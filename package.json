@@ -1,0 +1,23 @@
+{
+  "name": "dbxfcvnbgfcn",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/akshaayyanand-web/dbxfcvnbgfcn.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/akshaayyanand-web/dbxfcvnbgfcn/issues"
+  },
+  "homepage": "https://github.com/akshaayyanand-web/dbxfcvnbgfcn#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.61.1"
+  }
+}
