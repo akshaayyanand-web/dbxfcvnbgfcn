@@ -1,0 +1,70 @@
+{
+  "brand": "Lost Secrets",
+  "product": "Pure Cocos (50ml designer-inspired perfume, coconut/vanilla/musk)",
+  "creator_description": "Early-to-mid 20s woman, brown hair loosely tied back, light everyday makeup, wearing a plain white tank top, casual unscripted UGC energy",
+  "setting_description": "Home bathroom at the mirror, morning natural window light, lived-in vanity with everyday skincare clutter, no styling",
+  "product_reference_image": "https://lostsecrets.nl/cdn/shop/files/00-hero_fd0999f9-635a-448b-802f-0faa437983b9.png",
+  "aspect_ratio": "9:16",
+  "scenes": [
+    {
+      "scene": 1,
+      "beat": "Skeptical Hook",
+      "duration_sec": 4,
+      "aspect_ratio": "9:16",
+      "tool": "generate_video",
+      "image_url": null,
+      "prompt": "Handheld UGC-style phone video, Early-to-mid 20s woman, brown hair loosely tied back, light everyday makeup, wearing a plain white tank top, casual unscripted UGC energy, in a home bathroom at the mirror, morning natural window light, lived-in vanity with everyday skincare clutter, no styling, talking directly to the camera with a skeptical, unimpressed expression, mid-sentence delivery, authentic unscripted energy, slight camera shake, no color grade, no studio lighting, no on-screen graphics, vertical 9:16, phone-camera quality, slight grain",
+      "captions": "okay when this showed up i was like... here we go again"
+    },
+    {
+      "scene": 2,
+      "beat": "Unboxing / First Look",
+      "duration_sec": 5,
+      "aspect_ratio": "9:16",
+      "tool": "product_showcase",
+      "image_url": "https://lostsecrets.nl/cdn/shop/files/00-hero_fd0999f9-635a-448b-802f-0faa437983b9.png",
+      "prompt": "Handheld UGC-style phone video, Early-to-mid 20s woman, brown hair loosely tied back, light everyday makeup, wearing a plain white tank top, casual unscripted UGC energy, in a home bathroom at the mirror, morning natural window light, lived-in vanity with everyday skincare clutter, no styling, picking up and turning over a 50ml Pure Cocos perfume bottle by Lost Secrets, cream and gold minimalist label visible and legible, casually inspecting it not performing for camera, authentic unscripted energy, slight camera shake, no color grade, no studio lighting, no on-screen graphics, vertical 9:16, phone-camera quality, slight grain",
+      "captions": "it's called pure cocos, from lost secrets"
+    },
+    {
+      "scene": 3,
+      "beat": "Try-On / Application",
+      "duration_sec": 8,
+      "aspect_ratio": "9:16",
+      "tool": "product_showcase",
+      "image_url": "https://lostsecrets.nl/cdn/shop/files/00-hero_fd0999f9-635a-448b-802f-0faa437983b9.png",
+      "prompt": "Handheld UGC-style phone video, Early-to-mid 20s woman, brown hair loosely tied back, light everyday makeup, wearing a plain white tank top, casual unscripted UGC energy, in a home bathroom at the mirror, morning natural window light, lived-in vanity with everyday skincare clutter, no styling, spraying one spritz of the Pure Cocos perfume bottle onto her wrist, shown plainly and matter-of-fact, no slow motion, fully clothed close-up on the spray moment, authentic unscripted energy, slight camera shake, no color grade, no studio lighting, no on-screen graphics, vertical 9:16, phone-camera quality, slight grain",
+      "captions": "one spray. like i always do before i judge it"
+    },
+    {
+      "scene": 4,
+      "beat": "The Reaction",
+      "duration_sec": 5,
+      "aspect_ratio": "9:16",
+      "tool": "generate_video",
+      "image_url": null,
+      "prompt": "Handheld UGC-style phone video, Early-to-mid 20s woman, brown hair loosely tied back, light everyday makeup, wearing a plain white tank top, casual unscripted UGC energy, in a home bathroom at the mirror, morning natural window light, lived-in vanity with everyday skincare clutter, no styling, unguarded mirror-check reaction to smelling her wrist, genuine surprise, eyebrows raised, small caught-off-guard pause, not a posed smile, authentic unscripted energy, slight camera shake, no color grade, no studio lighting, no on-screen graphics, vertical 9:16, phone-camera quality, slight grain",
+      "captions": "wait... that's not- okay that smells expensive"
+    },
+    {
+      "scene": 5,
+      "beat": "Feature Callout",
+      "duration_sec": 7,
+      "aspect_ratio": "9:16",
+      "tool": "generate_video",
+      "image_url": "https://lostsecrets.nl/cdn/shop/files/00-hero_fd0999f9-635a-448b-802f-0faa437983b9.png",
+      "prompt": "Handheld UGC-style phone video, Early-to-mid 20s woman, brown hair loosely tied back, light everyday makeup, wearing a plain white tank top, casual unscripted UGC energy, in a home bathroom at the mirror, morning natural window light, lived-in vanity with everyday skincare clutter, no styling, holding the Pure Cocos bottle loosely at chest height while talking plainly to camera about the product, cream and gold minimalist label visible, matter-of-fact delivery not a pitch, authentic unscripted energy, slight camera shake, no color grade, no studio lighting, no on-screen graphics, vertical 9:16, phone-camera quality, slight grain",
+      "captions": "40% perfume oil, one spray was genuinely enough"
+    },
+    {
+      "scene": 6,
+      "beat": "Soft CTA",
+      "duration_sec": 5,
+      "aspect_ratio": "9:16",
+      "tool": "generate_video",
+      "image_url": "https://lostsecrets.nl/cdn/shop/files/00-hero_fd0999f9-635a-448b-802f-0faa437983b9.png",
+      "prompt": "Handheld UGC-style phone video, Early-to-mid 20s woman, brown hair loosely tied back, light everyday makeup, wearing a plain white tank top, casual unscripted UGC energy, in a home bathroom at the mirror, morning natural window light, lived-in vanity with everyday skincare clutter, no styling, casual relaxed sign-off to camera holding the Pure Cocos bottle at frame edge, low-key recommendation energy not an ad pitch, authentic unscripted energy, slight camera shake, no color grade, no studio lighting, no on-screen graphics, vertical 9:16, phone-camera quality, slight grain",
+      "captions": "not sponsored, i just didn't think a dupe would do this"
+    }
+  ]
+}

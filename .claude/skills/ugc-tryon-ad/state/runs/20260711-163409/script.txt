@@ -1,0 +1,39 @@
+LOST SECRETS — PURE COCOS
+"The Honest Try" — creator VO script
+Creator: early-to-mid 20s woman, has been burned by "dupe" perfumes before
+Setting: bathroom mirror
+Target length: ~35-38s
+
+[0:00–0:05] BEAT 1 — SKEPTICAL HOOK
+"Okay ngl, when this showed up I was like — here we go. Another 'dupe' perfume
+that's gonna smell like rubbing alcohol and be gone in an hour."
+
+[0:05–0:10] BEAT 2 — UNBOXING / FIRST LOOK
+"It's called Pure Cocos, from Lost Secrets. Cute bottle honestly, wasn't
+expecting that."
+
+[0:10–0:18] BEAT 3 — TRY-ON / APPLICATION
+"So I just did one spray, right on my wrist. Like I always do before I judge it."
+
+[0:18–0:24] BEAT 4 — THE REACTION
+"...wait. That's not— okay that actually smells expensive? Like warm coconut,
+vanilla, none of that sharp fake alcohol smell. I was not expecting that."
+
+[0:24–0:32] BEAT 5 — FEATURE CALLOUT
+"It's 40% perfume oil, so one spray was genuinely enough, I didn't have to
+layer it. And it's still on my skin right now, like eight hours later."
+
+[0:32–0:38] BEAT 6 — SOFT CTA
+"Not sponsored, I just did not think a 'dupe' would do this. It's Pure Cocos
+by Lost Secrets if you want to try it yourself."
+
+---
+SELF-AUDIT vs. failure modes (style-bible §6):
+1. Cinematic polish — n/a to VO; visual direction is handled in scene_prompts.json.
+2. Brand-speak — none used ("expensive," "warm coconut" are sensory, not hype adjectives).
+3. Skipping the doubt — doubt stated first, before any product claim. Pass.
+4. Vague/superlative-only claims — paired with specifics (40% oil, 8 hrs, one spray). Pass.
+5. Multiple creators/locations — one creator, one setting (bathroom mirror). Pass.
+6. Over-produced captions — captions kept plain/lowercase in scene_prompts.json. Pass.
+7. Posed reaction — reaction line written as an interrupted, unguarded beat ("...wait.
+   That's not—"). Pass.
