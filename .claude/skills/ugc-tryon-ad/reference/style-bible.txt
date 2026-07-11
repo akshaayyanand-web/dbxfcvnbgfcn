@@ -1,0 +1,72 @@
+UGC TRY-ON / PRODUCT DEMO — STYLE BIBLE & REPEATABLE FORMULA
+Read this fully before writing any script or prompt.
+
+0. WHAT THIS STYLE IS (one line)
+A raw, handheld-feeling UGC video of one believable creator unboxing, trying on, or
+demoing a product on camera, stating an honest doubt before a genuine reaction, and
+casually recommending it — engineered specifically to not look or feel like an ad.
+
+1. THE VISUAL SYSTEM
+1.1 Camera — handheld phone-shot: slightly off-center framing, natural imperfect
+    composition, small camera shake, no stabilized dolly or gimbal moves.
+1.2 Lighting — natural available light only (window light, bathroom vanity, car interior,
+    porch daylight). No studio lighting, no ring-light glow, no color grade.
+1.3 The creator — ONE person carries the whole ad. Same face, hair, outfit, and setting
+    description repeated every scene; only the action/beat changes. No multiple actors,
+    no scene-hopping locations mid-ad.
+1.4 Imperfection is credibility — a stray hair, an unstyled room, a half-finished sentence.
+    Do not "clean up" the frame; polish reads as an ad and kills trust.
+1.5 The mirror/reaction beat — the emotional peak. A real mirror check or unguarded
+    reaction (surprise, relief, a small laugh), not a posed smile to camera.
+1.6 Overlays — minimal to none. Plain lowercase captions only if used; no karaoke
+    animation, no logo bug, no lower-third graphics, no stock music sting.
+
+2. THE NARRATIVE FORMULA — "THE HONEST TRY" (6 beats)
+BEAT 1 — SKEPTICAL HOOK (~0-5s): direct to camera, doubt stated first ("I wasn't going to
+  buy this but..." / "okay I was NOT expecting this to..."). The hook owns the first 3
+  seconds or the viewer scrolls past.
+BEAT 2 — UNBOXING / FIRST LOOK: casual pickup or unboxing, reacting to the product itself,
+  not performing for camera.
+BEAT 3 — TRY-ON / APPLICATION: product goes on or gets used, shown plainly, no slow-motion
+  glam treatment.
+BEAT 4 — THE REACTION: the mirror check or immediate unguarded reaction. Proof-to-self.
+BEAT 5 — FEATURE CALLOUT: 1-2 concrete, specific details in plain language, not
+  superlatives ("didn't budge all day" beats "amazing quality").
+BEAT 6 — SOFT CTA: casual sign-off recommending it, light disclaimer energy ("not
+  sponsored, just liked it"), where to get it.
+
+3. PACING & RATIO
+~20% hook/skepticism, ~55% try-on/reaction, ~25% recommendation. Total runtime 30-45s.
+Speed and rawness matter more than length — the hook must land in the first 3 seconds.
+
+4. AUDIO
+Single casual, conversational creator voice. Natural pacing, contractions, filler words.
+Light or no background music — ambient room sound is fine and expected.
+
+5. THE VIRALITY LEVERS (keep intact)
+1. Stated skepticism before the claim — disarms the viewer's ad-detection instinct.
+2. Genuine-feeling reaction beat — proof-to-self before proof-to-viewer.
+3. Specificity over hype — one concrete detail beats five adjectives.
+4. Visual imperfection — handheld, natural light, unstyled room signal "not an ad."
+5. Speed of the hook — first 3 seconds decide the scroll.
+
+6. FAILURE MODES (kill these)
+1. Cinematic polish — studio light, color grade, stabilized camera all break the format.
+2. Brand-speak in the script — "revolutionary," "game-changing," feature-sheet language.
+3. Skipping the doubt — jumping straight to praise reads as scripted.
+4. Vague or superlative-only claims — always pair with one specific, plain detail.
+5. Multiple creators or locations — ONE person, ONE setting, continuity is the anchor.
+6. Over-produced captions or overlays — plain or none; karaoke/lower-thirds undercut it.
+7. Posed reaction — the mirror/reaction beat must read as unguarded, not performed.
+
+7. IMAGE-GEN / SCENE PROMPT SCAFFOLD (per scene)
+"Handheld UGC-style phone video, [CREATOR: age/look/outfit], in a [SETTING], natural
+available light, casual off-center framing, [ACTION THIS SCENE], authentic unscripted
+energy, slight camera shake, no color grade, no studio lighting, no on-screen graphics,
+vertical 9:16, phone-camera quality, slight grain."
+
+8. VIDEO-GEN PER-SCENE PROMPT RULES
+Keep the creator/setting description identical across scenes (continuity = the same
+person and room, only the action changes). No locked cinematic camera moves — handheld
+imperfection throughout. Normal speed; slightly faster cuts on the hook and CTA, a beat
+of stillness held on the reaction shot.
