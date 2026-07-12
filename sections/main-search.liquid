@@ -1,0 +1,35 @@
+<div class="search-page page-width">
+  <h1>{{ 'general.search.submit' | t }}</h1>
+  <form action="{{ routes.search_url }}" method="get" role="search" class="search-form">
+    <input type="search" name="q" value="{{ search.terms | escape }}" placeholder="{{ 'general.search.placeholder' | t }}">
+    <input type="hidden" name="type" value="product">
+    <button type="submit">{{ 'general.search.submit' | t }}</button>
+  </form>
+
+  {%- if search.performed -%}
+    {%- if search.results.size > 0 -%}
+      <ul class="product-grid" role="list">
+        {%- for item in search.results -%}
+          <li class="product-card">
+            <a href="{{ item.url }}" class="product-card__media">
+              {%- if item.featured_image -%}
+                <img src="{{ item.featured_image | image_url: width: 600 }}" alt="{{ item.featured_image.alt | escape }}" loading="lazy" width="300" height="{{ 300 | divided_by: item.featured_image.aspect_ratio }}">
+              {%- endif -%}
+            </a>
+            <div class="product-card__info">
+              <a href="{{ item.url }}" class="product-card__title">{{ item.title }}</a>
+            </div>
+          </li>
+        {%- endfor -%}
+      </ul>
+    {%- else -%}
+      <p>{{ 'general.search.no_results' | t: terms: search.terms }}</p>
+    {%- endif -%}
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "Search results"
+}
+{% endschema %}

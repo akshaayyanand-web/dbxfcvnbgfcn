@@ -1,0 +1,55 @@
+<div class="faq page-width color-scheme-{{ section.settings.color_scheme }}">
+  {%- if section.settings.heading != blank -%}
+    <h2 class="faq__heading">{{ section.settings.heading }}</h2>
+  {%- endif -%}
+
+  <div class="faq__list">
+    {%- for block in section.blocks -%}
+      <details class="faq__item" {{ block.shopify_attributes }}>
+        <summary class="faq__question">
+          {{ block.settings.question }}
+          <span class="faq__icon" aria-hidden="true">+</span>
+        </summary>
+        <div class="faq__answer rte">{{ block.settings.answer }}</div>
+      </details>
+    {%- endfor -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "FAQ",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Questions, answered" },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "options": [
+        { "value": "scheme-1", "label": "Scheme 1" },
+        { "value": "scheme-2", "label": "Scheme 2" },
+        { "value": "scheme-3", "label": "Scheme 3" }
+      ],
+      "default": "scheme-1"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "question",
+      "name": "Question",
+      "settings": [
+        { "type": "text", "id": "question", "label": "Question", "default": "How long until I see results?" },
+        { "type": "richtext", "id": "answer", "label": "Answer" }
+      ]
+    }
+  ],
+  "default": {
+    "blocks": [
+      { "type": "question", "settings": { "question": "How long until I see results?" } },
+      { "type": "question", "settings": { "question": "Is it safe for sensitive skin?" } },
+      { "type": "question", "settings": { "question": "What's your return policy?" } }
+    ]
+  },
+  "presets": [{ "name": "FAQ" }]
+}
+{% endschema %}

@@ -1,0 +1,53 @@
+{
+  "sections": {
+    "hero": {
+      "type": "hero",
+      "settings": {
+        "eyebrow": "New arrival",
+        "heading": "Wake up your skin, naturally",
+        "button_label": "Shop now",
+        "color_scheme": "scheme-1"
+      }
+    },
+    "feature-grid": {
+      "type": "feature-grid",
+      "blocks": {
+        "f-1": { "type": "feature", "settings": { "title": "Clinically tested", "text": "Backed by dermatologist studies." } },
+        "f-2": { "type": "feature", "settings": { "title": "Fast results", "text": "Visible change in 2-4 weeks." } },
+        "f-3": { "type": "feature", "settings": { "title": "Gentle formula", "text": "Safe for daily, sensitive-skin use." } }
+      },
+      "block_order": ["f-1", "f-2", "f-3"],
+      "settings": { "heading": "Why you'll love it", "color_scheme": "scheme-1" }
+    },
+    "steps": {
+      "type": "steps",
+      "blocks": {
+        "s-1": { "type": "step", "settings": { "title": "Cleanse", "text": "Start with a clean, dry face." } },
+        "s-2": { "type": "step", "settings": { "title": "Apply", "text": "Use nightly for best results." } },
+        "s-3": { "type": "step", "settings": { "title": "Glow", "text": "See results within a few weeks." } }
+      },
+      "block_order": ["s-1", "s-2", "s-3"],
+      "settings": { "heading": "How it works", "color_scheme": "scheme-2" }
+    },
+    "testimonials": {
+      "type": "testimonials",
+      "blocks": {
+        "t-1": { "type": "testimonial", "settings": { "quote": "This changed my routine completely.", "author": "Happy customer" } },
+        "t-2": { "type": "testimonial", "settings": { "quote": "Results after two weeks, no joke.", "author": "Verified buyer" } }
+      },
+      "block_order": ["t-1", "t-2"],
+      "settings": { "heading": "Loved by thousands", "color_scheme": "scheme-1" }
+    },
+    "faq": {
+      "type": "faq",
+      "blocks": {
+        "q-1": { "type": "question", "settings": { "question": "How long until I see results?" } },
+        "q-2": { "type": "question", "settings": { "question": "Is it safe for sensitive skin?" } },
+        "q-3": { "type": "question", "settings": { "question": "What's your return policy?" } }
+      },
+      "block_order": ["q-1", "q-2", "q-3"],
+      "settings": { "heading": "Questions, answered", "color_scheme": "scheme-1" }
+    }
+  },
+  "order": ["hero", "feature-grid", "steps", "testimonials", "faq"]
+}

@@ -1,0 +1,16 @@
+{
+  "type": "footer",
+  "name": "Footer group",
+  "sections": {
+    "footer": {
+      "type": "footer",
+      "blocks": {
+        "col-1": { "type": "menu", "settings": { "heading": "Quick links" } },
+        "col-2": { "type": "text", "settings": { "heading": "About" } }
+      },
+      "block_order": ["col-1", "col-2"],
+      "settings": { "show_newsletter": true, "newsletter_heading": "Join the list" }
+    }
+  },
+  "order": ["footer"]
+}

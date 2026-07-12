@@ -1,0 +1,21 @@
+{
+  "current": "Default",
+  "presets": {
+    "Default": {
+      "logo": "",
+      "logo_width": 140,
+      "favicon": "",
+      "color_scheme": "scheme-1",
+      "theme_color": "#c98f5f",
+      "font_heading": "assistant_n6",
+      "font_body": "assistant_n4",
+      "page_width": 1240,
+      "enable_page_transitions": true,
+      "enable_quick_add": true,
+      "cart_type": "drawer",
+      "social_instagram_link": "",
+      "social_tiktok_link": "",
+      "social_facebook_link": ""
+    }
+  }
+}

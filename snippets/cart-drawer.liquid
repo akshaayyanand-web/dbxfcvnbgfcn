@@ -1,0 +1,64 @@
+<cart-drawer class="drawer{% if cart.item_count == 0 %} is-empty{% endif %}" id="CartDrawer">
+  <div class="drawer__overlay" data-drawer-close></div>
+  <div class="drawer__panel" role="dialog" aria-modal="true" aria-label="{{ 'cart.title' | t }}" tabindex="-1">
+    <header class="drawer__head">
+      <h2 class="drawer__heading">{{ 'cart.title' | t }}</h2>
+      <button type="button" class="drawer__close" data-drawer-close aria-label="{{ 'accessibility.close' | t }}">
+        {% render 'icon-close' %}
+      </button>
+    </header>
+
+    {%- if cart.item_count == 0 -%}
+      <div class="drawer__empty">
+        <p>{{ 'cart.empty' | t }}</p>
+        <a href="{{ routes.all_products_collection_url }}" class="button button--primary">
+          {{ 'cart.continue_shopping' | t }}
+        </a>
+      </div>
+    {%- else -%}
+      <ul class="drawer__items" role="list">
+        {%- for item in cart.items -%}
+          <li class="drawer__item">
+            <a href="{{ item.url }}" class="drawer__item-image">
+              {%- if item.image -%}
+                <img
+                  src="{{ item.image | image_url: width: 160 }}"
+                  alt="{{ item.image.alt | escape }}"
+                  loading="lazy"
+                  width="80"
+                  height="{{ 80 | divided_by: item.image.aspect_ratio }}"
+                >
+              {%- endif -%}
+            </a>
+            <div class="drawer__item-detail">
+              <a href="{{ item.url }}" class="drawer__item-title">{{ item.product.title }}</a>
+              {%- if item.variant.title != 'Default Title' -%}
+                <p class="drawer__item-variant">{{ item.variant.title }}</p>
+              {%- endif -%}
+              <p class="drawer__item-price">{{ item.final_line_price | money }}</p>
+              <div class="drawer__item-qty">
+                <input
+                  type="number"
+                  min="0"
+                  value="{{ item.quantity }}"
+                  data-cart-line="{{ forloop.index }}"
+                  aria-label="{{ 'cart.quantity' | t }}"
+                >
+              </div>
+            </div>
+          </li>
+        {%- endfor -%}
+      </ul>
+
+      <footer class="drawer__footer">
+        <div class="drawer__subtotal">
+          <span>{{ 'cart.subtotal' | t }}</span>
+          <span>{{ cart.total_price | money }}</span>
+        </div>
+        <a href="{{ routes.cart_url }}" class="button button--primary button--full">
+          {{ 'cart.checkout' | t }}
+        </a>
+      </footer>
+    {%- endif -%}
+  </div>
+</cart-drawer>

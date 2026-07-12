@@ -1,0 +1,8 @@
+{{ 'global.js' | asset_url | script_tag: defer: true }}
+
+<script>
+  window.themeSettings = {
+    cartType: {{ settings.cart_type | json }},
+    moneyFormat: {{ shop.money_format | json }}
+  };
+</script>

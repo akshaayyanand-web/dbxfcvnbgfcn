@@ -1,0 +1,96 @@
+<!doctype html>
+<html
+  class="no-js"
+  {% if request.design_mode %}
+    data-design-mode
+  {% endif %}
+  lang="{{ request.locale.iso_code }}"
+>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="theme-color" content="{{ settings.theme_color | default: '' }}">
+
+    {%- if settings.favicon != blank -%}
+      <link
+        rel="icon"
+        type="image/png"
+        href="{{ settings.favicon | image_url: width: 32, height: 32 }}"
+      >
+    {%- endif -%}
+
+    {% comment %} Reserve space for the main region so the browser view-transition doesn't jump while the next page loads {% endcomment %}
+    {% if settings.enable_page_transitions %}
+      <link
+        rel="expect"
+        href="#MainContent"
+        blocking="render"
+        id="page-transition-blocker"
+      >
+    {% endif %}
+
+    {%- render 'meta-tags' -%}
+    {%- render 'stylesheets' -%}
+    {%- render 'fonts' -%}
+    {%- render 'color-scheme-variables' -%}
+    {%- render 'scripts' -%}
+
+    {% if request.design_mode %}
+      {%- render 'theme-editor-styles' -%}
+    {% endif %}
+
+    {{ content_for_header }}
+  </head>
+
+  <body class="gradient color-scheme-{{ settings.color_scheme | default: 'scheme-1' }}">
+    <a class="skip-to-content-link visually-hidden button" href="#MainContent">
+      {{ 'accessibility.skip_to_content' | t: default: 'Skip to content' }}
+    </a>
+
+    {% render 'cart-drawer' %}
+    {% render 'chat-widget' %}
+
+    <div class="layout-wrapper">
+      <div id="shopify-section-group-header-group">
+        {% sections 'header-group' %}
+      </div>
+
+      <script>
+        (function pinHeaderDimensions() {
+          const header = document.querySelector('sticky-header, .header-wrapper');
+          const headerGroup = document.getElementById('shopify-section-group-header-group');
+          if (!header || !headerGroup) return;
+
+          const root = document.documentElement;
+          const applyHeaderVars = () => {
+            root.style.setProperty('--hdr-height', header.offsetHeight + 'px');
+            root.style.setProperty('--hdr-group-height', headerGroup.offsetHeight + 'px');
+          };
+
+          applyHeaderVars();
+          window.addEventListener('resize', applyHeaderVars);
+        })();
+      </script>
+
+      <main
+        id="MainContent"
+        class="content-for-layout focus-none"
+        role="main"
+        tabindex="-1"
+        data-template="{{ template }}"
+      >
+        {{ content_for_layout }}
+      </main>
+
+      <div id="shopify-section-group-footer-group">
+        {% sections 'footer-group' %}
+      </div>
+    </div>
+
+    {% render 'search-drawer' %}
+
+    {% if settings.enable_quick_add %}
+      {% render 'quick-add-drawer' %}
+    {% endif %}
+  </body>
+</html>

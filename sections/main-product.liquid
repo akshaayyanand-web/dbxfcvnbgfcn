@@ -1,0 +1,96 @@
+<div class="product page-width" data-section-id="{{ section.id }}">
+  <div class="product__media">
+    {%- if product.media.size > 0 -%}
+      <div class="product__media-main">
+        <img
+          id="ProductMainImage-{{ section.id }}"
+          src="{{ product.selected_or_first_available_variant.featured_image | default: product.featured_image | image_url: width: 1200 }}"
+          alt="{{ product.featured_image.alt | escape }}"
+          width="1200"
+          height="{{ 1200 | divided_by: product.featured_image.aspect_ratio | default: 1200 }}"
+        >
+      </div>
+      {%- if product.media.size > 1 -%}
+        <div class="product__media-thumbs" role="list">
+          {%- for media in product.media -%}
+            <button type="button" class="product__media-thumb" data-media-id="{{ media.id }}">
+              <img
+                src="{{ media | image_url: width: 200 }}"
+                alt="{{ media.alt | escape }}"
+                loading="lazy"
+                width="80"
+                height="80"
+              >
+            </button>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+    {%- else -%}
+      <div class="product__media-main product__media-main--placeholder">
+        {{ 'product-1' | placeholder_svg_tag }}
+      </div>
+    {%- endif -%}
+  </div>
+
+  <div class="product__info">
+    <h1 class="product__title">{{ product.title }}</h1>
+
+    <div class="product__price">
+      {%- if product.selected_or_first_available_variant.compare_at_price > product.selected_or_first_available_variant.price -%}
+        <s class="product__price-compare">{{ product.selected_or_first_available_variant.compare_at_price | money }}</s>
+      {%- endif -%}
+      <span class="product__price-current">{{ product.selected_or_first_available_variant.price | money }}</span>
+    </div>
+
+    {%- if section.settings.show_rating -%}
+      <div class="product__rating" aria-hidden="true">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+    {%- endif -%}
+
+    {%- form 'product', product, id: 'ProductForm', class: 'product__form' -%}
+      <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+
+      {%- for option in product.options_with_values -%}
+        <fieldset class="product__option">
+          <legend>{{ option.name }}</legend>
+          {%- for value in option.values -%}
+            <label class="product__option-value">
+              <input type="radio" name="option-{{ option.position }}" value="{{ value | escape }}" {% if option.selected_value == value %}checked{% endif %}>
+              <span>{{ value }}</span>
+            </label>
+          {%- endfor -%}
+        </fieldset>
+      {%- endfor -%}
+
+      <div class="product__quantity">
+        <label for="Quantity-{{ section.id }}">{{ 'products.product.quantity' | t }}</label>
+        <input type="number" id="Quantity-{{ section.id }}" name="quantity" value="1" min="1">
+      </div>
+
+      <button
+        type="submit"
+        name="add"
+        class="button button--primary button--full"
+        {% unless product.selected_or_first_available_variant.available %}disabled{% endunless %}
+      >
+        {%- if product.selected_or_first_available_variant.available -%}
+          {{ 'products.product.add_to_cart' | t }}
+        {%- else -%}
+          {{ 'products.product.sold_out' | t }}
+        {%- endif -%}
+      </button>
+    {%- endform -%}
+
+    <div class="product__description rte">
+      {{ product.description }}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Product information",
+  "settings": [
+    { "type": "checkbox", "id": "show_rating", "label": "Show star rating", "default": true }
+  ]
+}
+{% endschema %}
