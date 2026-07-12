@@ -1,0 +1,11 @@
+<quick-add-drawer class="drawer drawer--quick-add" id="QuickAddDrawer">
+  <div class="drawer__overlay" data-drawer-close></div>
+  <div class="drawer__panel" role="dialog" aria-modal="true" aria-label="{{ 'products.product.quick_add' | t }}" tabindex="-1">
+    <button type="button" class="drawer__close" data-drawer-close aria-label="{{ 'accessibility.close' | t }}">
+      {% render 'icon-close' %}
+    </button>
+    <div class="quick-add__content" data-quick-add-content>
+      {%- comment -%} Populated client-side with the fetched product markup {%- endcomment -%}
+    </div>
+  </div>
+</quick-add-drawer>

@@ -1,0 +1,23 @@
+<search-drawer class="drawer drawer--search" id="SearchDrawer">
+  <div class="drawer__overlay" data-drawer-close></div>
+  <div class="drawer__panel drawer__panel--top" role="dialog" aria-modal="true" aria-label="{{ 'general.search.submit' | t }}" tabindex="-1">
+    <form action="{{ routes.search_url }}" method="get" role="search" class="search-form">
+      <input
+        type="search"
+        name="q"
+        value="{{ search.terms | escape }}"
+        placeholder="{{ 'general.search.placeholder' | t }}"
+        autocomplete="off"
+        class="search-form__input"
+      >
+      <input type="hidden" name="type" value="product">
+      <button type="submit" class="search-form__submit" aria-label="{{ 'general.search.submit' | t }}">
+        {% render 'icon-search' %}
+      </button>
+      <button type="button" class="drawer__close" data-drawer-close aria-label="{{ 'accessibility.close' | t }}">
+        {% render 'icon-close' %}
+      </button>
+    </form>
+    <div class="search-form__results" data-search-results></div>
+  </div>
+</search-drawer>

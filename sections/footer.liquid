@@ -1,0 +1,90 @@
+<div class="site-footer">
+  <div class="page-width">
+    {%- if section.settings.show_newsletter -%}
+      <div class="site-footer__newsletter">
+        <h2>{{ section.settings.newsletter_heading }}</h2>
+        {%- form 'customer', id: 'FooterNewsletter' -%}
+          <input type="hidden" name="contact[tags]" value="newsletter">
+          <div class="newsletter-form">
+            <input
+              type="email"
+              name="contact[email]"
+              placeholder="{{ 'newsletter.placeholder' | t }}"
+              required
+            >
+            <button type="submit">{{ 'newsletter.button' | t }}</button>
+          </div>
+        {%- endform -%}
+      </div>
+    {%- endif -%}
+
+    <div class="site-footer__columns">
+      {%- for block in section.blocks -%}
+        <div class="site-footer__column" {{ block.shopify_attributes }}>
+          {%- case block.type -%}
+            {%- when 'menu' -%}
+              <h3>{{ block.settings.heading }}</h3>
+              <ul role="list">
+                {%- for link in block.settings.menu.links -%}
+                  <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+                {%- endfor -%}
+              </ul>
+            {%- when 'text' -%}
+              <h3>{{ block.settings.heading }}</h3>
+              <div class="rte">{{ block.settings.text }}</div>
+          {%- endcase -%}
+        </div>
+      {%- endfor -%}
+    </div>
+
+    <div class="site-footer__bottom">
+      <div class="site-footer__social">
+        {%- if settings.social_instagram_link != blank -%}
+          <a href="{{ settings.social_instagram_link }}">Instagram</a>
+        {%- endif -%}
+        {%- if settings.social_tiktok_link != blank -%}
+          <a href="{{ settings.social_tiktok_link }}">TikTok</a>
+        {%- endif -%}
+        {%- if settings.social_facebook_link != blank -%}
+          <a href="{{ settings.social_facebook_link }}">Facebook</a>
+        {%- endif -%}
+      </div>
+      {%- assign current_year = 'now' | date: '%Y' -%}
+      <p class="site-footer__copyright">{{ 'footer.copyright' | t: year: current_year, shop: shop.name }}</p>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Footer",
+  "settings": [
+    { "type": "checkbox", "id": "show_newsletter", "label": "Show newsletter signup", "default": true },
+    { "type": "text", "id": "newsletter_heading", "label": "Newsletter heading", "default": "Join the list" }
+  ],
+  "blocks": [
+    {
+      "type": "menu",
+      "name": "Menu",
+      "settings": [
+        { "type": "text", "id": "heading", "label": "Heading", "default": "Quick links" },
+        { "type": "link_list", "id": "menu", "label": "Menu", "default": "footer" }
+      ]
+    },
+    {
+      "type": "text",
+      "name": "Text block",
+      "settings": [
+        { "type": "text", "id": "heading", "label": "Heading", "default": "About" },
+        { "type": "richtext", "id": "text", "label": "Text" }
+      ]
+    }
+  ],
+  "default": {
+    "blocks": [
+      { "type": "menu", "settings": { "heading": "Quick links" } },
+      { "type": "text", "settings": { "heading": "About" } }
+    ]
+  }
+}
+{% endschema %}

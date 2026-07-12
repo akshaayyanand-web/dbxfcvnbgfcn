@@ -1,0 +1,63 @@
+<div class="cart-page page-width">
+  <h1>{{ 'cart.title' | t }}</h1>
+
+  {%- if cart.item_count == 0 -%}
+    <div class="cart-page__empty">
+      <p>{{ 'cart.empty' | t }}</p>
+      <a href="{{ routes.all_products_collection_url }}" class="button button--primary">
+        {{ 'cart.continue_shopping' | t }}
+      </a>
+    </div>
+  {%- else -%}
+    {%- form 'cart', cart, id: 'CartForm' -%}
+      <table class="cart-page__table">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>{{ 'cart.quantity' | t }}</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          {%- for item in cart.items -%}
+            <tr>
+              <td class="cart-page__product">
+                <a href="{{ item.url }}">
+                  {%- if item.image -%}
+                    <img src="{{ item.image | image_url: width: 160 }}" alt="{{ item.image.alt | escape }}" width="80" height="{{ 80 | divided_by: item.image.aspect_ratio }}">
+                  {%- endif -%}
+                </a>
+                <div>
+                  <a href="{{ item.url }}">{{ item.product.title }}</a>
+                  {%- if item.variant.title != 'Default Title' -%}
+                    <p>{{ item.variant.title }}</p>
+                  {%- endif -%}
+                </div>
+              </td>
+              <td>
+                <input type="number" name="updates[]" value="{{ item.quantity }}" min="0" aria-label="{{ 'cart.quantity' | t }}">
+              </td>
+              <td>{{ item.final_line_price | money }}</td>
+            </tr>
+          {%- endfor -%}
+        </tbody>
+      </table>
+
+      <div class="cart-page__summary">
+        <div class="cart-page__subtotal">
+          <span>{{ 'cart.subtotal' | t }}</span>
+          <span>{{ cart.total_price | money }}</span>
+        </div>
+        <button type="submit" name="checkout" class="button button--primary button--full">
+          {{ 'cart.checkout' | t }}
+        </button>
+      </div>
+    {%- endform -%}
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "Cart page"
+}
+{% endschema %}

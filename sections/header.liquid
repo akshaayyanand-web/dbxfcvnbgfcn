@@ -1,0 +1,69 @@
+<header-bar class="site-header{% if section.settings.sticky %} site-header--sticky{% endif %}{% if section.settings.transparent %} site-header--transparent{% endif %}" data-sticky="{{ section.settings.sticky }}">
+  <div class="site-header__row page-width">
+    <button type="button" class="site-header__menu-toggle" data-menu-toggle aria-expanded="false" aria-controls="MobileNav">
+      <span></span><span></span><span></span>
+    </button>
+
+    <a href="{{ routes.root_url }}" class="site-header__logo">
+      {%- if settings.logo != blank -%}
+        <img
+          src="{{ settings.logo | image_url: width: 300 }}"
+          alt="{{ shop.name }}"
+          width="{{ settings.logo_width }}"
+          height="{{ settings.logo_width | divided_by: settings.logo.aspect_ratio }}"
+        >
+      {%- else -%}
+        <span class="site-header__logo-text">{{ shop.name }}</span>
+      {%- endif -%}
+    </a>
+
+    <nav class="site-header__nav" aria-label="Primary">
+      <ul role="list">
+        {%- for link in section.settings.menu.links -%}
+          <li>
+            <a href="{{ link.url }}"{% if link.active %} aria-current="page"{% endif %}>{{ link.title }}</a>
+            {%- if link.links.size > 0 -%}
+              <ul class="site-header__submenu" role="list">
+                {%- for grandchild in link.links -%}
+                  <li><a href="{{ grandchild.url }}">{{ grandchild.title }}</a></li>
+                {%- endfor -%}
+              </ul>
+            {%- endif -%}
+          </li>
+        {%- endfor -%}
+      </ul>
+    </nav>
+
+    <div class="site-header__icons">
+      <button type="button" class="site-header__icon" data-drawer-open="SearchDrawer" aria-label="{{ 'general.search.submit' | t }}">
+        {% render 'icon-search' %}
+      </button>
+      <a href="{{ routes.account_url }}" class="site-header__icon" aria-label="Account">
+        {% render 'icon-account' %}
+      </a>
+      <button type="button" class="site-header__icon site-header__icon--cart" data-drawer-open="CartDrawer" aria-label="{{ 'cart.title' | t }}">
+        {% render 'icon-cart' %}
+        <span class="site-header__cart-count" data-cart-count>{{ cart.item_count }}</span>
+      </button>
+    </div>
+  </div>
+
+  <nav id="MobileNav" class="site-header__mobile-nav" aria-label="Mobile">
+    <ul role="list">
+      {%- for link in section.settings.menu.links -%}
+        <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+      {%- endfor -%}
+    </ul>
+  </nav>
+</header-bar>
+
+{% schema %}
+{
+  "name": "Header",
+  "settings": [
+    { "type": "link_list", "id": "menu", "label": "Menu", "default": "main-menu" },
+    { "type": "checkbox", "id": "sticky", "label": "Sticky header", "default": true },
+    { "type": "checkbox", "id": "transparent", "label": "Transparent on home page", "default": false }
+  ]
+}
+{% endschema %}

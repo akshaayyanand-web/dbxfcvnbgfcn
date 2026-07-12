@@ -1,0 +1,124 @@
+[
+  {
+    "name": "theme_info",
+    "theme_name": "Aurora Glow",
+    "theme_version": "1.0.0",
+    "theme_author": "Custom Build",
+    "theme_documentation_url": "",
+    "theme_support_url": ""
+  },
+  {
+    "name": "Logo",
+    "settings": [
+      {
+        "type": "image_picker",
+        "id": "logo",
+        "label": "Logo image"
+      },
+      {
+        "type": "range",
+        "id": "logo_width",
+        "label": "Logo width",
+        "min": 60,
+        "max": 260,
+        "step": 10,
+        "default": 140,
+        "unit": "px"
+      },
+      {
+        "type": "image_picker",
+        "id": "favicon",
+        "label": "Favicon"
+      }
+    ]
+  },
+  {
+    "name": "Colors",
+    "settings": [
+      {
+        "type": "select",
+        "id": "color_scheme",
+        "label": "Color scheme",
+        "options": [
+          { "value": "scheme-1", "label": "Scheme 1 - Light" },
+          { "value": "scheme-2", "label": "Scheme 2 - Dark" },
+          { "value": "scheme-3", "label": "Scheme 3 - Contrast" }
+        ],
+        "default": "scheme-1"
+      },
+      {
+        "type": "color",
+        "id": "theme_color",
+        "label": "Accent color",
+        "default": "#c98f5f"
+      }
+    ]
+  },
+  {
+    "name": "Typography",
+    "settings": [
+      {
+        "type": "font_picker",
+        "id": "font_heading",
+        "label": "Heading font",
+        "default": "assistant_n6"
+      },
+      {
+        "type": "font_picker",
+        "id": "font_body",
+        "label": "Body font",
+        "default": "assistant_n4"
+      }
+    ]
+  },
+  {
+    "name": "Layout",
+    "settings": [
+      {
+        "type": "range",
+        "id": "page_width",
+        "label": "Max page width",
+        "min": 1000,
+        "max": 1600,
+        "step": 20,
+        "default": 1240,
+        "unit": "px"
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_page_transitions",
+        "label": "Enable page transitions",
+        "default": true
+      }
+    ]
+  },
+  {
+    "name": "Cart",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "enable_quick_add",
+        "label": "Enable quick add from collection grid",
+        "default": true
+      },
+      {
+        "type": "select",
+        "id": "cart_type",
+        "label": "Add to cart behavior",
+        "options": [
+          { "value": "drawer", "label": "Open cart drawer" },
+          { "value": "page", "label": "Go to cart page" }
+        ],
+        "default": "drawer"
+      }
+    ]
+  },
+  {
+    "name": "Social media",
+    "settings": [
+      { "type": "text", "id": "social_instagram_link", "label": "Instagram URL" },
+      { "type": "text", "id": "social_tiktok_link", "label": "TikTok URL" },
+      { "type": "text", "id": "social_facebook_link", "label": "Facebook URL" }
+    ]
+  }
+]

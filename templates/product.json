@@ -1,0 +1,18 @@
+{
+  "sections": {
+    "main-product": {
+      "type": "main-product",
+      "settings": { "show_rating": true }
+    },
+    "faq": {
+      "type": "faq",
+      "blocks": {
+        "q-1": { "type": "question", "settings": { "question": "How long until I see results?" } },
+        "q-2": { "type": "question", "settings": { "question": "What's your return policy?" } }
+      },
+      "block_order": ["q-1", "q-2"],
+      "settings": { "heading": "Questions, answered", "color_scheme": "scheme-1" }
+    }
+  },
+  "order": ["main-product", "faq"]
+}
