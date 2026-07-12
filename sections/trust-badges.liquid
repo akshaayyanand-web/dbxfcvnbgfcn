@@ -1,0 +1,35 @@
+<div class="trust-badges page-width">
+  <ul class="trust-badges__list" role="list">
+    {%- for block in section.blocks -%}
+      <li class="trust-badges__item" {{ block.shopify_attributes }}>
+        <span class="trust-badges__value">{{ block.settings.value }}</span>
+        <span class="trust-badges__label">{{ block.settings.label }}</span>
+      </li>
+    {%- endfor -%}
+  </ul>
+</div>
+
+{% schema %}
+{
+  "name": "Trust badges",
+  "blocks": [
+    {
+      "type": "badge",
+      "name": "Badge",
+      "settings": [
+        { "type": "text", "id": "value", "label": "Value", "default": "10,000+" },
+        { "type": "text", "id": "label", "label": "Label", "default": "Happy customers" }
+      ]
+    }
+  ],
+  "default": {
+    "blocks": [
+      { "type": "badge", "settings": { "value": "10,000+", "label": "Happy customers" } },
+      { "type": "badge", "settings": { "value": "4.8/5", "label": "Average rating" } },
+      { "type": "badge", "settings": { "value": "30-day", "label": "Money-back guarantee" } },
+      { "type": "badge", "settings": { "value": "Free", "label": "US shipping" } }
+    ]
+  },
+  "presets": [{ "name": "Trust badges" }]
+}
+{% endschema %}

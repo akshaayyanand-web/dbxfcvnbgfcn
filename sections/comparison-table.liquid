@@ -1,0 +1,80 @@
+<div class="comparison page-width color-scheme-{{ section.settings.color_scheme }}">
+  {%- if section.settings.heading != blank -%}
+    <h2 class="comparison__heading">{{ section.settings.heading }}</h2>
+  {%- endif -%}
+
+  <div class="comparison__table wide-scroll">
+    <table>
+      <thead>
+        <tr>
+          <th scope="col"></th>
+          <th scope="col" class="comparison__us">{{ section.settings.us_label }}</th>
+          <th scope="col">{{ section.settings.them_label }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {%- for block in section.blocks -%}
+          <tr {{ block.shopify_attributes }}>
+            <th scope="row">{{ block.settings.feature }}</th>
+            <td class="comparison__us">
+              {%- if block.settings.us -%}
+                <span class="comparison__yes" aria-hidden="true">&#10003;</span><span class="visually-hidden">Yes</span>
+              {%- else -%}
+                <span class="comparison__no" aria-hidden="true">&#10005;</span><span class="visually-hidden">No</span>
+              {%- endif -%}
+            </td>
+            <td>
+              {%- if block.settings.them -%}
+                <span class="comparison__yes" aria-hidden="true">&#10003;</span><span class="visually-hidden">Yes</span>
+              {%- else -%}
+                <span class="comparison__no" aria-hidden="true">&#10005;</span><span class="visually-hidden">No</span>
+              {%- endif -%}
+            </td>
+          </tr>
+        {%- endfor -%}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Comparison table",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "How we compare" },
+    { "type": "text", "id": "us_label", "label": "Our column label", "default": "Us" },
+    { "type": "text", "id": "them_label", "label": "Other column label", "default": "Other brands" },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "options": [
+        { "value": "scheme-1", "label": "Scheme 1" },
+        { "value": "scheme-2", "label": "Scheme 2" },
+        { "value": "scheme-3", "label": "Scheme 3" }
+      ],
+      "default": "scheme-1"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "row",
+      "name": "Row",
+      "settings": [
+        { "type": "text", "id": "feature", "label": "Feature", "default": "Feature name" },
+        { "type": "checkbox", "id": "us", "label": "We have it", "default": true },
+        { "type": "checkbox", "id": "them", "label": "They have it", "default": false }
+      ]
+    }
+  ],
+  "default": {
+    "blocks": [
+      { "type": "row", "settings": { "feature": "At-home use", "us": true, "them": true } },
+      { "type": "row", "settings": { "feature": "No appointment required", "us": true, "them": false } },
+      { "type": "row", "settings": { "feature": "30-day guarantee", "us": true, "them": false } },
+      { "type": "row", "settings": { "feature": "Reusable, no consumables", "us": true, "them": false } }
+    ]
+  },
+  "presets": [{ "name": "Comparison table" }]
+}
+{% endschema %}

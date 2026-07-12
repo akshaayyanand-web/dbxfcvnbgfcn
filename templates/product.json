@@ -4,15 +4,126 @@
       "type": "main-product",
       "settings": { "show_rating": true }
     },
+    "trust-badges": {
+      "type": "trust-badges",
+      "blocks": {
+        "b-1": { "type": "badge", "settings": { "value": "10,000+", "label": "Happy customers" } },
+        "b-2": { "type": "badge", "settings": { "value": "4.8/5", "label": "Average rating" } },
+        "b-3": { "type": "badge", "settings": { "value": "30-day", "label": "Money-back guarantee" } },
+        "b-4": { "type": "badge", "settings": { "value": "Free", "label": "US shipping" } }
+      },
+      "block_order": ["b-1", "b-2", "b-3", "b-4"],
+      "settings": {}
+    },
+    "product-results": {
+      "type": "product-results",
+      "blocks": {
+        "r-1": { "type": "result", "settings": { "text": "Noticeably smoother texture" } },
+        "r-2": { "type": "result", "settings": { "text": "More even, brighter tone" } },
+        "r-3": { "type": "result", "settings": { "text": "Reduced look of fine lines" } }
+      },
+      "block_order": ["r-1", "r-2", "r-3"],
+      "settings": {
+        "heading": "See visible results in 30 days",
+        "subheading": "Consistent use is the difference between hoping and seeing.",
+        "color_scheme": "scheme-1"
+      }
+    },
+    "benefit-panels": {
+      "type": "image-text-benefits",
+      "blocks": {
+        "p-1": {
+          "type": "panel",
+          "settings": {
+            "image_position": "left",
+            "result": "Result",
+            "heading": "Softer look around the eyes",
+            "color_scheme": "scheme-1"
+          }
+        },
+        "p-2": {
+          "type": "panel",
+          "settings": {
+            "image_position": "right",
+            "result": "Result",
+            "heading": "A brighter, more rested look",
+            "color_scheme": "scheme-1"
+          }
+        }
+      },
+      "block_order": ["p-1", "p-2"],
+      "settings": {}
+    },
+    "how-it-works": {
+      "type": "product-how-it-works",
+      "blocks": {
+        "m-1": { "type": "mode", "settings": { "title": "Mode one", "text": "Explain what this setting targets and why." } },
+        "m-2": { "type": "mode", "settings": { "title": "Mode two", "text": "Explain what this setting targets and why." } }
+      },
+      "block_order": ["m-1", "m-2"],
+      "settings": { "heading": "How it works", "color_scheme": "scheme-2" }
+    },
+    "testimonials": {
+      "type": "testimonials",
+      "blocks": {
+        "t-1": { "type": "testimonial", "settings": { "quote": "My skin looks noticeably more rested after a few weeks.", "author": "Verified buyer", "rating": 5 } },
+        "t-2": { "type": "testimonial", "settings": { "quote": "Easy to fit into my night routine, results were gradual but real.", "author": "Verified buyer", "rating": 5 } },
+        "t-3": { "type": "testimonial", "settings": { "quote": "Took about a month, but worth the wait.", "author": "Verified buyer", "rating": 4 } }
+      },
+      "block_order": ["t-1", "t-2", "t-3"],
+      "settings": { "heading": "Real customers, real results", "color_scheme": "scheme-1" }
+    },
+    "comparison-table": {
+      "type": "comparison-table",
+      "blocks": {
+        "c-1": { "type": "row", "settings": { "feature": "At-home use", "us": true, "them": true } },
+        "c-2": { "type": "row", "settings": { "feature": "No appointment required", "us": true, "them": false } },
+        "c-3": { "type": "row", "settings": { "feature": "30-day guarantee", "us": true, "them": false } },
+        "c-4": { "type": "row", "settings": { "feature": "Reusable, no consumables", "us": true, "them": false } }
+      },
+      "block_order": ["c-1", "c-2", "c-3", "c-4"],
+      "settings": { "heading": "How we compare", "us_label": "Us", "them_label": "Other brands", "color_scheme": "scheme-1" }
+    },
+    "guarantee": {
+      "type": "guarantee",
+      "settings": {
+        "eyebrow": "Try it risk-free",
+        "heading": "30 days to change your mind",
+        "button_label": "Shop now",
+        "color_scheme": "scheme-3"
+      }
+    },
+    "steps": {
+      "type": "steps",
+      "blocks": {
+        "s-1": { "type": "step", "settings": { "title": "Cleanse", "text": "Start with a clean, dry face." } },
+        "s-2": { "type": "step", "settings": { "title": "Apply", "text": "Use nightly for best results." } },
+        "s-3": { "type": "step", "settings": { "title": "Glow", "text": "See results within a few weeks." } }
+      },
+      "block_order": ["s-1", "s-2", "s-3"],
+      "settings": { "heading": "New to us? Start here", "color_scheme": "scheme-2" }
+    },
     "faq": {
       "type": "faq",
       "blocks": {
         "q-1": { "type": "question", "settings": { "question": "How long until I see results?" } },
-        "q-2": { "type": "question", "settings": { "question": "What's your return policy?" } }
+        "q-2": { "type": "question", "settings": { "question": "Is it safe for sensitive skin?" } },
+        "q-3": { "type": "question", "settings": { "question": "What's your return policy?" } }
       },
-      "block_order": ["q-1", "q-2"],
+      "block_order": ["q-1", "q-2", "q-3"],
       "settings": { "heading": "Questions, answered", "color_scheme": "scheme-1" }
     }
   },
-  "order": ["main-product", "faq"]
+  "order": [
+    "main-product",
+    "trust-badges",
+    "product-results",
+    "benefit-panels",
+    "how-it-works",
+    "testimonials",
+    "comparison-table",
+    "guarantee",
+    "steps",
+    "faq"
+  ]
 }
