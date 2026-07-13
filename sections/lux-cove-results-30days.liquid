@@ -1,0 +1,64 @@
+{{ 'lux-cove.css' | asset_url | stylesheet_tag }}
+<div class="lc-page">
+  <section class="lc-sec" data-screen-label="30 Day Results">
+    <div class="lc-sec-head">
+      <span class="lc-eyebrow">{{ section.settings.eyebrow }}</span>
+      <h2 class="lc-sec-t">{{ section.settings.heading }}</h2>
+      <span class="lc-rule"></span>
+    </div>
+
+    {%- if section.settings.image != blank -%}
+      <img src="{{ section.settings.image | image_url: width: 900 }}" class="lc-featimg" alt="Before and after 30 days">
+    {%- else -%}
+      <img src="{{ 'lc-before30.jpg' | asset_url }}" class="lc-featimg" alt="Before and after 30 days">
+    {%- endif -%}
+
+    {%- if section.settings.results_title != blank -%}
+      <h3 class="lc-h3" style="margin:34px 0 6px">{{ section.settings.results_title }}</h3>
+    {%- endif -%}
+
+    {%- for block in section.blocks -%}
+      {%- assign deg = block.settings.percent | times: 3.6 | round -%}
+      <div class="lc-resrow" {{ block.shopify_attributes }}>
+        <div class="lc-ring" style="background:conic-gradient(var(--lc-rose) {{ deg }}deg,var(--lc-pink) 0deg)">
+          <div class="lc-ringin">{{ block.settings.percent }}%</div>
+        </div>
+        <span>{{ block.settings.text }}</span>
+      </div>
+    {%- endfor -%}
+  </section>
+</div>
+
+{% schema %}
+{
+  "name": "Lux Cove: 30-day results",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Clinically observed" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Visible Results in Just 30 Days" },
+    { "type": "image_picker", "id": "image", "label": "Before/after image" },
+    { "type": "text", "id": "results_title", "label": "Results list title", "default": "The Results" }
+  ],
+  "blocks": [
+    {
+      "type": "stat",
+      "name": "Stat",
+      "settings": [
+        { "type": "range", "id": "percent", "label": "Percent", "min": 0, "max": 100, "step": 1, "default": 90 },
+        { "type": "text", "id": "text", "label": "Text", "default": "Noticed brighter under-eyes in just 2 weeks." }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Lux Cove: 30-day results",
+      "blocks": [
+        { "type": "stat", "settings": { "percent": 92, "text": "Noticed brighter under-eyes in just 2 weeks." } },
+        { "type": "stat", "settings": { "percent": 90, "text": "Reported reduced under-eye bags & puffiness." } },
+        { "type": "stat", "settings": { "percent": 84, "text": "Saw a visible reduction in dark circles & spots." } },
+        { "type": "stat", "settings": { "percent": 82, "text": "Saw a visible reduction in under-eye wrinkles." } },
+        { "type": "stat", "settings": { "percent": 75, "text": "Saw instant results after the first use." } }
+      ]
+    }
+  ]
+}
+{% endschema %}

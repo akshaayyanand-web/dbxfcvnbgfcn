@@ -1,0 +1,402 @@
+{
+  "sections": {
+    "lc_announcement": {
+      "type": "lux-cove-announcement",
+      "settings": { "enabled": true, "speed": 32 },
+      "blocks": {
+        "a1": { "type": "item", "settings": { "text": "Summer Sale" } },
+        "a2": { "type": "item", "settings": { "text": "40% Off Sitewide" } },
+        "a3": { "type": "item", "settings": { "text": "Free Shipping" } },
+        "a4": { "type": "item", "settings": { "text": "150,000+ Happy Customers" } }
+      },
+      "block_order": ["a1", "a2", "a3", "a4"]
+    },
+    "lc_header": {
+      "type": "lux-cove-header",
+      "settings": { "logo_text": "LUX COVE" }
+    },
+    "lc_hero": {
+      "type": "lux-cove-hero",
+      "settings": {
+        "eyebrow": "★ Bestseller · 150,000+ Sold",
+        "show_rating": true,
+        "rating_value": "4.8",
+        "stock_text": "In Stock · Ships Free Today",
+        "review_name": "Eleanor T.",
+        "review_quote": "I've tried every eye cream out there, but this is the only thing that actually made a difference. My dark circles have faded so much. This is now a staple in my routine!"
+      },
+      "blocks": {
+        "b1": { "type": "benefit", "settings": { "text": "Erase dark circles" } },
+        "b2": { "type": "benefit", "settings": { "text": "Firm sagging under-eye bags" } },
+        "b3": { "type": "benefit", "settings": { "text": "Get rid of under-eye wrinkles" } },
+        "b4": { "type": "benefit", "settings": { "text": "Smooth out crow's feet" } },
+        "b5": { "type": "benefit", "settings": { "text": "Clinically proven" } },
+        "b6": { "type": "benefit", "settings": { "text": "Dermatologist approved" } },
+        "t1": { "type": "trust", "settings": { "icon": "shield", "label": "90-Day Money-Back" } },
+        "t2": { "type": "trust", "settings": { "icon": "truck", "label": "Free Shipping" } },
+        "t3": { "type": "trust", "settings": { "icon": "star", "label": "1 Year Warranty" } },
+        "ac1": {
+          "type": "accordion",
+          "settings": {
+            "title": "Product details",
+            "body": "The Lux Cove Red Light Under-Eye Glasses are your at-home solution for youthful, refreshed eyes, without surgery, injections, or ineffective creams.\nPowered by Red Light Therapy & Microcurrent Technology, they stimulate collagen, reduce inflammation, and visibly diminish dark circles, puffiness, and fine lines in just 10 minutes a day.\n• Hands-Free & Effortless – Wear while you relax or multitask.\n• Safe for All Skin Types – Clinically tested, non-invasive, and pain-free.\n• Clinically-Proven Results – Noticeable improvements in as little as 2 weeks."
+          }
+        },
+        "ac2": {
+          "type": "accordion",
+          "settings": {
+            "title": "Guarantee & warranty",
+            "body": "We offer 90-day returns and a 1-year warranty on all purchases. So go ahead, try it out, and if you're dissatisfied for any reason we'll refund you in full."
+          }
+        },
+        "ac3": {
+          "type": "accordion",
+          "settings": {
+            "title": "Shipping & returns",
+            "body": "United Kingdom: Express Tracked Shipping (3 - 5 Working Days) - FREE\nEU: Express Tracked Shipping (3 - 7 Working Days) - FREE\nUnited States: Express Tracked Shipping (3 - 7 Working Days) - FREE\nRest Of The World: Express Tracked Shipping (3 - 7 Working Days) - FREE"
+          }
+        }
+      },
+      "block_order": ["b1", "b2", "b3", "b4", "b5", "b6", "t1", "t2", "t3", "ac1", "ac2", "ac3"]
+    },
+    "lc_marquee": {
+      "type": "lux-cove-testimonial-marquee",
+      "settings": {
+        "eyebrow": "Loved worldwide",
+        "heading": "Customers Love Their Red Light Glasses"
+      },
+      "blocks": {
+        "r1": { "type": "testimonial_row1", "settings": { "name": "Violet M.", "quote": "After two weeks, my dark circles are much brighter! I feel more awake without heavy concealer." } },
+        "r2": { "type": "testimonial_row1", "settings": { "name": "Valerie O.", "quote": "My fine lines have softened and my under-eyes feel firmer. I look younger without expensive treatments!" } },
+        "r3": { "type": "testimonial_row1", "settings": { "name": "Sarah B.", "quote": "So easy to use! I can relax or multitask while the glasses work their magic in 10 minutes a day." } },
+        "r4": { "type": "testimonial_row1", "settings": { "name": "Jenna W.", "quote": "Finally, an affordable solution that works! Reduced my dark circles without breaking the bank." } },
+        "r5": { "type": "testimonial_row2", "settings": { "name": "Lucy G.", "quote": "I saw a difference in just a week! My dark circles are lighter and my skin looks refreshed." } },
+        "r6": { "type": "testimonial_row2", "settings": { "name": "Megan D.", "quote": "Feels like a spa treatment! The red light is so relaxing and I love that I can unwind." } },
+        "r7": { "type": "testimonial_row2", "settings": { "name": "Nina L.", "quote": "Perfect for my daily routine. I use them while reading and my skin feels rejuvenated." } },
+        "r8": { "type": "testimonial_row2", "settings": { "name": "Sammy O.", "quote": "In two weeks, my under-eye bags and fine lines have improved. I feel so much more confident!" } }
+      },
+      "block_order": ["r1", "r2", "r3", "r4", "r5", "r6", "r7", "r8"]
+    },
+    "lc_inspired": {
+      "type": "lux-cove-get-inspired",
+      "settings": {
+        "eyebrow": "Real transformations",
+        "heading": "Get Inspired",
+        "subtext": "How customers are transforming their under-eyes with Lux Cove.",
+        "speed": 38
+      },
+      "blocks": {
+        "v1": { "type": "video", "settings": {} },
+        "v2": { "type": "video", "settings": {} },
+        "v3": { "type": "video", "settings": {} },
+        "v4": { "type": "video", "settings": {} }
+      },
+      "block_order": ["v1", "v2", "v3", "v4"]
+    },
+    "lc_results30": {
+      "type": "lux-cove-results-30days",
+      "settings": {
+        "eyebrow": "Clinically observed",
+        "heading": "Visible Results in Just 30 Days",
+        "results_title": "The Results"
+      },
+      "blocks": {
+        "s1": { "type": "stat", "settings": { "percent": 92, "text": "Noticed brighter under-eyes in just 2 weeks." } },
+        "s2": { "type": "stat", "settings": { "percent": 90, "text": "Reported reduced under-eye bags & puffiness." } },
+        "s3": { "type": "stat", "settings": { "percent": 84, "text": "Saw a visible reduction in dark circles & spots." } },
+        "s4": { "type": "stat", "settings": { "percent": 82, "text": "Saw a visible reduction in under-eye wrinkles." } },
+        "s5": { "type": "stat", "settings": { "percent": 75, "text": "Saw instant results after the first use." } }
+      },
+      "block_order": ["s1", "s2", "s3", "s4", "s5"]
+    },
+    "lc_perks": {
+      "type": "lux-cove-why-perks",
+      "settings": {
+        "eyebrow": "Why Lux Cove",
+        "heading": "A Salon Result, At Home"
+      },
+      "blocks": {
+        "p1": { "type": "perk", "settings": { "number": "01", "title": "Professional-Level Treatment", "text": "Enjoy professional-grade skincare in the comfort of your own home." } },
+        "p2": { "type": "perk", "settings": { "number": "02", "title": "Long-Term Results", "text": "Promotes collagen production, reduces inflammation and encourages cellular renewal." } },
+        "p3": { "type": "perk", "settings": { "number": "03", "title": "Save Energy & Time", "text": "Maximum results in minimal time — healthy skin without hours on your routine." } },
+        "p4": { "type": "perk", "settings": { "number": "04", "title": "Risk-Free for 90 Days", "text": "Try it risk-free with our 90-Day Money-Back Guarantee." } }
+      },
+      "block_order": ["p1", "p2", "p3", "p4"]
+    },
+    "lc_feature1": {
+      "type": "lux-cove-feature",
+      "settings": {
+        "pinkbg": false,
+        "tag": "Red Light Therapy",
+        "title": "Smooth Under-Eye Wrinkles",
+        "text": "Our Red Light Therapy boosts collagen production, smoothing out wrinkles and improving skin elasticity. Say goodbye to crepey skin and hello to a firmer, youthful glow — without expensive treatments.",
+        "fallback_image": "lc-smooth"
+      }
+    },
+    "lc_feature2": {
+      "type": "lux-cove-feature",
+      "settings": {
+        "pinkbg": true,
+        "tag": "Deep Cellular Care",
+        "title": "Brighten Dark Circles",
+        "text": "Red Light Therapy works at a deep cellular level to increase circulation, reduce discoloration, and brighten dark circles. Wake up looking refreshed, radiant, and well-rested, every single day.",
+        "fallback_image": "lc-brighten"
+      }
+    },
+    "lc_feature3": {
+      "type": "lux-cove-feature",
+      "settings": {
+        "pinkbg": false,
+        "tag": "EMS Microcurrent",
+        "title": "De-Puff & Lift Under-Eye Bags",
+        "text": "Our Microcurrent Therapy (EMS) gently stimulates facial muscles, reducing fluid retention and puffiness. Enjoy an instant lifting effect, making your under-eyes look tighter and firmer in just 10 minutes a day.",
+        "fallback_image": "lc-depuff"
+      }
+    },
+    "lc_feature4": {
+      "type": "lux-cove-feature",
+      "settings": {
+        "pinkbg": true,
+        "tag": "Dual Technology",
+        "title": "Reduce Crows Feet & Wrinkles",
+        "text": "Our EMS Microcurrent & Red Light Therapy work together to firm, plump, and restore elasticity. Unlike creams that only work on the surface, this device penetrates deep to repair and renew your skin from within.",
+        "fallback_image": "lc-crows"
+      }
+    },
+    "lc_howitworks": {
+      "type": "lux-cove-how-it-works",
+      "settings": {
+        "eyebrow": "The technology",
+        "heading": "How It Works"
+      },
+      "blocks": {
+        "tech1": { "type": "tech", "settings": { "fallback_image": "lc-redcircle", "label": "Red Light · 630nm", "text": "Stimulates collagen production to smooth wrinkles. Minimizes puffiness & dark circles. Enhances skin elasticity for a more youthful glow." } },
+        "tech2": { "type": "tech", "settings": { "fallback_image": "lc-emscircle", "label": "EMS Microcurrent", "text": "Stimulates facial muscles to lift & firm the under-eye area. Boosts circulation to reduce puffiness. Rejuvenates tired-looking skin." } }
+      },
+      "block_order": ["tech1", "tech2"]
+    },
+    "lc_realresults": {
+      "type": "lux-cove-loop-showcase",
+      "settings": {
+        "pinkbg": true,
+        "show_names": false,
+        "eyebrow": "Before & after",
+        "heading": "Real Customers, Real Results",
+        "speed": 52
+      },
+      "blocks": {
+        "rr1": { "type": "item", "settings": { "fallback_image": "lc-ba1", "quote": "After just a week, my eye bags and dark circles have almost disappeared! My skin looks brighter, and people keep telling me I look younger!" } },
+        "rr2": { "type": "item", "settings": { "fallback_image": "lc-ba2", "quote": "I'm in my 40's and just wanted to feel more like myself again. My skin looks healthier and I've had a few compliments — will keep using these everyday." } },
+        "rr3": { "type": "item", "settings": { "fallback_image": "lc-ba3", "quote": "I've tried so many creams that never worked, but this device actually delivers. My under-eyes look lifted and my fine lines are softening. I wish I'd found this sooner!" } }
+      },
+      "block_order": ["rr1", "rr2", "rr3"]
+    },
+    "lc_happycustomers": {
+      "type": "lux-cove-loop-showcase",
+      "settings": {
+        "pinkbg": false,
+        "show_names": true,
+        "eyebrow": "100,000+ five-star reviews",
+        "heading": "Happy Customers",
+        "speed": 52
+      },
+      "blocks": {
+        "hc1": { "type": "item", "settings": { "fallback_image": "lc-hc1", "name": "Hannah U.", "quote": "I was hesitant to try another skincare device, but this one is different. After a few weeks my dark circles are lighter. The best part? It's hands-free, so I wear it while reading!" } },
+        "hc2": { "type": "item", "settings": { "fallback_image": "lc-hc2", "name": "Elena K.", "quote": "I've spent hundreds on eye creams with little results, but this changed everything. Sleek, lightweight, and I've already noticed firmer, brighter skin around my eyes." } },
+        "hc3": { "type": "item", "settings": { "fallback_image": "lc-hc3", "name": "Alice P.", "quote": "This has become my favorite part of my skincare routine! The red light feels soothing, and my fine lines are fading — my eyes look more awake!" } }
+      },
+      "block_order": ["hc1", "hc2", "hc3"]
+    },
+    "lc_comparison": {
+      "type": "lux-cove-comparison",
+      "settings": {
+        "eyebrow": "The difference",
+        "heading": "Lux Cove vs Other Brands",
+        "brand_name": "Lux Cove"
+      },
+      "blocks": {
+        "u1": { "type": "usp", "settings": { "text": "The original Red Light Under-Eye glasses." } },
+        "u2": { "type": "usp", "settings": { "text": "Clinically tested, rated 5 stars." } },
+        "u3": { "type": "usp", "settings": { "text": "Improve your complexion without breaking the bank." } },
+        "row1": { "type": "row", "settings": { "text": "Developed by skincare experts" } },
+        "row2": { "type": "row", "settings": { "text": "Professional-grade results" } },
+        "row3": { "type": "row", "settings": { "text": "Non-invasive & pain-free" } },
+        "row4": { "type": "row", "settings": { "text": "Visible results under 30 days" } },
+        "row5": { "type": "row", "settings": { "text": "Fits any head shape" } },
+        "row6": { "type": "row", "settings": { "text": "Long battery life" } },
+        "row7": { "type": "row", "settings": { "text": "90-Day Money-Back Guarantee" } }
+      },
+      "block_order": ["u1", "u2", "u3", "row1", "row2", "row3", "row4", "row5", "row6", "row7"]
+    },
+    "lc_vs1": {
+      "type": "lux-cove-vs",
+      "settings": {
+        "pinkbg": false,
+        "title": "Results at home in 10 minutes",
+        "left_fallback": "lc-glasses1",
+        "left_label": "Lux Cove Glasses",
+        "right_fallback": "lc-clinic",
+        "right_label": "In-Clinic LED Therapy"
+      },
+      "blocks": {
+        "pro1": { "type": "pro", "settings": { "text": "Use anytime, no appointments" } },
+        "pro2": { "type": "pro", "settings": { "text": "Comfort of your own home" } },
+        "pro3": { "type": "pro", "settings": { "text": "Unlimited uses & treatments" } },
+        "pro4": { "type": "pro", "settings": { "text": "Only 10 minutes daily" } },
+        "con1": { "type": "con", "settings": { "text": "Requires scheduling & commute" } },
+        "con2": { "type": "con", "settings": { "text": "When (if) you get a slot" } },
+        "con3": { "type": "con", "settings": { "text": "Limited treatments" } },
+        "con4": { "type": "con", "settings": { "text": "30 to 60 minutes per session" } }
+      },
+      "block_order": ["pro1", "pro2", "pro3", "pro4", "con1", "con2", "con3", "con4"]
+    },
+    "lc_vs2": {
+      "type": "lux-cove-vs",
+      "settings": {
+        "pinkbg": true,
+        "title": "Fast, visible results that last",
+        "left_fallback": "lc-glasses2",
+        "left_label": "Lux Cove Glasses",
+        "right_fallback": "lc-creams",
+        "right_label": "Under-Eye Creams"
+      },
+      "blocks": {
+        "pro1": { "type": "pro", "settings": { "text": "One investment that lasts years" } },
+        "pro2": { "type": "pro", "settings": { "text": "Noticeable results under 30 days" } },
+        "pro3": { "type": "pro", "settings": { "text": "Long lasting results" } },
+        "pro4": { "type": "pro", "settings": { "text": "Suitable for all skin types" } },
+        "con1": { "type": "con", "settings": { "text": "Needs frequent repurchasing" } },
+        "con2": { "type": "con", "settings": { "text": "Months with minimal change" } },
+        "con3": { "type": "con", "settings": { "text": "Results fade when you stop" } },
+        "con4": { "type": "con", "settings": { "text": "Can cause skin irritation" } }
+      },
+      "block_order": ["pro1", "pro2", "pro3", "pro4", "con1", "con2", "con3", "con4"]
+    },
+    "lc_vs3": {
+      "type": "lux-cove-vs",
+      "settings": {
+        "pinkbg": false,
+        "title": "Rejuvenate without injections",
+        "left_fallback": "lc-glasses3",
+        "left_label": "Lux Cove Glasses",
+        "right_fallback": "lc-botox",
+        "right_label": "Under-Eye Botox"
+      },
+      "blocks": {
+        "pro1": { "type": "pro", "settings": { "text": "One investment that lasts years" } },
+        "pro2": { "type": "pro", "settings": { "text": "Comfort of your own home" } },
+        "pro3": { "type": "pro", "settings": { "text": "Long lasting results" } },
+        "pro4": { "type": "pro", "settings": { "text": "Painless & non-invasive" } },
+        "con1": { "type": "con", "settings": { "text": "Requires on-going injections" } },
+        "con2": { "type": "con", "settings": { "text": "Requires appointment scheduling" } },
+        "con3": { "type": "con", "settings": { "text": "Effects wear off in 3-6 months" } },
+        "con4": { "type": "con", "settings": { "text": "Involves injections & discomfort" } }
+      },
+      "block_order": ["pro1", "pro2", "pro3", "pro4", "con1", "con2", "con3", "con4"]
+    },
+    "lc_riskfree": {
+      "type": "lux-cove-risk-free",
+      "settings": {
+        "eyebrow": "Our promise",
+        "heading": "Try It Risk-Free",
+        "text": "We're confident you'll love it, but if it's not for you, no worries. Try it for 30 days, and if you're not completely satisfied, return it for a full refund — no questions asked."
+      }
+    },
+    "lc_howtouse": {
+      "type": "lux-cove-how-to-use",
+      "settings": {
+        "eyebrow": "Effortless routine",
+        "heading": "How to Use It"
+      },
+      "blocks": {
+        "step1": { "type": "step", "settings": { "title": "Prep Your Skin", "text": "Start with a clean face. Gently cleanse your under-eye area to remove makeup, oil, or dirt for the best results." } },
+        "step2": { "type": "step", "settings": { "title": "Dampen Skin", "text": "Apply a water-based serum, conductive gel, or simply dampen the skin with water to improve microcurrent conductivity." } },
+        "step3": { "type": "step", "settings": { "title": "Turn It On & Relax", "text": "Turn on the device, select your mode, and wear it for 10 minutes daily while you unwind. Recharge via USB to keep it ready for daily use." } }
+      },
+      "block_order": ["step1", "step2", "step3"]
+    },
+    "lc_faq": {
+      "type": "lux-cove-faq",
+      "settings": {
+        "eyebrow": "Good to know",
+        "heading": "Your Questions"
+      },
+      "blocks": {
+        "f1": { "type": "faq", "settings": { "question": "How long does it take to see results?", "answer": "Most users notice results in 2 weeks, with full transformation in 6-8 weeks." } },
+        "f2": { "type": "faq", "settings": { "question": "Does it work for all skin types?", "answer": "Yes! It's safe for all skin tones and types, including sensitive skin." } },
+        "f3": { "type": "faq", "settings": { "question": "Does the device hurt to use?", "answer": "No! It's a non-invasive, painless treatment. The EMS mode may give a slight tingling sensation, which means it's working." } },
+        "f4": { "type": "faq", "settings": { "question": "How long does the device take to charge?", "answer": "The device takes around 3 hours to charge fully, and lasts about 1 hour on a full charge.\nPlease note: each mode turns off automatically after 5 minutes to conserve battery." } },
+        "f5": { "type": "faq", "settings": { "question": "Can I use this with my other skincare products?", "answer": "Yes! Using our device alongside your other skincare products helps enhance absorption and improve their effectiveness." } },
+        "f6": { "type": "faq", "settings": { "question": "Will the red light therapy damage my eyes?", "answer": "No. The 630nm red LED light is safe, but you can close your eyes while wearing it for extra comfort." } },
+        "f7": { "type": "faq", "settings": { "question": "Can this device be used by both women and men?", "answer": "Yes, this product is great for both women and men." } },
+        "f8": { "type": "faq", "settings": { "question": "How much does shipping cost?", "answer": "United Kingdom: Express Tracked Shipping (3 - 5 Working Days) - FREE\nEU: Express Tracked Shipping (3 - 7 Working Days) - FREE\nUnited States: Express Tracked Shipping (3 - 7 Working Days) - FREE\nRest Of The World: Express Tracked Shipping (3 - 7 Working Days) - FREE" } },
+        "f9": { "type": "faq", "settings": { "question": "Can I return my order if I'm not satisfied?", "answer": "Yes, contact our support team within 90 days of receiving your product for a full refund." } }
+      },
+      "block_order": ["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8", "f9"]
+    },
+    "lc_reviews": {
+      "type": "lux-cove-reviews",
+      "settings": {
+        "eyebrow": "Verified buyers",
+        "heading": "Customer Reviews",
+        "average": "4.5",
+        "stars_display": "★★★★½",
+        "review_count": "677"
+      },
+      "blocks": {
+        "rb1": { "type": "rating_bar", "settings": { "stars": "★★★★★", "percent": 62, "count": "418" } },
+        "rb2": { "type": "rating_bar", "settings": { "stars": "★★★★☆", "percent": 32, "count": "220" } },
+        "rb3": { "type": "rating_bar", "settings": { "stars": "★★★☆☆", "percent": 2, "count": "13" } },
+        "rb4": { "type": "rating_bar", "settings": { "stars": "★★☆☆☆", "percent": 2, "count": "11" } },
+        "rb5": { "type": "rating_bar", "settings": { "stars": "★☆☆☆☆", "percent": 2, "count": "15" } },
+        "rv1": { "type": "review", "settings": { "name": "Anne-Marie", "date": "22/01/2026", "text": "Too early to see result as it takes a while, but is easy to use and I definitely feel it doing something." } },
+        "rv2": { "type": "review", "settings": { "name": "Sarah", "date": "09/10/2025", "text": "Amazing. Noticed a difference after a couple of uses." } },
+        "rv3": { "type": "review", "settings": { "name": "Pat Omeara", "date": "28/09/2025", "title": "Love these!!", "text": "So easy and comfortable to use. Just 10 minutes a day and already I can see a difference. Would definitely recommend." } },
+        "rv4": { "type": "review", "settings": { "name": "Karly Brierley", "date": "14/09/2025", "title": "Review", "text": "Really see a difference using the glasses, love them." } },
+        "rv5": { "type": "review", "settings": { "name": "Elise", "date": "02/09/2025", "title": "Spa Treatment at Home!", "text": "Such a great investment. No more spending on expensive eye creams that do nothing!" } }
+      },
+      "block_order": ["rb1", "rb2", "rb3", "rb4", "rb5", "rv1", "rv2", "rv3", "rv4", "rv5"]
+    },
+    "lc_footer": {
+      "type": "lux-cove-footer",
+      "settings": {
+        "logo_text": "LUX COVE",
+        "newsletter_heading": "Join the Lux Cove family",
+        "copyright": "© 2026 Lux Cove · Powered by Shopify"
+      },
+      "blocks": {
+        "l1": { "type": "link", "settings": { "label": "Refund policy" } },
+        "l2": { "type": "link", "settings": { "label": "Privacy" } },
+        "l3": { "type": "link", "settings": { "label": "Terms" } },
+        "l4": { "type": "link", "settings": { "label": "Shipping" } },
+        "l5": { "type": "link", "settings": { "label": "Contact" } }
+      },
+      "block_order": ["l1", "l2", "l3", "l4", "l5"]
+    }
+  },
+  "order": [
+    "lc_announcement",
+    "lc_header",
+    "lc_hero",
+    "lc_marquee",
+    "lc_inspired",
+    "lc_results30",
+    "lc_perks",
+    "lc_feature1",
+    "lc_feature2",
+    "lc_feature3",
+    "lc_feature4",
+    "lc_howitworks",
+    "lc_realresults",
+    "lc_happycustomers",
+    "lc_comparison",
+    "lc_vs1",
+    "lc_vs2",
+    "lc_vs3",
+    "lc_riskfree",
+    "lc_howtouse",
+    "lc_faq",
+    "lc_reviews",
+    "lc_footer"
+  ]
+}

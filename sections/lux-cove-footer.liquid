@@ -1,0 +1,58 @@
+{{ 'lux-cove.css' | asset_url | stylesheet_tag }}
+<div class="lc-page">
+  <footer class="lc-sec lc-inkbg" style="text-align:center" data-screen-label="Footer">
+    <div class="lc-logo" style="color:#fbf7f3;margin-bottom:16px">{{ section.settings.logo_text }}</div>
+    <h3 class="lc-serif" style="font-size:22px;font-weight:600;margin:0 0 18px;color:#f4ede4">{{ section.settings.newsletter_heading }}</h3>
+
+    {%- form 'customer' -%}
+      <input type="hidden" name="contact[tags]" value="newsletter">
+      <div class="lc-fx lc-gap8" style="max-width:340px;margin:0 auto">
+        <input type="email" name="contact[email]" class="lc-nlin" placeholder="Your email" required>
+        <button type="submit" class="lc-cta" style="width:auto;padding:14px 20px">→</button>
+      </div>
+      {%- if form.posted_successfully? -%}
+        <p class="lc-fs12" style="color:#f4ede4;margin-top:10px">Thanks for subscribing!</p>
+      {%- endif -%}
+    {%- endform -%}
+
+    <div class="lc-ftrlinks" style="color:#b9ac9c">
+      {%- for block in section.blocks -%}
+        <a href="{{ block.settings.url }}" style="color:#b9ac9c" {{ block.shopify_attributes }}>{{ block.settings.label }}</a>
+      {%- endfor -%}
+    </div>
+    <div class="lc-fs11" style="margin-top:22px;color:#8a7d6f">{{ section.settings.copyright }}</div>
+  </footer>
+</div>
+
+{% schema %}
+{
+  "name": "Lux Cove: Footer",
+  "settings": [
+    { "type": "text", "id": "logo_text", "label": "Logo text", "default": "LUX COVE" },
+    { "type": "text", "id": "newsletter_heading", "label": "Newsletter heading", "default": "Join the Lux Cove family" },
+    { "type": "text", "id": "copyright", "label": "Copyright text", "default": "© 2026 Lux Cove · Powered by Shopify" }
+  ],
+  "blocks": [
+    {
+      "type": "link",
+      "name": "Link",
+      "settings": [
+        { "type": "text", "id": "label", "label": "Label", "default": "Refund policy" },
+        { "type": "url", "id": "url", "label": "URL" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Lux Cove: Footer",
+      "blocks": [
+        { "type": "link", "settings": { "label": "Refund policy" } },
+        { "type": "link", "settings": { "label": "Privacy" } },
+        { "type": "link", "settings": { "label": "Terms" } },
+        { "type": "link", "settings": { "label": "Shipping" } },
+        { "type": "link", "settings": { "label": "Contact" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

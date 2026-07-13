@@ -1,0 +1,78 @@
+{{ 'lux-cove.css' | asset_url | stylesheet_tag }}
+<div class="{% if section.settings.pinkbg %}lc-pinkbg{% endif %}" data-screen-label="Showcase loop">
+  <div class="lc-page">
+    <section class="lc-sec">
+      <div class="lc-sec-head">
+        <span class="lc-eyebrow">{{ section.settings.eyebrow }}</span>
+        <h2 class="lc-sec-t">{{ section.settings.heading }}</h2>
+        <span class="lc-rule"></span>
+      </div>
+      {%- if section.blocks.size > 0 -%}
+        {%- capture loop_content -%}
+          {%- for block in section.blocks -%}
+            <div class="lc-loopcard" {{ block.shopify_attributes }}>
+              {%- if block.settings.image != blank -%}
+                <img src="{{ block.settings.image | image_url: width: 700 }}" alt="{{ block.settings.name | default: 'Customer result' | escape }}">
+              {%- elsif block.settings.fallback_image != 'none' -%}
+                <img src="{{ block.settings.fallback_image | append: '.jpg' | asset_url }}" alt="{{ block.settings.name | default: 'Customer result' | escape }}">
+              {%- endif -%}
+              <div class="lc-ystars lc-mt12 lc-tc">★★★★★</div>
+              <p class="lc-quote">"{{ block.settings.quote }}"</p>
+              {%- if section.settings.show_names and block.settings.name != blank -%}
+                <div class="lc-fw6 lc-tc lc-mt12">— {{ block.settings.name }}</div>
+              {%- endif -%}
+            </div>
+          {%- endfor -%}
+        {%- endcapture -%}
+        <div class="lc-loop">
+          <div class="lc-looptrack" style="animation-duration:{{ section.settings.speed }}s">
+            {{ loop_content }}{{ loop_content }}
+          </div>
+        </div>
+      {%- endif -%}
+    </section>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Lux Cove: Loop showcase",
+  "settings": [
+    { "type": "checkbox", "id": "pinkbg", "label": "Pink background", "default": false },
+    { "type": "checkbox", "id": "show_names", "label": "Show customer names", "default": false },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Before & after" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Real Customers, Real Results" },
+    { "type": "range", "id": "speed", "label": "Scroll speed (seconds)", "min": 20, "max": 90, "step": 1, "default": 52 }
+  ],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Card",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Image" },
+        { "type": "select", "id": "fallback_image", "label": "Placeholder image (used until you pick one above)", "options": [
+          { "value": "none", "label": "None" },
+          { "value": "lc-ba1", "label": "Before/after 1" },
+          { "value": "lc-ba2", "label": "Before/after 2" },
+          { "value": "lc-ba3", "label": "Before/after 3" },
+          { "value": "lc-hc1", "label": "Happy customer 1" },
+          { "value": "lc-hc2", "label": "Happy customer 2" },
+          { "value": "lc-hc3", "label": "Happy customer 3" }
+        ], "default": "none" },
+        { "type": "textarea", "id": "quote", "label": "Quote", "default": "This changed my routine completely." },
+        { "type": "text", "id": "name", "label": "Name (optional)" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Lux Cove: Loop showcase",
+      "blocks": [
+        { "type": "item", "settings": { "fallback_image": "lc-ba1", "quote": "After just a week, my eye bags and dark circles have almost disappeared! My skin looks brighter, and people keep telling me I look younger!" } },
+        { "type": "item", "settings": { "fallback_image": "lc-ba2", "quote": "I'm in my 40's and just wanted to feel more like myself again. My skin looks healthier and I've had a few compliments." } },
+        { "type": "item", "settings": { "fallback_image": "lc-ba3", "quote": "I've tried so many creams that never worked, but this device actually delivers. My under-eyes look lifted." } }
+      ]
+    }
+  ]
+}
+{% endschema %}

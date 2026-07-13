@@ -1,0 +1,67 @@
+{{ 'lux-cove.css' | asset_url | stylesheet_tag }}
+<div class="lc-page">
+  <section class="lc-pinkbg" style="padding:48px 0" data-screen-label="Get Inspired">
+    <div class="lc-sec-head" style="padding:0 22px">
+      <span class="lc-eyebrow">{{ section.settings.eyebrow }}</span>
+      <h2 class="lc-sec-t">{{ section.settings.heading }}</h2>
+      <span class="lc-rule"></span>
+      {%- if section.settings.subtext != blank -%}
+        <p class="lc-tc lc-fs14" style="color:#6a5147;max-width:340px;margin-top:-2px">{{ section.settings.subtext }}</p>
+      {%- endif -%}
+    </div>
+    {%- if section.blocks.size > 0 -%}
+      {%- assign fallbacks = 'lc-vid1.jpg,lc-vid2.jpg,lc-vid3.jpg,lc-vid4.jpg' | split: ',' -%}
+      {%- capture loop_content -%}
+        {%- for block in section.blocks -%}
+          {%- assign fallback_idx = forloop.index0 | modulo: fallbacks.size -%}
+          <div class="lc-vidcard" {{ block.shopify_attributes }}>
+            {%- if block.settings.poster != blank -%}
+              <img src="{{ block.settings.poster | image_url: width: 500 }}" alt="Customer video">
+            {%- else -%}
+              <img src="{{ fallbacks[fallback_idx] | asset_url }}" alt="Customer video">
+            {%- endif -%}
+            <div class="lc-play">▶</div>
+          </div>
+        {%- endfor -%}
+      {%- endcapture -%}
+      <div class="lc-loop">
+        <div class="lc-looptrack" style="animation-duration:{{ section.settings.speed }}s">
+          {{ loop_content }}{{ loop_content }}
+        </div>
+      </div>
+    {%- endif -%}
+  </section>
+</div>
+
+{% schema %}
+{
+  "name": "Lux Cove: Get inspired",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Real transformations" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Get Inspired" },
+    { "type": "text", "id": "subtext", "label": "Subtext", "default": "How customers are transforming their under-eyes with Lux Cove." },
+    { "type": "range", "id": "speed", "label": "Scroll speed (seconds)", "min": 10, "max": 80, "step": 1, "default": 38 }
+  ],
+  "blocks": [
+    {
+      "type": "video",
+      "name": "Video",
+      "settings": [
+        { "type": "image_picker", "id": "poster", "label": "Poster image" },
+        { "type": "url", "id": "video_url", "label": "Video link (optional)" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Lux Cove: Get inspired",
+      "blocks": [
+        { "type": "video" },
+        { "type": "video" },
+        { "type": "video" },
+        { "type": "video" }
+      ]
+    }
+  ]
+}
+{% endschema %}

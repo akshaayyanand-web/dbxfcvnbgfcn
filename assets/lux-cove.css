@@ -1,0 +1,187 @@
+/* Lux Cove product page theme
+   Scoped utility + component styles for the "lux-cove-*" section family.
+   Everything is namespaced with the `lc-` prefix so it can be dropped into
+   any existing Shopify theme without colliding with theme classes. */
+
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Jost:wght@300;400;500;600;700&display=swap');
+
+.lc-page{
+  --lc-pink:#f6e3e5;
+  --lc-rose:#c9788a;
+  --lc-rosedeep:#a85566;
+  --lc-gold:#b08d57;
+  --lc-mspeed:32s;
+  font-family:'Jost',sans-serif;
+  color:#2a2320;
+  background:#fbf7f3;
+  line-height:1.55;
+  max-width:500px;
+  margin:0 auto;
+  position:relative;
+}
+.lc-page *{box-sizing:border-box}
+.lc-page a{color:#2a2320;text-decoration:none}
+.lc-page a:hover{color:var(--lc-rose)}
+.lc-page img{max-width:100%}
+
+/* atomics */
+.lc-fx{display:flex}
+.lc-col{display:flex;flex-direction:column}
+.lc-grid{display:grid}
+.lc-ac{align-items:center}
+.lc-jc{justify-content:center}
+.lc-jb{justify-content:space-between}
+.lc-f1{flex:1}
+.lc-wrap{flex-wrap:wrap}
+.lc-fw5{font-weight:500}
+.lc-fw6{font-weight:600}
+.lc-fw7{font-weight:700}
+.lc-fs11{font-size:11px}
+.lc-fs12{font-size:12px}
+.lc-fs13{font-size:13px}
+.lc-fs14{font-size:14px}
+.lc-fs15{font-size:15px}
+.lc-fs16{font-size:16px}
+.lc-upper{text-transform:uppercase}
+.lc-tc{text-align:center}
+.lc-gap8{gap:8px}
+.lc-gap10{gap:10px}
+.lc-gap12{gap:12px}
+.lc-gap16{gap:16px}
+.lc-gap24{gap:24px}
+.lc-gap40{gap:40px}
+.lc-m0{margin:0}
+.lc-mt8{margin-top:8px}
+.lc-mt12{margin-top:12px}
+.lc-mt16{margin-top:16px}
+.lc-mb8{margin-bottom:8px}
+
+.lc-serif{font-family:'Cormorant Garamond',serif}
+.lc-eyebrow{font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--lc-gold);font-weight:500}
+.lc-sec{padding:56px 22px}
+.lc-sec-t{font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:600;line-height:1.12;text-align:center;letter-spacing:-.01em;margin:0}
+.lc-sec-head{display:flex;flex-direction:column;align-items:center;gap:12px;margin-bottom:34px}
+.lc-rule{width:38px;height:2px;background:var(--lc-gold);border-radius:2px}
+.lc-pinkbg{background:var(--lc-pink)}
+.lc-inkbg{background:#2a2320;color:#f4ede4}
+
+.lc-annbar{background:#2a2320;overflow:hidden;padding:11px 0}
+.lc-anntrack{display:flex;flex:none;width:max-content;animation:lc-mq var(--lc-mspeed) linear infinite}
+@keyframes lc-mq{to{transform:translateX(-50%)}}
+.lc-annitem{display:flex;align-items:center;gap:26px;padding-right:26px;font-size:10.5px;font-weight:500;letter-spacing:.22em;white-space:nowrap;color:#f0e6d8;text-transform:uppercase}
+.lc-dot{width:4px;height:4px;background:var(--lc-gold);border-radius:50%;flex:none}
+
+.lc-hdr{display:flex;align-items:center;justify-content:space-between;padding:16px 22px;background:rgba(251,247,243,.92);backdrop-filter:blur(8px);position:sticky;top:0;z-index:40;border-bottom:1px solid #ece2d6}
+.lc-logo{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:700;letter-spacing:.16em}
+.lc-hicon{width:22px;height:22px;stroke:#2a2320;fill:none;stroke-width:1.5;cursor:pointer}
+
+.lc-stars{color:var(--lc-rose);letter-spacing:2px;font-size:14px}
+.lc-ystars{color:#e0a94e;letter-spacing:3px;font-size:15px}
+.lc-strike{text-decoration:line-through;color:#a89d90;font-size:17px}
+.lc-price{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:700;color:#2a2320}
+.lc-offpill{background:var(--lc-rosedeep);color:#fff;font-size:10.5px;font-weight:600;letter-spacing:.1em;padding:5px 12px;border-radius:20px;text-transform:uppercase}
+.lc-instock{color:#2f9c56;font-size:10.5px;font-weight:600;letter-spacing:.14em;display:flex;align-items:center;gap:7px;text-transform:uppercase}
+.lc-gdot{width:7px;height:7px;border-radius:50%;background:#2f9c56}
+
+.lc-benef{display:flex;align-items:center;gap:12px;font-size:14.5px;font-weight:400}
+.lc-pcheck{width:22px;height:22px;border-radius:50%;background:var(--lc-rose);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex:none}
+
+.lc-revcard{background:#fff;border:1px solid #efe6da;border-radius:14px;padding:16px;display:flex;gap:13px;font-size:12.5px;color:#4a4038;box-shadow:0 8px 24px rgba(120,90,60,.07)}
+
+.lc-cta{background:#2a2320;color:#fbf7f3;border:none;border-radius:11px;font-family:'Jost',sans-serif;font-size:14px;font-weight:600;letter-spacing:.16em;padding:17px 0;width:100%;cursor:pointer;text-transform:uppercase;transition:background .2s;display:inline-block;text-align:center}
+.lc-cta:hover{background:var(--lc-rosedeep);color:#fbf7f3}
+.lc-cta:disabled{opacity:.6;cursor:not-allowed}
+
+.lc-heroimg{width:100%;border-radius:18px;background:var(--lc-pink);display:block;aspect-ratio:1/1;object-fit:cover}
+.lc-thumbs{display:flex;gap:10px;overflow-x:auto;margin-top:12px;padding-bottom:4px;scrollbar-width:none}
+.lc-thumbs::-webkit-scrollbar{display:none}
+.lc-thumb{width:60px;height:60px;object-fit:cover;border-radius:10px;border:1px solid #e6dcce;cursor:pointer;flex:none;background:#f3ece2}
+.lc-thumb.lc-on{border:2px solid #2a2320}
+
+.lc-trust{display:flex;flex-direction:column;align-items:center;gap:7px;font-size:10px;text-align:center;flex:1;color:#5a4f45;letter-spacing:.02em}
+.lc-ticon{width:26px;height:26px;stroke:var(--lc-gold);fill:none;stroke-width:1.3}
+
+.lc-acc{border-top:1px solid #ece2d6;font-size:14px}
+.lc-acc-h{display:flex;align-items:center;justify-content:space-between;padding:16px 2px;cursor:pointer;font-weight:500;background:none;border:none;width:100%;font-family:inherit;color:inherit;text-align:left}
+.lc-chev{transition:transform .25s;font-size:13px;color:#8a7d6f}
+.lc-chev.lc-open{transform:rotate(180deg)}
+.lc-acc-b{padding:0 2px 16px;font-size:13px;color:#5a4f45;white-space:pre-line;line-height:1.7}
+
+.lc-loop{overflow:hidden;padding:6px 0}
+.lc-looptrack{display:flex;width:max-content;animation:lc-mq 46s linear infinite}
+.lc-looptrack:hover{animation-play-state:paused}
+.lc-loopcard{width:288px;flex:none;display:flex;flex-direction:column;margin-right:14px}
+.lc-loopcard img{width:100%;border-radius:16px;display:block;box-shadow:0 12px 30px rgba(120,90,60,.12)}
+
+.lc-perkcard{background:#fff;border:1px solid #efe6da;border-radius:16px;padding:24px 20px;box-shadow:0 8px 22px rgba(120,90,60,.06);display:flex;flex-direction:column;gap:9px}
+.lc-perknum{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;color:var(--lc-gold);line-height:1}
+.lc-perkline{width:26px;height:2px;background:var(--lc-gold);border-radius:2px;margin:2px 0 4px}
+.lc-perkt{font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:600;line-height:1.1}
+
+.lc-pill{background:#fff;border:1px solid #efe6da;border-radius:18px;box-shadow:0 10px 26px rgba(120,90,60,.08);padding:20px;display:flex;flex-direction:column;gap:12px;width:250px;flex:none;font-size:13px;color:#4a4038;scroll-snap-align:start;line-height:1.6;margin-right:14px}
+.lc-pillav{width:44px;height:44px;border-radius:50%;flex:none;object-fit:cover}
+
+.lc-vidcard{border-radius:16px;overflow:hidden;position:relative;background:#000;width:200px;flex:none;scroll-snap-align:start;margin-right:14px}
+.lc-vidcard img{width:100%;height:100%;object-fit:cover;display:block;aspect-ratio:9/14}
+.lc-play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,.35);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;color:#fff;font-size:15px;border:1.5px solid rgba(255,255,255,.7)}
+
+.lc-ring{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex:none;position:relative}
+.lc-ringin{width:42px;height:42px;border-radius:50%;background:#fbf7f3;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:var(--lc-rosedeep);font-family:'Cormorant Garamond',serif}
+.lc-resrow{display:flex;align-items:center;gap:15px;padding:15px 0;border-bottom:1px solid #ece2d6;font-size:14px}
+
+.lc-feat{display:flex;flex-direction:column;align-items:center;text-align:center;gap:9px}
+.lc-featimg{width:100%;border-radius:16px;display:block;box-shadow:0 14px 34px rgba(120,90,60,.14)}
+.lc-h3{font-family:'Cormorant Garamond',serif;font-size:27px;font-weight:600;line-height:1.14;margin:0}
+.lc-bodytxt{font-size:14.5px;color:#5a4f45;line-height:1.8}
+
+.lc-circimg{width:190px;height:190px;border-radius:50%;object-fit:cover;box-shadow:0 12px 30px rgba(0,0,0,.16)}
+.lc-hiw{display:flex;flex-direction:column;align-items:center;text-align:center;gap:13px}
+
+.lc-quote{font-size:17px;color:#3a322b;text-align:center;line-height:1.7;margin-top:14px;font-style:italic;font-family:'Cormorant Garamond',serif}
+
+.lc-cmp{font-size:13px;width:100%;border-collapse:collapse;border-radius:14px;overflow:hidden;box-shadow:0 10px 30px rgba(120,90,60,.1)}
+.lc-cmp td,.lc-cmp th{padding:14px 12px;border-bottom:1px solid #eadfd2;background:#fff}
+.lc-cmp th{font-weight:700;text-align:center;font-family:'Cormorant Garamond',serif;font-size:17px}
+.lc-luxcol{background:#2a2320;color:#fbf7f3;text-align:center;width:88px}
+.lc-othcol{text-align:center;width:88px;color:#9a8e80}
+.lc-gcheck{color:#2f9c56;font-size:16px;font-weight:700}
+.lc-rx{color:#c96a6a;font-size:14px;font-weight:700}
+
+.lc-usprow{display:flex;align-items:center;gap:12px;font-size:14px;font-weight:500}
+.lc-usptick{width:26px;height:26px;border-radius:50%;border:1.5px solid #2a2320;color:#2a2320;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex:none}
+
+.lc-vscol{flex:1;display:flex;flex-direction:column;align-items:center;min-width:0}
+.lc-vsimg{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:14px}
+.lc-vslabel{font-size:13px;font-weight:600;margin:13px 0 12px;text-align:center;line-height:1.25}
+.lc-vsitem{display:flex;align-items:flex-start;gap:9px;font-size:12px;padding:9px 0;border-bottom:1px solid #ece2d6;text-align:left;width:100%}
+.lc-vsg{width:22px;height:22px;border-radius:50%;border:2px solid #2f9c56;color:#2f9c56;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex:none}
+.lc-vsr{width:22px;height:22px;border-radius:50%;border:2px solid #c96a6a;color:#c96a6a;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;flex:none}
+
+.lc-stepnum{width:52px;height:52px;border-radius:50%;border:1.5px solid var(--lc-rose);color:var(--lc-rosedeep);font-size:22px;font-weight:600;display:flex;align-items:center;justify-content:center;background:#fbf7f3;flex:none;font-family:'Cormorant Garamond',serif}
+.lc-step{display:flex;gap:18px;padding:14px 0;align-items:flex-start}
+
+.lc-faq{border-bottom:1px solid #e6b8bf;font-size:14px}
+.lc-faq-h{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:16px 2px;cursor:pointer;font-weight:500;background:none;border:none;width:100%;font-family:inherit;color:inherit;text-align:left}
+.lc-faq-b{padding:0 2px 16px;font-size:13px;color:#5a3d42;white-space:pre-line;line-height:1.7}
+
+.lc-bar{height:9px;background:#eadfd2;border-radius:4px;flex:1;overflow:hidden}
+.lc-barfill{height:100%;background:var(--lc-rose)}
+.lc-histrow{display:flex;align-items:center;gap:10px;font-size:11px;color:#6a5f54}
+
+.lc-rev{border-top:1px solid #ece2d6;padding:20px 0;font-size:13.5px;color:#3a322b}
+.lc-vinit{width:34px;height:34px;border-radius:50%;background:var(--lc-pink);color:var(--lc-rosedeep);font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;flex:none}
+.lc-vbadge{background:#2a2320;color:#fff;font-size:8.5px;padding:2px 7px;border-radius:3px;font-weight:600;letter-spacing:.04em}
+
+.lc-nlin{border:1px solid #c9bcaa;background:#fff;border-radius:10px;padding:14px 16px;font-family:'Jost',sans-serif;font-size:13px;flex:1;min-width:0;color:#2a2320}
+.lc-ftrlinks{display:flex;gap:16px;justify-content:center;font-size:11px;color:#6a5f54;margin-top:30px;flex-wrap:wrap}
+.lc-ftrlinks a{color:#6a5f54;text-decoration:underline}
+
+.lc-buybar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:500px;background:rgba(251,247,243,.96);backdrop-filter:blur(10px);border-top:1px solid #e6dcce;padding:11px 18px;display:flex;align-items:center;gap:14px;z-index:50;box-shadow:0 -6px 24px rgba(0,0,0,.07)}
+.lc-buybar .lc-cta{border-radius:10px;padding:15px 0}
+
+.lc-hscroll{display:flex;gap:14px;overflow-x:auto;padding:4px 22px 8px;scroll-snap-type:x mandatory;scrollbar-width:none}
+.lc-hscroll::-webkit-scrollbar{display:none}
+
+@media (min-width:600px){
+  .lc-page{box-shadow:0 0 60px rgba(0,0,0,.12)}
+}

@@ -1,0 +1,30 @@
+{{ 'lux-cove.css' | asset_url | stylesheet_tag }}
+<div class="lc-page">
+  <section class="lc-sec lc-pinkbg" data-screen-label="Risk Free">
+    {%- if section.settings.image != blank -%}
+      <img src="{{ section.settings.image | image_url: width: 900 }}" class="lc-featimg" alt="{{ section.settings.heading | escape }}">
+    {%- else -%}
+      <img src="{{ 'lc-closeup.jpg' | asset_url }}" class="lc-featimg" alt="{{ section.settings.heading | escape }}">
+    {%- endif -%}
+    <div class="lc-tc" style="margin-top:28px">
+      <span class="lc-eyebrow">{{ section.settings.eyebrow }}</span>
+      <h2 class="lc-sec-t" style="margin:10px 0 14px">{{ section.settings.heading }}</h2>
+      <p class="lc-fs14" style="color:#6a5147;line-height:1.85;max-width:360px;margin:0 auto">{{ section.settings.text }}</p>
+    </div>
+  </section>
+</div>
+
+{% schema %}
+{
+  "name": "Lux Cove: Risk free",
+  "settings": [
+    { "type": "image_picker", "id": "image", "label": "Image" },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Our promise" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Try It Risk-Free" },
+    { "type": "textarea", "id": "text", "label": "Text", "default": "We're confident you'll love it, but if it's not for you, no worries. Try it for 30 days, and if you're not completely satisfied, return it for a full refund — no questions asked." }
+  ],
+  "presets": [
+    { "name": "Lux Cove: Risk free" }
+  ]
+}
+{% endschema %}

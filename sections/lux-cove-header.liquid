@@ -1,0 +1,25 @@
+{{ 'lux-cove.css' | asset_url | stylesheet_tag }}
+<div class="lc-page" style="max-width:none;box-shadow:none;margin:0;overflow:visible">
+  <header class="lc-hdr">
+    <svg class="lc-hicon" viewBox="0 0 24 24"><line x1="3" y1="7" x2="21" y2="7"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="17" x2="21" y2="17"></line></svg>
+    <a href="{{ routes.root_url }}" class="lc-logo">{{ section.settings.logo_text }}</a>
+    <div class="lc-fx lc-ac lc-gap16">
+      <svg class="lc-hicon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"></circle><line x1="16.5" y1="16.5" x2="21" y2="21"></line></svg>
+      <a href="{{ routes.cart_url }}" style="display:flex">
+        <svg class="lc-hicon" viewBox="0 0 24 24"><path d="M5 8h14l-1 13H6L5 8z"></path><path d="M9 8V6a3 3 0 0 1 6 0v2"></path></svg>
+      </a>
+    </div>
+  </header>
+</div>
+
+{% schema %}
+{
+  "name": "Lux Cove: Header",
+  "settings": [
+    { "type": "text", "id": "logo_text", "label": "Logo text", "default": "LUX COVE" }
+  ],
+  "presets": [
+    { "name": "Lux Cove: Header" }
+  ]
+}
+{% endschema %}

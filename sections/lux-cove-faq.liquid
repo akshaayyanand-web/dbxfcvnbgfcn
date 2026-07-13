@@ -1,0 +1,56 @@
+{{ 'lux-cove.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'lux-cove.js' | asset_url }}" defer="defer"></script>
+<div class="lc-page">
+  <section class="lc-sec lc-pinkbg" data-screen-label="FAQ">
+    <div class="lc-sec-head">
+      <span class="lc-eyebrow">{{ section.settings.eyebrow }}</span>
+      <h2 class="lc-sec-t">{{ section.settings.heading }}</h2>
+      <span class="lc-rule"></span>
+    </div>
+    {%- for block in section.blocks -%}
+      <div class="lc-faq" {{ block.shopify_attributes }}>
+        <button type="button" class="lc-faq-h" data-lc-toggle aria-expanded="false">
+          <span>{{ block.settings.question }}</span>
+          <span class="lc-chev" data-lc-chev>⌄</span>
+        </button>
+        <div class="lc-faq-b" data-lc-body hidden>{{ block.settings.answer }}</div>
+      </div>
+    {%- endfor -%}
+  </section>
+</div>
+
+{% schema %}
+{
+  "name": "Lux Cove: FAQ",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Good to know" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Your Questions" }
+  ],
+  "blocks": [
+    {
+      "type": "faq",
+      "name": "Question",
+      "settings": [
+        { "type": "text", "id": "question", "label": "Question", "default": "How long does it take to see results?" },
+        { "type": "textarea", "id": "answer", "label": "Answer", "default": "Most users notice results in 2 weeks, with full transformation in 6-8 weeks." }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Lux Cove: FAQ",
+      "blocks": [
+        { "type": "faq", "settings": { "question": "How long does it take to see results?", "answer": "Most users notice results in 2 weeks, with full transformation in 6-8 weeks." } },
+        { "type": "faq", "settings": { "question": "Does it work for all skin types?", "answer": "Yes! It's safe for all skin tones and types, including sensitive skin." } },
+        { "type": "faq", "settings": { "question": "Does the device hurt to use?", "answer": "No! It's a non-invasive, painless treatment. The EMS mode may give a slight tingling sensation, which means it's working." } },
+        { "type": "faq", "settings": { "question": "How long does the device take to charge?", "answer": "The device takes around 3 hours to charge fully, and lasts about 1 hour on a full charge.\nPlease note: each mode turns off automatically after 5 minutes to conserve battery." } },
+        { "type": "faq", "settings": { "question": "Can I use this with my other skincare products?", "answer": "Yes! Using our device alongside your other skincare products helps enhance absorption and improve their effectiveness." } },
+        { "type": "faq", "settings": { "question": "Will the red light therapy damage my eyes?", "answer": "No. The 630nm red LED light is safe, but you can close your eyes while wearing it for extra comfort." } },
+        { "type": "faq", "settings": { "question": "Can this device be used by both women and men?", "answer": "Yes, this product is great for both women and men." } },
+        { "type": "faq", "settings": { "question": "How much does shipping cost?", "answer": "United Kingdom: Express Tracked Shipping (3 - 5 Working Days) - FREE\nEU: Express Tracked Shipping (3 - 7 Working Days) - FREE\nUnited States: Express Tracked Shipping (3 - 7 Working Days) - FREE\nRest Of The World: Express Tracked Shipping (3 - 7 Working Days) - FREE" } },
+        { "type": "faq", "settings": { "question": "Can I return my order if I'm not satisfied?", "answer": "Yes, contact our support team within 90 days of receiving your product for a full refund." } }
+      ]
+    }
+  ]
+}
+{% endschema %}
