@@ -1,0 +1,146 @@
+<section class="lc-reviews-widget" data-section-id="{{ section.id }}">
+  <div class="lc-wrap">
+    <h2 class="lc-heading">{{ section.settings.heading }}</h2>
+
+    <div class="lc-reviews-widget__summary">
+      <span class="lc-reviews-widget__score">{{ section.settings.average_rating }}</span>
+      <div>
+        <span class="lc-reviews-widget__stars" aria-hidden="true">★★★★★</span>
+        <span class="lc-reviews-widget__count">Based on {{ section.settings.review_count }} reviews</span>
+      </div>
+    </div>
+
+    <div class="lc-reviews-widget__list">
+      {% for block in section.blocks %}
+        {% if block.type == 'review' %}
+          <div class="lc-reviews-widget__item" {{ block.shopify_attributes }}>
+            <div class="lc-reviews-widget__item-head">
+              <span class="lc-reviews-widget__stars" aria-hidden="true">★★★★★</span>
+              <span class="lc-reviews-widget__name">{{ block.settings.name }}</span>
+              {% if block.settings.verified %}
+                <span class="lc-pill">Verified Buyer</span>
+              {% endif %}
+            </div>
+            {% if block.settings.title != blank %}
+              <h3>{{ block.settings.title }}</h3>
+            {% endif %}
+            <p>{{ block.settings.body }}</p>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .lc-reviews-widget {
+    padding: 64px 0;
+  }
+
+  .lc-reviews-widget__summary {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    justify-content: center;
+    margin-bottom: 40px;
+  }
+
+  .lc-reviews-widget__score {
+    font-size: 40px;
+    font-weight: 700;
+    color: var(--lc-ink);
+  }
+
+  .lc-reviews-widget__stars {
+    color: var(--lc-pink-deep);
+    display: block;
+    letter-spacing: 2px;
+  }
+
+  .lc-reviews-widget__count {
+    font-size: 13px;
+    color: var(--lc-muted);
+  }
+
+  .lc-reviews-widget__list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .lc-reviews-widget__item {
+    border: 1px solid var(--lc-line);
+    border-radius: var(--lc-radius-md);
+    padding: 20px;
+  }
+
+  .lc-reviews-widget__item-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+  }
+
+  .lc-reviews-widget__name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--lc-ink);
+  }
+
+  .lc-reviews-widget__item h3 {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--lc-ink);
+    margin: 0 0 6px;
+  }
+
+  .lc-reviews-widget__item p {
+    color: var(--lc-muted);
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  @media screen and (max-width: 749px) {
+    .lc-reviews-widget__list {
+      grid-template-columns: 1fr;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Reviews Widget",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Customer Reviews" },
+    { "type": "text", "id": "average_rating", "label": "Average rating", "default": "4.9" },
+    { "type": "text", "id": "review_count", "label": "Review count", "default": "12,482" }
+  ],
+  "blocks": [
+    {
+      "type": "review",
+      "name": "Review",
+      "settings": [
+        { "type": "text", "id": "name", "label": "Name", "default": "Jamie L." },
+        { "type": "checkbox", "id": "verified", "label": "Verified buyer", "default": true },
+        { "type": "text", "id": "title", "label": "Review title", "default": "Love this!" },
+        { "type": "textarea", "id": "body", "label": "Review text", "default": "Easy to use and I've already noticed a difference in my dark circles." }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Reviews Widget",
+      "blocks": [
+        { "type": "review" },
+        { "type": "review", "settings": { "name": "Priya S.", "title": "Worth it", "body": "My under-eyes look so much more awake now. Highly recommend." } },
+        { "type": "review", "settings": { "name": "Devon T.", "title": "Great routine addition", "body": "Simple to use every morning, and the results have been noticeable." } },
+        { "type": "review", "settings": { "name": "Maria C.", "title": "Impressed", "body": "Skeptical at first but genuinely happy with how my skin looks now." } }
+      ]
+    }
+  ]
+}
+{% endschema %}

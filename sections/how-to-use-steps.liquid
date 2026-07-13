@@ -1,0 +1,95 @@
+<section class="lc-steps" data-section-id="{{ section.id }}">
+  <div class="lc-wrap">
+    <h2 class="lc-heading">{{ section.settings.heading }}</h2>
+    <div class="lc-steps__grid">
+      {% for block in section.blocks %}
+        {% if block.type == 'step' %}
+          <div class="lc-steps__card" {{ block.shopify_attributes }}>
+            <span class="lc-steps__number">{{ forloop.index }}</span>
+            <h3>{{ block.settings.title }}</h3>
+            <p>{{ block.settings.text }}</p>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .lc-steps {
+    padding: 64px 0;
+  }
+
+  .lc-steps__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+
+  .lc-steps__card {
+    text-align: center;
+    padding: 28px 20px;
+  }
+
+  .lc-steps__number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--lc-ink);
+    color: var(--lc-white);
+    font-weight: 600;
+    margin-bottom: 16px;
+  }
+
+  .lc-steps__card h3 {
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--lc-ink);
+    margin: 0 0 8px;
+  }
+
+  .lc-steps__card p {
+    color: var(--lc-muted);
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  @media screen and (max-width: 749px) {
+    .lc-steps__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "How To Use Steps",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "How To Use It" }
+  ],
+  "blocks": [
+    {
+      "type": "step",
+      "name": "Step",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Title", "default": "Prep Your Skin" },
+        { "type": "richtext", "id": "text", "label": "Description", "default": "<p>Cleanse the under-eye area so it's dry and free of makeup.</p>" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "How To Use Steps",
+      "blocks": [
+        { "type": "step", "settings": { "title": "Prep Your Skin", "text": "<p>Cleanse the under-eye area so it's dry and free of makeup.</p>" } },
+        { "type": "step", "settings": { "title": "Power It On", "text": "<p>Put on the glasses and select your mode — red light, EMS, or both.</p>" } },
+        { "type": "step", "settings": { "title": "Relax For 10-15 Minutes", "text": "<p>Sit back and relax while the device gets to work. Use daily for best results.</p>" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

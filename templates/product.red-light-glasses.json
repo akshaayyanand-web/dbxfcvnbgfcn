@@ -1,0 +1,135 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-product-showcase"
+    },
+    "social-proof": {
+      "type": "social-proof-strip"
+    },
+    "before-after": {
+      "type": "before-after-results"
+    },
+    "feature-1": {
+      "type": "feature-highlight",
+      "settings": {
+        "eyebrow": "Smooth Under-Eye Wrinkles",
+        "heading": "Smooth Under-Eye Wrinkles",
+        "body": "<p>Red light therapy is shown to stimulate collagen production, helping to soften the look of fine lines and wrinkles around the eyes with consistent use.</p>",
+        "layout": "image_left"
+      }
+    },
+    "feature-2": {
+      "type": "feature-highlight",
+      "settings": {
+        "eyebrow": "Brighten Dark Circles",
+        "heading": "Brighten Dark Circles",
+        "body": "<p>Gentle red light wavelengths help improve circulation under the eyes, working to visibly brighten dark circles over time.</p>",
+        "layout": "image_right"
+      }
+    },
+    "feature-3": {
+      "type": "feature-highlight",
+      "settings": {
+        "eyebrow": "De-Puff & Lift",
+        "heading": "De-Puff & Lift Under-Eye Bags",
+        "body": "<p>Light massage-like pressure combined with red light therapy may help reduce the appearance of puffiness for a refreshed, lifted look.</p>",
+        "layout": "image_left"
+      }
+    },
+    "feature-4": {
+      "type": "feature-highlight",
+      "settings": {
+        "eyebrow": "Reduce Crow's Feet",
+        "heading": "Reduce Crow's Feet & Under-Eye Wrinkles",
+        "body": "<p>Designed for daily use in just minutes, this routine targets the delicate under-eye area for smoother, more radiant-looking skin.</p>",
+        "layout": "image_right"
+      }
+    },
+    "how-it-works": {
+      "type": "how-it-works"
+    },
+    "testimonials": {
+      "type": "testimonial-carousel"
+    },
+    "reviews-highlight": {
+      "type": "review-highlights"
+    },
+    "comparison": {
+      "type": "comparison-table"
+    },
+    "vs-1": {
+      "type": "vs-comparison",
+      "settings": {
+        "heading": "Results At Home In 30 Minutes, No Appointments Needed",
+        "us_label": "Our Under-Eye Glasses",
+        "them_label": "In-Office LED Therapy",
+        "us_point_1": "Use anytime, right at home",
+        "us_point_2": "One-time cost, unlimited sessions",
+        "us_point_3": "Just 10-15 minutes a day",
+        "them_point_1": "Requires scheduled appointments",
+        "them_point_2": "Costly recurring sessions",
+        "them_point_3": "Travel time required"
+      }
+    },
+    "vs-2": {
+      "type": "vs-comparison",
+      "settings": {
+        "heading": "Fast & Visible Results At Home That Actually Last",
+        "us_label": "Our Under-Eye Glasses",
+        "them_label": "Under-Eye Creams",
+        "us_point_1": "Targets the root cause with light therapy",
+        "us_point_2": "Visible results in weeks",
+        "us_point_3": "No daily reapplication needed",
+        "them_point_1": "Surface-level, temporary hydration",
+        "them_point_2": "Results fade quickly",
+        "them_point_3": "Requires daily reapplication"
+      }
+    },
+    "vs-3": {
+      "type": "vs-comparison",
+      "settings": {
+        "heading": "Rejuvenate Your Eyes Without Invasive Treatments",
+        "us_label": "Our Under-Eye Glasses",
+        "them_label": "Under-Eye Botox",
+        "us_point_1": "Non-invasive, no needles",
+        "us_point_2": "No downtime",
+        "us_point_3": "Gentle enough for daily use",
+        "them_point_1": "Invasive injections",
+        "them_point_2": "Recovery time needed",
+        "them_point_3": "Expensive touch-ups required"
+      }
+    },
+    "risk-free": {
+      "type": "risk-free-guarantee"
+    },
+    "how-to-use": {
+      "type": "how-to-use-steps"
+    },
+    "faq": {
+      "type": "faq-accordion"
+    },
+    "reviews-widget": {
+      "type": "reviews-widget"
+    }
+  },
+  "order": [
+    "main",
+    "social-proof",
+    "before-after",
+    "feature-1",
+    "feature-2",
+    "feature-3",
+    "feature-4",
+    "how-it-works",
+    "testimonials",
+    "reviews-highlight",
+    "comparison",
+    "vs-1",
+    "vs-2",
+    "vs-3",
+    "risk-free",
+    "how-to-use",
+    "faq",
+    "reviews-widget"
+  ]
+}

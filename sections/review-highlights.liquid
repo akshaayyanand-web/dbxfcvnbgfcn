@@ -1,0 +1,95 @@
+<section class="lc-review-highlights" data-section-id="{{ section.id }}">
+  <div class="lc-wrap">
+    <h2 class="lc-heading">{{ section.settings.heading }}</h2>
+    <div class="lc-review-highlights__grid">
+      {% for block in section.blocks %}
+        {% if block.type == 'review' %}
+          <div class="lc-review-highlights__card" {{ block.shopify_attributes }}>
+            <span class="lc-review-highlights__stars" aria-hidden="true">★★★★★</span>
+            <p>{{ block.settings.quote }}</p>
+            <span class="lc-review-highlights__name">{{ block.settings.name }}</span>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .lc-review-highlights {
+    padding: 64px 0;
+  }
+
+  .lc-review-highlights__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+
+  .lc-review-highlights__card {
+    background: var(--lc-white);
+    border: 1px solid var(--lc-line);
+    border-radius: var(--lc-radius-md);
+    padding: 24px;
+  }
+
+  .lc-review-highlights__stars {
+    color: var(--lc-pink-deep);
+    display: block;
+    margin-bottom: 12px;
+    letter-spacing: 2px;
+  }
+
+  .lc-review-highlights__card p {
+    color: var(--lc-ink);
+    line-height: 1.6;
+    font-size: 15px;
+    margin: 0 0 14px;
+  }
+
+  .lc-review-highlights__name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--lc-muted);
+  }
+
+  @media screen and (max-width: 749px) {
+    .lc-review-highlights__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Review Highlights",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "100,000+ Happy Customers"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "review",
+      "name": "Review",
+      "settings": [
+        { "type": "textarea", "id": "quote", "label": "Quote", "default": "I was hesitant at first but the results speak for themselves. My dark circles are noticeably lighter." },
+        { "type": "text", "id": "name", "label": "Name", "default": "Sarah H." }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Review Highlights",
+      "blocks": [
+        { "type": "review", "settings": { "name": "Sarah H." } },
+        { "type": "review", "settings": { "name": "Gina A." } },
+        { "type": "review", "settings": { "name": "Marcus P." } }
+      ]
+    }
+  ]
+}
+{% endschema %}

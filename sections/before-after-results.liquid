@@ -1,0 +1,223 @@
+<section class="lc-results" data-section-id="{{ section.id }}">
+  <div class="lc-wrap">
+    <h2 class="lc-heading">{{ section.settings.heading }}</h2>
+    <p class="lc-subheading">{{ section.settings.subheading }}</p>
+
+    <div class="lc-results__grid">
+      <div class="lc-results__images">
+        <div class="lc-results__image-wrap">
+          {% if section.settings.before_image != blank %}
+            <img src="{{ section.settings.before_image | image_url: width: 500 }}" alt="Before" loading="lazy">
+          {% else %}
+            {{ 'lifestyle-1' | placeholder_svg_tag }}
+          {% endif %}
+          <span class="lc-pill lc-results__tag">Before</span>
+        </div>
+        <div class="lc-results__image-wrap">
+          {% if section.settings.after_image != blank %}
+            <img src="{{ section.settings.after_image | image_url: width: 500 }}" alt="After" loading="lazy">
+          {% else %}
+            {{ 'lifestyle-2' | placeholder_svg_tag }}
+          {% endif %}
+          <span class="lc-pill lc-results__tag">After</span>
+        </div>
+      </div>
+
+      <ul class="lc-results__list">
+        {% for block in section.blocks %}
+          {% if block.type == 'result_item' %}
+            <li {{ block.shopify_attributes }}>
+              <span class="lc-results__check" aria-hidden="true">✓</span>
+              <span>{{ block.settings.text }}</span>
+            </li>
+          {% endif %}
+        {% endfor %}
+      </ul>
+    </div>
+
+    {% if section.settings.show_icon_row %}
+      <div class="lc-results__icon-row">
+        {% for block in section.blocks %}
+          {% if block.type == 'icon_column' %}
+            <div class="lc-results__icon-col" {{ block.shopify_attributes }}>
+              <span class="lc-results__icon" aria-hidden="true">{{ block.settings.icon }}</span>
+              <p>{{ block.settings.text }}</p>
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+{% stylesheet %}
+  .lc-results {
+    padding: 64px 0;
+    background: var(--lc-pink-soft);
+    border-radius: var(--lc-radius-lg);
+  }
+
+  .lc-results__grid {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 48px;
+    align-items: center;
+  }
+
+  .lc-results__images {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .lc-results__image-wrap {
+    position: relative;
+    border-radius: var(--lc-radius-md);
+    overflow: hidden;
+    aspect-ratio: 4 / 5;
+    background: var(--lc-white);
+  }
+
+  .lc-results__image-wrap img,
+  .lc-results__image-wrap svg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .lc-results__tag {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: var(--lc-white);
+  }
+
+  .lc-results__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .lc-results__list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-size: 16px;
+    color: var(--lc-ink);
+    line-height: 1.5;
+  }
+
+  .lc-results__check {
+    flex: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--lc-pink-deep);
+    color: var(--lc-white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+  }
+
+  .lc-results__icon-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    margin-top: 56px;
+    text-align: center;
+  }
+
+  .lc-results__icon {
+    font-size: 28px;
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  .lc-results__icon-col p {
+    font-size: 14px;
+    color: var(--lc-muted);
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  @media screen and (max-width: 900px) {
+    .lc-results__grid {
+      grid-template-columns: 1fr;
+    }
+    .lc-results__icon-row {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Before/After Results",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "See Visible Results In Just 30 Days"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "With consistent daily use, most customers report noticeably smoother, brighter, more youthful-looking eyes."
+    },
+    {
+      "type": "image_picker",
+      "id": "before_image",
+      "label": "Before image"
+    },
+    {
+      "type": "image_picker",
+      "id": "after_image",
+      "label": "After image"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_icon_row",
+      "label": "Show icon row",
+      "default": true
+    }
+  ],
+  "blocks": [
+    {
+      "type": "result_item",
+      "name": "Result bullet",
+      "settings": [
+        { "type": "text", "id": "text", "label": "Text", "default": "Visibly smoother under-eye wrinkles" }
+      ]
+    },
+    {
+      "type": "icon_column",
+      "name": "Icon column",
+      "settings": [
+        { "type": "text", "id": "icon", "label": "Icon (emoji)", "default": "✨" },
+        { "type": "text", "id": "text", "label": "Text", "default": "Smooths wrinkles" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Before/After Results",
+      "blocks": [
+        { "type": "result_item", "settings": { "text": "Visibly smoother under-eye wrinkles" } },
+        { "type": "result_item", "settings": { "text": "Reduced appearance of dark circles" } },
+        { "type": "result_item", "settings": { "text": "Less puffiness, more lifted look" } },
+        { "type": "result_item", "settings": { "text": "Brighter, more radiant under-eye area" } },
+        { "type": "icon_column", "settings": { "icon": "✨", "text": "Smooths wrinkles" } },
+        { "type": "icon_column", "settings": { "icon": "💧", "text": "De-puffs & lifts" } },
+        { "type": "icon_column", "settings": { "icon": "🔆", "text": "Brightens dark circles" } },
+        { "type": "icon_column", "settings": { "icon": "⏱️", "text": "Just 10 minutes a day" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

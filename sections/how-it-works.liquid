@@ -1,0 +1,125 @@
+<section class="lc-how" data-section-id="{{ section.id }}">
+  <div class="lc-wrap">
+    <h2 class="lc-heading">{{ section.settings.heading }}</h2>
+    <div class="lc-how__grid">
+      {% for block in section.blocks %}
+        {% if block.type == 'mode' %}
+          <div class="lc-how__card" {{ block.shopify_attributes }}>
+            <div class="lc-how__badge" style="background: {{ block.settings.color }};">
+              {% if block.settings.image != blank %}
+                <img src="{{ block.settings.image | image_url: width: 200 }}" alt="{{ block.settings.title | escape }}" loading="lazy">
+              {% endif %}
+            </div>
+            <h3>{{ block.settings.title }}</h3>
+            <p>{{ block.settings.text }}</p>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .lc-how {
+    padding: 64px 0;
+  }
+
+  .lc-how__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 32px;
+  }
+
+  .lc-how__card {
+    text-align: center;
+    padding: 32px;
+    border-radius: var(--lc-radius-lg);
+    background: var(--lc-pink-soft);
+  }
+
+  .lc-how__badge {
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    margin: 0 auto 20px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .lc-how__badge img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .lc-how__card h3 {
+    font-size: 19px;
+    font-weight: 600;
+    color: var(--lc-ink);
+    margin: 0 0 10px;
+  }
+
+  .lc-how__card p {
+    color: var(--lc-muted);
+    line-height: 1.6;
+    font-size: 15px;
+    margin: 0;
+  }
+
+  @media screen and (max-width: 749px) {
+    .lc-how__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "How It Works",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "How It Works"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "mode",
+      "name": "Mode",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Icon/photo" },
+        { "type": "color", "id": "color", "label": "Badge color", "default": "#f7cdd3" },
+        { "type": "text", "id": "title", "label": "Title", "default": "Red Light Mode" },
+        { "type": "richtext", "id": "text", "label": "Description", "default": "<p>Describe how this mode works.</p>" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "How It Works",
+      "blocks": [
+        {
+          "type": "mode",
+          "settings": {
+            "title": "Red Light Mode",
+            "text": "<p>Targets fine lines, dark circles, and puffiness with a warm red light wavelength.</p>",
+            "color": "#f3b7bd"
+          }
+        },
+        {
+          "type": "mode",
+          "settings": {
+            "title": "EMS Microcurrent Mode",
+            "text": "<p>Gentle micro-pulses help tone and lift the delicate under-eye muscles.</p>",
+            "color": "#cfe0f3"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,118 @@
+<section class="lc-feature lc-feature--{{ section.settings.layout }}" data-section-id="{{ section.id }}">
+  <div class="lc-wrap lc-feature__grid">
+    <div class="lc-feature__media">
+      {% if section.settings.image != blank %}
+        <img src="{{ section.settings.image | image_url: width: 800 }}" alt="{{ section.settings.heading | escape }}" loading="lazy">
+      {% else %}
+        {{ 'lifestyle-1' | placeholder_svg_tag }}
+      {% endif %}
+    </div>
+    <div class="lc-feature__content">
+      {% if section.settings.eyebrow != blank %}
+        <span class="lc-eyebrow">{{ section.settings.eyebrow }}</span>
+      {% endif %}
+      <h2 class="lc-feature__heading">{{ section.settings.heading }}</h2>
+      <div class="lc-feature__body">{{ section.settings.body }}</div>
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .lc-feature {
+    padding: 56px 0;
+  }
+
+  .lc-feature__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 56px;
+    align-items: center;
+  }
+
+  .lc-feature--image_right .lc-feature__media {
+    order: 2;
+  }
+
+  .lc-feature__media {
+    border-radius: var(--lc-radius-lg);
+    overflow: hidden;
+    background: var(--lc-pink-soft);
+    aspect-ratio: 4 / 3;
+  }
+
+  .lc-feature__media img,
+  .lc-feature__media svg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .lc-feature__heading {
+    font-size: clamp(24px, 2.8vw, 32px);
+    font-weight: 600;
+    color: var(--lc-ink);
+    margin: 0 0 16px;
+    text-align: left;
+  }
+
+  .lc-feature__body {
+    color: var(--lc-muted);
+    line-height: 1.7;
+    font-size: 16px;
+  }
+
+  @media screen and (max-width: 900px) {
+    .lc-feature__grid {
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+    .lc-feature--image_right .lc-feature__media {
+      order: 0;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Feature Highlight",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow text"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Feature heading"
+    },
+    {
+      "type": "richtext",
+      "id": "body",
+      "label": "Body text",
+      "default": "<p>Describe this benefit here.</p>"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Image position",
+      "options": [
+        { "value": "image_left", "label": "Image left" },
+        { "value": "image_right", "label": "Image right" }
+      ],
+      "default": "image_left"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Feature Highlight"
+    }
+  ]
+}
+{% endschema %}

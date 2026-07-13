@@ -1,0 +1,86 @@
+<section class="lc-guarantee" data-section-id="{{ section.id }}">
+  <div class="lc-wrap lc-guarantee__grid">
+    <div class="lc-guarantee__media">
+      {% if section.settings.image != blank %}
+        <img src="{{ section.settings.image | image_url: width: 700 }}" alt="{{ section.settings.heading | escape }}" loading="lazy">
+      {% else %}
+        {{ 'lifestyle-1' | placeholder_svg_tag }}
+      {% endif %}
+    </div>
+    <div class="lc-guarantee__content">
+      <h2 class="lc-guarantee__heading">{{ section.settings.heading }}</h2>
+      <div class="lc-guarantee__body">{{ section.settings.body }}</div>
+      {% if section.settings.cta_text != blank %}
+        <a href="{{ section.settings.cta_link }}" class="lc-btn">{{ section.settings.cta_text }}</a>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .lc-guarantee {
+    padding: 64px 0;
+  }
+
+  .lc-guarantee__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    align-items: center;
+  }
+
+  .lc-guarantee__media {
+    border-radius: var(--lc-radius-lg);
+    overflow: hidden;
+    background: var(--lc-pink-soft);
+    aspect-ratio: 4 / 3;
+  }
+
+  .lc-guarantee__media img,
+  .lc-guarantee__media svg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .lc-guarantee__heading {
+    font-size: clamp(24px, 2.8vw, 32px);
+    font-weight: 600;
+    color: var(--lc-ink);
+    margin: 0 0 16px;
+    text-align: left;
+  }
+
+  .lc-guarantee__body {
+    color: var(--lc-muted);
+    line-height: 1.7;
+    margin-bottom: 24px;
+  }
+
+  @media screen and (max-width: 900px) {
+    .lc-guarantee__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Risk-Free Guarantee",
+  "settings": [
+    { "type": "image_picker", "id": "image", "label": "Image" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Try Risk-Free" },
+    {
+      "type": "richtext",
+      "id": "body",
+      "label": "Body",
+      "default": "<p>We're confident you'll love your results. If you're not fully satisfied within 30 days, we'll give you a full refund — no questions asked.</p>"
+    },
+    { "type": "text", "id": "cta_text", "label": "Button text", "default": "Shop Now" },
+    { "type": "url", "id": "cta_link", "label": "Button link" }
+  ],
+  "presets": [
+    { "name": "Risk-Free Guarantee" }
+  ]
+}
+{% endschema %}

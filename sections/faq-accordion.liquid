@@ -1,0 +1,101 @@
+<section class="lc-faq" data-section-id="{{ section.id }}">
+  <div class="lc-wrap lc-faq__wrap">
+    <h2 class="lc-heading">{{ section.settings.heading }}</h2>
+    <div class="lc-faq__list">
+      {% for block in section.blocks %}
+        {% if block.type == 'question' %}
+          <details class="lc-faq__item" {{ block.shopify_attributes }}>
+            <summary>
+              <span>{{ block.settings.question }}</span>
+              <span class="lc-faq__icon" aria-hidden="true">+</span>
+            </summary>
+            <div class="lc-faq__answer">{{ block.settings.answer }}</div>
+          </details>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .lc-faq {
+    padding: 64px 0;
+  }
+
+  .lc-faq__wrap {
+    max-width: 760px;
+  }
+
+  .lc-faq__list {
+    border-top: 1px solid var(--lc-line);
+  }
+
+  .lc-faq__item {
+    border-bottom: 1px solid var(--lc-line);
+    padding: 20px 0;
+  }
+
+  .lc-faq__item summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--lc-ink);
+    list-style: none;
+    font-size: 15px;
+  }
+
+  .lc-faq__item summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .lc-faq__icon {
+    font-size: 20px;
+    color: var(--lc-pink-deep);
+    transition: transform 0.15s ease;
+    flex: none;
+    margin-left: 16px;
+  }
+
+  .lc-faq__item[open] .lc-faq__icon {
+    transform: rotate(45deg);
+  }
+
+  .lc-faq__answer {
+    color: var(--lc-muted);
+    line-height: 1.6;
+    margin-top: 12px;
+    font-size: 14px;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "FAQ Accordion",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "FAQs About Our Product" }
+  ],
+  "blocks": [
+    {
+      "type": "question",
+      "name": "Question",
+      "settings": [
+        { "type": "text", "id": "question", "label": "Question", "default": "How often should I use it?" },
+        { "type": "richtext", "id": "answer", "label": "Answer", "default": "<p>For best results, use for 10-15 minutes daily.</p>" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "FAQ Accordion",
+      "blocks": [
+        { "type": "question", "settings": { "question": "How often should I use it?", "answer": "<p>For best results, use for 10-15 minutes daily.</p>" } },
+        { "type": "question", "settings": { "question": "Is it safe for sensitive skin?", "answer": "<p>Yes, it's designed to be gentle enough for daily use on the delicate under-eye area.</p>" } },
+        { "type": "question", "settings": { "question": "When will I see results?", "answer": "<p>Most customers notice visible changes within 2-4 weeks of consistent use.</p>" } },
+        { "type": "question", "settings": { "question": "How long does the battery last?", "answer": "<p>A full charge typically lasts for multiple sessions before needing to recharge.</p>" } }
+      ]
+    }
+  ]
+}
+{% endschema %}
