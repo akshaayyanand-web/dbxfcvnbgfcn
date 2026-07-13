@@ -1,5 +1,3 @@
-{% render 'lc-styles' %}
-
 {% liquid
   assign product = product
   assign current_variant = product.selected_or_first_available_variant
@@ -131,6 +129,105 @@
 </section>
 
 {% stylesheet %}
+  :root {
+    --lc-pink: #f7cdd3;
+    --lc-pink-soft: #fbe9ec;
+    --lc-pink-deep: #e88a9a;
+    --lc-ink: #2a2420;
+    --lc-muted: #6b625d;
+    --lc-white: #ffffff;
+    --lc-line: rgba(42, 36, 32, 0.1);
+    --lc-radius-lg: 24px;
+    --lc-radius-md: 16px;
+    --lc-radius-sm: 10px;
+    --lc-max-width: 1200px;
+    --lc-shadow: 0 10px 30px rgba(42, 36, 32, 0.08);
+  }
+
+  .lc-wrap {
+    max-width: var(--lc-max-width);
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  .lc-section-pad {
+    padding: 64px 0;
+  }
+
+  .lc-eyebrow {
+    display: inline-block;
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--lc-pink-deep);
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+
+  .lc-heading {
+    font-size: clamp(26px, 3.6vw, 40px);
+    line-height: 1.15;
+    font-weight: 600;
+    color: var(--lc-ink);
+    margin: 0 0 16px;
+    text-align: center;
+  }
+
+  .lc-subheading {
+    font-size: 16px;
+    color: var(--lc-muted);
+    text-align: center;
+    max-width: 640px;
+    margin: 0 auto 40px;
+    line-height: 1.6;
+  }
+
+  .lc-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 16px 32px;
+    border-radius: 999px;
+    background: var(--lc-ink);
+    color: var(--lc-white);
+    font-weight: 600;
+    font-size: 15px;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    transition: transform 0.15s ease, opacity 0.15s ease;
+  }
+
+  .lc-btn:hover {
+    transform: translateY(-1px);
+    opacity: 0.92;
+  }
+
+  .lc-btn--outline {
+    background: transparent;
+    color: var(--lc-ink);
+    border: 1px solid var(--lc-line);
+  }
+
+  .lc-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: var(--lc-pink-soft);
+    color: var(--lc-pink-deep);
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  @media screen and (max-width: 749px) {
+    .lc-section-pad {
+      padding: 40px 0;
+    }
+  }
+
   .lc-main-product {
     padding: 40px 0 64px;
   }
