@@ -1,0 +1,132 @@
+{{ 'lux-cove.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'lux-cove.js' | asset_url }}" defer="defer"></script>
+
+{%- if section.settings.eyebrow != blank or section.settings.show_rating -%}
+  <div style="max-width:720px;margin:0 auto;padding:0 22px 8px">
+    {%- if section.settings.eyebrow != blank -%}
+      <div class="lc-eyebrow">{{ section.settings.eyebrow }}</div>
+    {%- endif -%}
+    {%- if section.settings.show_rating -%}
+      <div class="lc-fx lc-ac lc-gap8 lc-fs13" style="margin-top:8px">
+        <span class="lc-stars">★★★★★</span>
+        <span style="color:#6a5f54">{{ section.settings.rating_value }} / 5</span>
+      </div>
+    {%- endif -%}
+    {%- if section.settings.stock_text != blank -%}
+      <div class="lc-fs12" style="margin-top:10px;color:#2f9c56;font-weight:600;letter-spacing:.14em;display:flex;align-items:center;gap:7px;text-transform:uppercase">
+        <span style="width:7px;height:7px;border-radius:50%;background:#2f9c56;display:inline-block"></span>{{ section.settings.stock_text }}
+      </div>
+    {%- endif -%}
+  </div>
+{%- endif -%}
+
+{%- if section.blocks.size > 0 -%}
+  {%- assign benefit_blocks = section.blocks | where: 'type', 'benefit' -%}
+  {%- if benefit_blocks.size > 0 -%}
+    <div class="lc-col lc-gap12" style="max-width:720px;margin:0 auto;padding:16px 22px 0">
+      {%- for block in benefit_blocks -%}
+        <div class="lc-fx lc-ac lc-gap12 lc-fs14" {{ block.shopify_attributes }}>
+          <span style="width:22px;height:22px;border-radius:50%;background:var(--lc-rose);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex:none">✓</span>
+          {{ block.settings.text }}
+        </div>
+      {%- endfor -%}
+    </div>
+  {%- endif -%}
+
+  {%- assign trust_blocks = section.blocks | where: 'type', 'trust' -%}
+  {%- if trust_blocks.size > 0 -%}
+    <div class="lc-fx" style="max-width:720px;margin:0 auto;gap:8px;padding:20px 22px 0">
+      {%- for block in trust_blocks -%}
+        <div style="flex:1;text-align:center;font-size:10px;color:#5a4f45" {{ block.shopify_attributes }}>{{ block.settings.label }}</div>
+      {%- endfor -%}
+    </div>
+  {%- endif -%}
+
+  {%- assign accordion_blocks = section.blocks | where: 'type', 'details_item' -%}
+  {%- if accordion_blocks.size > 0 -%}
+    <div style="max-width:720px;margin:0 auto;padding:16px 22px 40px">
+      {%- for block in accordion_blocks -%}
+        <div style="border-top:1px solid #ece2d6;font-size:14px" {{ block.shopify_attributes }}>
+          <button type="button" style="display:flex;align-items:center;justify-content:space-between;padding:16px 2px;cursor:pointer;font-weight:500;background:none;border:none;width:100%;font-family:inherit;color:inherit;text-align:left" data-lc-toggle aria-expanded="false">
+            <span>{{ block.settings.title }}</span>
+            <span class="lc-chev" data-lc-chev>⌄</span>
+          </button>
+          <div style="padding:0 2px 16px;font-size:13px;color:#5a4f45;white-space:pre-line;line-height:1.7" data-lc-body hidden>{{ block.settings.body }}</div>
+        </div>
+      {%- endfor -%}
+    </div>
+  {%- endif -%}
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Lux Cove: Buy box extras",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow badge", "default": "★ Bestseller · 150,000+ Sold" },
+    { "type": "checkbox", "id": "show_rating", "label": "Show star rating", "default": true },
+    { "type": "text", "id": "rating_value", "label": "Rating value", "default": "4.8" },
+    { "type": "text", "id": "stock_text", "label": "Stock status text", "default": "In Stock · Ships Free Today" }
+  ],
+  "blocks": [
+    {
+      "type": "benefit",
+      "name": "Benefit",
+      "settings": [
+        { "type": "text", "id": "text", "label": "Text", "default": "Erase dark circles" }
+      ]
+    },
+    {
+      "type": "trust",
+      "name": "Trust badge",
+      "settings": [
+        { "type": "text", "id": "label", "label": "Label", "default": "90-Day Money-Back" }
+      ]
+    },
+    {
+      "type": "details_item",
+      "name": "Accordion item",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Title", "default": "Product details" },
+        { "type": "textarea", "id": "body", "label": "Body", "default": "Details go here." }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Lux Cove: Buy box extras",
+      "blocks": [
+        { "type": "benefit", "settings": { "text": "Erase dark circles" } },
+        { "type": "benefit", "settings": { "text": "Firm sagging under-eye bags" } },
+        { "type": "benefit", "settings": { "text": "Get rid of under-eye wrinkles" } },
+        { "type": "benefit", "settings": { "text": "Smooth out crow's feet" } },
+        { "type": "benefit", "settings": { "text": "Clinically proven" } },
+        { "type": "benefit", "settings": { "text": "Dermatologist approved" } },
+        { "type": "trust", "settings": { "label": "90-Day Money-Back" } },
+        { "type": "trust", "settings": { "label": "Free Shipping" } },
+        { "type": "trust", "settings": { "label": "1 Year Warranty" } },
+        {
+          "type": "details_item",
+          "settings": {
+            "title": "Product details",
+            "body": "The Lux Cove Red Light Under-Eye Glasses are your at-home solution for youthful, refreshed eyes, without surgery, injections, or ineffective creams.\nPowered by Red Light Therapy & Microcurrent Technology, they stimulate collagen, reduce inflammation, and visibly diminish dark circles, puffiness, and fine lines in just 10 minutes a day.\n• Hands-Free & Effortless – Wear while you relax or multitask.\n• Safe for All Skin Types – Clinically tested, non-invasive, and pain-free.\n• Clinically-Proven Results – Noticeable improvements in as little as 2 weeks."
+          }
+        },
+        {
+          "type": "details_item",
+          "settings": {
+            "title": "Guarantee & warranty",
+            "body": "We offer 90-day returns and a 1-year warranty on all purchases. So go ahead, try it out, and if you're dissatisfied for any reason we'll refund you in full."
+          }
+        },
+        {
+          "type": "details_item",
+          "settings": {
+            "title": "Shipping & returns",
+            "body": "United Kingdom: Express Tracked Shipping (3 - 5 Working Days) - FREE\nEU: Express Tracked Shipping (3 - 7 Working Days) - FREE\nUnited States: Express Tracked Shipping (3 - 7 Working Days) - FREE\nRest Of The World: Express Tracked Shipping (3 - 7 Working Days) - FREE"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -24,80 +24,49 @@
         "media-gallery": {
           "type": "_product-media-gallery",
           "static": true,
-          "settings": {
-            "media_presentation": "grid",
-            "media_columns": "two",
-            "thumbnail_position": "right",
-            "media_fit": "contain",
-            "zoom": true
-          },
+          "settings": {},
           "blocks": {}
         },
         "product-details": {
           "type": "_product-details",
           "static": true,
-          "settings": { "gap": 24 },
+          "settings": {},
           "blocks": {
-            "header": {
+            "group_header": {
               "type": "group",
               "name": "Header",
-              "settings": { "content_direction": "column", "gap": 10 },
+              "settings": {},
               "blocks": {
-                "eyebrow": {
-                  "type": "text",
-                  "settings": {
-                    "text": "<div class=\"lc-eyebrow\">★ Bestseller · 150,000+ Sold</div><div class=\"lc-fx lc-ac lc-gap8 lc-fs13\" style=\"margin-top:8px\"><span class=\"lc-stars\">★★★★★</span><span style=\"color:#6a5f54\">4.8 / 5</span></div>",
-                    "type_preset": "paragraph"
-                  },
-                  "blocks": {}
-                },
-                "title": {
+                "text_title": {
                   "type": "text",
                   "name": "Product title",
                   "settings": {
                     "text": "<h1>{{ closest.product.title }}</h1>",
-                    "type_preset": "h2"
+                    "type_preset": "h3"
                   },
                   "blocks": {}
                 },
-                "price": {
+                "price_main": {
                   "type": "price",
-                  "settings": { "show_sale_price_first": true },
-                  "blocks": {}
-                },
-                "stock": {
-                  "type": "text",
-                  "settings": {
-                    "text": "<div class=\"lc-instock\" style=\"color:#2f9c56;font-size:10.5px;font-weight:600;letter-spacing:.14em;display:flex;align-items:center;gap:7px;text-transform:uppercase\"><span style=\"width:7px;height:7px;border-radius:50%;background:#2f9c56;display:inline-block\"></span>In Stock · Ships Free Today</div>",
-                    "type_preset": "paragraph"
-                  },
+                  "settings": {},
                   "blocks": {}
                 }
               },
-              "block_order": ["eyebrow", "title", "price", "stock"]
+              "block_order": ["text_title", "price_main"]
             },
-            "divider1": {
+            "divider_main": {
               "type": "_divider",
-              "settings": { "thickness": 1 },
+              "settings": {},
               "blocks": {}
             },
-            "benefits": {
-              "type": "text",
-              "name": "Benefits",
-              "settings": {
-                "text": "<ul><li>Erase dark circles</li><li>Firm sagging under-eye bags</li><li>Get rid of under-eye wrinkles</li><li>Smooth out crow's feet</li><li>Clinically proven</li><li>Dermatologist approved</li></ul>",
-                "type_preset": "rte"
-              },
-              "blocks": {}
-            },
-            "variant_picker": {
+            "variant_picker_main": {
               "type": "variant-picker",
-              "settings": { "variant_style": "buttons" },
+              "settings": {},
               "blocks": {}
             },
-            "buy_buttons": {
+            "buy_buttons_main": {
               "type": "buy-buttons",
-              "settings": { "stacking": true, "show_pickup_availability": false, "gift_card_form": true },
+              "settings": {},
               "blocks": {
                 "quantity": { "type": "quantity", "static": true, "settings": {}, "blocks": {} },
                 "add-to-cart": { "type": "add-to-cart", "static": true, "settings": {}, "blocks": {} },
@@ -105,78 +74,62 @@
               },
               "block_order": []
             },
-            "trust_row": {
+            "text_description": {
               "type": "text",
-              "name": "Trust badges",
+              "name": "Product description",
               "settings": {
-                "text": "<div style=\"display:flex;gap:8px;margin-top:6px;text-align:center;font-size:10px;color:#5a4f45\"><div style=\"flex:1\">90-Day Money-Back</div><div style=\"flex:1\">Free Shipping</div><div style=\"flex:1\">1 Year Warranty</div></div>",
-                "type_preset": "paragraph"
+                "text": "{{ closest.product.description }}",
+                "type_preset": "rte"
               },
-              "blocks": {}
-            },
-            "accordion1": {
-              "type": "accordion",
-              "name": "Details accordion",
-              "settings": { "icon": "caret", "dividers": true },
-              "blocks": {
-                "row1": {
-                  "type": "_accordion-row",
-                  "settings": { "heading": "Product details" },
-                  "blocks": {
-                    "body": {
-                      "type": "text",
-                      "settings": {
-                        "text": "<p>The Lux Cove Red Light Under-Eye Glasses are your at-home solution for youthful, refreshed eyes, without surgery, injections, or ineffective creams. Powered by Red Light Therapy &amp; Microcurrent Technology, they stimulate collagen, reduce inflammation, and visibly diminish dark circles, puffiness, and fine lines in just 10 minutes a day.</p><ul><li>Hands-Free &amp; Effortless – wear while you relax or multitask</li><li>Safe for All Skin Types – clinically tested, non-invasive, and pain-free</li><li>Clinically-Proven Results – noticeable improvements in as little as 2 weeks</li></ul>",
-                        "type_preset": "rte"
-                      },
-                      "blocks": {}
-                    }
-                  },
-                  "block_order": ["body"]
-                },
-                "row2": {
-                  "type": "_accordion-row",
-                  "settings": { "heading": "Guarantee & warranty" },
-                  "blocks": {
-                    "body": {
-                      "type": "text",
-                      "settings": {
-                        "text": "<p>We offer 90-day returns and a 1-year warranty on all purchases. So go ahead, try it out, and if you're dissatisfied for any reason we'll refund you in full.</p>",
-                        "type_preset": "rte"
-                      },
-                      "blocks": {}
-                    }
-                  },
-                  "block_order": ["body"]
-                },
-                "row3": {
-                  "type": "_accordion-row",
-                  "settings": { "heading": "Shipping & returns" },
-                  "blocks": {
-                    "body": {
-                      "type": "text",
-                      "settings": {
-                        "text": "<p>United Kingdom: Express Tracked Shipping (3 - 5 Working Days) - FREE<br>EU: Express Tracked Shipping (3 - 7 Working Days) - FREE<br>United States: Express Tracked Shipping (3 - 7 Working Days) - FREE<br>Rest Of The World: Express Tracked Shipping (3 - 7 Working Days) - FREE</p>",
-                        "type_preset": "rte"
-                      },
-                      "blocks": {}
-                    }
-                  },
-                  "block_order": ["body"]
-                }
-              },
-              "block_order": ["row1", "row2", "row3"]
-            },
-            "description": {
-              "type": "product-description",
-              "settings": {},
               "blocks": {}
             }
           },
-          "block_order": ["header", "divider1", "benefits", "variant_picker", "buy_buttons", "trust_row", "accordion1", "description"]
+          "block_order": ["group_header", "divider_main", "variant_picker_main", "buy_buttons_main", "text_description"]
         }
       },
       "block_order": []
+    },
+    "lc_buybox_extras": {
+      "type": "lux-cove-buybox-extras",
+      "settings": {
+        "eyebrow": "★ Bestseller · 150,000+ Sold",
+        "show_rating": true,
+        "rating_value": "4.8",
+        "stock_text": "In Stock · Ships Free Today"
+      },
+      "blocks": {
+        "b1": { "type": "benefit", "settings": { "text": "Erase dark circles" } },
+        "b2": { "type": "benefit", "settings": { "text": "Firm sagging under-eye bags" } },
+        "b3": { "type": "benefit", "settings": { "text": "Get rid of under-eye wrinkles" } },
+        "b4": { "type": "benefit", "settings": { "text": "Smooth out crow's feet" } },
+        "b5": { "type": "benefit", "settings": { "text": "Clinically proven" } },
+        "b6": { "type": "benefit", "settings": { "text": "Dermatologist approved" } },
+        "t1": { "type": "trust", "settings": { "label": "90-Day Money-Back" } },
+        "t2": { "type": "trust", "settings": { "label": "Free Shipping" } },
+        "t3": { "type": "trust", "settings": { "label": "1 Year Warranty" } },
+        "ac1": {
+          "type": "details_item",
+          "settings": {
+            "title": "Product details",
+            "body": "The Lux Cove Red Light Under-Eye Glasses are your at-home solution for youthful, refreshed eyes, without surgery, injections, or ineffective creams.\nPowered by Red Light Therapy & Microcurrent Technology, they stimulate collagen, reduce inflammation, and visibly diminish dark circles, puffiness, and fine lines in just 10 minutes a day.\n• Hands-Free & Effortless – Wear while you relax or multitask.\n• Safe for All Skin Types – Clinically tested, non-invasive, and pain-free.\n• Clinically-Proven Results – Noticeable improvements in as little as 2 weeks."
+          }
+        },
+        "ac2": {
+          "type": "details_item",
+          "settings": {
+            "title": "Guarantee & warranty",
+            "body": "We offer 90-day returns and a 1-year warranty on all purchases. So go ahead, try it out, and if you're dissatisfied for any reason we'll refund you in full."
+          }
+        },
+        "ac3": {
+          "type": "details_item",
+          "settings": {
+            "title": "Shipping & returns",
+            "body": "United Kingdom: Express Tracked Shipping (3 - 5 Working Days) - FREE\nEU: Express Tracked Shipping (3 - 7 Working Days) - FREE\nUnited States: Express Tracked Shipping (3 - 7 Working Days) - FREE\nRest Of The World: Express Tracked Shipping (3 - 7 Working Days) - FREE"
+          }
+        }
+      },
+      "block_order": ["b1", "b2", "b3", "b4", "b5", "b6", "t1", "t2", "t3", "ac1", "ac2", "ac3"]
     },
     "lc_marquee": {
       "type": "lux-cove-testimonial-marquee",
@@ -513,6 +466,7 @@
   "order": [
     "lc_style",
     "main",
+    "lc_buybox_extras",
     "lc_marquee",
     "lc_inspired",
     "lc_results30",
