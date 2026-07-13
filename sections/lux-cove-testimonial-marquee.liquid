@@ -19,9 +19,9 @@
               <div class="lc-pill" {{ block.shopify_attributes }}>
                 <div class="lc-fx lc-ac lc-gap10">
                   {%- if block.settings.image != blank -%}
-                    <img src="{{ block.settings.image | image_url: width: 100 }}" class="lc-pillav" alt="{{ block.settings.name | escape }}">
+                    <img src="{{ block.settings.image | image_url: width: 88 }}" width="44" height="44" loading="lazy" class="lc-pillav" alt="{{ block.settings.name | escape }}">
                   {%- elsif block.settings.fallback_image != 'none' -%}
-                    <img src="{{ block.settings.fallback_image | append: '.jpg' | asset_url }}" class="lc-pillav" alt="{{ block.settings.name | escape }}">
+                    <img src="{{ block.settings.fallback_image | append: '.jpg' | asset_url }}" width="44" height="44" loading="lazy" class="lc-pillav" alt="{{ block.settings.name | escape }}">
                   {%- endif -%}
                   <div><div class="lc-fw6 lc-fs13">{{ block.settings.name }}</div><div class="lc-stars lc-fs12">★★★★★</div></div>
                 </div>
@@ -41,9 +41,9 @@
               <div class="lc-pill" {{ block.shopify_attributes }}>
                 <div class="lc-fx lc-ac lc-gap10">
                   {%- if block.settings.image != blank -%}
-                    <img src="{{ block.settings.image | image_url: width: 100 }}" class="lc-pillav" alt="{{ block.settings.name | escape }}">
+                    <img src="{{ block.settings.image | image_url: width: 88 }}" width="44" height="44" loading="lazy" class="lc-pillav" alt="{{ block.settings.name | escape }}">
                   {%- elsif block.settings.fallback_image != 'none' -%}
-                    <img src="{{ block.settings.fallback_image | append: '.jpg' | asset_url }}" class="lc-pillav" alt="{{ block.settings.name | escape }}">
+                    <img src="{{ block.settings.fallback_image | append: '.jpg' | asset_url }}" width="44" height="44" loading="lazy" class="lc-pillav" alt="{{ block.settings.name | escape }}">
                   {%- endif -%}
                   <div><div class="lc-fw6 lc-fs13">{{ block.settings.name }}</div><div class="lc-stars lc-fs12">★★★★★</div></div>
                 </div>
