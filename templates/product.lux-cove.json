@@ -1,63 +1,182 @@
 {
   "sections": {
-    "lc_announcement": {
-      "type": "lux-cove-announcement",
-      "settings": { "enabled": true, "speed": 32 },
-      "blocks": {
-        "a1": { "type": "item", "settings": { "text": "Summer Sale" } },
-        "a2": { "type": "item", "settings": { "text": "40% Off Sitewide" } },
-        "a3": { "type": "item", "settings": { "text": "Free Shipping" } },
-        "a4": { "type": "item", "settings": { "text": "150,000+ Happy Customers" } }
-      },
-      "block_order": ["a1", "a2", "a3", "a4"]
-    },
-    "lc_header": {
-      "type": "lux-cove-header",
-      "settings": { "logo_text": "LUX COVE" }
-    },
-    "lc_hero": {
-      "type": "lux-cove-hero",
+    "lc_style": {
+      "type": "lux-cove-style",
       "settings": {
-        "eyebrow": "★ Bestseller · 150,000+ Sold",
-        "show_rating": true,
-        "rating_value": "4.8",
-        "stock_text": "In Stock · Ships Free Today",
-        "review_name": "Eleanor T.",
-        "review_quote": "I've tried every eye cream out there, but this is the only thing that actually made a difference. My dark circles have faded so much. This is now a staple in my routine!"
+        "template_suffix": "lux-cove",
+        "color_background": "#fbf7f3",
+        "color_foreground": "#2a2320",
+        "color_accent": "#a85566",
+        "color_pink": "#f6e3e5",
+        "color_border": "#e6dcce"
+      }
+    },
+    "main": {
+      "type": "product-information",
+      "settings": {
+        "content_width": "content-center-aligned",
+        "desktop_media_position": "left",
+        "gap": 48,
+        "enable_sticky_add_to_cart": true,
+        "background_color": "#fbf7f3"
       },
       "blocks": {
-        "b1": { "type": "benefit", "settings": { "text": "Erase dark circles" } },
-        "b2": { "type": "benefit", "settings": { "text": "Firm sagging under-eye bags" } },
-        "b3": { "type": "benefit", "settings": { "text": "Get rid of under-eye wrinkles" } },
-        "b4": { "type": "benefit", "settings": { "text": "Smooth out crow's feet" } },
-        "b5": { "type": "benefit", "settings": { "text": "Clinically proven" } },
-        "b6": { "type": "benefit", "settings": { "text": "Dermatologist approved" } },
-        "t1": { "type": "trust", "settings": { "icon": "shield", "label": "90-Day Money-Back" } },
-        "t2": { "type": "trust", "settings": { "icon": "truck", "label": "Free Shipping" } },
-        "t3": { "type": "trust", "settings": { "icon": "star", "label": "1 Year Warranty" } },
-        "ac1": {
-          "type": "accordion",
+        "media-gallery": {
+          "type": "_product-media-gallery",
+          "static": true,
           "settings": {
-            "title": "Product details",
-            "body": "The Lux Cove Red Light Under-Eye Glasses are your at-home solution for youthful, refreshed eyes, without surgery, injections, or ineffective creams.\nPowered by Red Light Therapy & Microcurrent Technology, they stimulate collagen, reduce inflammation, and visibly diminish dark circles, puffiness, and fine lines in just 10 minutes a day.\n• Hands-Free & Effortless – Wear while you relax or multitask.\n• Safe for All Skin Types – Clinically tested, non-invasive, and pain-free.\n• Clinically-Proven Results – Noticeable improvements in as little as 2 weeks."
-          }
+            "media_presentation": "grid",
+            "media_columns": "two",
+            "thumbnail_position": "right",
+            "media_fit": "contain",
+            "zoom": true
+          },
+          "blocks": {}
         },
-        "ac2": {
-          "type": "accordion",
-          "settings": {
-            "title": "Guarantee & warranty",
-            "body": "We offer 90-day returns and a 1-year warranty on all purchases. So go ahead, try it out, and if you're dissatisfied for any reason we'll refund you in full."
-          }
-        },
-        "ac3": {
-          "type": "accordion",
-          "settings": {
-            "title": "Shipping & returns",
-            "body": "United Kingdom: Express Tracked Shipping (3 - 5 Working Days) - FREE\nEU: Express Tracked Shipping (3 - 7 Working Days) - FREE\nUnited States: Express Tracked Shipping (3 - 7 Working Days) - FREE\nRest Of The World: Express Tracked Shipping (3 - 7 Working Days) - FREE"
-          }
+        "product-details": {
+          "type": "_product-details",
+          "static": true,
+          "settings": { "gap": 24 },
+          "blocks": {
+            "header": {
+              "type": "group",
+              "name": "Header",
+              "settings": { "content_direction": "column", "gap": 10 },
+              "blocks": {
+                "eyebrow": {
+                  "type": "text",
+                  "settings": {
+                    "text": "<div class=\"lc-eyebrow\">★ Bestseller · 150,000+ Sold</div><div class=\"lc-fx lc-ac lc-gap8 lc-fs13\" style=\"margin-top:8px\"><span class=\"lc-stars\">★★★★★</span><span style=\"color:#6a5f54\">4.8 / 5</span></div>",
+                    "type_preset": "paragraph"
+                  },
+                  "blocks": {}
+                },
+                "title": {
+                  "type": "text",
+                  "name": "Product title",
+                  "settings": {
+                    "text": "<h1>{{ closest.product.title }}</h1>",
+                    "type_preset": "h2"
+                  },
+                  "blocks": {}
+                },
+                "price": {
+                  "type": "price",
+                  "settings": { "show_sale_price_first": true },
+                  "blocks": {}
+                },
+                "stock": {
+                  "type": "text",
+                  "settings": {
+                    "text": "<div class=\"lc-instock\" style=\"color:#2f9c56;font-size:10.5px;font-weight:600;letter-spacing:.14em;display:flex;align-items:center;gap:7px;text-transform:uppercase\"><span style=\"width:7px;height:7px;border-radius:50%;background:#2f9c56;display:inline-block\"></span>In Stock · Ships Free Today</div>",
+                    "type_preset": "paragraph"
+                  },
+                  "blocks": {}
+                }
+              },
+              "block_order": ["eyebrow", "title", "price", "stock"]
+            },
+            "divider1": {
+              "type": "_divider",
+              "settings": { "thickness": 1 },
+              "blocks": {}
+            },
+            "benefits": {
+              "type": "text",
+              "name": "Benefits",
+              "settings": {
+                "text": "<ul><li>Erase dark circles</li><li>Firm sagging under-eye bags</li><li>Get rid of under-eye wrinkles</li><li>Smooth out crow's feet</li><li>Clinically proven</li><li>Dermatologist approved</li></ul>",
+                "type_preset": "rte"
+              },
+              "blocks": {}
+            },
+            "variant_picker": {
+              "type": "variant-picker",
+              "settings": { "variant_style": "buttons" },
+              "blocks": {}
+            },
+            "buy_buttons": {
+              "type": "buy-buttons",
+              "settings": { "stacking": true, "show_pickup_availability": false, "gift_card_form": true },
+              "blocks": {
+                "quantity": { "type": "quantity", "static": true, "settings": {}, "blocks": {} },
+                "add-to-cart": { "type": "add-to-cart", "static": true, "settings": {}, "blocks": {} },
+                "accelerated-checkout": { "type": "accelerated-checkout", "static": true, "settings": {}, "blocks": {} }
+              },
+              "block_order": []
+            },
+            "trust_row": {
+              "type": "text",
+              "name": "Trust badges",
+              "settings": {
+                "text": "<div style=\"display:flex;gap:8px;margin-top:6px;text-align:center;font-size:10px;color:#5a4f45\"><div style=\"flex:1\">90-Day Money-Back</div><div style=\"flex:1\">Free Shipping</div><div style=\"flex:1\">1 Year Warranty</div></div>",
+                "type_preset": "paragraph"
+              },
+              "blocks": {}
+            },
+            "accordion1": {
+              "type": "accordion",
+              "name": "Details accordion",
+              "settings": { "icon": "caret", "dividers": true },
+              "blocks": {
+                "row1": {
+                  "type": "_accordion-row",
+                  "settings": { "heading": "Product details" },
+                  "blocks": {
+                    "body": {
+                      "type": "text",
+                      "settings": {
+                        "text": "<p>The Lux Cove Red Light Under-Eye Glasses are your at-home solution for youthful, refreshed eyes, without surgery, injections, or ineffective creams. Powered by Red Light Therapy &amp; Microcurrent Technology, they stimulate collagen, reduce inflammation, and visibly diminish dark circles, puffiness, and fine lines in just 10 minutes a day.</p><ul><li>Hands-Free &amp; Effortless – wear while you relax or multitask</li><li>Safe for All Skin Types – clinically tested, non-invasive, and pain-free</li><li>Clinically-Proven Results – noticeable improvements in as little as 2 weeks</li></ul>",
+                        "type_preset": "rte"
+                      },
+                      "blocks": {}
+                    }
+                  },
+                  "block_order": ["body"]
+                },
+                "row2": {
+                  "type": "_accordion-row",
+                  "settings": { "heading": "Guarantee & warranty" },
+                  "blocks": {
+                    "body": {
+                      "type": "text",
+                      "settings": {
+                        "text": "<p>We offer 90-day returns and a 1-year warranty on all purchases. So go ahead, try it out, and if you're dissatisfied for any reason we'll refund you in full.</p>",
+                        "type_preset": "rte"
+                      },
+                      "blocks": {}
+                    }
+                  },
+                  "block_order": ["body"]
+                },
+                "row3": {
+                  "type": "_accordion-row",
+                  "settings": { "heading": "Shipping & returns" },
+                  "blocks": {
+                    "body": {
+                      "type": "text",
+                      "settings": {
+                        "text": "<p>United Kingdom: Express Tracked Shipping (3 - 5 Working Days) - FREE<br>EU: Express Tracked Shipping (3 - 7 Working Days) - FREE<br>United States: Express Tracked Shipping (3 - 7 Working Days) - FREE<br>Rest Of The World: Express Tracked Shipping (3 - 7 Working Days) - FREE</p>",
+                        "type_preset": "rte"
+                      },
+                      "blocks": {}
+                    }
+                  },
+                  "block_order": ["body"]
+                }
+              },
+              "block_order": ["row1", "row2", "row3"]
+            },
+            "description": {
+              "type": "product-description",
+              "settings": {},
+              "blocks": {}
+            }
+          },
+          "block_order": ["header", "divider1", "benefits", "variant_picker", "buy_buttons", "trust_row", "accordion1", "description"]
         }
       },
-      "block_order": ["b1", "b2", "b3", "b4", "b5", "b6", "t1", "t2", "t3", "ac1", "ac2", "ac3"]
+      "block_order": []
     },
     "lc_marquee": {
       "type": "lux-cove-testimonial-marquee",
@@ -66,14 +185,14 @@
         "heading": "Customers Love Their Red Light Glasses"
       },
       "blocks": {
-        "r1": { "type": "testimonial_row1", "settings": { "name": "Violet M.", "quote": "After two weeks, my dark circles are much brighter! I feel more awake without heavy concealer." } },
-        "r2": { "type": "testimonial_row1", "settings": { "name": "Valerie O.", "quote": "My fine lines have softened and my under-eyes feel firmer. I look younger without expensive treatments!" } },
-        "r3": { "type": "testimonial_row1", "settings": { "name": "Sarah B.", "quote": "So easy to use! I can relax or multitask while the glasses work their magic in 10 minutes a day." } },
-        "r4": { "type": "testimonial_row1", "settings": { "name": "Jenna W.", "quote": "Finally, an affordable solution that works! Reduced my dark circles without breaking the bank." } },
-        "r5": { "type": "testimonial_row2", "settings": { "name": "Lucy G.", "quote": "I saw a difference in just a week! My dark circles are lighter and my skin looks refreshed." } },
-        "r6": { "type": "testimonial_row2", "settings": { "name": "Megan D.", "quote": "Feels like a spa treatment! The red light is so relaxing and I love that I can unwind." } },
-        "r7": { "type": "testimonial_row2", "settings": { "name": "Nina L.", "quote": "Perfect for my daily routine. I use them while reading and my skin feels rejuvenated." } },
-        "r8": { "type": "testimonial_row2", "settings": { "name": "Sammy O.", "quote": "In two weeks, my under-eye bags and fine lines have improved. I feel so much more confident!" } }
+        "r1": { "type": "testimonial_row1", "settings": { "fallback_image": "lc-av1", "name": "Violet M.", "quote": "After two weeks, my dark circles are much brighter! I feel more awake without heavy concealer." } },
+        "r2": { "type": "testimonial_row1", "settings": { "fallback_image": "lc-av2", "name": "Valerie O.", "quote": "My fine lines have softened and my under-eyes feel firmer. I look younger without expensive treatments!" } },
+        "r3": { "type": "testimonial_row1", "settings": { "fallback_image": "lc-av3", "name": "Sarah B.", "quote": "So easy to use! I can relax or multitask while the glasses work their magic in 10 minutes a day." } },
+        "r4": { "type": "testimonial_row1", "settings": { "fallback_image": "lc-av4", "name": "Jenna W.", "quote": "Finally, an affordable solution that works! Reduced my dark circles without breaking the bank." } },
+        "r5": { "type": "testimonial_row2", "settings": { "fallback_image": "lc-av5", "name": "Lucy G.", "quote": "I saw a difference in just a week! My dark circles are lighter and my skin looks refreshed." } },
+        "r6": { "type": "testimonial_row2", "settings": { "fallback_image": "lc-av6", "name": "Megan D.", "quote": "Feels like a spa treatment! The red light is so relaxing and I love that I can unwind." } },
+        "r7": { "type": "testimonial_row2", "settings": { "fallback_image": "lc-av7", "name": "Nina L.", "quote": "Perfect for my daily routine. I use them while reading and my skin feels rejuvenated." } },
+        "r8": { "type": "testimonial_row2", "settings": { "fallback_image": "lc-av8", "name": "Sammy O.", "quote": "In two weeks, my under-eye bags and fine lines have improved. I feel so much more confident!" } }
       },
       "block_order": ["r1", "r2", "r3", "r4", "r5", "r6", "r7", "r8"]
     },
@@ -86,10 +205,10 @@
         "speed": 38
       },
       "blocks": {
-        "v1": { "type": "video", "settings": {} },
-        "v2": { "type": "video", "settings": {} },
-        "v3": { "type": "video", "settings": {} },
-        "v4": { "type": "video", "settings": {} }
+        "v1": { "type": "showcase_video", "settings": {} },
+        "v2": { "type": "showcase_video", "settings": {} },
+        "v3": { "type": "showcase_video", "settings": {} },
+        "v4": { "type": "showcase_video", "settings": {} }
       },
       "block_order": ["v1", "v2", "v3", "v4"]
     },
@@ -349,35 +468,51 @@
         "rb3": { "type": "rating_bar", "settings": { "stars": "★★★☆☆", "percent": 2, "count": "13" } },
         "rb4": { "type": "rating_bar", "settings": { "stars": "★★☆☆☆", "percent": 2, "count": "11" } },
         "rb5": { "type": "rating_bar", "settings": { "stars": "★☆☆☆☆", "percent": 2, "count": "15" } },
-        "rv1": { "type": "review", "settings": { "name": "Anne-Marie", "date": "22/01/2026", "text": "Too early to see result as it takes a while, but is easy to use and I definitely feel it doing something." } },
-        "rv2": { "type": "review", "settings": { "name": "Sarah", "date": "09/10/2025", "text": "Amazing. Noticed a difference after a couple of uses." } },
-        "rv3": { "type": "review", "settings": { "name": "Pat Omeara", "date": "28/09/2025", "title": "Love these!!", "text": "So easy and comfortable to use. Just 10 minutes a day and already I can see a difference. Would definitely recommend." } },
-        "rv4": { "type": "review", "settings": { "name": "Karly Brierley", "date": "14/09/2025", "title": "Review", "text": "Really see a difference using the glasses, love them." } },
-        "rv5": { "type": "review", "settings": { "name": "Elise", "date": "02/09/2025", "title": "Spa Treatment at Home!", "text": "Such a great investment. No more spending on expensive eye creams that do nothing!" } }
+        "rv1": { "type": "customer_review", "settings": { "name": "Anne-Marie", "date": "22/01/2026", "text": "Too early to see result as it takes a while, but is easy to use and I definitely feel it doing something." } },
+        "rv2": { "type": "customer_review", "settings": { "name": "Sarah", "date": "09/10/2025", "text": "Amazing. Noticed a difference after a couple of uses." } },
+        "rv3": { "type": "customer_review", "settings": { "name": "Pat Omeara", "date": "28/09/2025", "title": "Love these!!", "text": "So easy and comfortable to use. Just 10 minutes a day and already I can see a difference. Would definitely recommend." } },
+        "rv4": { "type": "customer_review", "settings": { "name": "Karly Brierley", "date": "14/09/2025", "title": "Review", "text": "Really see a difference using the glasses, love them." } },
+        "rv5": { "type": "customer_review", "settings": { "name": "Elise", "date": "02/09/2025", "title": "Spa Treatment at Home!", "text": "Such a great investment. No more spending on expensive eye creams that do nothing!" } }
       },
       "block_order": ["rb1", "rb2", "rb3", "rb4", "rb5", "rv1", "rv2", "rv3", "rv4", "rv5"]
     },
-    "lc_footer": {
-      "type": "lux-cove-footer",
-      "settings": {
-        "logo_text": "LUX COVE",
-        "newsletter_heading": "Join the Lux Cove family",
-        "copyright": "© 2026 Lux Cove · Powered by Shopify"
-      },
+    "product_recommendations": {
+      "type": "product-recommendations",
       "blocks": {
-        "l1": { "type": "link", "settings": { "label": "Refund policy" } },
-        "l2": { "type": "link", "settings": { "label": "Privacy" } },
-        "l3": { "type": "link", "settings": { "label": "Terms" } },
-        "l4": { "type": "link", "settings": { "label": "Shipping" } },
-        "l5": { "type": "link", "settings": { "label": "Contact" } }
+        "heading": {
+          "type": "text",
+          "settings": { "text": "<h3>You may also like</h3>", "type_preset": "h4" },
+          "blocks": {}
+        },
+        "static-product-card": {
+          "type": "_product-card",
+          "static": true,
+          "settings": {},
+          "blocks": {
+            "product_card_gallery": { "type": "_product-card-gallery", "settings": {}, "blocks": {} },
+            "product_title": { "type": "product-title", "settings": {}, "blocks": {} },
+            "price": { "type": "price", "settings": {}, "blocks": {} }
+          },
+          "block_order": ["product_card_gallery", "product_title", "price"]
+        }
       },
-      "block_order": ["l1", "l2", "l3", "l4", "l5"]
+      "block_order": ["heading"],
+      "settings": {
+        "product": "{{ closest.product }}",
+        "recommendation_type": "related",
+        "layout_type": "grid",
+        "max_products": 4,
+        "columns": 4,
+        "mobile_columns": "2",
+        "background_color": "#fbf7f3",
+        "padding-block-start": 48,
+        "padding-block-end": 48
+      }
     }
   },
   "order": [
-    "lc_announcement",
-    "lc_header",
-    "lc_hero",
+    "lc_style",
+    "main",
     "lc_marquee",
     "lc_inspired",
     "lc_results30",
@@ -397,6 +532,6 @@
     "lc_howtouse",
     "lc_faq",
     "lc_reviews",
-    "lc_footer"
+    "product_recommendations"
   ]
 }

@@ -1,0 +1,89 @@
+{%- doc -%}
+  Scopes the Lux Cove look (fonts + palette) to just this product's alternate
+  template, by overriding the theme's own CSS custom properties underneath
+  `main[data-template="product.{{ template_suffix }}"]`. Nothing here touches
+  global theme settings, so every other product/page keeps using the
+  merchant's normal theme styling. Place this section first in the template.
+{%- enddoc -%}
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link
+  href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Jost:wght@300;400;500;600;700&display=swap"
+  rel="stylesheet"
+>
+{{ 'lux-cove.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'lux-cove.js' | asset_url }}" defer="defer"></script>
+
+{% style %}
+  main[data-template="product.{{ section.settings.template_suffix }}"] {
+    --font-body--family: 'Jost', sans-serif;
+    --font-subheading--family: 'Cormorant Garamond', serif;
+    --font-heading--family: 'Cormorant Garamond', serif;
+
+    --color-background: {{ section.settings.color_background }};
+    --color-background-rgb: {{ section.settings.color_background.red }}, {{ section.settings.color_background.green }}, {{ section.settings.color_background.blue }};
+    --color-foreground: {{ section.settings.color_foreground }};
+    --color-foreground-rgb: {{ section.settings.color_foreground.red }}, {{ section.settings.color_foreground.green }}, {{ section.settings.color_foreground.blue }};
+    --color-foreground-subdued: {{ section.settings.color_foreground }}99;
+    --color-foreground-muted: {{ section.settings.color_foreground }}66;
+    --color-border: {{ section.settings.color_border }};
+    --color-border-rgb: {{ section.settings.color_border.red }}, {{ section.settings.color_border.green }}, {{ section.settings.color_border.blue }};
+
+    --color-primary-button-background: {{ section.settings.color_foreground }};
+    --color-primary-button-text: {{ section.settings.color_background }};
+    --color-primary-button-border: {{ section.settings.color_foreground }};
+    --color-primary-button-hover-background: {{ section.settings.color_accent }};
+    --color-primary-button-hover-text: {{ section.settings.color_background }};
+    --color-primary-button-hover-border: {{ section.settings.color_accent }};
+    --color-primary-button-focus-outline: {{ section.settings.color_accent }};
+
+    --color-secondary-button-background: transparent;
+    --color-secondary-button-text: {{ section.settings.color_foreground }};
+    --color-secondary-button-border: {{ section.settings.color_foreground }};
+    --color-secondary-button-hover-background: {{ section.settings.color_foreground }};
+    --color-secondary-button-hover-text: {{ section.settings.color_background }};
+    --color-secondary-button-hover-border: {{ section.settings.color_foreground }};
+
+    --color-variant-background: {{ section.settings.color_background }};
+    --color-variant-border: {{ section.settings.color_border }};
+    --color-variant-text: {{ section.settings.color_foreground }};
+    --color-variant-hover-background: {{ section.settings.color_pink }};
+    --color-variant-hover-border: {{ section.settings.color_accent }};
+    --color-variant-hover-text: {{ section.settings.color_foreground }};
+
+    --color-selected-variant-background: {{ section.settings.color_foreground }};
+    --color-selected-variant-border: {{ section.settings.color_foreground }};
+    --color-selected-variant-text: {{ section.settings.color_background }};
+    --color-selected-variant-hover-background: {{ section.settings.color_accent }};
+    --color-selected-variant-hover-border: {{ section.settings.color_accent }};
+    --color-selected-variant-hover-text: {{ section.settings.color_background }};
+
+    --color-input-background: {{ section.settings.color_background }};
+    --color-input-border: {{ section.settings.color_border }};
+    --color-input-text: {{ section.settings.color_foreground }};
+
+    background: {{ section.settings.color_background }};
+  }
+{% endstyle %}
+
+{% schema %}
+{
+  "name": "Lux Cove: Style override",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Loads the Lux Cove fonts/palette and scopes them to this product's alternate template only. Place this section first in the template. It renders no visible markup of its own."
+    },
+    { "type": "text", "id": "template_suffix", "label": "Template suffix", "info": "Must match the alternate template filename, e.g. product.lux-cove.json → \"lux-cove\".", "default": "lux-cove" },
+    { "type": "color", "id": "color_background", "label": "Background (cream)", "default": "#fbf7f3" },
+    { "type": "color", "id": "color_foreground", "label": "Foreground / buttons (charcoal)", "default": "#2a2320" },
+    { "type": "color", "id": "color_accent", "label": "Accent hover (rose)", "default": "#a85566" },
+    { "type": "color", "id": "color_pink", "label": "Pink tint", "default": "#f6e3e5" },
+    { "type": "color", "id": "color_border", "label": "Border", "default": "#e6dcce" }
+  ],
+  "presets": [
+    { "name": "Lux Cove: Style override" }
+  ]
+}
+{% endschema %}

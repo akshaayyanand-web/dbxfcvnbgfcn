@@ -20,6 +20,8 @@
                 <div class="lc-fx lc-ac lc-gap10">
                   {%- if block.settings.image != blank -%}
                     <img src="{{ block.settings.image | image_url: width: 100 }}" class="lc-pillav" alt="{{ block.settings.name | escape }}">
+                  {%- elsif block.settings.fallback_image != 'none' -%}
+                    <img src="{{ block.settings.fallback_image | append: '.jpg' | asset_url }}" class="lc-pillav" alt="{{ block.settings.name | escape }}">
                   {%- endif -%}
                   <div><div class="lc-fw6 lc-fs13">{{ block.settings.name }}</div><div class="lc-stars lc-fs12">★★★★★</div></div>
                 </div>
@@ -40,6 +42,8 @@
                 <div class="lc-fx lc-ac lc-gap10">
                   {%- if block.settings.image != blank -%}
                     <img src="{{ block.settings.image | image_url: width: 100 }}" class="lc-pillav" alt="{{ block.settings.name | escape }}">
+                  {%- elsif block.settings.fallback_image != 'none' -%}
+                    <img src="{{ block.settings.fallback_image | append: '.jpg' | asset_url }}" class="lc-pillav" alt="{{ block.settings.name | escape }}">
                   {%- endif -%}
                   <div><div class="lc-fw6 lc-fs13">{{ block.settings.name }}</div><div class="lc-stars lc-fs12">★★★★★</div></div>
                 </div>
@@ -66,6 +70,17 @@
       "name": "Testimonial (row 1)",
       "settings": [
         { "type": "image_picker", "id": "image", "label": "Photo" },
+        { "type": "select", "id": "fallback_image", "label": "Placeholder photo (used until you pick one above)", "options": [
+          { "value": "none", "label": "None" },
+          { "value": "lc-av1", "label": "Avatar 1" },
+          { "value": "lc-av2", "label": "Avatar 2" },
+          { "value": "lc-av3", "label": "Avatar 3" },
+          { "value": "lc-av4", "label": "Avatar 4" },
+          { "value": "lc-av5", "label": "Avatar 5" },
+          { "value": "lc-av6", "label": "Avatar 6" },
+          { "value": "lc-av7", "label": "Avatar 7" },
+          { "value": "lc-av8", "label": "Avatar 8" }
+        ], "default": "none" },
         { "type": "text", "id": "name", "label": "Name", "default": "Violet M." },
         { "type": "textarea", "id": "quote", "label": "Quote", "default": "After two weeks, my dark circles are much brighter!" }
       ]
@@ -75,6 +90,17 @@
       "name": "Testimonial (row 2)",
       "settings": [
         { "type": "image_picker", "id": "image", "label": "Photo" },
+        { "type": "select", "id": "fallback_image", "label": "Placeholder photo (used until you pick one above)", "options": [
+          { "value": "none", "label": "None" },
+          { "value": "lc-av1", "label": "Avatar 1" },
+          { "value": "lc-av2", "label": "Avatar 2" },
+          { "value": "lc-av3", "label": "Avatar 3" },
+          { "value": "lc-av4", "label": "Avatar 4" },
+          { "value": "lc-av5", "label": "Avatar 5" },
+          { "value": "lc-av6", "label": "Avatar 6" },
+          { "value": "lc-av7", "label": "Avatar 7" },
+          { "value": "lc-av8", "label": "Avatar 8" }
+        ], "default": "none" },
         { "type": "text", "id": "name", "label": "Name", "default": "Lucy G." },
         { "type": "textarea", "id": "quote", "label": "Quote", "default": "I saw a difference in just a week!" }
       ]
@@ -84,14 +110,14 @@
     {
       "name": "Lux Cove: Testimonial marquee",
       "blocks": [
-        { "type": "testimonial_row1", "settings": { "name": "Violet M.", "quote": "After two weeks, my dark circles are much brighter! I feel more awake without heavy concealer." } },
-        { "type": "testimonial_row1", "settings": { "name": "Valerie O.", "quote": "My fine lines have softened and my under-eyes feel firmer. I look younger without expensive treatments!" } },
-        { "type": "testimonial_row1", "settings": { "name": "Sarah B.", "quote": "So easy to use! I can relax or multitask while the glasses work their magic in 10 minutes a day." } },
-        { "type": "testimonial_row1", "settings": { "name": "Jenna W.", "quote": "Finally, an affordable solution that works! Reduced my dark circles without breaking the bank." } },
-        { "type": "testimonial_row2", "settings": { "name": "Lucy G.", "quote": "I saw a difference in just a week! My dark circles are lighter and my skin looks refreshed." } },
-        { "type": "testimonial_row2", "settings": { "name": "Megan D.", "quote": "Feels like a spa treatment! The red light is so relaxing and I love that I can unwind." } },
-        { "type": "testimonial_row2", "settings": { "name": "Nina L.", "quote": "Perfect for my daily routine. I use them while reading and my skin feels rejuvenated." } },
-        { "type": "testimonial_row2", "settings": { "name": "Sammy O.", "quote": "In two weeks, my under-eye bags and fine lines have improved. I feel so much more confident!" } }
+        { "type": "testimonial_row1", "settings": { "fallback_image": "lc-av1", "name": "Violet M.", "quote": "After two weeks, my dark circles are much brighter! I feel more awake without heavy concealer." } },
+        { "type": "testimonial_row1", "settings": { "fallback_image": "lc-av2", "name": "Valerie O.", "quote": "My fine lines have softened and my under-eyes feel firmer. I look younger without expensive treatments!" } },
+        { "type": "testimonial_row1", "settings": { "fallback_image": "lc-av3", "name": "Sarah B.", "quote": "So easy to use! I can relax or multitask while the glasses work their magic in 10 minutes a day." } },
+        { "type": "testimonial_row1", "settings": { "fallback_image": "lc-av4", "name": "Jenna W.", "quote": "Finally, an affordable solution that works! Reduced my dark circles without breaking the bank." } },
+        { "type": "testimonial_row2", "settings": { "fallback_image": "lc-av5", "name": "Lucy G.", "quote": "I saw a difference in just a week! My dark circles are lighter and my skin looks refreshed." } },
+        { "type": "testimonial_row2", "settings": { "fallback_image": "lc-av6", "name": "Megan D.", "quote": "Feels like a spa treatment! The red light is so relaxing and I love that I can unwind." } },
+        { "type": "testimonial_row2", "settings": { "fallback_image": "lc-av7", "name": "Nina L.", "quote": "Perfect for my daily routine. I use them while reading and my skin feels rejuvenated." } },
+        { "type": "testimonial_row2", "settings": { "fallback_image": "lc-av8", "name": "Sammy O.", "quote": "In two weeks, my under-eye bags and fine lines have improved. I feel so much more confident!" } }
       ]
     }
   ]

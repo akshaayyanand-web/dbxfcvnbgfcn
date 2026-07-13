@@ -1,7 +1,7 @@
 {{ 'lux-cove.css' | asset_url | stylesheet_tag }}
 {%- liquid
   assign bars = section.blocks | where: 'type', 'rating_bar'
-  assign reviews = section.blocks | where: 'type', 'review'
+  assign reviews = section.blocks | where: 'type', 'customer_review'
 -%}
 <div class="lc-page">
   <section class="lc-sec" data-screen-label="Customer Reviews">
@@ -77,7 +77,7 @@
       ]
     },
     {
-      "type": "review",
+      "type": "customer_review",
       "name": "Review",
       "settings": [
         { "type": "text", "id": "name", "label": "Name", "default": "Sarah" },
@@ -96,11 +96,11 @@
         { "type": "rating_bar", "settings": { "stars": "★★★☆☆", "percent": 2, "count": "13" } },
         { "type": "rating_bar", "settings": { "stars": "★★☆☆☆", "percent": 2, "count": "11" } },
         { "type": "rating_bar", "settings": { "stars": "★☆☆☆☆", "percent": 2, "count": "15" } },
-        { "type": "review", "settings": { "name": "Anne-Marie", "date": "22/01/2026", "text": "Too early to see result as it takes a while, but is easy to use and I definitely feel it doing something." } },
-        { "type": "review", "settings": { "name": "Sarah", "date": "09/10/2025", "text": "Amazing. Noticed a difference after a couple of uses." } },
-        { "type": "review", "settings": { "name": "Pat Omeara", "date": "28/09/2025", "title": "Love these!!", "text": "So easy and comfortable to use. Just 10 minutes a day and already I can see a difference. Would definitely recommend." } },
-        { "type": "review", "settings": { "name": "Karly Brierley", "date": "14/09/2025", "title": "Review", "text": "Really see a difference using the glasses, love them." } },
-        { "type": "review", "settings": { "name": "Elise", "date": "02/09/2025", "title": "Spa Treatment at Home!", "text": "Such a great investment. No more spending on expensive eye creams that do nothing!" } }
+        { "type": "customer_review", "settings": { "name": "Anne-Marie", "date": "22/01/2026", "text": "Too early to see result as it takes a while, but is easy to use and I definitely feel it doing something." } },
+        { "type": "customer_review", "settings": { "name": "Sarah", "date": "09/10/2025", "text": "Amazing. Noticed a difference after a couple of uses." } },
+        { "type": "customer_review", "settings": { "name": "Pat Omeara", "date": "28/09/2025", "title": "Love these!!", "text": "So easy and comfortable to use. Just 10 minutes a day and already I can see a difference. Would definitely recommend." } },
+        { "type": "customer_review", "settings": { "name": "Karly Brierley", "date": "14/09/2025", "title": "Review", "text": "Really see a difference using the glasses, love them." } },
+        { "type": "customer_review", "settings": { "name": "Elise", "date": "02/09/2025", "title": "Spa Treatment at Home!", "text": "Such a great investment. No more spending on expensive eye creams that do nothing!" } }
       ]
     }
   ]

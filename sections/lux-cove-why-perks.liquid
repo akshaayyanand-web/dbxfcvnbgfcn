@@ -6,7 +6,7 @@
       <h2 class="lc-sec-t">{{ section.settings.heading }}</h2>
       <span class="lc-rule"></span>
     </div>
-    <div class="lc-grid" style="grid-template-columns:1fr 1fr;gap:14px">
+    <div class="lc-perkgrid">
       {%- for block in section.blocks -%}
         <div class="lc-perkcard" {{ block.shopify_attributes }}>
           <span class="lc-perknum">{{ block.settings.number }}</span>
