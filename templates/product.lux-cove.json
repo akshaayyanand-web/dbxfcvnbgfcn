@@ -251,7 +251,6 @@
       "type": "lux-cove-loop-showcase",
       "settings": {
         "pinkbg": true,
-        "show_names": false,
         "eyebrow": "Before & after",
         "heading": "Real Customers, Real Results",
         "speed": 52
@@ -267,7 +266,6 @@
       "type": "lux-cove-loop-showcase",
       "settings": {
         "pinkbg": false,
-        "show_names": true,
         "eyebrow": "100,000+ five-star reviews",
         "heading": "Happy Customers",
         "speed": 52
