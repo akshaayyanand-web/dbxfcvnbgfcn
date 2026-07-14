@@ -13,12 +13,14 @@
             <div class="lc-loopcard" {{ block.shopify_attributes }}>
               {%- if block.settings.image != blank -%}
                 <img src="{{ block.settings.image | image_url: width: 700 }}" alt="{{ block.settings.name | default: 'Customer result' | escape }}">
+              {%- elsif block.settings.external_image_url != blank -%}
+                <img src="{{ block.settings.external_image_url }}" alt="{{ block.settings.name | default: 'Customer result' | escape }}">
               {%- elsif block.settings.fallback_image != 'none' -%}
                 <img src="{{ block.settings.fallback_image | append: '.jpg' | asset_url }}" alt="{{ block.settings.name | default: 'Customer result' | escape }}">
               {%- endif -%}
               <div class="lc-ystars lc-mt12 lc-tc">★★★★★</div>
               <p class="lc-quote">"{{ block.settings.quote }}"</p>
-              {%- if section.settings.show_names and block.settings.name != blank -%}
+              {%- if block.settings.name != blank -%}
                 <div class="lc-fw6 lc-tc lc-mt12">— {{ block.settings.name }}</div>
               {%- endif -%}
             </div>
@@ -39,7 +41,6 @@
   "name": "Lux Cove: Loop showcase",
   "settings": [
     { "type": "checkbox", "id": "pinkbg", "label": "Pink background", "default": false },
-    { "type": "checkbox", "id": "show_names", "label": "Show customer names", "default": false },
     { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Before & after" },
     { "type": "text", "id": "heading", "label": "Heading", "default": "Real Customers, Real Results" },
     { "type": "range", "id": "speed", "label": "Scroll speed (seconds)", "min": 20, "max": 90, "step": 1, "default": 52 }
@@ -50,7 +51,8 @@
       "name": "Card",
       "settings": [
         { "type": "image_picker", "id": "image", "label": "Image" },
-        { "type": "select", "id": "fallback_image", "label": "Placeholder image (used until you pick one above)", "options": [
+        { "type": "url", "id": "external_image_url", "label": "External image URL (used until you pick one above)" },
+        { "type": "select", "id": "fallback_image", "label": "Placeholder image (used until neither of the above is set)", "options": [
           { "value": "none", "label": "None" },
           { "value": "lc-ba1", "label": "Before/after 1" },
           { "value": "lc-ba2", "label": "Before/after 2" },

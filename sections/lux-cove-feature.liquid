@@ -7,6 +7,8 @@
       <p class="lc-bodytxt" style="margin-bottom:24px">{{ section.settings.text }}</p>
       {%- if section.settings.image != blank -%}
         <img src="{{ section.settings.image | image_url: width: 900 }}" class="lc-featimg" alt="{{ section.settings.title | escape }}">
+      {%- elsif section.settings.external_image_url != blank -%}
+        <img src="{{ section.settings.external_image_url }}" class="lc-featimg" alt="{{ section.settings.title | escape }}">
       {%- elsif section.settings.fallback_image != 'none' -%}
         <img src="{{ section.settings.fallback_image | append: '.jpg' | asset_url }}" class="lc-featimg" alt="{{ section.settings.title | escape }}">
       {%- endif -%}
@@ -23,7 +25,8 @@
     { "type": "text", "id": "title", "label": "Title", "default": "Smooth Under-Eye Wrinkles" },
     { "type": "textarea", "id": "text", "label": "Body text", "default": "Our Red Light Therapy boosts collagen production, smoothing out wrinkles and improving skin elasticity." },
     { "type": "image_picker", "id": "image", "label": "Image" },
-    { "type": "select", "id": "fallback_image", "label": "Placeholder image (used until you pick one above)", "options": [
+    { "type": "url", "id": "external_image_url", "label": "External image URL (used until you pick one above)" },
+    { "type": "select", "id": "fallback_image", "label": "Placeholder image (used until neither of the above is set)", "options": [
       { "value": "none", "label": "None" },
       { "value": "lc-smooth", "label": "Smooth wrinkles" },
       { "value": "lc-brighten", "label": "Brighten dark circles" },

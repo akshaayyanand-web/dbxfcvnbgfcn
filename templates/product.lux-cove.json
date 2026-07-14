@@ -94,7 +94,7 @@
       "settings": {
         "eyebrow": "★ Bestseller · 150,000+ Sold",
         "show_rating": true,
-        "rating_value": "4.8",
+        "rating_text": "4.8 / 5",
         "stock_text": "In Stock · Ships Free Today"
       },
       "blocks": {

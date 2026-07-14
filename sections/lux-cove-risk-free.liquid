@@ -3,6 +3,8 @@
   <section class="lc-sec lc-pinkbg" data-screen-label="Risk Free">
     {%- if section.settings.image != blank -%}
       <img src="{{ section.settings.image | image_url: width: 900 }}" class="lc-featimg" alt="{{ section.settings.heading | escape }}">
+    {%- elsif section.settings.external_image_url != blank -%}
+      <img src="{{ section.settings.external_image_url }}" class="lc-featimg" alt="{{ section.settings.heading | escape }}">
     {%- else -%}
       <img src="{{ 'lc-closeup.jpg' | asset_url }}" class="lc-featimg" alt="{{ section.settings.heading | escape }}">
     {%- endif -%}
@@ -19,6 +21,7 @@
   "name": "Lux Cove: Risk free",
   "settings": [
     { "type": "image_picker", "id": "image", "label": "Image" },
+    { "type": "url", "id": "external_image_url", "label": "External image URL (used until you pick one above)" },
     { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Our promise" },
     { "type": "text", "id": "heading", "label": "Heading", "default": "Try It Risk-Free" },
     { "type": "textarea", "id": "text", "label": "Text", "default": "We're confident you'll love it, but if it's not for you, no worries. Try it for 30 days, and if you're not completely satisfied, return it for a full refund — no questions asked." }

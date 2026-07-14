@@ -20,6 +20,8 @@
                 <div class="lc-fx lc-ac lc-gap10">
                   {%- if block.settings.image != blank -%}
                     <img src="{{ block.settings.image | image_url: width: 88 }}" width="44" height="44" loading="lazy" class="lc-pillav" alt="{{ block.settings.name | escape }}">
+                  {%- elsif block.settings.external_image_url != blank -%}
+                    <img src="{{ block.settings.external_image_url }}" width="44" height="44" loading="lazy" class="lc-pillav" alt="{{ block.settings.name | escape }}">
                   {%- elsif block.settings.fallback_image != 'none' -%}
                     <img src="{{ block.settings.fallback_image | append: '.jpg' | asset_url }}" width="44" height="44" loading="lazy" class="lc-pillav" alt="{{ block.settings.name | escape }}">
                   {%- endif -%}
@@ -42,6 +44,8 @@
                 <div class="lc-fx lc-ac lc-gap10">
                   {%- if block.settings.image != blank -%}
                     <img src="{{ block.settings.image | image_url: width: 88 }}" width="44" height="44" loading="lazy" class="lc-pillav" alt="{{ block.settings.name | escape }}">
+                  {%- elsif block.settings.external_image_url != blank -%}
+                    <img src="{{ block.settings.external_image_url }}" width="44" height="44" loading="lazy" class="lc-pillav" alt="{{ block.settings.name | escape }}">
                   {%- elsif block.settings.fallback_image != 'none' -%}
                     <img src="{{ block.settings.fallback_image | append: '.jpg' | asset_url }}" width="44" height="44" loading="lazy" class="lc-pillav" alt="{{ block.settings.name | escape }}">
                   {%- endif -%}
@@ -70,7 +74,8 @@
       "name": "Testimonial (row 1)",
       "settings": [
         { "type": "image_picker", "id": "image", "label": "Photo" },
-        { "type": "select", "id": "fallback_image", "label": "Placeholder photo (used until you pick one above)", "options": [
+        { "type": "url", "id": "external_image_url", "label": "External photo URL (used until you pick one above)" },
+        { "type": "select", "id": "fallback_image", "label": "Placeholder photo (used until neither of the above is set)", "options": [
           { "value": "none", "label": "None" },
           { "value": "lc-av1", "label": "Avatar 1" },
           { "value": "lc-av2", "label": "Avatar 2" },
@@ -90,7 +95,8 @@
       "name": "Testimonial (row 2)",
       "settings": [
         { "type": "image_picker", "id": "image", "label": "Photo" },
-        { "type": "select", "id": "fallback_image", "label": "Placeholder photo (used until you pick one above)", "options": [
+        { "type": "url", "id": "external_image_url", "label": "External photo URL (used until you pick one above)" },
+        { "type": "select", "id": "fallback_image", "label": "Placeholder photo (used until neither of the above is set)", "options": [
           { "value": "none", "label": "None" },
           { "value": "lc-av1", "label": "Avatar 1" },
           { "value": "lc-av2", "label": "Avatar 2" },

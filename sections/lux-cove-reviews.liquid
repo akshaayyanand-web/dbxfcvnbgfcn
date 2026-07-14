@@ -37,8 +37,10 @@
         {%- for block in reviews -%}
           <div class="lc-rev" {{ block.shopify_attributes }}>
             <div class="lc-fx lc-ac lc-jb">
-              <span class="lc-stars">★★★★★</span>
-              <span class="lc-fs12" style="color:#a89d90">{{ block.settings.date }}</span>
+              <span class="lc-stars">{{ block.settings.stars }}</span>
+              {%- if block.settings.date != blank -%}
+                <span class="lc-fs12" style="color:#a89d90">{{ block.settings.date }}</span>
+              {%- endif -%}
             </div>
             <div class="lc-fx lc-ac lc-gap8 lc-mt8">
               <span class="lc-vinit">{{ block.settings.name | slice: 0 | upcase }}</span>
@@ -81,7 +83,8 @@
       "name": "Review",
       "settings": [
         { "type": "text", "id": "name", "label": "Name", "default": "Sarah" },
-        { "type": "text", "id": "date", "label": "Date", "default": "09/10/2025" },
+        { "type": "text", "id": "stars", "label": "Stars", "default": "★★★★★" },
+        { "type": "text", "id": "date", "label": "Date (optional)" },
         { "type": "text", "id": "title", "label": "Title (optional)" },
         { "type": "textarea", "id": "text", "label": "Text", "default": "Amazing. Noticed a difference after a couple of uses." }
       ]
