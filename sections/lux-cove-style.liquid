@@ -4,7 +4,52 @@
   `main[data-template="product.{{ template_suffix }}"]`. Nothing here touches
   global theme settings, so every other product/page keeps using the
   merchant's normal theme styling. Place this section first in the template.
+
+  Pick "Color theme" below to switch the whole page between the default
+  Cream & Rose look, Pink, or a clean White & Neutral look — no code editing
+  needed. Choose "Custom" to set every color yourself with the pickers below.
 {%- enddoc -%}
+
+{%- liquid
+  case section.settings.color_theme
+    when 'pink'
+      assign c_background = '#fdf1f3'
+      assign c_foreground = '#4a2530'
+      assign c_accent = '#d1587a'
+      assign c_pink = '#fbdbe1'
+      assign c_border = '#f3d3da'
+      assign c_rose = '#e8879c'
+      assign c_rosedeep = '#d1587a'
+      assign c_gold = '#c98a9a'
+    when 'white'
+      assign c_background = '#ffffff'
+      assign c_foreground = '#1f1f1f'
+      assign c_accent = '#4a4a4a'
+      assign c_pink = '#f5f5f5'
+      assign c_border = '#e5e5e5'
+      assign c_rose = '#b98a95'
+      assign c_rosedeep = '#8a5560'
+      assign c_gold = '#8a8a8a'
+    when 'custom'
+      assign c_background = section.settings.color_background
+      assign c_foreground = section.settings.color_foreground
+      assign c_accent = section.settings.color_accent
+      assign c_pink = section.settings.color_pink
+      assign c_border = section.settings.color_border
+      assign c_rose = section.settings.color_accent
+      assign c_rosedeep = section.settings.color_accent
+      assign c_gold = section.settings.color_accent
+    else
+      assign c_background = '#fbf7f3'
+      assign c_foreground = '#2a2320'
+      assign c_accent = '#a85566'
+      assign c_pink = '#f6e3e5'
+      assign c_border = '#e6dcce'
+      assign c_rose = '#c9788a'
+      assign c_rosedeep = '#a85566'
+      assign c_gold = '#b08d57'
+  endcase
+-%}
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -21,49 +66,54 @@
     --font-subheading--family: 'Cormorant Garamond', serif;
     --font-heading--family: 'Cormorant Garamond', serif;
 
-    --color-background: {{ section.settings.color_background }};
-    --color-background-rgb: {{ section.settings.color_background.red }}, {{ section.settings.color_background.green }}, {{ section.settings.color_background.blue }};
-    --color-foreground: {{ section.settings.color_foreground }};
-    --color-foreground-rgb: {{ section.settings.color_foreground.red }}, {{ section.settings.color_foreground.green }}, {{ section.settings.color_foreground.blue }};
-    --color-foreground-subdued: {{ section.settings.color_foreground }}99;
-    --color-foreground-muted: {{ section.settings.color_foreground }}66;
-    --color-border: {{ section.settings.color_border }};
-    --color-border-rgb: {{ section.settings.color_border.red }}, {{ section.settings.color_border.green }}, {{ section.settings.color_border.blue }};
+    --lc-pink: {{ c_pink }};
+    --lc-rose: {{ c_rose }};
+    --lc-rosedeep: {{ c_rosedeep }};
+    --lc-gold: {{ c_gold }};
 
-    --color-primary-button-background: {{ section.settings.color_foreground }};
-    --color-primary-button-text: {{ section.settings.color_background }};
-    --color-primary-button-border: {{ section.settings.color_foreground }};
-    --color-primary-button-hover-background: {{ section.settings.color_accent }};
-    --color-primary-button-hover-text: {{ section.settings.color_background }};
-    --color-primary-button-hover-border: {{ section.settings.color_accent }};
-    --color-primary-button-focus-outline: {{ section.settings.color_accent }};
+    --color-background: {{ c_background }};
+    --color-background-rgb: {{ c_background.red }}, {{ c_background.green }}, {{ c_background.blue }};
+    --color-foreground: {{ c_foreground }};
+    --color-foreground-rgb: {{ c_foreground.red }}, {{ c_foreground.green }}, {{ c_foreground.blue }};
+    --color-foreground-subdued: {{ c_foreground }}99;
+    --color-foreground-muted: {{ c_foreground }}66;
+    --color-border: {{ c_border }};
+    --color-border-rgb: {{ c_border.red }}, {{ c_border.green }}, {{ c_border.blue }};
+
+    --color-primary-button-background: {{ c_foreground }};
+    --color-primary-button-text: {{ c_background }};
+    --color-primary-button-border: {{ c_foreground }};
+    --color-primary-button-hover-background: {{ c_accent }};
+    --color-primary-button-hover-text: {{ c_background }};
+    --color-primary-button-hover-border: {{ c_accent }};
+    --color-primary-button-focus-outline: {{ c_accent }};
 
     --color-secondary-button-background: transparent;
-    --color-secondary-button-text: {{ section.settings.color_foreground }};
-    --color-secondary-button-border: {{ section.settings.color_foreground }};
-    --color-secondary-button-hover-background: {{ section.settings.color_foreground }};
-    --color-secondary-button-hover-text: {{ section.settings.color_background }};
-    --color-secondary-button-hover-border: {{ section.settings.color_foreground }};
+    --color-secondary-button-text: {{ c_foreground }};
+    --color-secondary-button-border: {{ c_foreground }};
+    --color-secondary-button-hover-background: {{ c_foreground }};
+    --color-secondary-button-hover-text: {{ c_background }};
+    --color-secondary-button-hover-border: {{ c_foreground }};
 
-    --color-variant-background: {{ section.settings.color_background }};
-    --color-variant-border: {{ section.settings.color_border }};
-    --color-variant-text: {{ section.settings.color_foreground }};
-    --color-variant-hover-background: {{ section.settings.color_pink }};
-    --color-variant-hover-border: {{ section.settings.color_accent }};
-    --color-variant-hover-text: {{ section.settings.color_foreground }};
+    --color-variant-background: {{ c_background }};
+    --color-variant-border: {{ c_border }};
+    --color-variant-text: {{ c_foreground }};
+    --color-variant-hover-background: {{ c_pink }};
+    --color-variant-hover-border: {{ c_accent }};
+    --color-variant-hover-text: {{ c_foreground }};
 
-    --color-selected-variant-background: {{ section.settings.color_foreground }};
-    --color-selected-variant-border: {{ section.settings.color_foreground }};
-    --color-selected-variant-text: {{ section.settings.color_background }};
-    --color-selected-variant-hover-background: {{ section.settings.color_accent }};
-    --color-selected-variant-hover-border: {{ section.settings.color_accent }};
-    --color-selected-variant-hover-text: {{ section.settings.color_background }};
+    --color-selected-variant-background: {{ c_foreground }};
+    --color-selected-variant-border: {{ c_foreground }};
+    --color-selected-variant-text: {{ c_background }};
+    --color-selected-variant-hover-background: {{ c_accent }};
+    --color-selected-variant-hover-border: {{ c_accent }};
+    --color-selected-variant-hover-text: {{ c_background }};
 
-    --color-input-background: {{ section.settings.color_background }};
-    --color-input-border: {{ section.settings.color_border }};
-    --color-input-text: {{ section.settings.color_foreground }};
+    --color-input-background: {{ c_background }};
+    --color-input-border: {{ c_border }};
+    --color-input-text: {{ c_foreground }};
 
-    background: {{ section.settings.color_background }};
+    background: {{ c_background }};
   }
 {% endstyle %}
 
@@ -76,10 +126,17 @@
       "content": "Loads the Lux Cove fonts/palette and scopes them to this product's alternate template only. Place this section first in the template. It renders no visible markup of its own."
     },
     { "type": "text", "id": "template_suffix", "label": "Template suffix", "info": "Must match the alternate template filename, e.g. product.lux-cove.json → \"lux-cove\".", "default": "lux-cove" },
-    { "type": "color", "id": "color_background", "label": "Background (cream)", "default": "#fbf7f3" },
-    { "type": "color", "id": "color_foreground", "label": "Foreground / buttons (charcoal)", "default": "#2a2320" },
-    { "type": "color", "id": "color_accent", "label": "Accent hover (rose)", "default": "#a85566" },
-    { "type": "color", "id": "color_pink", "label": "Pink tint", "default": "#f6e3e5" },
+    { "type": "select", "id": "color_theme", "label": "Color theme", "options": [
+      { "value": "cream_rose", "label": "Cream & Rose (default)" },
+      { "value": "pink", "label": "Pink" },
+      { "value": "white", "label": "White & Neutral" },
+      { "value": "custom", "label": "Custom (use pickers below)" }
+    ], "default": "cream_rose" },
+    { "type": "header", "content": "Custom colors (only used when theme is \"Custom\")" },
+    { "type": "color", "id": "color_background", "label": "Background", "default": "#fbf7f3" },
+    { "type": "color", "id": "color_foreground", "label": "Foreground / buttons", "default": "#2a2320" },
+    { "type": "color", "id": "color_accent", "label": "Accent (hover, stars, eyebrow)", "default": "#a85566" },
+    { "type": "color", "id": "color_pink", "label": "Tinted section background", "default": "#f6e3e5" },
     { "type": "color", "id": "color_border", "label": "Border", "default": "#e6dcce" }
   ],
   "presets": [
