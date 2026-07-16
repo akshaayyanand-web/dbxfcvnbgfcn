@@ -1,0 +1,48 @@
+{{ 'lux-cove.css' | asset_url | stylesheet_tag }}
+<div class="lc-page" data-screen-label="As Seen In">
+  <section style="padding:34px 22px">
+    {%- if section.settings.heading != blank -%}
+      <div class="lc-eyebrow lc-tc" style="width:100%;margin-bottom:20px">{{ section.settings.heading }}</div>
+    {%- endif -%}
+    <div class="lc-fx lc-ac lc-jc lc-wrap" style="gap:26px 34px">
+      {%- for block in section.blocks -%}
+        {%- if block.settings.logo != blank -%}
+          <img src="{{ block.settings.logo | image_url: width: 240 }}" loading="lazy" style="height:22px;width:auto;opacity:.55;object-fit:contain" alt="{{ block.settings.name | escape }}" {{ block.shopify_attributes }}>
+        {%- else -%}
+          <span class="lc-serif" style="font-size:19px;font-weight:600;letter-spacing:.12em;color:#8a7d6f;text-transform:uppercase" {{ block.shopify_attributes }}>{{ block.settings.name }}</span>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+  </section>
+</div>
+
+{% schema %}
+{
+  "name": "Lux Cove: As seen in",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "As Seen In" }
+  ],
+  "blocks": [
+    {
+      "type": "press_logo",
+      "name": "Logo",
+      "settings": [
+        { "type": "image_picker", "id": "logo", "label": "Logo image (optional)" },
+        { "type": "text", "id": "name", "label": "Name (used if no image)", "default": "VOGUE" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Lux Cove: As seen in",
+      "blocks": [
+        { "type": "press_logo", "settings": { "name": "VOGUE" } },
+        { "type": "press_logo", "settings": { "name": "ELLE" } },
+        { "type": "press_logo", "settings": { "name": "COSMOPOLITAN" } },
+        { "type": "press_logo", "settings": { "name": "HARPER'S BAZAAR" } },
+        { "type": "press_logo", "settings": { "name": "ALLURE" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

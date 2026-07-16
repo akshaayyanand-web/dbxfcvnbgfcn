@@ -1,0 +1,1040 @@
+{
+  "sections": {
+    "lc_style": {
+      "type": "lux-cove-style",
+      "settings": {
+        "template_suffix": "lumatra-led-face-mask",
+        "color_theme": "pink"
+      }
+    },
+    "main": {
+      "type": "product-information",
+      "settings": {
+        "content_width": "content-center-aligned",
+        "desktop_media_position": "left",
+        "gap": 48,
+        "enable_sticky_add_to_cart": true,
+        "background_color": "#fdf1f3"
+      },
+      "blocks": {
+        "media-gallery": {
+          "type": "_product-media-gallery",
+          "static": true,
+          "settings": {},
+          "blocks": {}
+        },
+        "product-details": {
+          "type": "_product-details",
+          "static": true,
+          "settings": {},
+          "blocks": {
+            "group_header": {
+              "type": "group",
+              "name": "Header",
+              "settings": {},
+              "blocks": {
+                "text_title": {
+                  "type": "text",
+                  "name": "Product title",
+                  "settings": {
+                    "text": "<h1>{{ closest.product.title }}</h1>",
+                    "type_preset": "h3"
+                  },
+                  "blocks": {}
+                },
+                "price_main": {
+                  "type": "price",
+                  "settings": {},
+                  "blocks": {}
+                }
+              },
+              "block_order": [
+                "text_title",
+                "price_main"
+              ]
+            },
+            "divider_main": {
+              "type": "_divider",
+              "settings": {},
+              "blocks": {}
+            },
+            "variant_picker_main": {
+              "type": "variant-picker",
+              "settings": {},
+              "blocks": {}
+            },
+            "buy_buttons_main": {
+              "type": "buy-buttons",
+              "settings": {},
+              "blocks": {
+                "quantity": {
+                  "type": "quantity",
+                  "static": true,
+                  "settings": {},
+                  "blocks": {}
+                },
+                "add-to-cart": {
+                  "type": "add-to-cart",
+                  "static": true,
+                  "settings": {},
+                  "blocks": {}
+                },
+                "accelerated-checkout": {
+                  "type": "accelerated-checkout",
+                  "static": true,
+                  "settings": {},
+                  "blocks": {}
+                }
+              },
+              "block_order": []
+            },
+            "text_description": {
+              "type": "text",
+              "name": "Product description",
+              "settings": {
+                "text": "{{ closest.product.description }}",
+                "type_preset": "rte"
+              },
+              "blocks": {}
+            }
+          },
+          "block_order": [
+            "group_header",
+            "divider_main",
+            "variant_picker_main",
+            "buy_buttons_main",
+            "text_description"
+          ]
+        }
+      },
+      "block_order": []
+    },
+    "lc_buybox_extras": {
+      "type": "lux-cove-buybox-extras",
+      "settings": {
+        "eyebrow": "★ Dermatologist Recommended",
+        "show_rating": true,
+        "rating_text": "1,200+ reviews",
+        "stock_text": "In Stock · 30k+ Bought This Month",
+        "review_name": "Jessy K.",
+        "review_quote": "My skin has never looked clearer. Fine lines softened and my breakouts have calmed right down — I'm obsessed!",
+        "gifts_text": "🎁 Order today for 8 guaranteed FREE gifts"
+      },
+      "blocks": {
+        "b1": {
+          "type": "benefit",
+          "settings": {
+            "text": "Smooth fine lines & wrinkles"
+          }
+        },
+        "b2": {
+          "type": "benefit",
+          "settings": {
+            "text": "Clear & prevent acne breakouts"
+          }
+        },
+        "b3": {
+          "type": "benefit",
+          "settings": {
+            "text": "Even skin tone & fade dark spots"
+          }
+        },
+        "b4": {
+          "type": "benefit",
+          "settings": {
+            "text": "Boost collagen & firmness"
+          }
+        },
+        "b5": {
+          "type": "benefit",
+          "settings": {
+            "text": "7 clinical LED light modes"
+          }
+        },
+        "b6": {
+          "type": "benefit",
+          "settings": {
+            "text": "Hands-free, full-face coverage"
+          }
+        },
+        "t1": {
+          "type": "trust",
+          "settings": {
+            "label": "90-Day Money-Back"
+          }
+        },
+        "t2": {
+          "type": "trust",
+          "settings": {
+            "label": "Free Shipping"
+          }
+        },
+        "t3": {
+          "type": "trust",
+          "settings": {
+            "label": "1 Year Warranty"
+          }
+        },
+        "ac1": {
+          "type": "details_item",
+          "settings": {
+            "title": "Product details",
+            "body": "The Lumatra 7-in-1 LED Face Mask brings professional-grade light therapy to your own home. Seven clinically-studied LED wavelengths target fine lines, breakouts, dark spots and dullness — hands-free, in just 10 minutes a day.\nComfortable, lightweight and cordless, simply choose your light, relax, and let the mask do the work while you unwind."
+          }
+        },
+        "ac2": {
+          "type": "details_item",
+          "settings": {
+            "title": "What's included",
+            "body": "✓ 7-in-1 LED Face Mask\n✓ Remote / Controller\n✓ User Manual\n✓ Charging Cable\n✓ 8 Free Gifts"
+          }
+        },
+        "ac3": {
+          "type": "details_item",
+          "settings": {
+            "title": "How quickly will I see results?",
+            "body": "Many users notice brighter, calmer, more even-looking skin within the first 2–3 weeks. Results continue to build, with the most noticeable changes to fine lines, texture and clarity after 6–8 weeks of consistent use."
+          }
+        },
+        "ac4": {
+          "type": "details_item",
+          "settings": {
+            "title": "Is it safe to use?",
+            "body": "Yes — when used as directed the Lumatra LED Face Mask is safe for regular at-home use. It uses non-invasive, low-level LED light that's gentle on the skin. Please read the full user manual before your first session."
+          }
+        },
+        "ac5": {
+          "type": "details_item",
+          "settings": {
+            "title": "Guarantee & warranty",
+            "body": "We offer 90-day returns and a 1-year warranty on all purchases. So go ahead, try it out, and if you're dissatisfied for any reason we'll refund you in full."
+          }
+        },
+        "ac6": {
+          "type": "details_item",
+          "settings": {
+            "title": "Shipping & returns",
+            "body": "United Kingdom: Express Tracked Shipping (3 - 5 Working Days) - FREE\nEU: Express Tracked Shipping (3 - 7 Working Days) - FREE\nUnited States: Express Tracked Shipping (3 - 7 Working Days) - FREE\nRest Of The World: Express Tracked Shipping (3 - 7 Working Days) - FREE"
+          }
+        }
+      },
+      "block_order": [
+        "b1",
+        "b2",
+        "b3",
+        "b4",
+        "b5",
+        "b6",
+        "t1",
+        "t2",
+        "t3",
+        "ac1",
+        "ac2",
+        "ac3",
+        "ac4",
+        "ac5",
+        "ac6"
+      ]
+    },
+    "lc_asseenin": {
+      "type": "lux-cove-as-seen-in",
+      "settings": {
+        "heading": "As Seen In"
+      },
+      "blocks": {
+        "logo1": {
+          "type": "press_logo",
+          "settings": {
+            "name": "VOGUE"
+          }
+        },
+        "logo2": {
+          "type": "press_logo",
+          "settings": {
+            "name": "ELLE"
+          }
+        },
+        "logo3": {
+          "type": "press_logo",
+          "settings": {
+            "name": "COSMOPOLITAN"
+          }
+        },
+        "logo4": {
+          "type": "press_logo",
+          "settings": {
+            "name": "HARPER'S BAZAAR"
+          }
+        },
+        "logo5": {
+          "type": "press_logo",
+          "settings": {
+            "name": "ALLURE"
+          }
+        }
+      },
+      "block_order": [
+        "logo1",
+        "logo2",
+        "logo3",
+        "logo4",
+        "logo5"
+      ]
+    },
+    "lc_inspired": {
+      "type": "lux-cove-get-inspired",
+      "settings": {
+        "eyebrow": "Real transformations",
+        "heading": "Get Inspired",
+        "subtext": "How customers are transforming their skin with Lumatra.",
+        "speed": 38
+      },
+      "blocks": {
+        "v1": {
+          "type": "showcase_video",
+          "settings": {}
+        },
+        "v2": {
+          "type": "showcase_video",
+          "settings": {}
+        },
+        "v3": {
+          "type": "showcase_video",
+          "settings": {}
+        },
+        "v4": {
+          "type": "showcase_video",
+          "settings": {}
+        }
+      },
+      "block_order": [
+        "v1",
+        "v2",
+        "v3",
+        "v4"
+      ]
+    },
+    "lc_results30": {
+      "type": "lux-cove-results-30days",
+      "settings": {
+        "eyebrow": "Clinically observed",
+        "heading": "See Visible Results in<br>Just 30 Days",
+        "external_image_url": "https://www.luxcove.co/cdn/shop/files/US_VS_THEM_FACELIFT_SURGERY.png?v=1773769643&width=1000",
+        "results_title": "The Results",
+        "disclaimer": "Based on an independent claims validation study over 30 days of consistent use. Results may vary."
+      },
+      "blocks": {
+        "s1": {
+          "type": "stat",
+          "settings": {
+            "percent": 91,
+            "text": "Saw a visible improvement in overall skin clarity."
+          }
+        },
+        "s2": {
+          "type": "stat",
+          "settings": {
+            "percent": 89,
+            "text": "Reported a noticeable reduction in fine lines & wrinkles."
+          }
+        },
+        "s3": {
+          "type": "stat",
+          "settings": {
+            "percent": 86,
+            "text": "Saw a significant improvement in skin tone and texture."
+          }
+        },
+        "s4": {
+          "type": "stat",
+          "settings": {
+            "percent": 83,
+            "text": "Experienced fewer breakouts and calmer skin."
+          }
+        },
+        "s5": {
+          "type": "stat",
+          "settings": {
+            "percent": 78,
+            "text": "Saw brighter, more radiant-looking skin after use."
+          }
+        }
+      },
+      "block_order": [
+        "s1",
+        "s2",
+        "s3",
+        "s4",
+        "s5"
+      ]
+    },
+    "lc_feature1": {
+      "type": "lux-cove-feature",
+      "settings": {
+        "pinkbg": true,
+        "tag": "Blue Light Therapy",
+        "title": "Prevent Acne Breakouts",
+        "text": "Our blue light mode targets acne-causing bacteria deep in the skin, calming active breakouts and helping to prevent new ones — for clearer, healthier-looking skin without harsh treatments.",
+        "external_image_url": "https://www.luxcove.co/cdn/shop/files/ACNE_BEFORE_AFTER.png?v=1773948105&width=1000"
+      }
+    },
+    "lc_feature2": {
+      "type": "lux-cove-feature",
+      "settings": {
+        "pinkbg": false,
+        "tag": "Red Light Therapy",
+        "title": "Reduce Fine Lines & Wrinkles",
+        "text": "Our red light mode boosts collagen production to smooth fine lines and wrinkles, improve elasticity and restore a firmer, more youthful glow — without needles or downtime.",
+        "external_image_url": "https://www.luxcove.co/cdn/shop/files/WRINKLES_BEFORE_AFTER_1.png?v=1774893605&width=1000"
+      }
+    },
+    "lc_feature3": {
+      "type": "lux-cove-feature",
+      "settings": {
+        "pinkbg": true,
+        "tag": "Green Light Mode",
+        "title": "Brighten Skin Tone & Boost Radiance",
+        "text": "Our green light mode targets excess melanin, fading dark spots and hyperpigmentation to reveal a brighter, more even and radiant complexion.",
+        "external_image_url": "https://www.luxcove.co/cdn/shop/files/DARK_CIRCLES_BEFORE_AFTER_df309dcd-9faa-44d2-b5d2-5f6dab5c82c8.png?v=1774893691&width=1000"
+      }
+    },
+    "lc_lights": {
+      "type": "lux-cove-light-modes",
+      "settings": {
+        "eyebrow": "One device, endless care",
+        "heading": "Thousands of Dollars of<br>Treatment in a Single Device"
+      },
+      "blocks": {
+        "l1": {
+          "type": "mode",
+          "settings": {
+            "color": "#e2444f",
+            "label_color": "#ff8a91",
+            "name": "Red Light · 630nm",
+            "text": "Stimulates collagen production & prevents fine lines, wrinkles & sagging skin."
+          }
+        },
+        "l2": {
+          "type": "mode",
+          "settings": {
+            "color": "#3a6bd6",
+            "label_color": "#8fb0ff",
+            "name": "Blue Light · 415nm",
+            "text": "Kills acne-causing bacteria that cause blemishes and breakouts."
+          }
+        },
+        "l3": {
+          "type": "mode",
+          "settings": {
+            "color": "#2fae66",
+            "label_color": "#7fe0a6",
+            "name": "Green Light · 525nm",
+            "text": "Evens out skin tone & improves overall skin texture."
+          }
+        },
+        "l4": {
+          "type": "mode",
+          "settings": {
+            "color": "#2fb7c4",
+            "label_color": "#7fe6ef",
+            "name": "Cyan Light · 490nm",
+            "text": "Soothes sensitive skin & reduces redness, inflammation and irritation."
+          }
+        },
+        "l5": {
+          "type": "mode",
+          "settings": {
+            "color": "#f2ede2",
+            "label_color": "#f6f1e7",
+            "name": "White Light · Mix",
+            "text": "Promotes deep skin rejuvenation and targets fine lines & wrinkles."
+          }
+        },
+        "l6": {
+          "type": "mode",
+          "settings": {
+            "color": "#9b5fd0",
+            "label_color": "#c79bef",
+            "name": "Purple Light · 380nm",
+            "text": "Combines the benefits of both red and blue light."
+          }
+        },
+        "l7": {
+          "type": "mode",
+          "settings": {
+            "color": "#e8c14a",
+            "label_color": "#f5d872",
+            "name": "Yellow Light · 590nm",
+            "text": "Stimulates lymphatic drainage and increases blood circulation."
+          }
+        }
+      },
+      "block_order": [
+        "l1",
+        "l2",
+        "l3",
+        "l4",
+        "l5",
+        "l6",
+        "l7"
+      ]
+    },
+    "lc_vs1": {
+      "type": "lux-cove-vs",
+      "settings": {
+        "pinkbg": false,
+        "title": "Skip the Clinic. Get Professional Treatment at Home",
+        "left_fallback": "none",
+        "left_label": "Lumatra LED Mask",
+        "right_label": "In-Clinic LED Therapy"
+      },
+      "blocks": {
+        "pro1": {
+          "type": "pro",
+          "settings": {
+            "text": "Use anytime, no appointments"
+          }
+        },
+        "pro2": {
+          "type": "pro",
+          "settings": {
+            "text": "Comfort of your own home"
+          }
+        },
+        "pro3": {
+          "type": "pro",
+          "settings": {
+            "text": "Unlimited uses & treatments"
+          }
+        },
+        "pro4": {
+          "type": "pro",
+          "settings": {
+            "text": "Just 10 minutes daily"
+          }
+        },
+        "con1": {
+          "type": "con",
+          "settings": {
+            "text": "Requires scheduling & commute"
+          }
+        },
+        "con2": {
+          "type": "con",
+          "settings": {
+            "text": "When (if) you get a slot"
+          }
+        },
+        "con3": {
+          "type": "con",
+          "settings": {
+            "text": "Limited treatments"
+          }
+        },
+        "con4": {
+          "type": "con",
+          "settings": {
+            "text": "30 to 60 minutes per session"
+          }
+        }
+      },
+      "block_order": [
+        "pro1",
+        "pro2",
+        "pro3",
+        "pro4",
+        "con1",
+        "con2",
+        "con3",
+        "con4"
+      ]
+    },
+    "lc_realresults": {
+      "type": "lux-cove-loop-showcase",
+      "settings": {
+        "pinkbg": true,
+        "eyebrow": "Before & after",
+        "heading": "Real Customers,<br>Real Results",
+        "speed": 52
+      },
+      "blocks": {
+        "rr1": {
+          "type": "item",
+          "settings": {
+            "external_image_url": "https://www.luxcove.co/cdn/shop/files/JOWLS_BEFORE_AFTER_1.png?v=1774893491&width=800",
+            "name": "Marni",
+            "quote": "I genuinely didn't expect much, but my skin looks firmer and more lifted than it has in years. It's become the ten minutes of my day I look forward to most."
+          }
+        },
+        "rr2": {
+          "type": "item",
+          "settings": {
+            "external_image_url": "https://www.luxcove.co/cdn/shop/files/WRINKLES_BEFORE_AFTER_1.png?v=1774893605&width=800",
+            "name": "",
+            "quote": "The lines around my eyes and forehead have softened noticeably. I use the red light setting every evening and my skin just looks smoother and more rested."
+          }
+        },
+        "rr3": {
+          "type": "item",
+          "settings": {
+            "external_image_url": "https://www.luxcove.co/cdn/shop/files/DARK_CIRCLES_BEFORE_AFTER_df309dcd-9faa-44d2-b5d2-5f6dab5c82c8.png?v=1774893691&width=800",
+            "name": "",
+            "quote": "My dark circles and dullness have faded so much. People keep asking if I've been on holiday — it's just the mask!"
+          }
+        },
+        "rr4": {
+          "type": "item",
+          "settings": {
+            "external_image_url": "https://www.luxcove.co/cdn/shop/files/ACNE_BEFORE_AFTER.png?v=1773948105&width=800",
+            "name": "",
+            "quote": "Blue light a few times a week completely calmed my breakouts. My skin is the clearest it's been since my twenties."
+          }
+        }
+      },
+      "block_order": [
+        "rr1",
+        "rr2",
+        "rr3",
+        "rr4"
+      ]
+    },
+    "lc_happycustomers": {
+      "type": "lux-cove-loop-showcase",
+      "settings": {
+        "pinkbg": false,
+        "eyebrow": "100,000+ five-star reviews",
+        "heading": "Happy Customers",
+        "speed": 54
+      },
+      "blocks": {
+        "h1": {
+          "type": "item",
+          "settings": {
+            "external_image_url": "https://www.luxcove.co/cdn/shop/files/Untitled_design_-_2024-08-10T173242.225.png?v=1723307813&width=600",
+            "name": "",
+            "quote": "This mask does everything — clears my skin, brightens my tone and softens my lines. The best skincare purchase I've ever made."
+          }
+        },
+        "h2": {
+          "type": "item",
+          "settings": {
+            "external_image_url": "https://www.luxcove.co/cdn/shop/files/Untitled_design_-_2024-08-10T173300.494.png?v=1723307783&width=600",
+            "name": "",
+            "quote": "Within a few weeks my skin looked smoother, calmer and more even. I love that it's completely hands-free."
+          }
+        },
+        "h3": {
+          "type": "item",
+          "settings": {
+            "external_image_url": "https://www.luxcove.co/cdn/shop/files/1_79630330-2c1a-43d4-b335-e7576b1155d6.png?v=1733341034&width=600",
+            "name": "Sally Y.",
+            "quote": "It's like having a professional facial at home, without the appointments or the cost. My skin has never looked better!"
+          }
+        },
+        "h4": {
+          "type": "item",
+          "settings": {
+            "external_image_url": "https://www.luxcove.co/cdn/shop/files/2_75a76c65-9f69-4fce-9a14-cfbe58c3ce8a.png?v=1733341040&width=600",
+            "name": "Lisa K.",
+            "quote": "So many light modes to target every concern — acne, dark spots, fine lines. I love how versatile it is!"
+          }
+        }
+      },
+      "block_order": [
+        "h1",
+        "h2",
+        "h3",
+        "h4"
+      ]
+    },
+    "lc_comparison": {
+      "type": "lux-cove-comparison",
+      "settings": {
+        "eyebrow": "The difference",
+        "heading": "Lumatra vs Other Brands",
+        "brand_name": "Lumatra"
+      },
+      "blocks": {
+        "u1": {
+          "type": "usp",
+          "settings": {
+            "text": "The original 7-in-1 LED Face Mask."
+          }
+        },
+        "u2": {
+          "type": "usp",
+          "settings": {
+            "text": "Clinically tested, rated 5 stars."
+          }
+        },
+        "u3": {
+          "type": "usp",
+          "settings": {
+            "text": "Professional results without the salon price."
+          }
+        },
+        "row1": {
+          "type": "row",
+          "settings": {
+            "text": "Developed by skincare experts"
+          }
+        },
+        "row2": {
+          "type": "row",
+          "settings": {
+            "text": "Professional-grade results"
+          }
+        },
+        "row3": {
+          "type": "row",
+          "settings": {
+            "text": "Choose from 7 LED light modes"
+          }
+        },
+        "row4": {
+          "type": "row",
+          "settings": {
+            "text": "Full-face, hands-free coverage"
+          }
+        },
+        "row5": {
+          "type": "row",
+          "settings": {
+            "text": "Non-invasive & pain-free"
+          }
+        },
+        "row6": {
+          "type": "row",
+          "settings": {
+            "text": "90-Day Money-Back Guarantee"
+          }
+        }
+      },
+      "block_order": [
+        "u1",
+        "u2",
+        "u3",
+        "row1",
+        "row2",
+        "row3",
+        "row4",
+        "row5",
+        "row6"
+      ]
+    },
+    "lc_riskfree": {
+      "type": "lux-cove-risk-free",
+      "settings": {
+        "eyebrow": "Our promise",
+        "heading": "Try It Risk-Free",
+        "external_image_url": "https://www.luxcove.co/cdn/shop/files/JOWLS_BEFORE_AFTER_7.png?v=1775327619&width=1000",
+        "text": "We're confident you'll love it, but if it's not for you, no worries. Try it for 90 days, and if you're not completely satisfied, return it for a full refund — no questions asked."
+      }
+    },
+    "lc_howtouse": {
+      "type": "lux-cove-how-to-use",
+      "settings": {
+        "eyebrow": "Effortless routine",
+        "heading": "How to Use It"
+      },
+      "blocks": {
+        "step1": {
+          "type": "step",
+          "settings": {
+            "title": "Cleanse & Prep",
+            "text": "Start with clean, dry skin. Apply your serum or moisturiser so it can absorb better during your session."
+          }
+        },
+        "step2": {
+          "type": "step",
+          "settings": {
+            "title": "Choose Your Light",
+            "text": "Power on the mask and select your LED mode — red for anti-aging, blue for breakouts, green for brightening, and more."
+          }
+        },
+        "step3": {
+          "type": "step",
+          "settings": {
+            "title": "Relax for 10 Minutes",
+            "text": "Sit back and let the mask work hands-free. Use 4–5 times a week and recharge via USB to keep it ready."
+          }
+        }
+      },
+      "block_order": [
+        "step1",
+        "step2",
+        "step3"
+      ]
+    },
+    "lc_faq": {
+      "type": "lux-cove-faq",
+      "settings": {
+        "eyebrow": "Good to know",
+        "heading": "FAQs About Our Product"
+      },
+      "blocks": {
+        "f1": {
+          "type": "faq",
+          "settings": {
+            "question": "How long will it take to see results?",
+            "answer": "Most users start noticing brighter, calmer and more even skin within 3 to 4 weeks of consistent use. For best results, use for 10 minutes per session, 4–5 times a week."
+          }
+        },
+        "f2": {
+          "type": "faq",
+          "settings": {
+            "question": "What are the main benefits?",
+            "answer": "The mask combines Red Light for anti-aging, Blue Light for acne, Green Light for brightening, and more — delivering professional-level light therapy that targets fine lines, breakouts, dark spots and dullness at home."
+          }
+        },
+        "f3": {
+          "type": "faq",
+          "settings": {
+            "question": "How do I use the mask?",
+            "answer": "1. Cleanse and dry your skin.\n2. Apply your serum or moisturiser.\n3. Put on the mask, power it on and select your light.\nUse for 10 minutes, 4–5 times per week."
+          }
+        },
+        "f4": {
+          "type": "faq",
+          "settings": {
+            "question": "How do I charge the device?",
+            "answer": "The mask charges with the included USB cable. A full charge takes around 3 hours and lasts several sessions. It turns off automatically to conserve battery."
+          }
+        },
+        "f5": {
+          "type": "faq",
+          "settings": {
+            "question": "Does it hurt to use?",
+            "answer": "No. LED light therapy is completely painless and non-invasive. You'll simply see a soft, warm glow of light while you relax."
+          }
+        },
+        "f6": {
+          "type": "faq",
+          "settings": {
+            "question": "Does it come with all 7 lights?",
+            "answer": "Yes — the mask includes red, blue, green, cyan, white, purple and yellow light modes."
+          }
+        },
+        "f7": {
+          "type": "faq",
+          "settings": {
+            "question": "Is it suitable for all skin types & tones?",
+            "answer": "Yes, the Lumatra LED Face Mask is suitable for all skin types and tones, for both women and men."
+          }
+        },
+        "f8": {
+          "type": "faq",
+          "settings": {
+            "question": "Who is this device NOT suitable for?",
+            "answer": "It is not suitable for: individuals who have undergone facial surgery; individuals with photosensitive conditions or on photosensitising medication; those who are pregnant. If in doubt, consult your doctor."
+          }
+        },
+        "f9": {
+          "type": "faq",
+          "settings": {
+            "question": "How much does shipping cost?",
+            "answer": "United Kingdom: Express Tracked Shipping (3 - 5 Working Days) - FREE\nEU: Express Tracked Shipping (3 - 7 Working Days) - FREE\nUnited States: Express Tracked Shipping (3 - 7 Working Days) - FREE\nRest Of The World: Express Tracked Shipping (3 - 7 Working Days) - FREE"
+          }
+        },
+        "f10": {
+          "type": "faq",
+          "settings": {
+            "question": "Can I return my order if I'm not satisfied?",
+            "answer": "Yes, contact our support team within 90 days of receiving your product for a full refund."
+          }
+        }
+      },
+      "block_order": [
+        "f1",
+        "f2",
+        "f3",
+        "f4",
+        "f5",
+        "f6",
+        "f7",
+        "f8",
+        "f9",
+        "f10"
+      ]
+    },
+    "lc_reviews": {
+      "type": "lux-cove-reviews",
+      "settings": {
+        "eyebrow": "Verified buyers",
+        "heading": "Customer Reviews",
+        "average": "4.7",
+        "stars_display": "★★★★★",
+        "review_count": "1,204"
+      },
+      "blocks": {
+        "rb1": {
+          "type": "rating_bar",
+          "settings": {
+            "stars": "★★★★★",
+            "percent": 74,
+            "count": "892"
+          }
+        },
+        "rb2": {
+          "type": "rating_bar",
+          "settings": {
+            "stars": "★★★★☆",
+            "percent": 15,
+            "count": "180"
+          }
+        },
+        "rb3": {
+          "type": "rating_bar",
+          "settings": {
+            "stars": "★★★☆☆",
+            "percent": 6,
+            "count": "72"
+          }
+        },
+        "rb4": {
+          "type": "rating_bar",
+          "settings": {
+            "stars": "★★☆☆☆",
+            "percent": 3,
+            "count": "36"
+          }
+        },
+        "rb5": {
+          "type": "rating_bar",
+          "settings": {
+            "stars": "★☆☆☆☆",
+            "percent": 2,
+            "count": "24"
+          }
+        },
+        "rv1": {
+          "type": "customer_review",
+          "settings": {
+            "name": "Janice",
+            "stars": "★★★★★",
+            "text": "Only started using it this week but it's so easy and relaxing to use. Skin already feels softer. So far so good!"
+          }
+        },
+        "rv2": {
+          "type": "customer_review",
+          "settings": {
+            "name": "S.Y.",
+            "stars": "★★★★★",
+            "text": "Brilliant. My skin looks brighter already."
+          }
+        },
+        "rv3": {
+          "type": "customer_review",
+          "settings": {
+            "name": "A.M.",
+            "stars": "★★★★★",
+            "text": "Lovely product, delivery was quick, would recommend."
+          }
+        },
+        "rv4": {
+          "type": "customer_review",
+          "settings": {
+            "name": "Adele",
+            "stars": "★★★★★",
+            "text": "Nothing to dislike. Only been using it a couple of weeks and can already see a difference in my breakouts."
+          }
+        },
+        "rv5": {
+          "type": "customer_review",
+          "settings": {
+            "name": "Sharon",
+            "stars": "★★☆☆☆",
+            "text": "Took a little getting used to the fit, but support were very helpful and my skin is looking clearer."
+          }
+        }
+      },
+      "block_order": [
+        "rb1",
+        "rb2",
+        "rb3",
+        "rb4",
+        "rb5",
+        "rv1",
+        "rv2",
+        "rv3",
+        "rv4",
+        "rv5"
+      ]
+    },
+    "product_recommendations": {
+      "type": "product-recommendations",
+      "blocks": {
+        "heading": {
+          "type": "text",
+          "settings": {
+            "text": "<h3>You may also like</h3>",
+            "type_preset": "h4"
+          },
+          "blocks": {}
+        },
+        "static-product-card": {
+          "type": "_product-card",
+          "static": true,
+          "settings": {},
+          "blocks": {
+            "product_card_gallery": {
+              "type": "_product-card-gallery",
+              "settings": {},
+              "blocks": {}
+            },
+            "product_title": {
+              "type": "product-title",
+              "settings": {},
+              "blocks": {}
+            },
+            "price": {
+              "type": "price",
+              "settings": {},
+              "blocks": {}
+            }
+          },
+          "block_order": [
+            "product_card_gallery",
+            "product_title",
+            "price"
+          ]
+        }
+      },
+      "block_order": [
+        "heading"
+      ],
+      "settings": {
+        "product": "{{ closest.product }}",
+        "recommendation_type": "related",
+        "layout_type": "grid",
+        "max_products": 4,
+        "columns": 4,
+        "mobile_columns": "2",
+        "background_color": "#fdf1f3",
+        "padding-block-start": 48,
+        "padding-block-end": 48
+      }
+    }
+  },
+  "order": [
+    "lc_style",
+    "main",
+    "lc_buybox_extras",
+    "lc_asseenin",
+    "lc_inspired",
+    "lc_results30",
+    "lc_feature1",
+    "lc_feature2",
+    "lc_feature3",
+    "lc_lights",
+    "lc_vs1",
+    "lc_realresults",
+    "lc_happycustomers",
+    "lc_comparison",
+    "lc_riskfree",
+    "lc_howtouse",
+    "lc_faq",
+    "lc_reviews",
+    "product_recommendations"
+  ]
+}
