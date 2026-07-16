@@ -1,0 +1,95 @@
+{{ 'lux-cove.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'lux-cove.js' | asset_url }}" defer="defer"></script>
+<div class="{% if section.settings.pinkbg %}lc-pinkbg{% endif %}" data-screen-label="Bestsellers">
+  <div class="lc-page">
+    <section class="lc-sec">
+      <div class="lc-sec-head">
+        {%- if section.settings.eyebrow != blank -%}<span class="lc-eyebrow">{{ section.settings.eyebrow }}</span>{%- endif -%}
+        <h2 class="lc-sec-t">{{ section.settings.heading }}</h2>
+        <span class="lc-rule"></span>
+      </div>
+
+      <div class="lc-bsgrid">
+        {%- for block in section.blocks -%}
+          {%- assign product = block.settings.product -%}
+          {%- if product != blank -%}
+            {%- assign variant = product.selected_or_first_available_variant -%}
+            <div class="lc-bscard" {{ block.shopify_attributes }}>
+              <a href="{{ product.url }}" class="lc-bscard-imgwrap">
+                {%- if product.featured_image -%}
+                  <img src="{{ product.featured_image | image_url: width: 500 }}" loading="lazy" class="lc-bscard-img" alt="{{ product.title | escape }}">
+                {%- endif -%}
+                {%- if variant.compare_at_price > variant.price -%}
+                  {%- assign save_pct = variant.compare_at_price | minus: variant.price | times: 100.0 | divided_by: variant.compare_at_price | round -%}
+                  <span class="lc-bsbadge">{{ save_pct }}% OFF</span>
+                {%- endif -%}
+              </a>
+              <a href="{{ product.url }}" class="lc-bscard-title">{{ product.title }}</a>
+              <div class="lc-bscard-price">
+                {%- if variant.compare_at_price > variant.price -%}
+                  <span class="lc-strike-sm">{{ variant.compare_at_price | money }}</span>
+                {%- endif -%}
+                <span>{{ variant.price | money }}</span>
+              </div>
+              {%- if section.settings.show_add_to_cart -%}
+                {%- form 'product', product, data-lc-quick-add: '', class: 'lc-bscard-form' -%}
+                  <input type="hidden" name="id" value="{{ variant.id }}">
+                  <button type="submit" class="lc-cta" style="padding:12px 0;font-size:12px" {% unless variant.available %}disabled{% endunless %}>
+                    {%- if variant.available -%}{{ section.settings.button_label }}{%- else -%}Sold Out{%- endif -%}
+                  </button>
+                {%- endform -%}
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+    </section>
+  </div>
+</div>
+
+{% stylesheet %}
+  .lc-bsgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (min-width: 750px) { .lc-bsgrid { grid-template-columns: repeat(4, 1fr); } }
+  .lc-bscard { display: flex; flex-direction: column; gap: 8px; }
+  .lc-bscard-imgwrap { position: relative; display: block; border-radius: 14px; overflow: hidden; background: #f3ece2; aspect-ratio: 1/1; }
+  .lc-bscard-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .lc-bsbadge { position: absolute; top: 10px; left: 10px; background: var(--lc-rosedeep); color: #fff; font-size: 10px; font-weight: 700; letter-spacing: .08em; padding: 4px 9px; border-radius: 20px; text-transform: uppercase; }
+  .lc-bscard-title { font-size: 12.5px; font-weight: 500; line-height: 1.35; color: #2a2320; text-decoration: none; }
+  .lc-bscard-price { display: flex; align-items: center; gap: 8px; font-family: 'Cormorant Garamond', serif; font-size: 17px; font-weight: 700; }
+  .lc-strike-sm { text-decoration: line-through; color: #a89d90; font-size: 13px; font-weight: 400; font-family: 'Jost', sans-serif; }
+  .lc-bscard-form { margin-top: 2px; }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Lux Cove: Bestsellers",
+  "settings": [
+    { "type": "checkbox", "id": "pinkbg", "label": "Pink background", "default": false },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Our Bestsellers" },
+    { "type": "checkbox", "id": "show_add_to_cart", "label": "Show Add to Cart button", "default": true },
+    { "type": "text", "id": "button_label", "label": "Button label", "default": "Add to Cart" }
+  ],
+  "blocks": [
+    {
+      "type": "product",
+      "name": "Product",
+      "settings": [
+        { "type": "product", "id": "product", "label": "Product" }
+      ]
+    }
+  ],
+  "max_blocks": 12,
+  "presets": [
+    {
+      "name": "Lux Cove: Bestsellers",
+      "blocks": [
+        { "type": "product" },
+        { "type": "product" },
+        { "type": "product" },
+        { "type": "product" }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -61,7 +61,7 @@
 <script src="{{ 'lux-cove.js' | asset_url }}" defer="defer"></script>
 
 {% style %}
-  main[data-template="product.{{ section.settings.template_suffix }}"] {
+  main[data-template="{{ template }}"] {
     --font-body--family: 'Jost', sans-serif;
     --font-subheading--family: 'Cormorant Garamond', serif;
     --font-heading--family: 'Cormorant Garamond', serif;
@@ -123,9 +123,9 @@
   "settings": [
     {
       "type": "paragraph",
-      "content": "Loads the Lux Cove fonts/palette and scopes them to this product's alternate template only. Place this section first in the template. It renders no visible markup of its own."
+      "content": "Loads the Lux Cove fonts/palette and scopes them to whichever template this section is placed in (auto-detected). Place this section first in the template. It renders no visible markup of its own."
     },
-    { "type": "text", "id": "template_suffix", "label": "Template suffix", "info": "Must match the alternate template filename, e.g. product.lux-cove.json → \"lux-cove\".", "default": "lux-cove" },
+    { "type": "text", "id": "template_suffix", "label": "Template suffix (legacy, no longer required)", "default": "lux-cove" },
     { "type": "select", "id": "color_theme", "label": "Color theme", "options": [
       { "value": "cream_rose", "label": "Cream & Rose (default)" },
       { "value": "pink", "label": "Pink" },

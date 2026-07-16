@@ -1,285 +1,426 @@
-/*
- * ------------------------------------------------------------
- * IMPORTANT: The contents of this file are auto-generated.
- *
- * This file may be updated by the Shopify admin theme editor
- * or related systems. Please exercise caution as any changes
- * made to this file may be overwritten.
- * ------------------------------------------------------------
- */{
+{
   "sections": {
-    "hero_jVaWmY": {
-      "type": "hero",
+    "lc_style": {
+      "type": "lux-cove-style",
+      "settings": {
+        "color_theme": "pink"
+      }
+    },
+    "lc_hero": {
+      "type": "lux-cove-hero",
+      "settings": {
+        "external_image_url": "https://www.luxcove.co/cdn/shop/files/Untitled_design_-_2024-08-10T173242.225.png?v=1723307813&width=1600",
+        "heading": "Better Skin in Just 2 Weeks",
+        "subtext": "Improve the look of fine lines, firmness, clarity and radiance with clinically-supported beauty and skincare tools.",
+        "button_label": "Shop Now",
+        "button_link": "/collections/all",
+        "text_position": "center",
+        "text_color": "#4a2530"
+      }
+    },
+    "lc_asseenin": {
+      "type": "lux-cove-as-seen-in",
+      "settings": {
+        "heading": "As Seen In",
+        "scroll": true,
+        "speed": 40
+      },
       "blocks": {
-        "text_YLPk4p": {
-          "type": "text",
-          "name": "t:names.heading",
+        "logo1": {
+          "type": "press_logo",
           "settings": {
-            "text": "<p>Browse our latest products</p>",
-            "text_color": "{{ settings.color_palette.background }}",
-            "width": "fit-content",
-            "max_width": "normal",
-            "alignment": "left",
-            "type_preset": "h2",
-            "font": "var(--font-body--family)",
-            "font_size": "1rem",
-            "line_height": "normal",
-            "letter_spacing": "normal",
-            "case": "none",
-            "wrap": "pretty",
-            "background": false,
-            "background_color": "#00000026",
-            "corner_radius": 0,
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
-          },
-          "blocks": {}
+            "name": "VOGUE"
+          }
         },
-        "button_H9gpTf": {
-          "type": "button",
-          "name": "t:names.button",
+        "logo2": {
+          "type": "press_logo",
           "settings": {
-            "label": "Shop all",
-            "link": "shopify://collections/all",
-            "open_in_new_tab": false,
-            "style_class": "button-custom",
-            "custom_button_background": "rgba(0,0,0,0)",
-            "custom_button_text": "{{ settings.color_palette.background }}",
-            "custom_button_border": "{{ settings.color_palette.background }}",
-            "width": "fit-content",
-            "custom_width": 100,
-            "width_mobile": "fit-content",
-            "custom_width_mobile": 100
-          },
-          "blocks": {}
+            "name": "INSTYLE"
+          }
+        },
+        "logo3": {
+          "type": "press_logo",
+          "settings": {
+            "name": "GLAMOUR"
+          }
+        },
+        "logo4": {
+          "type": "press_logo",
+          "settings": {
+            "name": "WOMEN'S HEALTH"
+          }
+        },
+        "logo5": {
+          "type": "press_logo",
+          "settings": {
+            "name": "ALLURE"
+          }
+        },
+        "logo6": {
+          "type": "press_logo",
+          "settings": {
+            "name": "ELLE"
+          }
         }
       },
       "block_order": [
-        "text_YLPk4p",
-        "button_H9gpTf"
-      ],
-      "name": "t:names.hero",
-      "settings": {
-        "media_type_1": "image",
-        "media_type_2": "image",
-        "stack_media_on_mobile": false,
-        "custom_mobile_media": false,
-        "media_type_1_mobile": "image",
-        "media_type_2_mobile": "image",
-        "open_in_new_tab": false,
-        "content_direction": "column",
-        "vertical_on_mobile": true,
-        "horizontal_alignment": "space-between",
-        "vertical_alignment": "flex-end",
-        "align_baseline": true,
-        "horizontal_alignment_flex_direction_column": "center",
-        "vertical_alignment_flex_direction_column": "flex-end",
-        "gap": 24,
-        "section_width": "page-width",
-        "section_height": "medium",
-        "section_height_custom": 50,
-        "background_color": "rgba(0,0,0,0)",
-        "toggle_overlay": true,
-        "overlay_color": "#12121266",
-        "overlay_style": "solid",
-        "gradient_direction": "to bottom",
-        "blurred_reflection": false,
-        "reflection_opacity": 75,
-        "padding-block-start": 100,
-        "padding-block-end": 72
-      }
+        "logo1",
+        "logo2",
+        "logo3",
+        "logo4",
+        "logo5",
+        "logo6"
+      ]
     },
-    "product_list_fa6P9H": {
-      "type": "product-list",
+    "lc_bestsellers": {
+      "type": "lux-cove-bestsellers",
+      "settings": {
+        "pinkbg": false,
+        "heading": "Our Bestsellers",
+        "show_add_to_cart": true,
+        "button_label": "Add to Cart"
+      },
       "blocks": {
-        "static-header": {
-          "type": "_product-list-content",
-          "name": "t:names.header",
-          "static": true,
-          "settings": {
-            "content_direction": "row",
-            "vertical_on_mobile": false,
-            "horizontal_alignment": "space-between",
-            "vertical_alignment": "flex-end",
-            "align_baseline": true,
-            "horizontal_alignment_flex_direction_column": "flex-start",
-            "vertical_alignment_flex_direction_column": "center",
-            "gap": 12,
-            "width": "fill",
-            "custom_width": 100,
-            "width_mobile": "fill",
-            "custom_width_mobile": 100,
-            "height": "fit",
-            "custom_height": 100,
-            "background_media": "none",
-            "video_position": "cover",
-            "background_image_position": "cover",
-            "border": "none",
-            "border_width": 1,
-            "border_opacity": 100,
-            "border_radius": 0,
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
-          },
-          "blocks": {
-            "product_list_text_YFtzcL": {
-              "type": "_product-list-text",
-              "name": "t:names.collection_title",
-              "settings": {
-                "text": "<h3>{{ closest.collection.title }}</h3>",
-                "width": "fit-content",
-                "max_width": "normal",
-                "alignment": "left",
-                "type_preset": "h4",
-                "font": "var(--font-body--family)",
-                "line_height": "normal",
-                "letter_spacing": "normal",
-                "case": "none",
-                "wrap": "pretty",
-                "background": false,
-                "background_color": "#00000026",
-                "corner_radius": 0,
-                "padding-block-start": 0,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {}
-            },
-            "product_list_button_MWeP9V": {
-              "type": "_product-list-button",
-              "name": "t:names.product_list_button",
-              "settings": {
-                "label": "View all",
-                "open_in_new_tab": false,
-                "style_class": "link",
-                "width": "fit-content",
-                "custom_width": 100,
-                "width_mobile": "fit-content",
-                "custom_width_mobile": 100
-              },
-              "blocks": {}
-            }
-          },
-          "block_order": [
-            "product_list_text_YFtzcL",
-            "product_list_button_MWeP9V"
-          ]
+        "p1": {
+          "type": "product",
+          "settings": {}
         },
-        "static-product-card": {
-          "type": "_product-card",
-          "name": "t:names.product_card",
-          "static": true,
-          "settings": {
-            "product_card_gap": 4,
-            "border": "none",
-            "border_width": 1,
-            "border_opacity": 100,
-            "border_radius": 0,
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
-          },
-          "blocks": {
-            "product_card_gallery_677WP3": {
-              "type": "_product-card-gallery",
-              "name": "t:names.product_card_media",
-              "settings": {
-                "image_ratio": "adapt",
-                "border": "none",
-                "border_width": 1,
-                "border_opacity": 100,
-                "border_radius": 0,
-                "padding-block-start": 0,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {}
-            },
-            "product_title_YXxMTj": {
-              "type": "product-title",
-              "name": "t:names.product_title",
-              "settings": {
-                "width": "100%",
-                "max_width": "normal",
-                "alignment": "left",
-                "type_preset": "rte",
-                "font": "var(--font-body--family)",
-                "font_size": "1rem",
-                "line_height": "normal",
-                "letter_spacing": "normal",
-                "case": "none",
-                "wrap": "pretty",
-                "background": false,
-                "background_color": "#00000026",
-                "corner_radius": 0,
-                "padding-block-start": 4,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {}
-            },
-            "price_JQzVV4": {
-              "type": "price",
-              "name": "t:names.product_price",
-              "settings": {
-                "show_sale_price_first": true,
-                "show_installments": false,
-                "show_tax_info": false,
-                "type_preset": "h6",
-                "width": "100%",
-                "alignment": "left",
-                "font": "var(--font-body--family)",
-                "font_size": "1rem",
-                "line_height": "normal",
-                "letter_spacing": "normal",
-                "case": "none",
-                "padding-block-start": 0,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {}
-            }
-          },
-          "block_order": [
-            "product_card_gallery_677WP3",
-            "product_title_YXxMTj",
-            "price_JQzVV4"
-          ]
+        "p2": {
+          "type": "product",
+          "settings": {}
+        },
+        "p3": {
+          "type": "product",
+          "settings": {}
+        },
+        "p4": {
+          "type": "product",
+          "settings": {}
         }
       },
-      "name": "Featured collection",
+      "block_order": [
+        "p1",
+        "p2",
+        "p3",
+        "p4"
+      ]
+    },
+    "lc_marquee": {
+      "type": "lux-cove-testimonial-marquee",
       "settings": {
-        "collection": "all",
-        "layout_type": "grid",
-        "carousel_on_mobile": false,
-        "max_products": 8,
-        "columns": 4,
-        "mobile_columns": "2",
-        "mobile_card_size": "60cqw",
-        "columns_gap": 8,
-        "rows_gap": 24,
-        "icons_style": "arrow",
-        "icons_shape": "none",
-        "section_width": "page-width",
-        "horizontal_alignment": "flex-start",
-        "gap": 28,
-        "background_color": "{{ settings.color_palette.background }}",
-        "padding-block-start": 48,
-        "padding-block-end": 48
+        "eyebrow": "Loved worldwide",
+        "heading": "Skincare That Actually Works"
+      },
+      "blocks": {
+        "r1": {
+          "type": "testimonial_row1",
+          "settings": {
+            "external_image_url": "https://www.luxcove.co/cdn/shop/files/1_255fdc8a-630d-4b8e-ac51-1d5bf96ef2de.png?v=1741425603&width=120",
+            "name": "Jessy K.",
+            "quote": "I was skeptical, but my fine lines softened and my skin looks sculpted. So many compliments!"
+          }
+        },
+        "r2": {
+          "type": "testimonial_row1",
+          "settings": {
+            "external_image_url": "https://www.luxcove.co/cdn/shop/files/2_227e3980-11a4-4119-9ed4-d0963676a467.png?v=1741425800&width=120",
+            "name": "Nikki A.",
+            "quote": "I used to spend hundreds on spa treatments. Now I get the same results at home. So easy!"
+          }
+        },
+        "r3": {
+          "type": "testimonial_row1",
+          "settings": {
+            "external_image_url": "https://www.luxcove.co/cdn/shop/files/3_5669acd7-16a2-483a-bdbb-9f2409006cb3.png?v=1741425629&width=120",
+            "name": "Kate B.",
+            "quote": "Super easy to use. I just sit back, relax and let it work while watching TV. No hassle!"
+          }
+        },
+        "r4": {
+          "type": "testimonial_row1",
+          "settings": {
+            "external_image_url": "https://www.luxcove.co/cdn/shop/files/4_6d5fe2b7-5b21-42f1-86a6-d13fd0a1a092.png?v=1741425640&width=120",
+            "name": "Karla B.",
+            "quote": "It's my favorite part of my routine. It feels like a spa treatment at home!"
+          }
+        },
+        "r5": {
+          "type": "testimonial_row2",
+          "settings": {
+            "external_image_url": "https://www.luxcove.co/cdn/shop/files/5_4674e838-6296-4ca1-9a34-6cc05243b642.png?v=1741425662&width=120",
+            "name": "Aileen F.",
+            "quote": "Love that I can target every skin need. My skin has honestly never looked better!"
+          }
+        },
+        "r6": {
+          "type": "testimonial_row2",
+          "settings": {
+            "external_image_url": "https://www.luxcove.co/cdn/shop/files/6_1bb22647-f558-4396-a07f-58716d687ff7.png?v=1741425681&width=120",
+            "name": "Laura F.",
+            "quote": "My serums absorb so much better. My skin feels plumper and more hydrated!"
+          }
+        },
+        "r7": {
+          "type": "testimonial_row2",
+          "settings": {
+            "external_image_url": "https://www.luxcove.co/cdn/shop/files/7_3ad142b3-b597-4ce5-a2dc-bd12d1ff7222.png?v=1741425694&width=120",
+            "name": "Han S.",
+            "quote": "My skin is clearer, brighter and more even. The only thing that's worked long-term!"
+          }
+        },
+        "r8": {
+          "type": "testimonial_row2",
+          "settings": {
+            "external_image_url": "https://www.luxcove.co/cdn/shop/files/8_3ecc94a3-ae31-49c0-a516-7c5b88caef34.png?v=1741425718&width=120",
+            "name": "Laura I.",
+            "quote": "No needles, no downtime. Instant glow and the results just keep getting better!"
+          }
+        }
+      },
+      "block_order": [
+        "r1",
+        "r2",
+        "r3",
+        "r4",
+        "r5",
+        "r6",
+        "r7",
+        "r8"
+      ]
+    },
+    "lc_trusted": {
+      "type": "lux-cove-get-inspired",
+      "settings": {
+        "eyebrow": "Real transformations",
+        "heading": "Trusted by 100,000+ Customers",
+        "subtext": "See how customers are transforming their skin with Lumatra.",
+        "speed": 40
+      },
+      "blocks": {
+        "v1": {
+          "type": "showcase_video",
+          "settings": {}
+        },
+        "v2": {
+          "type": "showcase_video",
+          "settings": {}
+        },
+        "v3": {
+          "type": "showcase_video",
+          "settings": {}
+        },
+        "v4": {
+          "type": "showcase_video",
+          "settings": {}
+        }
+      },
+      "block_order": [
+        "v1",
+        "v2",
+        "v3",
+        "v4"
+      ]
+    },
+    "lc_perks": {
+      "type": "lux-cove-value-props",
+      "settings": {
+        "pinkbg": false,
+        "padding_y": 40
+      },
+      "blocks": {
+        "perk1": {
+          "type": "prop",
+          "settings": {
+            "icon": "sparkle",
+            "title": "Professional-Level Treatment",
+            "text": "Enjoy professional-grade skincare in the comfort of your own home."
+          }
+        },
+        "perk2": {
+          "type": "prop",
+          "settings": {
+            "icon": "check",
+            "title": "Long-Term Results",
+            "text": "Promotes collagen production, reduces inflammation and encourages cellular renewal."
+          }
+        },
+        "perk3": {
+          "type": "prop",
+          "settings": {
+            "icon": "clock",
+            "title": "Save Energy & Time",
+            "text": "Maximum results in minimal time — healthy skin without hours on your routine."
+          }
+        }
+      },
+      "block_order": [
+        "perk1",
+        "perk2",
+        "perk3"
+      ]
+    },
+    "lc_trust": {
+      "type": "lux-cove-value-props",
+      "settings": {
+        "pinkbg": false,
+        "padding_y": 26
+      },
+      "blocks": {
+        "tb1": {
+          "type": "prop",
+          "settings": {
+            "icon": "shield",
+            "title": "Try Risk-Free for 90 Days",
+            "text": ""
+          }
+        },
+        "tb2": {
+          "type": "prop",
+          "settings": {
+            "icon": "truck",
+            "title": "Free Worldwide Shipping",
+            "text": ""
+          }
+        },
+        "tb3": {
+          "type": "prop",
+          "settings": {
+            "icon": "lock",
+            "title": "Secure Payment Methods",
+            "text": ""
+          }
+        }
+      },
+      "block_order": [
+        "tb1",
+        "tb2",
+        "tb3"
+      ]
+    },
+    "lc_realresults": {
+      "type": "lux-cove-loop-showcase",
+      "settings": {
+        "pinkbg": true,
+        "eyebrow": "Before & after",
+        "heading": "Real Customers,<br>Real Results",
+        "speed": 52
+      },
+      "blocks": {
+        "rr1": {
+          "type": "item",
+          "settings": {
+            "external_image_url": "https://www.luxcove.co/cdn/shop/files/JOWLS_BEFORE_AFTER_1.png?v=1774893491&width=800",
+            "name": "Marni",
+            "quote": "I genuinely didn't expect much, but my skin looks firmer and more lifted than it has in years. It's become the ten minutes of my day I look forward to most."
+          }
+        },
+        "rr2": {
+          "type": "item",
+          "settings": {
+            "external_image_url": "https://www.luxcove.co/cdn/shop/files/WRINKLES_BEFORE_AFTER_1.png?v=1774893605&width=800",
+            "name": "",
+            "quote": "The lines around my eyes and forehead have softened noticeably. My skin just looks smoother and more rested."
+          }
+        },
+        "rr3": {
+          "type": "item",
+          "settings": {
+            "external_image_url": "https://www.luxcove.co/cdn/shop/files/DARK_CIRCLES_BEFORE_AFTER_df309dcd-9faa-44d2-b5d2-5f6dab5c82c8.png?v=1774893691&width=800",
+            "name": "",
+            "quote": "My dark circles and dullness have faded so much. People keep asking if I've been on holiday!"
+          }
+        },
+        "rr4": {
+          "type": "item",
+          "settings": {
+            "external_image_url": "https://www.luxcove.co/cdn/shop/files/ACNE_BEFORE_AFTER.png?v=1773948105&width=800",
+            "name": "",
+            "quote": "A few sessions a week completely calmed my breakouts. My skin is the clearest it's been in years."
+          }
+        }
+      },
+      "block_order": [
+        "rr1",
+        "rr2",
+        "rr3",
+        "rr4"
+      ]
+    },
+    "lc_results30": {
+      "type": "lux-cove-results-30days",
+      "settings": {
+        "eyebrow": "Clinically observed",
+        "heading": "See Visible Results in<br>Just 30 Days",
+        "external_image_url": "https://www.luxcove.co/cdn/shop/files/US_VS_THEM_FACELIFT_SURGERY.png?v=1773769643&width=1000",
+        "results_title": "Results",
+        "disclaimer": "Based on an independent claims validation study over 30 days of consistent use. Results may vary."
+      },
+      "blocks": {
+        "s1": {
+          "type": "stat",
+          "settings": {
+            "percent": 90,
+            "text": "Saw a significant decrease in jowling & turkey neck."
+          }
+        },
+        "s2": {
+          "type": "stat",
+          "settings": {
+            "percent": 89,
+            "text": "Reported a noticeable reduction in fine lines & wrinkles."
+          }
+        },
+        "s3": {
+          "type": "stat",
+          "settings": {
+            "percent": 85,
+            "text": "Saw a significant improvement in skin tone and texture."
+          }
+        },
+        "s4": {
+          "type": "stat",
+          "settings": {
+            "percent": 82,
+            "text": "Experienced a significant increase in facial definition."
+          }
+        },
+        "s5": {
+          "type": "stat",
+          "settings": {
+            "percent": 75,
+            "text": "Saw improved skincare absorption after using the device."
+          }
+        }
+      },
+      "block_order": [
+        "s1",
+        "s2",
+        "s3",
+        "s4",
+        "s5"
+      ]
+    },
+    "lc_riskfree": {
+      "type": "lux-cove-risk-free",
+      "settings": {
+        "eyebrow": "Our promise",
+        "heading": "Try Risk-Free",
+        "external_image_url": "https://www.luxcove.co/cdn/shop/files/JOWLS_BEFORE_AFTER_7.png?v=1775327619&width=1000",
+        "text": "We're confident you'll love it, but if it's not for you, no worries. Try it for 90 days, and if you're not completely satisfied, return it for a full refund — your satisfaction is our priority."
       }
     }
   },
   "order": [
-    "hero_jVaWmY",
-    "product_list_fa6P9H"
+    "lc_style",
+    "lc_hero",
+    "lc_asseenin",
+    "lc_bestsellers",
+    "lc_marquee",
+    "lc_trusted",
+    "lc_perks",
+    "lc_trust",
+    "lc_realresults",
+    "lc_results30",
+    "lc_riskfree"
   ]
 }

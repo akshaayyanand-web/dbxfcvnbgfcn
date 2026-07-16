@@ -1,0 +1,51 @@
+{{ 'lux-cove.css' | asset_url | stylesheet_tag }}
+<div class="lc-page" data-screen-label="Hero" style="max-width:none">
+  <section class="lc-hero" style="position:relative;overflow:hidden">
+    {%- if section.settings.image != blank -%}
+      <img src="{{ section.settings.image | image_url: width: 1600 }}" class="lc-hero-img" alt="{{ section.settings.heading | escape }}" style="width:100%;display:block;object-fit:cover;min-height:340px;max-height:560px">
+    {%- elsif section.settings.external_image_url != blank -%}
+      <img src="{{ section.settings.external_image_url }}" class="lc-hero-img" alt="{{ section.settings.heading | escape }}" style="width:100%;display:block;object-fit:cover;min-height:340px;max-height:560px">
+    {%- else -%}
+      <div style="width:100%;min-height:340px;background:var(--lc-pink)"></div>
+    {%- endif -%}
+
+    <div class="lc-hero-overlay" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:{{ section.settings.text_position }};text-align:center;padding:40px 22px;gap:14px">
+      {%- if section.settings.eyebrow != blank -%}
+        <div class="lc-eyebrow" style="color:{{ section.settings.text_color }}">{{ section.settings.eyebrow }}</div>
+      {%- endif -%}
+      {%- if section.settings.heading != blank -%}
+        <h1 class="lc-serif" style="font-size:38px;font-weight:700;line-height:1.08;letter-spacing:-.01em;margin:0;max-width:520px;color:{{ section.settings.text_color }}">{{ section.settings.heading }}</h1>
+      {%- endif -%}
+      {%- if section.settings.subtext != blank -%}
+        <p class="lc-fs14" style="max-width:420px;line-height:1.7;margin:0;color:{{ section.settings.text_color }}">{{ section.settings.subtext }}</p>
+      {%- endif -%}
+      {%- if section.settings.button_label != blank -%}
+        <a href="{{ section.settings.button_link | default: '#' }}" class="lc-cta" style="width:auto;padding:15px 40px;margin-top:8px;display:inline-block">{{ section.settings.button_label }}</a>
+      {%- endif -%}
+    </div>
+  </section>
+</div>
+
+{% schema %}
+{
+  "name": "Lux Cove: Hero",
+  "settings": [
+    { "type": "image_picker", "id": "image", "label": "Background image" },
+    { "type": "url", "id": "external_image_url", "label": "External image URL (used until you pick one above)" },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Better Skin in Just 2 Weeks" },
+    { "type": "textarea", "id": "subtext", "label": "Subtext", "default": "Improve the look of fine lines, firmness, clarity and radiance with clinically-supported beauty and skincare tools." },
+    { "type": "text", "id": "button_label", "label": "Button label", "default": "Shop Now" },
+    { "type": "url", "id": "button_link", "label": "Button link" },
+    { "type": "select", "id": "text_position", "label": "Text vertical position", "options": [
+      { "value": "flex-start", "label": "Top" },
+      { "value": "center", "label": "Center" },
+      { "value": "flex-end", "label": "Bottom" }
+    ], "default": "center" },
+    { "type": "color", "id": "text_color", "label": "Text color", "default": "#2a2320" }
+  ],
+  "presets": [
+    { "name": "Lux Cove: Hero" }
+  ]
+}
+{% endschema %}
