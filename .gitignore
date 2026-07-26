@@ -1,0 +1,5 @@
+.env
+*.env
+.claude/skills/video-use/.env
+videos/
+*/edit/
