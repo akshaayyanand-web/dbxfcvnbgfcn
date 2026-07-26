@@ -3,3 +3,6 @@
 .claude/skills/video-use/.env
 videos/
 */edit/
+*.egg-info/
+__pycache__/
+node_modules/
