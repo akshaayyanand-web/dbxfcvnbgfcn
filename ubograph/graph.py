@@ -4,6 +4,7 @@ from typing import Dict, List, Optional
 import networkx as nx
 
 from config import HIGH_RISK_JURISDICTIONS
+from reference import country_label, jurisdiction_label
 from resolve import EntityStore
 from schema import (
     ADDRESS,
@@ -99,6 +100,7 @@ def detect_nominee_hubs(graph: nx.MultiDiGraph) -> List[dict]:
                         "common for professional service providers acting as nominees."
                     ),
                     "nodes": [node_id] + sorted(controlled),
+                    "principals": [node_id],  # the nominee, not the companies
                     "edges": [[node_id, target] for target in sorted(controlled)],
                 }
             )
@@ -128,6 +130,7 @@ def detect_shared_addresses(graph: nx.MultiDiGraph) -> List[dict]:
                         "check substance, not as a finding on its own."
                     ),
                     "nodes": [node_id] + sorted(occupants),
+                    "principals": [node_id],  # the address, not every tenant
                     "edges": [[occupant, node_id] for occupant in sorted(occupants)],
                 }
             )
@@ -227,6 +230,7 @@ def detect_layering_depth(graph: nx.MultiDiGraph, roots: List[str]) -> List[dict
                         + " ← ".join(graph.nodes[n].get("name", n) for n in chain)
                     ),
                     "nodes": chain,
+                    "principals": [root],  # the company being layered over
                     "edges": [[chain[i + 1], chain[i]] for i in range(len(chain) - 1)],
                 }
             )
@@ -250,16 +254,57 @@ def run_detectors(graph: nx.MultiDiGraph, roots: Optional[List[str]] = None) -> 
 # Risk score
 # --------------------------------------------------------------------------
 
-_SEVERITY_POINTS = {"high": 35, "medium": 18, "low": 7}
+# Calibrated so the bands and the findings can never contradict each other:
+# one high finding alone reaches red (50), one medium alone reaches orange (25),
+# and low findings accumulate without tipping an otherwise clean entity.
+_SEVERITY_POINTS = {"high": 50, "medium": 25, "low": 8}
+
+# One definition of the traffic-light bands, used by the graph, the table and
+# the PDF so they can never disagree.
+RED, ORANGE, GREEN = "red", "orange", "green"
+
+
+def risk_band(score: int, flags) -> str:
+    flags = set(flags or [])
+    if flags & {"sanctioned", "crime", "wanted"} or score >= 50:
+        return RED
+    if "pep" in flags or score >= 25:
+        return ORANGE
+    return GREEN
+
+
+def band_reason(score: int, flags) -> str:
+    flags = set(flags or [])
+    if flags & {"sanctioned", "crime", "wanted"}:
+        listed = ", ".join(sorted(flags & {"sanctioned", "crime", "wanted"}))
+        return f"Red: carries a {listed} flag, which sets the band regardless of score."
+    if score >= 50:
+        return f"Red: risk score {score}/100 from the findings below."
+    if "pep" in flags:
+        return "Orange: recorded as politically exposed or a close associate of a PEP."
+    if score >= 25:
+        return f"Orange: risk score {score}/100 from the findings below."
+    return (
+        f"Green: risk score {score}/100 and no sanctions, criminal or political-exposure "
+        "flag in the sources searched."
+    )
+
+
+# An entity that merely appears in someone else's finding carries a share of the
+# weight, not all of it: being one of eight companies a nominee runs is context,
+# not the same fact as being the nominee.
+BYSTANDER_SHARE = 0.4
 
 
 def score_nodes(graph: nx.MultiDiGraph, findings: List[dict]) -> Dict[str, int]:
     scores: Dict[str, int] = {node_id: 0 for node_id in graph.nodes}
     for finding in findings:
         points = _SEVERITY_POINTS.get(finding["severity"], 5)
+        principals = set(finding.get("principals") or finding.get("nodes") or [])
         for node_id in finding.get("nodes", []):
-            if node_id in scores:
-                scores[node_id] += points
+            if node_id not in scores:
+                continue
+            scores[node_id] += points if node_id in principals else round(points * BYSTANDER_SHARE)
     for node_id in scores:
         scores[node_id] = min(100, scores[node_id])
     return scores
@@ -333,8 +378,15 @@ def subgraph_json(
     nodes = []
     for node_id in keep:
         data = dict(graph.nodes[node_id])
-        data["risk_score"] = scores.get(node_id, 0)
+        score = scores.get(node_id, 0)
+        data["risk_score"] = score
+        data["risk_band"] = risk_band(score, data.get("risk_flags"))
+        data["band_reason"] = band_reason(score, data.get("risk_flags"))
         data["is_root"] = node_id in roots
+        data["country_label"] = country_label(data.get("country"))
+        data["jurisdiction_label"] = jurisdiction_label(
+            data.get("jurisdiction") or data.get("country")
+        )
         nodes.append(data)
 
     edges = []

@@ -1,7 +1,10 @@
 """Smoke tests. Run with: python test_ubograph.py  (no pytest needed)."""
 import sys
 
-from graph import build_graph, find_ubos, run_detectors
+import pdf as pdf_renderer
+from graph import band_reason, build_graph, find_ubos, risk_band, run_detectors
+from reference import country_label, jurisdiction_label
+from report import build_report
 from resolve import EntityStore
 from schema import COMPANY, OWNS, PERSON, POSSIBLY_SAME_AS, Edge, Node, normalise_name
 from search import run_search
@@ -89,6 +92,77 @@ def test_ubo_traversal_ignores_directorships():
     run_detectors(graph, ["c"])
 
 
+def test_risk_bands():
+    print("risk bands")
+    check("sanctions forces red at any score", risk_band(0, ["sanctioned"]) == "red")
+    check("crime forces red", risk_band(5, ["crime"]) == "red")
+    check("pep forces at least orange", risk_band(0, ["pep"]) == "orange")
+    check("score 50 is red", risk_band(50, []) == "red")
+    check("score 25 is orange", risk_band(25, []) == "orange")
+    check("score 24 is green", risk_band(24, []) == "green")
+    check("band reason explains itself", "sanctioned" in band_reason(0, ["sanctioned"]))
+
+
+def test_bands_never_contradict_findings():
+    print("bands agree with findings")
+    payload = run_search("falcon capital", hops=4)
+    bad = []
+    for node in payload["nodes"]:
+        severities = {
+            f["severity"]
+            for f in payload["findings"]
+            if node["id"] in (f.get("principals") or f.get("nodes") or [])
+        }
+        if "high" in severities and node["risk_band"] != "red":
+            bad.append(node["name"])
+        if "medium" in severities and node["risk_band"] == "green":
+            bad.append(node["name"])
+    check("no entity is greener than its own findings", not bad)
+
+
+def test_place_labels():
+    print("country and jurisdiction labels")
+    check("country code resolves", country_label("ae") == "United Arab Emirates")
+    check("subdivision resolves", jurisdiction_label("ae_du").endswith("Dubai"))
+    check("delaware resolves", "Delaware" in jurisdiction_label("us_de"))
+    check("unknown code passes through", country_label("zz9") == "zz9")
+
+
+def test_report_and_pdf():
+    print("report and PDF")
+    payload = run_search("falcon capital", hops=4)
+    webb = next(n["id"] for n in payload["nodes"] if n["name"] == "Marcus Webb")
+    report = build_report(payload, webb)
+    check("nominee bands orange, not green", report["subject"]["risk_band"] == "orange")
+    check("all eight directorships listed", len(report["affiliations"]["current"]) == 8)
+    check("narrative explains the band", any("controlling role" in p for p in report["narrative"]))
+
+    branko = next(n["id"] for n in payload["nodes"] if n["name"] == "Viktor Branko")
+    sanctioned = build_report(payload, branko)
+    check("sanctioned subject bands red", sanctioned["subject"]["risk_band"] == "red")
+    check("ownership route to the target is shown", sanctioned["ownership_paths"])
+    check("affiliations carry their own band",
+          all(a["band"] in {"red", "orange", "green"}
+              for a in sanctioned["affiliations"]["current"]))
+
+    data = pdf_renderer.render(sanctioned)
+    check("PDF renders", data.startswith(b"%PDF") and len(data) > 2000)
+
+    missing = build_report(payload, "does-not-exist")
+    check("unknown entity returns an error, not a crash", "error" in missing)
+
+
+def test_identity_matches_surface_in_report():
+    print("unresolved identity matches reach the report")
+    payload = run_search("falcon capital", hops=4)
+    node = next((n["id"] for n in payload["nodes"] if n["name"] == "Rashid Al Mansoori"), None)
+    check("subject present", node is not None)
+    if node:
+        report = build_report(payload, node)
+        check("possible-match record is flagged for verification",
+              len(report["identity_matches"]) == 1)
+
+
 if __name__ == "__main__":
     for test in (
         test_name_normalisation,
@@ -97,6 +171,11 @@ if __name__ == "__main__":
         test_conflicting_birth_years_do_not_merge,
         test_detectors_and_ubos,
         test_ubo_traversal_ignores_directorships,
+        test_risk_bands,
+        test_bands_never_contradict_findings,
+        test_place_labels,
+        test_report_and_pdf,
+        test_identity_matches_surface_in_report,
     ):
         test()
     print()

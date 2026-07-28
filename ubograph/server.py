@@ -1,9 +1,13 @@
 """Flask server: static frontend + the /api endpoints it calls."""
 import json
+import re
 
 from flask import Flask, jsonify, request, send_from_directory
 
 import config
+import pdf as pdf_renderer
+import reference
+from report import build_report
 from search import run_search
 
 app = Flask(__name__, static_folder="frontend", static_url_path="")
@@ -45,6 +49,45 @@ def api_search():
     if payload.get("error"):
         return jsonify(payload), 400
     return jsonify(payload)
+
+
+@app.get("/api/reference")
+def api_reference():
+    """Country and jurisdiction lists for the form dropdowns."""
+    return jsonify({
+        "countries": reference.countries(),
+        "jurisdictions": reference.jurisdictions(),
+    })
+
+
+@app.post("/api/report")
+def api_report():
+    """Build a report from a result set the client already has."""
+    body = request.get_json(silent=True) or {}
+    payload, node_id = body.get("payload"), body.get("node_id")
+    if not payload or not node_id:
+        return jsonify({"error": "payload and node_id are required."}), 400
+    report = build_report(payload, node_id)
+    if report.get("error"):
+        return jsonify(report), 404
+    return jsonify(report)
+
+
+@app.post("/api/report.pdf")
+def api_report_pdf():
+    body = request.get_json(silent=True) or {}
+    payload, node_id = body.get("payload"), body.get("node_id")
+    if not payload or not node_id:
+        return jsonify({"error": "payload and node_id are required."}), 400
+    report = build_report(payload, node_id)
+    if report.get("error"):
+        return jsonify(report), 404
+    name = re.sub(r"[^A-Za-z0-9]+", "_", report["subject"].get("name") or "report").strip("_")
+    return app.response_class(
+        pdf_renderer.render(report),
+        mimetype="application/pdf",
+        headers={"Content-Disposition": f'attachment; filename="UBOgraph_{name}.pdf"'},
+    )
 
 
 @app.get("/api/export")

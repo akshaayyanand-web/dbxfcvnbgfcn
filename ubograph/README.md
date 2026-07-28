@@ -6,7 +6,8 @@ intermediaries — and what should be checked before signing.
 
 It pulls from sanctions and corporate registry APIs, resolves records that describe
 the same real-world entity, builds one graph, runs red-flag detectors over it, and
-draws the result.
+presents the result three ways: an interactive **graph**, a filterable **table**, and
+a per-entity **written report** you can download as a PDF.
 
 ---
 
@@ -81,8 +82,12 @@ terminal while you use the browser.
 They are the most valuable part of the form, which is why the UI explains them
 rather than hiding them. OpenSanctions scores a multi-attribute match far higher
 than a name-only one, so a birth year or nationality is the single most effective
-way to kill namesake false positives. Nationality and date of birth show for
-people, registration number for companies, plus a jurisdiction filter.
+way to kill namesake false positives. Nationality is a dropdown of all 249 ISO
+countries; date of birth is day / month / year selects where the year alone is enough
+(often all a registry publishes); jurisdiction is a grouped dropdown covering every
+country plus the sub-national registries that matter — US states, UAE emirates,
+Canadian provinces, Australian states — in the `us_de` / `ae_du` form the APIs expect.
+Registration number shows for companies.
 
 ---
 
@@ -137,6 +142,9 @@ resolve.py           entity resolution: merge vs link
 graph.py             NetworkX build, detectors, risk scoring, UBO paths, export
 search.py            orchestration across every configured source
 server.py            Flask: static frontend + /api/status, /api/search, /api/export
+report.py            per-entity report structure (screen and PDF share it)
+pdf.py               ReportLab rendering of that structure
+reference.py         ISO country / jurisdiction lookup
 pipeline.py          command line entry point
 test_ubograph.py     smoke tests
 sources/
@@ -144,7 +152,10 @@ sources/
   opencorporates.py  company search, company detail, officer search
   adverse_media.py   open-web fallback via the Claude API
   demo.py            synthetic network used when no keys are configured
-frontend/index.html  the whole UI: form, force-directed graph, findings, detail
+frontend/index.html  markup: form, tabs, table, report
+frontend/app.js      search, graph rendering, table filtering, report + PDF
+frontend/styles.css  the whole visual layer
+frontend/data/       generated ISO country and jurisdiction lists
 ```
 
 Adding a source means writing one adapter that emits `Node`s and `Edge`s. Nothing
@@ -157,9 +168,61 @@ downstream knows which API a record came from.
 | `GET /api/status` | Which sources are configured (drives the header chips) |
 | `GET|POST /api/search` | `name`, `entity_type`, `nationality`, `birth_date`, `reg_number`, `jurisdiction`, `hops` → graph payload |
 | `GET /api/export` | Same payload as a downloadable JSON file |
+| `GET /api/reference` | Country and jurisdiction lists for the dropdowns |
+| `POST /api/report` | `{payload, node_id}` → the report structure for one entity |
+| `POST /api/report.pdf` | Same input → a PDF file |
+
+The report endpoints take the result set the browser already holds, so opening a
+report and downloading a PDF cost no extra API quota.
 
 The frontend only ever calls `/api/search`, so the visual layer can be reworked
 freely without touching the backend.
+
+## The three views
+
+**Graph** — the network. Circle = person, square = company, diamond = address.
+
+**Table** — every entity as a row: name, type, how it relates to the network,
+jurisdiction, flags and risk score. Sort by any column. Filter by risk band (the
+three coloured pills), entity type, specific flag, or name. Click any name to open
+its report.
+
+**Report** — the written assessment for one entity:
+
+- Risk band chip (red / orange / green) and a plain sentence saying why that band.
+- Identifying details: nationality, date of birth, registration number, jurisdiction,
+  aliases, sources.
+- **Assessment** — several paragraphs in plain English explaining what makes this
+  entity a risk: sanctions or PEP status, how many entities it controls and where,
+  which of those are themselves red, the ownership route to the company you searched,
+  and which structural findings it is caught up in.
+- **Current** and **previous affiliations** as tables, each row colour-banded by that
+  company's own risk, with role, stake, jurisdiction and dates.
+- Unresolved identity matches, flagged for verification and never silently merged.
+- Open-web research, if enabled, in a separate amber panel with a category filter.
+- **Download PDF** produces a formatted document with the same content, colour bands
+  included, ready to file or attach.
+
+Every name in the report is clickable, so you can walk the chain from a subsidiary up
+to its beneficial owner one report at a time.
+
+### Risk bands
+
+| Band | Meaning |
+|---|---|
+| **Red** | A sanctions, criminal or wanted flag, or a risk score of 50+ |
+| **Orange** | Politically exposed, or a risk score of 25–49 |
+| **Green** | Score under 25 and no adverse flag in the sources searched |
+
+Flags override the score: a sanctioned party is red even in an otherwise empty
+network. Scoring is calibrated so the bands and the findings cannot contradict each
+other — one high finding alone reaches red, one medium alone reaches orange. An
+entity that merely appears in someone else's finding carries a fraction of the
+weight, because being one of eight companies a nominee runs is context, not the same
+fact as being the nominee.
+
+Green means nothing was found, which is not the same as clearance — the report says
+so explicitly.
 
 ## Reading the graph
 
