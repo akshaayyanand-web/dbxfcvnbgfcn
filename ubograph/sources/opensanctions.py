@@ -13,6 +13,7 @@ import requests
 
 from config import HTTP_TIMEOUT, OPENSANCTIONS_API_KEY, OPENSANCTIONS_BASE_URL
 from resolve import EntityStore
+from sources import dossier as dossier_builder
 from schema import (
     ADDRESS,
     COMPANY,
@@ -27,6 +28,13 @@ from schema import (
 )
 
 SOURCE = "opensanctions"
+
+# A /match score of 1.0 means the record matched the *query* perfectly — not that
+# two records describe the same person. Searching a bare "Imran Khan" scores every
+# same-named record 1.0, several of whom are different men. So a 100% group is only
+# collapsed when nothing in the records contradicts the identification.
+PERFECT_MATCH = 0.999
+CONFLICT_KEYS = ("birthDate", "passportNumber", "idNumber", "nationality")
 
 # FollowTheMoney relationship schemata -> (source property, target property, edge type)
 RELATIONSHIPS: Dict[str, Tuple[str, str, str]] = {
@@ -119,6 +127,7 @@ def _to_node(entity: dict) -> Node:
         status=_first(props, "status"),
     )
     node.sources.add(SOURCE)
+    node.source_ids.add(f"{SOURCE}:{entity.get('id')}")
     node.risk_flags |= _risk_flags(entity)
     node.source_urls.append(f"https://www.opensanctions.org/entities/{entity.get('id')}/")
     for alias in (props.get("alias") or [])[:8]:
@@ -220,6 +229,75 @@ def _percent(value: Optional[str]) -> Optional[float]:
         return None
 
 
+_catalog_cache: Optional[dict] = None
+
+
+def dataset_titles() -> dict:
+    """Slug -> published title, so a report can say "NACTA List of Proscribed
+    Persons" rather than "pk_nacta_proscribed"."""
+    global _catalog_cache
+    if _catalog_cache is not None:
+        return _catalog_cache
+    _catalog_cache = {}
+    if not available():
+        return _catalog_cache
+    try:
+        response = requests.get(
+            f"{OPENSANCTIONS_BASE_URL}/catalog", headers=_headers(), timeout=HTTP_TIMEOUT
+        )
+        if response.ok:
+            for dataset in (response.json() or {}).get("datasets") or []:
+                name = dataset.get("name")
+                if not name:
+                    continue
+                publisher = dataset.get("publisher") or {}
+                _catalog_cache[name] = {
+                    "name": name,
+                    "title": dataset.get("title") or name,
+                    "url": dataset.get("url") or dataset.get("link"),
+                    "publisher": publisher.get("name"),
+                    "publisher_country": publisher.get("country"),
+                    "summary": dataset.get("summary"),
+                }
+    except requests.RequestException:
+        pass  # titles are a nicety; the slug is still shown
+    return _catalog_cache
+
+
+def fetch_dossier(raw_ids: List[str]) -> Optional[dict]:
+    """Full detail for one entity, or several records merged into one."""
+    if not available() or not raw_ids:
+        return None
+    titles = dataset_titles()
+    built = []
+    for raw_id in raw_ids[:6]:  # a sane ceiling on API calls per report
+        entity = fetch_entity(raw_id, nested=True)
+        if entity:
+            built.append(dossier_builder.build(entity, titles))
+    return dossier_builder.merge(built)
+
+
+def _identity_conflict(a: dict, b: dict) -> Optional[str]:
+    """Is there positive evidence these are different people?
+
+    Absence of data is not evidence of difference — only a direct contradiction
+    on a hard identifier blocks the merge.
+    """
+    a_props = a.get("properties") or {}
+    b_props = b.get("properties") or {}
+    for key in CONFLICT_KEYS:
+        a_values = {str(v).strip().lower() for v in (a_props.get(key) or []) if isinstance(v, str)}
+        b_values = {str(v).strip().lower() for v in (b_props.get(key) or []) if isinstance(v, str)}
+        if not a_values or not b_values:
+            continue
+        if key == "birthDate":
+            a_values = {v[:4] for v in a_values}
+            b_values = {v[:4] for v in b_values}
+        if a_values.isdisjoint(b_values):
+            return key
+    return None
+
+
 def match(
     name: str,
     entity_type: str = "any",
@@ -285,7 +363,7 @@ def fetch_entity(entity_id: str, nested: bool = True) -> Optional[dict]:
 
 
 def search_and_expand(store: EntityStore, query: dict, expand: int = 2) -> List[str]:
-    """Match the query, then pull the network around the strongest candidates."""
+    """Match the query, collapse certain duplicates, then pull the network."""
     results = match(
         name=query["name"],
         entity_type=query.get("entity_type", "any"),
@@ -295,17 +373,77 @@ def search_and_expand(store: EntityStore, query: dict, expand: int = 2) -> List[
         jurisdiction=query.get("jurisdiction"),
         scope=query.get("scope") or "default",
     )
+
+    candidates = []
+    for result in results:
+        entity = result if result.get("schema") else result.get("match") or {}
+        if entity.get("id"):
+            candidates.append({"entity": entity, "score": float(result.get("score") or 0)})
+
     roots: List[str] = []
     seen: dict = {}
-    for index, result in enumerate(results):
-        entity = result if result.get("schema") else result.get("match") or {}
-        if not entity.get("id"):
-            continue
+    node_for_raw: dict = {}
+
+    for index, candidate in enumerate(candidates):
+        entity = candidate["entity"]
         node_id = ingest_entity(entity, store, seen)
-        if node_id and index < expand:
+        if not node_id:
+            continue
+        node_for_raw[entity["id"]] = node_id
+        if index < expand:
             detailed = fetch_entity(entity["id"], nested=True)
             if detailed:
                 node_id = ingest_entity(detailed, store, seen) or node_id
-        if node_id and node_id not in roots:
+                candidate["entity"] = detailed
+                node_for_raw[entity["id"]] = node_id
+        if node_id not in roots:
             roots.append(node_id)
-    return roots
+
+    merged_ids = _collapse_duplicates(store, candidates, node_for_raw)
+    roots = [r for r in (store.canonical(x) for x in roots) if r] if merged_ids else roots
+
+    deduped = []
+    for root in roots:
+        if root not in deduped:
+            deduped.append(root)
+    return deduped
+
+
+def _collapse_duplicates(store: EntityStore, candidates: List[dict], node_for_raw: dict) -> int:
+    """Fold perfect-scoring records into one entity where nothing contradicts it.
+
+    Also honours OpenSanctions' own `referents`, which are records it has
+    already determined to be the same thing.
+    """
+    perfect = [c for c in candidates if c["score"] >= PERFECT_MATCH]
+    merged = 0
+    for index, keeper in enumerate(perfect):
+        keeper_entity = keeper["entity"]
+        keeper_node = store.canonical(node_for_raw.get(keeper_entity["id"]))
+        if not keeper_node:
+            continue
+        for other in perfect[index + 1:]:
+            other_entity = other["entity"]
+            other_node = store.canonical(node_for_raw.get(other_entity["id"]))
+            if not other_node or other_node == keeper_node:
+                continue
+
+            asserted = (
+                other_entity["id"] in (keeper_entity.get("referents") or [])
+                or keeper_entity["id"] in (other_entity.get("referents") or [])
+            )
+            conflict = _identity_conflict(keeper_entity, other_entity)
+            if not asserted and conflict:
+                continue  # a contradicting identifier — leave them separate
+
+            note = (
+                f"Merged with OpenSanctions record {other_entity['id']} "
+                + ("(same record per OpenSanctions referents)" if asserted
+                   else "(100% match on the search query, no contradicting identifier)")
+            )
+            node = store.nodes.get(keeper_node)
+            if node and note not in node.notes:
+                node.notes.append(note)
+            store.merge_nodes(keeper_node, other_node)
+            merged += 1
+    return merged

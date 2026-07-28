@@ -86,6 +86,7 @@ class Node:
     jurisdiction: Optional[str] = None
     status: Optional[str] = None
     sources: set = field(default_factory=set)
+    source_ids: set = field(default_factory=set)   # e.g. "opensanctions:NK-abc123"
     risk_flags: set = field(default_factory=set)
     source_urls: list = field(default_factory=list)
     aliases: set = field(default_factory=set)
@@ -101,6 +102,7 @@ class Node:
             self.aliases.add(other.name)
         self.aliases |= other.aliases
         self.sources |= other.sources
+        self.source_ids |= other.source_ids
         self.risk_flags |= other.risk_flags
         for url in other.source_urls:
             if url not in self.source_urls:
@@ -125,6 +127,7 @@ class Node:
             "jurisdiction": self.jurisdiction,
             "status": self.status,
             "sources": sorted(self.sources),
+            "source_ids": sorted(self.source_ids),
             "risk_flags": sorted(self.risk_flags),
             "source_urls": self.source_urls,
             "aliases": sorted(self.aliases),

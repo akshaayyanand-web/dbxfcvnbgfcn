@@ -154,6 +154,109 @@ def _findings_block(findings: List[dict], styles) -> List:
     return flow
 
 
+def _dossier_flow(report: dict, styles) -> List:
+    """Full source detail: what each list actually records about the subject."""
+    dossier = report.get("dossier")
+    flow = []
+    if not dossier:
+        if report.get("dossier_error"):
+            flow.append(Paragraph("Source detail", styles["h2"]))
+            flow.append(Paragraph(_clean(report["dossier_error"]), styles["small"]))
+        return flow
+
+    flow.append(Paragraph("Source detail", styles["h2"]))
+    lists = " · ".join(d.get("title") or d.get("name") for d in dossier.get("datasets") or [])
+    flow.append(Paragraph(f"<b>Listed on:</b> {_clean(lists) or 'no dataset recorded'}",
+                          styles["body"]))
+    if (dossier.get("record_count") or 1) > 1:
+        flow.append(Paragraph(
+            f"Combined from {dossier['record_count']} source records "
+            f"({_clean(', '.join(dossier.get('record_ids') or []))}). Values appearing on "
+            "more than one list are stated once.", styles["small"]))
+    if dossier.get("last_change"):
+        flow.append(Paragraph(
+            f"Source last changed {_clean(dossier['last_change'])} · first seen "
+            f"{_clean(dossier.get('first_seen') or 'unknown')}", styles["small"]))
+
+    for group in dossier.get("groups") or []:
+        flow.append(Paragraph(_clean(group["title"]), styles["h2"]))
+        data = [
+            [Paragraph(_clean(row["label"]), styles["cellhead"]),
+             Paragraph("<br/>".join(_clean(v) for v in row["values"]), styles["cell"])]
+            for row in group["rows"]
+        ]
+        table = Table(data, colWidths=[45 * mm, None])
+        table.setStyle(TableStyle([
+            ("VALIGN", (0, 0), (-1, -1), "TOP"),
+            ("LINEBELOW", (0, 0), (-1, -2), 0.25, LINE),
+            ("TOPPADDING", (0, 0), (-1, -1), 4), ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
+            ("LEFTPADDING", (0, 0), (0, -1), 0),
+        ]))
+        flow.append(table)
+
+    for index, sanction in enumerate(dossier.get("sanctions") or []):
+        heading = "Sanction records" if index == 0 else None
+        if heading:
+            flow.append(Paragraph(heading, styles["h2"]))
+        rows = [
+            ("Authority", sanction.get("authority")),
+            ("Programme", sanction.get("program")),
+            ("Reason", sanction.get("reason")),
+            ("Provisions", ", ".join(sanction.get("provisions") or [])),
+            ("Status", sanction.get("status")),
+            ("Listed", sanction.get("listing_date")),
+            ("Start date", sanction.get("start_date")),
+            ("End date", sanction.get("end_date")),
+            ("Authority ref.", sanction.get("authority_id")),
+            ("UNSC ID", sanction.get("unsc_id")),
+            ("List", ", ".join(d.get("title") or d.get("name")
+                               for d in sanction.get("datasets") or [])),
+            ("Source", sanction.get("source_url")),
+        ]
+        data = [
+            [Paragraph(_clean(label), styles["cellhead"]), Paragraph(_clean(value), styles["cell"])]
+            for label, value in rows if value
+        ]
+        if not data:
+            continue
+        table = Table(data, colWidths=[38 * mm, None])
+        table.setStyle(TableStyle([
+            ("VALIGN", (0, 0), (-1, -1), "TOP"),
+            ("BOX", (0, 0), (-1, -1), 0.4, LINE),
+            ("LINEBEFORE", (0, 0), (0, -1), 3, BAND_COLOUR["red"]),
+            ("LINEBELOW", (0, 0), (-1, -2), 0.25, LINE),
+            ("TOPPADDING", (0, 0), (-1, -1), 4), ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
+            ("LEFTPADDING", (0, 0), (0, -1), 7),
+        ]))
+        flow += [table, Spacer(1, 7)]
+
+    relationships = dossier.get("relationships") or []
+    if relationships:
+        flow.append(Paragraph("Recorded relationships", styles["h2"]))
+        data = [[Paragraph(_clean(h), styles["cellhead"])
+                 for h in ("Type", "Role", "Party", "Period")]]
+        for relationship in relationships:
+            period = " – ".join(
+                x for x in [relationship.get("start_date"), relationship.get("end_date")] if x
+            )
+            data.append([
+                Paragraph(_clean(relationship.get("kind")), styles["cell"]),
+                Paragraph(_clean(relationship.get("role") or "—"), styles["cell"]),
+                Paragraph(_clean(relationship.get("name")), styles["cell"]),
+                Paragraph(_clean(period or "—"), styles["cell"]),
+            ])
+        table = Table(data, colWidths=[28 * mm, 40 * mm, 62 * mm, 30 * mm], repeatRows=1)
+        table.setStyle(TableStyle([
+            ("VALIGN", (0, 0), (-1, -1), "TOP"),
+            ("LINEBELOW", (0, 0), (-1, 0), 0.6, LINE),
+            ("LINEBELOW", (0, 1), (-1, -1), 0.25, LINE),
+            ("TOPPADDING", (0, 0), (-1, -1), 4), ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
+            ("LEFTPADDING", (0, 0), (0, -1), 0),
+        ]))
+        flow.append(table)
+    return flow
+
+
 def render(report: dict) -> bytes:
     styles = _styles()
     subject = report["subject"]
@@ -180,8 +283,9 @@ def render(report: dict) -> bytes:
         Paragraph("Identifying details", styles["h2"]),
         _facts_table(subject, styles),
 
-        Paragraph("Assessment", styles["h2"]),
     ]
+    flow += _dossier_flow(report, styles)
+    flow.append(Paragraph("Assessment", styles["h2"]))
     for paragraph in report.get("narrative", []):
         flow.append(Paragraph(_clean(paragraph), styles["body"]))
 

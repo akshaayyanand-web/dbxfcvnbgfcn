@@ -121,3 +121,103 @@ def load(store: EntityStore) -> None:
 
     edge("james-okoro", "pearl-desert-ae", DIRECTS, role="Manager")
     edge("pearl-desert-ae", "crescent-trade-fzc", SHAREHOLDER_OF, share_pct=9.0)
+
+
+# A synthetic dossier in the same shape sources/dossier.py produces from a real
+# OpenSanctions entity, so the detail view is demonstrable without a key. Every
+# value is invented, including the list names.
+_DEMO_DOSSIERS = {
+    "demo:viktor-branko": {
+        "id": "demo-NK-4f2a91",
+        "caption": "Viktor Branko",
+        "schema": "Person",
+        "target": True,
+        "record_ids": ["demo-NK-4f2a91", "demo-NK-88b120"],
+        "record_count": 2,
+        "first_seen": "2019-03-14",
+        "last_seen": "2026-07-01",
+        "last_change": "2025-11-08",
+        "referents": ["demo-NK-88b120"],
+        "url": "https://www.opensanctions.org/entities/demo-NK-4f2a91/",
+        "datasets": [
+            {"name": "demo_sanctions_list", "title": "Demo National Sanctions List",
+             "publisher": "Demo Ministry of Finance", "publisher_country": "xx",
+             "url": "https://example.invalid/sanctions"},
+            {"name": "demo_proscribed", "title": "Demo Register of Proscribed Persons",
+             "publisher": "Demo Counter-Terrorism Authority", "publisher_country": "xx",
+             "url": "https://example.invalid/proscribed"},
+        ],
+        "groups": [
+            {"title": "Identity", "rows": [
+                {"key": "name", "label": "Name", "values": ["Viktor Branko"]},
+                {"key": "alias", "label": "Also known as",
+                 "values": ["Viktor Branko-Petrović", "V. Branko"]},
+                {"key": "fatherName", "label": "Patronymic / father's name",
+                 "values": ["Milanovich"]},
+                {"key": "birthDate", "label": "Date of birth", "values": ["1963-07-25"]},
+                {"key": "birthPlace", "label": "Place of birth", "values": ["Novi Sad"]},
+                {"key": "gender", "label": "Gender", "values": ["male"]},
+                {"key": "position", "label": "Position held",
+                 "values": ["Director, Harbour Line Shipping SA"]},
+            ]},
+            {"title": "Nationality & country", "rows": [
+                {"key": "nationality", "label": "Nationality", "values": ["Serbia"]},
+                {"key": "country", "label": "Country", "values": ["Serbia", "Panama"]},
+            ]},
+            {"title": "Identifiers", "rows": [
+                {"key": "passportNumber", "label": "Passport number", "values": ["RS-0042118"]},
+                {"key": "idNumber", "label": "National ID number", "values": ["2507963800115"]},
+                {"key": "taxNumber", "label": "Tax number", "values": ["SRB-118820044"]},
+            ]},
+            {"title": "Contact & address", "rows": [
+                {"key": "address", "label": "Address",
+                 "values": ["Bulevar Oslobodenja 114, Novi Sad, Serbia",
+                            "c/o Harbour Line Shipping SA, Panama City, Panama"]},
+            ]},
+            {"title": "Status & classification", "rows": [
+                {"key": "topics", "label": "Topics", "values": ["sanction", "crime.fin"]},
+                {"key": "notes", "label": "Notes",
+                 "values": ["Synthetic record for demonstration. Not a real person."]},
+            ]},
+        ],
+        "sanctions": [
+            {"authority": "Demo Ministry of Finance",
+             "program": "Demo Financial Crime Designations (DFC-2019)",
+             "reason": "Designated for money laundering through shipping and trade "
+                       "invoicing on behalf of a proscribed organisation.",
+             "provisions": ["Asset freeze", "Travel ban"],
+             "status": "Active", "listing_date": "2019-03-14",
+             "start_date": "2019-03-14", "end_date": None,
+             "unsc_id": None, "authority_id": "DFC-2019-0412",
+             "source_url": "https://example.invalid/sanctions/DFC-2019-0412",
+             "country": "xx",
+             "datasets": [{"name": "demo_sanctions_list",
+                           "title": "Demo National Sanctions List"}]},
+            {"authority": "Demo Counter-Terrorism Authority",
+             "program": "Schedule IV — Proscribed Persons",
+             "reason": "Listed as a financier of a proscribed organisation.",
+             "provisions": ["Asset freeze", "Reporting obligation"],
+             "status": "Active", "listing_date": "2021-08-02",
+             "start_date": "2021-08-02", "end_date": None,
+             "unsc_id": None, "authority_id": "PROSC-4471",
+             "source_url": "https://example.invalid/proscribed/4471",
+             "country": "xx",
+             "datasets": [{"name": "demo_proscribed",
+                           "title": "Demo Register of Proscribed Persons"}]},
+        ],
+        "relationships": [
+            {"kind": "Family", "role": "Brother", "name": "Milan Branko",
+             "id": None, "start_date": None, "end_date": None},
+            {"kind": "Associate", "role": "Business associate", "name": "Marcus Webb",
+             "id": None, "start_date": "2018", "end_date": None},
+            {"kind": "Directorship", "role": "Director",
+             "name": "Harbour Line Shipping SA", "id": None,
+             "start_date": "2017-06", "end_date": None},
+        ],
+    },
+}
+
+
+def dossier_for(node_id: str):
+    """Sample source detail for a demo entity, or None."""
+    return _DEMO_DOSSIERS.get(node_id)

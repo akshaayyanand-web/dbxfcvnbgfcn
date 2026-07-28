@@ -65,6 +65,7 @@ terminal while you use the browser.
 ./.venv/bin/python pipeline.py "Falcon Capital" --json graph.json
 ./.venv/bin/python pipeline.py --check-keys   # test each API key and exit
 ./.venv/bin/python test_ubograph.py       # smoke tests, no pytest needed
+./.venv/bin/python test_dossier.py        # dossier parsing + merge rules
 ```
 
 ---
@@ -97,6 +98,26 @@ Canadian provinces, Australian states — in the `us_de` / `ae_du` form the APIs
 Registration number shows for companies.
 
 ---
+
+## Duplicate records for one person
+
+A search for a common name often returns the same individual several times, once
+per list they appear on. Those records are collapsed into one entity when a
+`/match` result scores 100% **and** nothing in the two records contradicts the
+identification — different birth years, passport numbers, national ID numbers or
+nationalities each block the merge. Records OpenSanctions itself marks as the
+same thing (via `referents`) are merged regardless.
+
+This guard matters more than it looks. A `/match` score measures the record
+against **your query**, not against another record: search a bare "Imran Khan"
+and every same-named record scores 1.0, including men who are plainly not each
+other. Collapsing on score alone would manufacture a single person holding
+another man's sanctions listing.
+
+When records are merged the report says so, lists the source record IDs, and
+states each fact once — a passport number appearing on four lists is one fact,
+not four findings. Anything below 100% is never collapsed; it stays a separate
+entity with a dashed "possible match" link.
 
 ## Entity resolution — why it merges cautiously
 
@@ -158,7 +179,8 @@ sources/
   opensanctions.py   /match + nested /entities, FollowTheMoney relationship walker
   opencorporates.py  company search, company detail, officer search
   adverse_media.py   open-web fallback via the Claude API
-  demo.py            synthetic network used when no keys are configured
+  dossier.py         raw OpenSanctions entity -> structured dossier, and merging
+  demo.py            synthetic network + sample dossier for keyless demos
 frontend/index.html  markup: form, tabs, table, report
 frontend/app.js      search, graph rendering, table filtering, report + PDF
 frontend/styles.css  the whole visual layer
@@ -205,6 +227,15 @@ its report.
   and which structural findings it is caught up in.
 - **Current** and **previous affiliations** as tables, each row colour-banded by that
   company's own risk, with role, stake, jurisdiction and dates.
+- **Source detail** — everything OpenSanctions publishes about the subject:
+  patronymic, place of birth, gender, position held, nationality, passport and
+  national ID numbers, tax numbers, addresses, plus the named lists it appears on
+  ("NACTA List of Proscribed Persons", not `pk_nacta_proscribed`).
+- **Sanction records** — one block per listing: issuing authority, programme,
+  the stated reason, provisions (asset freeze, travel ban), status, listing and
+  start dates, the authority's own reference and a link to the source document.
+- **Recorded relationships** — family, associates, directorships and ownership
+  as the source states them, with roles and dates.
 - Unresolved identity matches, flagged for verification and never silently merged.
 - Open-web research, if enabled, in a separate amber panel with a category filter.
 - **Download PDF** produces a formatted document with the same content, colour bands

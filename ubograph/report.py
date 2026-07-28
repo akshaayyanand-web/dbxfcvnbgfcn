@@ -7,6 +7,8 @@ from datetime import date, datetime
 from typing import List, Optional
 
 from graph import band_reason, risk_band
+from sources import demo as demo_source
+from sources import opensanctions
 from reference import country_label, jurisdiction_label
 from schema import COMPANY, DIRECTS, OWNS, PERSON, POSSIBLY_SAME_AS, SHAREHOLDER_OF
 
@@ -152,8 +154,12 @@ def build_report(payload: dict, node_id: str) -> dict:
                 "note": edge.get("role") or "",
             })
 
+    dossier, dossier_error = _load_dossier(subject)
+
     return {
         "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M"),
+        "dossier": dossier,
+        "dossier_error": dossier_error,
         "query": payload.get("query", {}),
         "demo_mode": payload.get("demo_mode", False),
         "subject": {
@@ -185,6 +191,29 @@ def build_report(payload: dict, node_id: str) -> dict:
         "disclaimer": DISCLAIMER,
         "end_date_note": END_DATE_NOTE,
     }
+
+
+def _load_dossier(subject: dict):
+    """Full source detail for the subject, fetched on demand.
+
+    Only runs when a report is opened, so a search of twenty entities does not
+    pull twenty dossiers nobody asked for.
+    """
+    raw_ids = [
+        source_id.split(":", 1)[1]
+        for source_id in (subject.get("source_ids") or [])
+        if source_id.startswith("opensanctions:")
+    ]
+    if raw_ids and opensanctions.available():
+        try:
+            return opensanctions.fetch_dossier(raw_ids), None
+        except Exception as exc:
+            return None, str(exc)[:240]
+    if str(subject.get("id", "")).startswith("demo:"):
+        return demo_source.dossier_for(subject["id"]), None
+    if raw_ids:
+        return None, "OpenSanctions key not configured — detail not fetched."
+    return None, None
 
 
 def _narrative(subject, findings, current, previous, paths, band) -> List[str]:

@@ -351,6 +351,8 @@ function renderReport(report) {
       `<dt>Source</dt><dd><a href="${escapeHtml(u)}" target="_blank" rel="noopener">${escapeHtml(u)}</a></dd>`
     ).join('')}</dl>` : ''}
 
+    ${dossierHtml(report)}
+
     <h3>Assessment</h3>
     ${(report.narrative || []).map((p) => `<p>${escapeHtml(p)}</p>`).join('')}
 
@@ -411,6 +413,66 @@ function renderReport(report) {
       $('#media-list').innerHTML = mediaItems(report.media);
     });
   }
+}
+
+function dossierHtml(report) {
+  const d = report.dossier;
+  if (!d) {
+    return report.dossier_error
+      ? `<h3>Source detail</h3><p class="empty">${escapeHtml(report.dossier_error)}</p>`
+      : '';
+  }
+  const lists = (d.datasets || []).map((x) =>
+    x.url ? `<a href="${escapeHtml(x.url)}" target="_blank" rel="noopener">${escapeHtml(x.title)}</a>`
+          : escapeHtml(x.title)).join(' · ');
+
+  const merged = d.record_count > 1
+    ? `<p class="note">Combined from ${d.record_count} source records
+       (${(d.record_ids || []).map((i) => `<code>${escapeHtml(i)}</code>`).join(', ')}).
+       Values appearing on more than one list are stated once.</p>`
+    : '';
+
+  const groups = (d.groups || []).map((g) => `
+    <h3>${escapeHtml(g.title)}</h3>
+    <dl class="facts">${g.rows.map((r) => `
+      <dt>${escapeHtml(r.label)}</dt>
+      <dd>${r.values.map((v) => escapeHtml(v)).join('<br>')}</dd>`).join('')}</dl>`).join('');
+
+  const sanctions = (d.sanctions || []).map((s) => `
+    <div class="sanction">
+      <div class="t">${escapeHtml(s.program || s.authority || 'Sanction record')}</div>
+      <dl class="facts">
+        ${s.authority ? `<dt>Authority</dt><dd>${escapeHtml(s.authority)}</dd>` : ''}
+        ${s.reason ? `<dt>Reason</dt><dd class="prose">${escapeHtml(s.reason)}</dd>` : ''}
+        ${(s.provisions || []).length ? `<dt>Provisions</dt><dd>${s.provisions.map(escapeHtml).join('<br>')}</dd>` : ''}
+        ${s.status ? `<dt>Status</dt><dd>${escapeHtml(s.status)}</dd>` : ''}
+        ${s.listing_date ? `<dt>Listed</dt><dd>${escapeHtml(s.listing_date)}</dd>` : ''}
+        ${s.start_date ? `<dt>Start date</dt><dd>${escapeHtml(s.start_date)}</dd>` : ''}
+        ${s.end_date ? `<dt>End date</dt><dd>${escapeHtml(s.end_date)}</dd>` : ''}
+        ${s.authority_id ? `<dt>Authority ref.</dt><dd>${escapeHtml(s.authority_id)}</dd>` : ''}
+        ${s.unsc_id ? `<dt>UNSC ID</dt><dd>${escapeHtml(s.unsc_id)}</dd>` : ''}
+        ${(s.datasets || []).length ? `<dt>List</dt><dd>${s.datasets.map((x) => escapeHtml(x.title)).join('<br>')}</dd>` : ''}
+        ${s.source_url ? `<dt>Source</dt><dd><a href="${escapeHtml(s.source_url)}" target="_blank" rel="noopener">${escapeHtml(s.source_url)}</a></dd>` : ''}
+      </dl>
+    </div>`).join('');
+
+  const relationships = (d.relationships || []).map((r) => `
+    <tr><td>${escapeHtml(r.kind)}</td><td>${escapeHtml(r.role || '—')}</td>
+    <td>${escapeHtml(r.name)}</td>
+    <td>${escapeHtml([r.start_date, r.end_date].filter(Boolean).join(' – ') || '—')}</td></tr>`).join('');
+
+  return `
+    <h3>Source detail</h3>
+    <p><b>Listed on:</b> ${lists || '<span class="empty">no dataset recorded</span>'}</p>
+    ${merged}
+    ${d.last_change ? `<p class="note">Source last changed ${escapeHtml(d.last_change)}
+      · first seen ${escapeHtml(d.first_seen || 'unknown')}
+      ${d.url ? `· <a href="${escapeHtml(d.url)}" target="_blank" rel="noopener">view on OpenSanctions</a>` : ''}</p>` : ''}
+    ${groups}
+    ${sanctions ? `<h3>Sanction records</h3>${sanctions}` : ''}
+    ${relationships ? `<h3>Recorded relationships</h3>
+      <table><thead><tr><th>Type</th><th>Role</th><th>Party</th><th>Period</th></tr></thead>
+      <tbody>${relationships}</tbody></table>` : ''}`;
 }
 
 function mediaItems(media) {

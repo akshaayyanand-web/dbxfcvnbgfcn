@@ -187,3 +187,9 @@ dd a{font-family:var(--sans); font-size:12px}
 .empty-state h3{margin:0 0 8px; font-size:18px}
 .empty-state p{margin:0 0 8px; max-width:60ch}
 .empty-state code{font-family:var(--mono); font-size:12.5px}
+
+.sanction{border:1px solid var(--line); border-left:4px solid var(--red);
+          border-radius:5px; padding:12px 14px; margin-bottom:12px}
+.sanction .t{font-weight:600; font-size:15px; margin-bottom:4px}
+.sanction .facts{grid-template-columns:150px 1fr}
+.report code{font-family:var(--mono); font-size:12px}

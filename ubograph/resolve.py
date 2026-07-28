@@ -103,6 +103,30 @@ class EntityStore:
         self._store_new(node)
         return node.id
 
+    def merge_nodes(self, keeper_id: str, other_id: str) -> Optional[str]:
+        """Force two existing records together.
+
+        Used when a source asserts the identity itself (an OpenSanctions
+        referent, or a 100% match with no contradicting identifier) rather than
+        when the resolver has merely inferred it.
+        """
+        keeper = self.canonical(keeper_id)
+        other = self.canonical(other_id)
+        if not keeper or not other or keeper == other:
+            return keeper
+        if keeper not in self.nodes or other not in self.nodes:
+            return keeper
+        absorbed = self.nodes.pop(other)
+        self.nodes[keeper].merge(absorbed)
+        self._alias[other] = keeper
+        self._index(self.nodes[keeper])
+        self._rewire(other, keeper)
+        self.edges = [
+            e for e in self.edges
+            if not (e.type == POSSIBLY_SAME_AS and {e.source, e.target} == {keeper})
+        ]
+        return keeper
+
     def add_edge(self, edge: Edge) -> None:
         source = self.canonical(edge.source)
         target = self.canonical(edge.target)
