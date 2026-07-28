@@ -1,0 +1,520 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UBOgraph — beneficial ownership mapping</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='8' r='4' fill='%237a4b1e'/%3E%3Crect x='4' y='20' width='8' height='8' fill='%23b07407'/%3E%3Crect x='20' y='20' width='8' height='8' fill='%23a5321f'/%3E%3C/svg%3E">
+<style>
+  :root{
+    --bg:#f7f5f0; --panel:#fffdf8; --ink:#1c1a17; --muted:#6b645a;
+    --line:#ddd6c9; --edge:#a89c88; --accent:#7a4b1e; --accent-soft:#f0e6d8;
+    --high:#a5321f; --medium:#b07407; --low:#5a6b4e; --link:#b07407;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --bg:#16151300; --bg:#161513; --panel:#1e1c19; --ink:#ece7de; --muted:#a09889;
+      --line:#332f29; --edge:#6b6357; --accent:#d8a56d; --accent-soft:#2a241c;
+      --high:#e2705c; --medium:#dda23f; --low:#8fa87d; --link:#dda23f;
+    }
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font:15px/1.55 "Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+  }
+  header{
+    display:flex; align-items:baseline; gap:16px; flex-wrap:wrap;
+    padding:14px 22px; border-bottom:1px solid var(--line); background:var(--panel);
+  }
+  header h1{font-size:19px; margin:0; letter-spacing:.01em}
+  header .tag{color:var(--muted); font-size:13px}
+  .chips{margin-left:auto; display:flex; gap:8px; flex-wrap:wrap}
+  .chip{
+    font:11px/1 var(--mono); letter-spacing:.04em; text-transform:uppercase;
+    padding:5px 9px; border:1px solid var(--line); border-radius:999px; color:var(--muted);
+  }
+  .chip.on{border-color:var(--low); color:var(--low)}
+  .chip.demo{border-color:var(--medium); color:var(--medium)}
+
+  main{display:grid; grid-template-columns:320px 1fr 340px; height:calc(100vh - 55px)}
+  @media (max-width:1100px){ main{grid-template-columns:1fr; height:auto} }
+
+  .col{overflow-y:auto; padding:18px}
+  .col.left{border-right:1px solid var(--line); background:var(--panel)}
+  .col.right{border-left:1px solid var(--line); background:var(--panel)}
+  .canvas-wrap{position:relative; min-height:460px; display:flex; flex-direction:column}
+  canvas{display:block; flex:1; min-height:0; width:100%; cursor:grab}
+  canvas.dragging{cursor:grabbing}
+
+  label{display:block; font-size:12px; letter-spacing:.05em; text-transform:uppercase;
+        color:var(--muted); margin:14px 0 5px}
+  input,select{
+    width:100%; padding:9px 10px; border:1px solid var(--line); border-radius:5px;
+    background:var(--bg); color:var(--ink); font:14px/1.3 inherit;
+  }
+  input[name=reg_number],input[name=birth_date]{font-family:var(--mono); font-size:13px}
+  input:focus,select:focus{outline:2px solid var(--accent); outline-offset:-1px}
+  .hint{font-size:12.5px; color:var(--muted); margin:6px 0 0}
+  button{
+    width:100%; margin-top:18px; padding:11px; border:0; border-radius:5px;
+    background:var(--accent); color:#fffdf8; font:600 14px/1 inherit; cursor:pointer;
+    letter-spacing:.02em;
+  }
+  button:disabled{opacity:.55; cursor:progress}
+  .optional{border-top:1px solid var(--line); margin-top:20px; padding-top:4px}
+  .optional h3{font-size:13px; margin:14px 0 2px; letter-spacing:.02em}
+
+  h2{font-size:13px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted);
+     margin:0 0 10px; font-weight:600; font-family:system-ui,sans-serif}
+  .section{margin-bottom:26px}
+  .finding{border-left:3px solid var(--line); padding:6px 0 6px 11px; margin-bottom:12px; cursor:pointer}
+  .finding:hover{background:var(--accent-soft)}
+  .finding.high{border-color:var(--high)} .finding.medium{border-color:var(--medium)}
+  .finding.low{border-color:var(--low)}
+  .finding .t{font-weight:600; font-size:14px}
+  .finding .d{font-size:13px; color:var(--muted); margin-top:3px}
+  .sev{font:10px/1 var(--mono); text-transform:uppercase; letter-spacing:.06em; padding:2px 5px;
+       border-radius:3px; vertical-align:1px; margin-right:6px}
+  .sev.high{background:var(--high); color:#fff} .sev.medium{background:var(--medium); color:#241a06}
+  .sev.low{background:var(--low); color:#fff}
+
+  .ubo{padding:9px 0; border-bottom:1px solid var(--line); cursor:pointer}
+  .ubo:hover{background:var(--accent-soft)}
+  .ubo .n{font-weight:600}
+  .ubo .p{font-size:12px; color:var(--muted); margin-top:3px}
+  .flag{font:10px/1 var(--mono); text-transform:uppercase; border:1px solid currentColor;
+        border-radius:3px; padding:2px 4px; margin-left:5px}
+  .flag.sanctioned,.flag.crime,.flag.wanted{color:var(--high)}
+  .flag.pep{color:var(--medium)} .flag.leak{color:var(--accent)}
+
+  dl{margin:0} dt{font-size:11px; letter-spacing:.05em; text-transform:uppercase; color:var(--muted); margin-top:10px}
+  dd{margin:2px 0 0; font-family:var(--mono); font-size:12.5px; word-break:break-word}
+  dd.prose{font-family:inherit; font-size:14px}
+  a{color:var(--accent)}
+
+  .amber{border:1px solid var(--medium); background:color-mix(in srgb,var(--medium) 9%,transparent);
+         border-radius:6px; padding:13px; margin-bottom:22px}
+  .amber h2{color:var(--medium)}
+  .amber .warn{font-size:12px; color:var(--medium); margin-bottom:8px}
+  .amber li{font-size:13px; margin-bottom:8px}
+
+  .err{border-left:3px solid var(--high); padding-left:10px; font-size:13px; color:var(--high); margin-bottom:10px}
+  .empty{color:var(--muted); font-size:13.5px}
+  .legend{font-size:12px; color:var(--muted); display:flex; gap:14px; flex-wrap:wrap;
+          padding:8px 14px; border-top:1px solid var(--line)}
+  .legend i{display:inline-block; width:22px; height:0; border-top:2px solid var(--muted); vertical-align:4px; margin-right:5px}
+  .legend i.dashed{border-top-style:dashed; border-color:var(--medium)}
+  .status{position:absolute; top:12px; left:14px; font:12px/1 var(--mono); color:var(--muted)}
+</style>
+</head>
+<body>
+<header>
+  <h1>UBOgraph</h1>
+  <span class="tag">Beneficial ownership &amp; layering analysis</span>
+  <div class="chips" id="chips"></div>
+</header>
+
+<main>
+  <section class="col left">
+    <form id="form">
+      <label for="name">Name</label>
+      <input id="name" name="name" placeholder="Person or company" value="Falcon Capital" required>
+
+      <label for="entity_type">Entity type</label>
+      <select id="entity_type" name="entity_type">
+        <option value="any">Any</option>
+        <option value="person">Person</option>
+        <option value="company">Company</option>
+      </select>
+
+      <div class="optional">
+        <h3>Optional identifiers</h3>
+        <p class="hint">These are the most valuable part of the search. A name on its own
+          returns every namesake; a birth year or nationality scores a true match far
+          higher and is the single most effective way to kill false positives.</p>
+
+        <div data-for="person">
+          <label for="nationality">Nationality</label>
+          <input id="nationality" name="nationality" placeholder="ISO code, e.g. ae">
+          <label for="birth_date">Date of birth</label>
+          <input id="birth_date" name="birth_date" placeholder="1971 or 1971-04-18">
+        </div>
+
+        <div data-for="company">
+          <label for="reg_number">Registration number</label>
+          <input id="reg_number" name="reg_number" placeholder="e.g. DMCC-114872">
+        </div>
+
+        <label for="jurisdiction">Jurisdiction</label>
+        <input id="jurisdiction" name="jurisdiction" placeholder="e.g. ae_du, gb, ky">
+
+        <label for="hops">Network depth</label>
+        <select id="hops" name="hops">
+          <option value="2">2 hops</option>
+          <option value="3" selected>3 hops</option>
+          <option value="4">4 hops</option>
+        </select>
+      </div>
+
+      <button type="submit" id="go">Map network</button>
+    </form>
+
+    <div class="section" id="errors" style="margin-top:22px"></div>
+  </section>
+
+  <section class="canvas-wrap">
+    <canvas id="canvas"></canvas>
+    <div class="status" id="status">ready</div>
+    <div class="legend">
+      <span><i></i>asserted relationship</span>
+      <span><i class="dashed"></i>possible same entity — verify</span>
+      <span>node size = network centrality · colour = risk</span>
+    </div>
+  </section>
+
+  <section class="col right" id="right"></section>
+</main>
+
+<script>
+const $ = (s) => document.querySelector(s);
+const canvas = $('#canvas'), ctx = canvas.getContext('2d');
+let data = {nodes:[], edges:[], findings:[], ubos:[]};
+let sim = {nodes:[], edges:[]}, view = {x:0, y:0, k:1};
+let selected = null, hovered = null, highlight = new Set(), dragNode = null, raf = null;
+
+const RISK = (score, flags) => {
+  if (flags.includes('sanctioned') || flags.includes('crime')) return 'var(--high)';
+  if (score >= 50) return 'var(--high)';
+  if (score >= 25 || flags.includes('pep')) return 'var(--medium)';
+  if (score > 0) return 'var(--low)';
+  return 'var(--muted)';
+};
+const css = (name) => getComputedStyle(document.body).getPropertyValue(name).trim();
+
+/* ---------- status chips ---------- */
+fetch('/api/status').then(r => r.json()).then(s => {
+  const chips = [
+    ['OpenSanctions', s.opensanctions], ['OpenCorporates', s.opencorporates],
+    ['Adverse media', s.adverse_media]
+  ].map(([label, on]) =>
+    `<span class="chip ${on ? 'on' : ''}">${label} ${on ? 'live' : 'off'}</span>`).join('');
+  $('#chips').innerHTML = chips +
+    (s.demo_mode ? '<span class="chip demo">demo data</span>' : '');
+});
+
+/* ---------- form ---------- */
+function syncOptional() {
+  const type = $('#entity_type').value;
+  document.querySelectorAll('[data-for]').forEach(block => {
+    block.style.display = (type === 'any' || block.dataset.for === type) ? '' : 'none';
+  });
+}
+$('#entity_type').addEventListener('change', syncOptional);
+syncOptional();
+
+$('#form').addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const form = new FormData($('#form'));
+  const params = new URLSearchParams();
+  for (const [key, value] of form.entries()) if (value) params.set(key, value);
+  $('#go').disabled = true; $('#status').textContent = 'searching…';
+  try {
+    const response = await fetch('/api/search?' + params.toString());
+    const payload = await response.json();
+    if (payload.error) throw new Error(payload.error);
+    render(payload);
+  } catch (err) {
+    $('#errors').innerHTML = `<div class="err">${escapeHtml(err.message)}</div>`;
+    $('#status').textContent = 'error';
+  } finally { $('#go').disabled = false; }
+});
+
+/* ---------- render ---------- */
+function render(payload) {
+  data = payload;
+  selected = null; highlight = new Set();
+  $('#errors').innerHTML = (payload.errors || [])
+    .map(e => `<div class="err"><b>${escapeHtml(e.source)}</b>: ${escapeHtml(e.message)}</div>`)
+    .join('');
+  $('#status').textContent = payload.matched
+    ? `${payload.stats.node_count} entities · ${payload.stats.edge_count} relationships`
+    : 'no structured match';
+  layout(payload);
+  renderPanel(payload);
+}
+
+function renderPanel(payload) {
+  const parts = [];
+  const media = payload.adverse_media;
+  if (media && media.available) {
+    parts.push(`<div class="amber">
+      <h2>Open-web research</h2>
+      <p class="warn">Unverified · generated from web search, not a registry record.
+        Check every source before relying on it.</p>
+      ${media.error ? `<p>${escapeHtml(media.error)}</p>` : ''}
+      <p>${escapeHtml(media.summary || '')}</p>
+      <ul>${(media.findings || []).map(f => `<li>${escapeHtml(f.claim || '')}
+        ${f.source_url ? `<a href="${escapeAttr(f.source_url)}" target="_blank" rel="noopener">
+          ${escapeHtml(f.source_title || 'source')}</a>` : ''}
+        ${f.date ? ` <span class="hint">${escapeHtml(f.date)}</span>` : ''}</li>`).join('')}</ul>
+    </div>`);
+  }
+
+  parts.push(`<div class="section"><h2>Red flags</h2>` + (
+    payload.findings && payload.findings.length
+      ? payload.findings.map((f, i) => `<div class="finding ${f.severity}" data-finding="${i}">
+          <div class="t"><span class="sev ${f.severity}">${f.severity}</span>${escapeHtml(f.title)}</div>
+          <div class="d">${escapeHtml(f.detail)}</div></div>`).join('')
+      : '<p class="empty">Nothing flagged in this subgraph.</p>') + `</div>`);
+
+  parts.push(`<div class="section"><h2>Candidate UBOs</h2>` + (
+    payload.ubos && payload.ubos.length
+      ? payload.ubos.map(u => `<div class="ubo" data-node="${escapeAttr(u.id)}">
+          <div class="n">${escapeHtml(u.name || '')}
+            ${(u.risk_flags || []).map(f => `<span class="flag ${f}">${f}</span>`).join('')}</div>
+          <div class="p">${u.tiers} tier${u.tiers === 1 ? '' : 's'} up ·
+            ${escapeHtml((u.path || []).join(' → '))}</div></div>`).join('')
+      : '<p class="empty">No natural person reachable through ownership edges. ' +
+        'That absence is itself worth noting.</p>') + `</div>`);
+
+  parts.push(`<div class="section" id="detail"><h2>Entity detail</h2>
+    <p class="empty">Select a node in the graph.</p></div>`);
+
+  $('#right').innerHTML = parts.join('');
+
+  $('#right').querySelectorAll('[data-finding]').forEach(el => {
+    el.addEventListener('click', () => {
+      const finding = payload.findings[+el.dataset.finding];
+      highlight = new Set(finding.nodes || []);
+      selected = (finding.nodes || [])[0] || null;
+      showDetail(selected); draw();
+    });
+  });
+  $('#right').querySelectorAll('[data-node]').forEach(el => {
+    el.addEventListener('click', () => {
+      selected = el.dataset.node; highlight = new Set([selected]);
+      showDetail(selected); draw();
+    });
+  });
+}
+
+function showDetail(nodeId) {
+  const node = data.nodes.find(n => n.id === nodeId);
+  const box = $('#detail');
+  if (!box) return;
+  if (!node) { box.innerHTML = '<h2>Entity detail</h2><p class="empty">Select a node.</p>'; return; }
+  const rows = [
+    ['Type', node.type], ['Risk score', node.risk_score + ' / 100'],
+    ['Country', node.country], ['Jurisdiction', node.jurisdiction],
+    ['Registration no.', node.reg_number], ['Date of birth', node.birth_date],
+    ['Status', node.status], ['Sources', (node.sources || []).join(', ')],
+    ['Flags', (node.risk_flags || []).join(', ')],
+    ['Also known as', (node.aliases || []).join(' · ')],
+  ].filter(([, value]) => value);
+  box.innerHTML = `<h2>Entity detail</h2>
+    <p class="prose" style="font-size:17px;margin:0 0 4px"><b>${escapeHtml(node.name || '')}</b></p>
+    <dl>${rows.map(([k, v]) => `<dt>${k}</dt><dd>${escapeHtml(String(v))}</dd>`).join('')}
+    ${(node.notes || []).map(n => `<dt>Note</dt><dd class="prose">${escapeHtml(n)}</dd>`).join('')}
+    ${(node.source_urls || []).map(u =>
+      `<dt>Source</dt><dd><a href="${escapeAttr(u)}" target="_blank" rel="noopener">${escapeHtml(u)}</a></dd>`
+    ).join('')}</dl>`;
+}
+
+/* ---------- force layout ---------- */
+function layout(payload) {
+  const degree = {};
+  payload.edges.forEach(e => {
+    degree[e.source] = (degree[e.source] || 0) + 1;
+    degree[e.target] = (degree[e.target] || 0) + 1;
+  });
+  const width = canvas.clientWidth || 800, height = canvas.clientHeight || 600;
+  sim.nodes = payload.nodes.map((n, i) => ({
+    ...n,
+    x: width / 2 + Math.cos(i) * (80 + i * 9),
+    y: height / 2 + Math.sin(i) * (80 + i * 9),
+    vx: 0, vy: 0,
+    r: 6 + Math.min(12, Math.sqrt(degree[n.id] || 1) * 3.2) + (n.is_root ? 3 : 0),
+  }));
+  const index = Object.fromEntries(sim.nodes.map(n => [n.id, n]));
+  sim.edges = payload.edges
+    .map(e => ({...e, s: index[e.source], t: index[e.target]}))
+    .filter(e => e.s && e.t);
+  view = {x: 0, y: 0, k: 1};
+  tick(220);
+}
+
+function tick(steps) {
+  cancelAnimationFrame(raf);
+  let remaining = steps;
+  const step = () => {
+    for (let pass = 0; pass < 2; pass++) physics();
+    draw();
+    if (--remaining > 0) raf = requestAnimationFrame(step);
+  };
+  step();
+}
+
+function physics() {
+  const width = canvas.clientWidth, height = canvas.clientHeight;
+  const nodes = sim.nodes;
+  for (let i = 0; i < nodes.length; i++) {
+    const a = nodes[i];
+    for (let j = i + 1; j < nodes.length; j++) {
+      const b = nodes[j];
+      let dx = b.x - a.x, dy = b.y - a.y;
+      let dist2 = dx * dx + dy * dy || 0.01;
+      if (dist2 > 90000) continue;
+      const force = 2600 / dist2;
+      const dist = Math.sqrt(dist2);
+      const fx = (dx / dist) * force, fy = (dy / dist) * force;
+      a.vx -= fx; a.vy -= fy; b.vx += fx; b.vy += fy;
+    }
+  }
+  sim.edges.forEach(e => {
+    const dx = e.t.x - e.s.x, dy = e.t.y - e.s.y;
+    const dist = Math.hypot(dx, dy) || 0.01;
+    const force = (dist - 110) * 0.012;
+    const fx = (dx / dist) * force, fy = (dy / dist) * force;
+    e.s.vx += fx; e.s.vy += fy; e.t.vx -= fx; e.t.vy -= fy;
+  });
+  sim.nodes.forEach(n => {
+    n.vx += (width / 2 - n.x) * 0.0016;
+    n.vy += (height / 2 - n.y) * 0.0016;
+    if (n === dragNode) { n.vx = n.vy = 0; return; }
+    n.vx *= 0.82; n.vy *= 0.82;
+    n.x += Math.max(-18, Math.min(18, n.vx));
+    n.y += Math.max(-18, Math.min(18, n.vy));
+  });
+}
+
+/* ---------- draw ---------- */
+function resize() {
+  const ratio = window.devicePixelRatio || 1;
+  canvas.width = canvas.clientWidth * ratio;
+  canvas.height = canvas.clientHeight * ratio;
+  ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+  draw();
+}
+window.addEventListener('resize', resize);
+
+function draw() {
+  const width = canvas.clientWidth, height = canvas.clientHeight;
+  ctx.save();
+  ctx.setTransform(window.devicePixelRatio || 1, 0, 0, window.devicePixelRatio || 1, 0, 0);
+  ctx.clearRect(0, 0, width, height);
+  ctx.translate(view.x, view.y); ctx.scale(view.k, view.k);
+
+  const dim = highlight.size > 0;
+  sim.edges.forEach(e => {
+    const lit = !dim || (highlight.has(e.source) && highlight.has(e.target));
+    ctx.globalAlpha = lit ? 1 : 0.14;
+    ctx.strokeStyle = e.asserted ? css('--edge') : css('--link');
+    ctx.lineWidth = e.type === 'possibly_same_as' ? 1.4 : (e.share_pct ? 1.2 + e.share_pct / 60 : 1.3);
+    ctx.setLineDash(e.asserted ? [] : [5, 4]);
+    ctx.beginPath(); ctx.moveTo(e.s.x, e.s.y); ctx.lineTo(e.t.x, e.t.y); ctx.stroke();
+    if (e.asserted) arrow(e.s, e.t);
+    ctx.setLineDash([]);
+  });
+
+  sim.nodes.forEach(n => {
+    const lit = !dim || highlight.has(n.id);
+    ctx.globalAlpha = lit ? 1 : 0.16;
+    const colour = css(RISK(n.risk_score || 0, n.risk_flags || []).replace('var(', '').replace(')', ''));
+    ctx.beginPath();
+    if (n.type === 'company') {
+      ctx.rect(n.x - n.r, n.y - n.r, n.r * 2, n.r * 2);
+    } else if (n.type === 'address') {
+      ctx.moveTo(n.x, n.y - n.r); ctx.lineTo(n.x + n.r, n.y);
+      ctx.lineTo(n.x, n.y + n.r); ctx.lineTo(n.x - n.r, n.y); ctx.closePath();
+    } else {
+      ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+    }
+    ctx.fillStyle = colour; ctx.fill();
+    if (n.id === selected || n.is_root) {
+      ctx.strokeStyle = css('--ink'); ctx.lineWidth = n.id === selected ? 2.5 : 1.5; ctx.stroke();
+    }
+    if (n.r > 9 || lit) {
+      ctx.fillStyle = css('--ink');
+      ctx.font = '12px ui-sans-serif, system-ui, sans-serif';
+      ctx.textAlign = 'center';
+      const label = (n.name || '').length > 26 ? n.name.slice(0, 24) + '…' : (n.name || '');
+      ctx.fillText(label, n.x, n.y + n.r + 13);
+    }
+  });
+  ctx.globalAlpha = 1;
+  ctx.restore();
+}
+
+function arrow(from, to) {
+  const angle = Math.atan2(to.y - from.y, to.x - from.x);
+  const tipX = to.x - Math.cos(angle) * (to.r + 3);
+  const tipY = to.y - Math.sin(angle) * (to.r + 3);
+  ctx.beginPath();
+  ctx.moveTo(tipX, tipY);
+  ctx.lineTo(tipX - Math.cos(angle - 0.4) * 7, tipY - Math.sin(angle - 0.4) * 7);
+  ctx.lineTo(tipX - Math.cos(angle + 0.4) * 7, tipY - Math.sin(angle + 0.4) * 7);
+  ctx.closePath();
+  ctx.fillStyle = ctx.strokeStyle; ctx.fill();
+}
+
+/* ---------- interaction ---------- */
+function toWorld(event) {
+  const rect = canvas.getBoundingClientRect();
+  return {
+    x: (event.clientX - rect.left - view.x) / view.k,
+    y: (event.clientY - rect.top - view.y) / view.k,
+  };
+}
+function nodeAt(point) {
+  return sim.nodes.find(n => Math.hypot(n.x - point.x, n.y - point.y) <= n.r + 4);
+}
+let panning = null;
+canvas.addEventListener('mousedown', (event) => {
+  const point = toWorld(event);
+  const node = nodeAt(point);
+  if (node) { dragNode = node; }
+  else { panning = {x: event.clientX - view.x, y: event.clientY - view.y}; }
+  canvas.classList.add('dragging');
+});
+canvas.addEventListener('mousemove', (event) => {
+  const point = toWorld(event);
+  if (dragNode) { dragNode.x = point.x; dragNode.y = point.y; tick(30); return; }
+  if (panning) { view.x = event.clientX - panning.x; view.y = event.clientY - panning.y; draw(); return; }
+  const node = nodeAt(point);
+  if (node !== hovered) { hovered = node; canvas.title = node ? node.name : ''; }
+});
+window.addEventListener('mouseup', () => {
+  if (dragNode) tick(60);
+  dragNode = null; panning = null; canvas.classList.remove('dragging');
+});
+canvas.addEventListener('click', (event) => {
+  const node = nodeAt(toWorld(event));
+  if (node) { selected = node.id; highlight = new Set([node.id]); showDetail(node.id); }
+  else { selected = null; highlight = new Set(); showDetail(null); }
+  draw();
+});
+canvas.addEventListener('wheel', (event) => {
+  event.preventDefault();
+  const factor = event.deltaY < 0 ? 1.12 : 0.89;
+  const rect = canvas.getBoundingClientRect();
+  const mx = event.clientX - rect.left, my = event.clientY - rect.top;
+  view.x = mx - (mx - view.x) * factor;
+  view.y = my - (my - view.y) * factor;
+  view.k = Math.max(0.25, Math.min(3.5, view.k * factor));
+  draw();
+}, {passive: false});
+
+/* ---------- utils ---------- */
+function escapeHtml(value) {
+  return String(value ?? '').replace(/[&<>"']/g,
+    c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function escapeAttr(value) { return escapeHtml(value); }
+
+resize();
+$('#form').dispatchEvent(new Event('submit'));
+</script>
+</body>
+</html>
