@@ -16,6 +16,17 @@ let selected = null, highlight = new Set(), dragNode = null, panning = null, raf
 
 const css = (name) => getComputedStyle(document.body).getPropertyValue(name).trim();
 const BAND_LABEL = {red: 'High risk', orange: 'Elevated risk', green: 'No flags found'};
+const FLAG_LABEL = {
+  sanctioned: 'sanctioned',
+  sanction_linked: 'sanction-linked',
+  pep: 'PEP',
+  pep_associate: 'PEP associate',
+  crime: 'crime',
+  debarred: 'debarred',
+  wanted: 'wanted',
+  leak: 'leak',
+};
+const flagLabel = (flag) => FLAG_LABEL[flag] || flag.replace(/_/g, ' ');
 
 function escapeHtml(value) {
   return String(value ?? '').replace(/[&<>"']/g,
@@ -245,7 +256,7 @@ function renderTable() {
       <td>${escapeHtml(n.role)}</td>
       <td>${escapeHtml(n.jurisdiction_label || n.country_label || n.jurisdiction || '')}</td>
       <td>${(n.risk_flags || []).map((f) =>
-        `<span class="tag-flag ${f}">${escapeHtml(f)}</span>`).join('') || '<span class="empty">—</span>'}</td>
+        `<span class="tag-flag ${f}">${escapeHtml(flagLabel(f))}</span>`).join('') || '<span class="empty">—</span>'}</td>
       <td class="num">${n.risk_score}</td>
     </tr>`).join('');
   $$('#table-body .namebtn').forEach((button) => {
@@ -306,7 +317,7 @@ function affiliationTable(entries, emptyText) {
     ${entries.map((a) => `<tr>
       <td class="band ${a.band}"></td>
       <td><button class="namebtn" data-node="${escapeHtml(a.id)}">${escapeHtml(a.name)}</button>
-        ${(a.flags || []).map((f) => `<span class="tag-flag ${f}">${escapeHtml(f)}</span>`).join('')}</td>
+        ${(a.flags || []).map((f) => `<span class="tag-flag ${f}">${escapeHtml(flagLabel(f))}</span>`).join('')}</td>
       <td>${escapeHtml(a.detail_role || a.role)}</td>
       <td class="num">${escapeHtml(a.share || '—')}</td>
       <td>${escapeHtml(a.jurisdiction || '—')}</td>
@@ -520,7 +531,7 @@ function renderSidebar(payload) {
     (payload.ubos || []).length
       ? payload.ubos.map((u) => `<div class="ubo" data-node="${escapeHtml(u.id)}">
           <div class="n">${escapeHtml(u.name || '')}
-            ${(u.risk_flags || []).map((f) => `<span class="tag-flag ${f}">${escapeHtml(f)}</span>`).join('')}</div>
+            ${(u.risk_flags || []).map((f) => `<span class="tag-flag ${f}">${escapeHtml(flagLabel(f))}</span>`).join('')}</div>
           <div class="p">${u.tiers} tier${u.tiers === 1 ? '' : 's'} up ·
             ${escapeHtml((u.path || []).join(' → '))}</div></div>`).join('')
       : '<p class="empty">No natural person reachable through ownership edges. That absence is itself worth noting.</p>')

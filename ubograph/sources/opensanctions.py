@@ -96,21 +96,43 @@ def _node_type(schema: str) -> str:
     return UNKNOWN
 
 
+# OpenSanctions topic taxonomy. The distinctions matter: "sanction" is a listed
+# party, "sanction.linked" is somebody connected to one, and a PEP is neither.
+SANCTIONED_TOPICS = {"sanction", "sanction.counter"}
+LINKED_TOPICS = {"sanction.linked"}
+DEBARMENT_TOPICS = {"debarment", "export.control", "export.risk"}
+
+
 def _risk_flags(entity: dict) -> set:
+    """Map source topics to our flags.
+
+    Deliberately NOT derived from `target`. In OpenSanctions `target: true` means
+    the entity is a subject of interest *in that dataset* — in the PEPs dataset
+    every politician is a target — so treating it as a sanctions signal labelled
+    ordinary elected officials as sanctioned. Only an explicit sanctions topic
+    sets the sanctions flag.
+    """
     props = entity.get("properties") or {}
-    topics = {t.lower() for t in (props.get("topics") or []) if isinstance(t, str)}
+    topics = {t.lower().strip() for t in (props.get("topics") or []) if isinstance(t, str)}
     datasets = {d.lower() for d in (entity.get("datasets") or []) if isinstance(d, str)}
     flags = set()
-    if entity.get("target") or any(t.startswith("sanction") for t in topics):
+
+    if topics & SANCTIONED_TOPICS:
         flags.add("sanctioned")
-    if any(t.startswith("role.pep") or t.startswith("role.rca") for t in topics):
+    if topics & LINKED_TOPICS:
+        flags.add("sanction_linked")
+    if any(t == "role.pep" or t.startswith("role.pep.") for t in topics):
         flags.add("pep")
-    if any(t.startswith("crime") for t in topics):
+    if any(t == "role.rca" or t.startswith("role.rca.") for t in topics):
+        flags.add("pep_associate")
+    if any(t == "crime" or t.startswith("crime.") for t in topics):
         flags.add("crime")
+    if topics & DEBARMENT_TOPICS:
+        flags.add("debarred")
+    if any(t == "wanted" or t.startswith("wanted.") for t in topics):
+        flags.add("wanted")
     if any("leak" in d or "icij" in d or "offshore" in d for d in datasets):
         flags.add("leak")
-    if any(t.startswith("wanted") for t in topics):
-        flags.add("wanted")
     return flags
 
 

@@ -125,7 +125,9 @@ td.num{font-family:var(--mono); font-size:12.5px; text-align:right; white-space:
   border-radius:3px; padding:2px 4px; margin-right:4px; white-space:nowrap;
 }
 .tag-flag.sanctioned,.tag-flag.crime,.tag-flag.wanted{color:var(--red)}
-.tag-flag.pep{color:var(--orange)} .tag-flag.leak{color:var(--accent)}
+.tag-flag.pep,.tag-flag.pep_associate,.tag-flag.sanction_linked,
+.tag-flag.debarred{color:var(--orange)}
+.tag-flag.leak{color:var(--accent)}
 
 /* report */
 .report{padding:22px 26px; max-width:860px}

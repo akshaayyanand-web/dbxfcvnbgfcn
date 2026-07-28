@@ -236,11 +236,29 @@ def _narrative(subject, findings, current, previous, paths, band) -> List[str]:
             "with a listed party may itself be prohibited — confirm the listing against "
             "the issuing authority's own register before proceeding."
         )
+    if "sanction_linked" in flags:
+        paragraphs.append(
+            f"{name} is recorded as linked to a sanctioned party and is NOT itself "
+            "sanctioned. Establish the nature of the connection: depending on ownership "
+            "and control, a link can bring an entity within the measures, or be immaterial."
+        )
     if "pep" in flags:
         paragraphs.append(
-            f"{name} is recorded as politically exposed, or as a close associate of a "
-            "politically exposed person. PEP status is not an allegation of wrongdoing; "
-            "it raises the standard of source-of-funds enquiry."
+            f"{name} holds or has held public office and is recorded as a politically "
+            "exposed person. That is a status, not an allegation — it is not a sanctions "
+            "listing and implies no wrongdoing. It raises the standard of source-of-funds "
+            "enquiry and calls for senior sign-off under most AML policies."
+        )
+    if "pep_associate" in flags:
+        paragraphs.append(
+            f"{name} is recorded as a relative or close associate of a politically "
+            "exposed person. As with PEP status itself, this is a prompt for enhanced "
+            "due diligence rather than an adverse finding."
+        )
+    if "debarred" in flags:
+        paragraphs.append(
+            f"{name} appears on a debarment or export-control listing. Check the issuing "
+            "body's own register for the scope and current status of the measure."
         )
     if "leak" in flags:
         paragraphs.append(

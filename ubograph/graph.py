@@ -190,8 +190,52 @@ def detect_sanctions_and_peps(graph: nx.MultiDiGraph) -> List[dict]:
                     "severity": "medium",
                     "title": "Politically exposed person",
                     "detail": (
-                        f"{data.get('name', node_id)} is recorded as politically exposed "
-                        "or closely associated with a PEP."
+                        f"{data.get('name', node_id)} holds or has held public office. "
+                        "PEP status is not an allegation of wrongdoing and does not mean "
+                        "sanctioned; it raises the standard of source-of-funds enquiry."
+                    ),
+                    "nodes": [node_id],
+                    "edges": [],
+                }
+            )
+        if "pep_associate" in flags:
+            findings.append(
+                {
+                    "kind": "pep_associate",
+                    "severity": "medium",
+                    "title": "Close associate of a PEP",
+                    "detail": (
+                        f"{data.get('name', node_id)} is recorded as a relative or close "
+                        "associate of a politically exposed person."
+                    ),
+                    "nodes": [node_id],
+                    "edges": [],
+                }
+            )
+        if "sanction_linked" in flags:
+            findings.append(
+                {
+                    "kind": "sanction_linked",
+                    "severity": "medium",
+                    "title": "Linked to a sanctioned party",
+                    "detail": (
+                        f"{data.get('name', node_id)} is recorded as connected to a "
+                        "sanctioned party. The entity is NOT itself sanctioned — check "
+                        "whether the connection brings it within the measures."
+                    ),
+                    "nodes": [node_id],
+                    "edges": [],
+                }
+            )
+        if "debarred" in flags:
+            findings.append(
+                {
+                    "kind": "debarred",
+                    "severity": "medium",
+                    "title": "Debarment or export-control listing",
+                    "detail": (
+                        f"{data.get('name', node_id)} appears on a debarment or "
+                        "export-control list."
                     ),
                     "nodes": [node_id],
                     "edges": [],
@@ -264,24 +308,40 @@ _SEVERITY_POINTS = {"high": 50, "medium": 25, "low": 8}
 RED, ORANGE, GREEN = "red", "orange", "green"
 
 
+RED_FLAGS = {"sanctioned", "crime", "wanted"}
+# Being connected to a sanctioned party, or holding office, is a reason to look
+# harder — not a reason to state that someone is sanctioned.
+ORANGE_FLAGS = {"pep", "pep_associate", "sanction_linked", "debarred", "leak"}
+
+
 def risk_band(score: int, flags) -> str:
     flags = set(flags or [])
-    if flags & {"sanctioned", "crime", "wanted"} or score >= 50:
+    if flags & RED_FLAGS or score >= 50:
         return RED
-    if "pep" in flags or score >= 25:
+    if flags & ORANGE_FLAGS or score >= 25:
         return ORANGE
     return GREEN
 
 
+ORANGE_REASONS = {
+    "pep": "recorded as a politically exposed person",
+    "pep_associate": "recorded as a close associate of a politically exposed person",
+    "sanction_linked": "recorded as linked to a sanctioned party, not sanctioned itself",
+    "debarred": "subject to a debarment or export-control listing",
+    "leak": "appears in leaked offshore records",
+}
+
+
 def band_reason(score: int, flags) -> str:
     flags = set(flags or [])
-    if flags & {"sanctioned", "crime", "wanted"}:
-        listed = ", ".join(sorted(flags & {"sanctioned", "crime", "wanted"}))
+    if flags & RED_FLAGS:
+        listed = ", ".join(sorted(flags & RED_FLAGS))
         return f"Red: carries a {listed} flag, which sets the band regardless of score."
     if score >= 50:
         return f"Red: risk score {score}/100 from the findings below."
-    if "pep" in flags:
-        return "Orange: recorded as politically exposed or a close associate of a PEP."
+    matched = [ORANGE_REASONS[f] for f in sorted(flags & ORANGE_FLAGS) if f in ORANGE_REASONS]
+    if matched:
+        return "Orange: " + "; ".join(matched) + "."
     if score >= 25:
         return f"Orange: risk score {score}/100 from the findings below."
     return (

@@ -92,6 +92,37 @@ def test_ubo_traversal_ignores_directorships():
     run_detectors(graph, ["c"])
 
 
+def test_flags_distinguish_sanctions_from_office():
+    print("a politician is not a sanctioned party")
+    from sources.opensanctions import _risk_flags
+
+    def entity(topics, target=True, datasets=("in_peps",)):
+        return {"target": target, "datasets": list(datasets),
+                "properties": {"topics": list(topics)}}
+
+    pep = _risk_flags(entity(["role.pep"]))
+    check("PEP is flagged as a PEP", pep == {"pep"})
+    check("PEP is NOT flagged sanctioned", "sanctioned" not in pep)
+    check("PEP bands orange, not red", risk_band(0, pep) == "orange")
+
+    check("dataset target flag alone means nothing",
+          _risk_flags(entity([], target=True)) == set())
+    check("PEP sub-topics still map to pep",
+          _risk_flags(entity(["role.pep.gov"])) == {"pep"})
+    check("PEP relatives are flagged separately",
+          _risk_flags(entity(["role.rca"])) == {"pep_associate"})
+    check("a sanctioned party is flagged sanctioned",
+          _risk_flags(entity(["sanction"])) == {"sanctioned"})
+    check("sanction.linked is NOT sanctioned",
+          _risk_flags(entity(["sanction.linked"])) == {"sanction_linked"})
+    check("sanction-linked bands orange",
+          risk_band(0, {"sanction_linked"}) == "orange")
+    check("counter-sanctions still count as a listing",
+          _risk_flags(entity(["sanction.counter"])) == {"sanctioned"})
+    check("band reason states PEP, not sanctions",
+          "sanction" not in band_reason(0, {"pep"}).lower())
+
+
 def test_risk_bands():
     print("risk bands")
     check("sanctions forces red at any score", risk_band(0, ["sanctioned"]) == "red")
@@ -171,6 +202,7 @@ if __name__ == "__main__":
         test_conflicting_birth_years_do_not_merge,
         test_detectors_and_ubos,
         test_ubo_traversal_ignores_directorships,
+        test_flags_distinguish_sanctions_from_office,
         test_risk_bands,
         test_bands_never_contradict_findings,
         test_place_labels,
