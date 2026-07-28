@@ -32,6 +32,10 @@ OPENCORPORATES_BASE_URL = os.environ.get(
     "OPENCORPORATES_BASE_URL", "https://api.opencorporates.com/v0.4"
 ).rstrip("/")
 
+# Set this when the app is reachable from the internet. Blank locally.
+APP_PASSWORD = os.environ.get("APP_PASSWORD", "").strip()
+APP_USERNAME = os.environ.get("APP_USERNAME", "ubograph").strip()
+
 HTTP_TIMEOUT = float(os.environ.get("HTTP_TIMEOUT", "30"))
 PORT = int(os.environ.get("PORT", "5000"))
 

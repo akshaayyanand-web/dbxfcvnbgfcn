@@ -68,6 +68,16 @@ terminal while you use the browser.
 ./.venv/bin/python test_dossier.py        # dossier parsing + merge rules
 ```
 
+### Putting it on a public URL
+
+See [DEPLOY.md](DEPLOY.md). Render's free tier is the shortest path — it reads
+`render.yaml`, gives you `https://yourname.onrender.com`, and takes the API keys
+as environment variables. A `Dockerfile` is included for Hugging Face Spaces,
+Fly.io, Koyeb or Cloud Run.
+
+Set `APP_PASSWORD` on any deployment. A public instance searches on your API keys,
+and without a password anyone who finds the URL spends your quota.
+
 ---
 
 ## How a search flows

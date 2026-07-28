@@ -1,8 +1,9 @@
 """Flask server: static frontend + the /api endpoints it calls."""
 import json
 import re
+import secrets
 
-from flask import Flask, jsonify, request, send_from_directory
+from flask import Flask, Response, jsonify, request, send_from_directory
 
 import config
 import pdf as pdf_renderer
@@ -11,6 +12,27 @@ from report import build_report
 from search import run_search
 
 app = Flask(__name__, static_folder="frontend", static_url_path="")
+
+
+@app.before_request
+def _require_password():
+    """Gate the whole app behind a password when APP_PASSWORD is set.
+
+    A deployed instance searches on your API keys. Without this, anyone who
+    finds the URL spends your OpenSanctions and OpenCorporates quota, and the
+    first you know of it is a rate-limit error mid-demo. Unset locally, so
+    development is unaffected.
+    """
+    if not config.APP_PASSWORD:
+        return None
+    auth = request.authorization
+    if auth and auth.username == config.APP_USERNAME and \
+            secrets.compare_digest(auth.password or "", config.APP_PASSWORD):
+        return None
+    return Response(
+        "Authentication required.", 401,
+        {"WWW-Authenticate": 'Basic realm="UBOgraph"'},
+    )
 
 
 @app.get("/")
@@ -108,6 +130,12 @@ def api_export():
         mimetype="application/json",
         headers={"Content-Disposition": f'attachment; filename="{filename}.json"'},
     )
+
+
+@app.get("/healthz")
+def healthz():
+    """Liveness probe for hosting platforms (and a cheap way to warm a cold start)."""
+    return jsonify({"status": "ok"})
 
 
 if __name__ == "__main__":

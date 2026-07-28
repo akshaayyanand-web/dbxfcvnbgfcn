@@ -1,0 +1,28 @@
+# Render blueprint. In the Render dashboard: New → Blueprint → pick this repo.
+# Everything below is configured automatically except the secrets, which you
+# paste into the dashboard (sync: false keeps them out of the repository).
+services:
+  - type: web
+    name: ubograph
+    runtime: python
+    plan: free
+    rootDir: ubograph
+    buildCommand: pip install -r requirements.txt
+    # Two workers is plenty; the free instance has limited memory and a search
+    # is mostly waiting on someone else's API.
+    startCommand: gunicorn server:app --workers 2 --threads 4 --timeout 120 --bind 0.0.0.0:$PORT
+    healthCheckPath: /healthz
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11.9"
+      - key: OPENSANCTIONS_API_KEY
+        sync: false
+      - key: OPENCORPORATES_API_TOKEN
+        sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      # Leave APP_PASSWORD set. A public URL searches on your API keys.
+      - key: APP_PASSWORD
+        sync: false
+      - key: APP_USERNAME
+        value: ubograph

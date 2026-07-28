@@ -4,3 +4,4 @@ networkx==3.3
 rapidfuzz==3.9.7
 anthropic>=0.40.0
 reportlab==4.2.5
+gunicorn==23.0.0
