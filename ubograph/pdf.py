@@ -322,17 +322,6 @@ def render(report: dict) -> bytes:
         for path in report["ownership_paths"]:
             flow.append(Paragraph(_clean(" → ".join(path.get("path") or [])), styles["body"]))
 
-    if report.get("identity_matches"):
-        flow.append(Paragraph("Unresolved identity matches", styles["h2"]))
-        flow.append(Paragraph(
-            "These records resemble the subject but were NOT merged. Verify before "
-            "treating them as the same person or company.", styles["small"]))
-        for match in report["identity_matches"]:
-            confidence = match.get("confidence")
-            flow.append(Paragraph(
-                f"{_clean(match.get('name'))} — similarity "
-                f"{int((confidence or 0) * 100)}%", styles["body"]))
-
     media = report.get("media")
     if media and media.get("available") and (media.get("summary") or media.get("findings")):
         flow.append(Paragraph("Open-web research (unverified)", styles["h2"]))

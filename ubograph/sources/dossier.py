@@ -76,12 +76,27 @@ SKIP = {"name", "alias", "weakAlias", "sanctions", "addressEntity", "associates"
         "employmentEmployee", "employmentEmployer", "positionOccupancies",
         "parent", "children", "proof"}
 
-RELATIONSHIP_LABELS = {
-    "Family": "Family", "Associate": "Associate", "Ownership": "Ownership",
-    "Directorship": "Directorship", "Membership": "Membership",
-    "Employment": "Employment", "Representation": "Representation",
-    "UnknownLink": "Linked", "Succession": "Succession",
+# For each relationship schema: (property naming the first party, property naming
+# the second, how it reads when the subject is the first party, how it reads when
+# the subject is the second). FollowTheMoney relationships are DIRECTED — a
+# Family record says "the relative is the <relationship> of the person" — so which
+# side the subject sits on decides the wording entirely.
+RELATIONSHIP_SPECS = {
+    "Family":         ("person", "relative", "{term}", "{term} of"),
+    "Associate":      ("person", "associate", "Associate", "Associate"),
+    "Ownership":      ("owner", "asset", "Owner of", "Owned by"),
+    "Directorship":   ("director", "organization", "Director of", "Directed by"),
+    "Membership":     ("member", "organization", "Member of", "Has member"),
+    "Employment":     ("employee", "employer", "Employed by", "Employs"),
+    "Representation": ("agent", "client", "Acts for", "Represented by"),
+    "Succession":     ("predecessor", "successor", "Succeeded by", "Successor to"),
+    "UnknownLink":    ("subject", "object", "Linked to", "Linked to"),
 }
+
+RELATIONSHIP_LABELS = {schema: schema for schema in RELATIONSHIP_SPECS}
+RELATIONSHIP_LABELS["UnknownLink"] = "Linked"
+
+TERM_KEYS = ("relationship", "role", "description", "position")
 
 
 def _label(key: str) -> str:
@@ -147,11 +162,30 @@ def parse_sanction(entity: dict, dataset_titles: Dict[str, dict]) -> dict:
     }
 
 
+def _endpoints(inner: dict, prop: str):
+    """Both shapes an endpoint arrives in: an inlined entity, or a bare id."""
+    out = []
+    for value in inner.get(prop) or []:
+        if isinstance(value, dict):
+            out.append({"id": value.get("id"), "name": value.get("caption"), "inline": True})
+        elif isinstance(value, str):
+            out.append({"id": value, "name": None, "inline": False})
+    return out
+
+
 def parse_relationships(entity: dict) -> List[dict]:
-    """Family, associates, ownership and the rest, as readable one-liners."""
+    """Family, associates, ownership and the rest, worded from the subject's side.
+
+    Getting this wrong is not cosmetic. A Family record states that the relative
+    is the mother of the person; read from the mother's own record without
+    checking sides, that becomes a child she does not have. So the subject's
+    position is established first, and the source's own term is never inverted —
+    when the subject is the "mother of" someone, it says exactly that.
+    """
     props = entity.get("properties") or {}
     entity_id = entity.get("id")
     out = []
+
     for values in props.values():
         if not isinstance(values, list):
             continue
@@ -159,30 +193,50 @@ def parse_relationships(entity: dict) -> List[dict]:
             if not isinstance(value, dict):
                 continue
             schema = value.get("schema")
-            if schema not in RELATIONSHIP_LABELS:
+            if schema not in RELATIONSHIP_SPECS:
                 continue
+
             inner = value.get("properties") or {}
+            prop_a, prop_b, forward, reverse = RELATIONSHIP_SPECS[schema]
+            side_a, side_b = _endpoints(inner, prop_a), _endpoints(inner, prop_b)
 
-            other_name, other_id, role = None, None, None
-            for key, inner_values in inner.items():
-                if not isinstance(inner_values, list):
-                    continue
-                for candidate in inner_values:
-                    if isinstance(candidate, dict) and candidate.get("id") != entity_id:
-                        other_name = other_name or candidate.get("caption")
-                        other_id = other_id or candidate.get("id")
-                    elif isinstance(candidate, str) and key in {
-                        "relationship", "role", "description", "position"
-                    }:
-                        role = role or candidate
+            if any(e["id"] == entity_id for e in side_a):
+                template, others = forward, side_b
+            elif any(e["id"] == entity_id for e in side_b):
+                template, others = reverse, side_a
+            else:
+                # Subject named on neither side (it can be absent from a nested
+                # payload). Fall back to the forward reading, which is how the
+                # record is written, rather than guessing.
+                template, others = forward, side_b or side_a
 
-            if not other_name:
+            other = next((e for e in others if e.get("name")), None)
+            if not other:
                 continue
+
+            term = None
+            for key in TERM_KEYS:
+                for candidate in inner.get(key) or []:
+                    if isinstance(candidate, str) and candidate.strip():
+                        term = candidate.strip()
+                        break
+                if term:
+                    break
+
+            if "{term}" in template:
+                if not term:
+                    # No term to direct: state the bare fact instead of inventing one.
+                    label = "Relative" if template == forward else "Relative of"
+                else:
+                    label = template.format(term=term[:1].upper() + term[1:])
+            else:
+                label = template
+
             out.append({
-                "kind": RELATIONSHIP_LABELS[schema],
-                "role": role,
-                "name": other_name,
-                "id": other_id,
+                "kind": RELATIONSHIP_LABELS.get(schema, schema),
+                "role": label,
+                "name": other["name"],
+                "id": other["id"],
                 "start_date": (inner.get("startDate") or [None])[0],
                 "end_date": (inner.get("endDate") or [None])[0],
             })

@@ -376,13 +376,6 @@ function renderReport(report) {
       ${report.ownership_paths.map((p) =>
         `<p>${escapeHtml((p.path || []).join(' → '))}</p>`).join('')}` : ''}
 
-    ${(report.identity_matches || []).length ? `<h3>Unresolved identity matches</h3>
-      <p class="note">These records resemble the subject but were <b>not</b> merged.
-        Verify before treating them as the same party.</p>
-      ${report.identity_matches.map((m) => `<p>
-        <button class="namebtn" data-node="${escapeHtml(m.id)}">${escapeHtml(m.name)}</button>
-        — similarity ${Math.round((m.confidence || 0) * 100)}%</p>`).join('')}` : ''}
-
     ${media && media.available ? `<h3>Open-web research (unverified)</h3>
       <div class="amber">
         <p class="warn">Retrieved by web search, not from a registry. Check every claim

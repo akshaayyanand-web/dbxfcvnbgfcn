@@ -135,6 +135,55 @@ check("no name/alias rows survive the merge either",
 check("identical sanction not duplicated", len(m["sanctions"]) == 1)
 check("relationships not duplicated", len(m["relationships"]) == 2)
 
+print("\nrelationship direction")
+
+def family_record(subject_id, person, relative, term=None):
+    inner = {"person": person, "relative": relative}
+    if term:
+        inner["relationship"] = [term]
+    return {"id": subject_id, "schema": "Person", "caption": "Subject", "datasets": [],
+            "properties": {"familyPerson": [
+                {"id": "f1", "schema": "Family", "properties": inner}]}}
+
+MOTHER = {"id": "NK-mother", "schema": "Person", "caption": "Heeraben Modi"}
+SON = {"id": "NK-son", "schema": "Person", "caption": "Narendra Modi"}
+
+r = dossier.parse_relationships(family_record("NK-son", ["NK-son"], [MOTHER], "mother"))[0]
+check("from the son's record, she is his mother",
+      (r["role"], r["name"]) == ("Mother", "Heeraben Modi"))
+
+r = dossier.parse_relationships(family_record("NK-mother", [SON], ["NK-mother"], "mother"))[0]
+check("from the mother's record, she is the mother OF him",
+      (r["role"], r["name"]) == ("Mother of", "Narendra Modi"))
+check("no invented child relationship", "child" not in r["role"].lower())
+
+r = dossier.parse_relationships(family_record("NK-mother", [SON], ["NK-mother"]))[0]
+check("no relationship term -> neutral wording, not a guess", r["role"] == "Relative of")
+
+COMPANY_E = {"id": "NK-co", "schema": "Company", "caption": "Acme Ltd"}
+PERSON_E = {"id": "NK-p", "schema": "Person", "caption": "A Person"}
+
+def ownership_record(subject_id, owner, asset):
+    return {"id": subject_id, "schema": "Person", "caption": "S", "datasets": [],
+            "properties": {"ownershipOwner": [{"id": "o1", "schema": "Ownership",
+                "properties": {"owner": owner, "asset": asset}}]}}
+
+check("owner side reads 'Owner of'",
+      dossier.parse_relationships(
+          ownership_record("NK-p", ["NK-p"], [COMPANY_E]))[0]["role"] == "Owner of")
+check("asset side reads 'Owned by'",
+      dossier.parse_relationships(
+          ownership_record("NK-co", [PERSON_E], ["NK-co"]))[0]["role"] == "Owned by")
+
+def directorship_record(subject_id, director, organization):
+    return {"id": subject_id, "schema": "Person", "caption": "S", "datasets": [],
+            "properties": {"directorshipDirector": [{"id": "d1", "schema": "Directorship",
+                "properties": {"director": director, "organization": organization}}]}}
+
+check("company side reads 'Directed by'",
+      dossier.parse_relationships(
+          directorship_record("NK-co", [PERSON_E], ["NK-co"]))[0]["role"] == "Directed by")
+
 print("\nnon-Latin record falls back gracefully")
 cyrillic = {"id": "NK-ru", "caption": "Владимир Иванов", "schema": "Person",
             "datasets": [], "properties": {"name": ["Владимир Иванов"]}}
