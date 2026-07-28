@@ -8,12 +8,14 @@ import json
 import sys
 
 import config
-from search import run_search, summarise
+from search import check_sources, run_search, summarise
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Map corporate ownership networks.")
-    parser.add_argument("name", help="Person or company name to search for")
+    parser.add_argument("name", nargs="?", help="Person or company name to search for")
+    parser.add_argument("--check-keys", action="store_true",
+                        help="Test each configured API key and exit")
     parser.add_argument("--type", dest="entity_type", default="any",
                         choices=["any", "person", "company"])
     parser.add_argument("--nationality", default=None, help="ISO country code, e.g. ae")
@@ -24,6 +26,19 @@ def main() -> int:
     parser.add_argument("--json", dest="json_out", default=None,
                         help="Write the full graph payload to this file")
     args = parser.parse_args()
+
+    if args.check_keys:
+        print("\nChecking configured sources…\n")
+        worst = 0
+        for result in check_sources():
+            mark = {"ok": "  OK  ", "failed": " FAIL ", "not configured": "  --  "}[result["state"]]
+            print(f"[{mark}] {result['source']}: {result['detail']}")
+            worst = max(worst, 1 if result["state"] == "failed" else 0)
+        print()
+        return worst
+
+    if not args.name:
+        parser.error("a name is required (or use --check-keys)")
 
     status = config.status()
     print(

@@ -80,12 +80,15 @@ def run_search(
         except Exception as exc:
             errors.append({"source": "opencorporates", "message": config.redact(str(exc))[:300]})
 
-    demo_mode = not sources_used or (not roots and not store.nodes)
+    # Demo data stands in only when no source is configured at all. Once a key is
+    # present, "nothing found" must be reported as nothing found — showing an
+    # invented network for a real name is the worst failure this tool could have.
+    configured = opensanctions.available() or opencorporates.available()
+    demo_mode = not configured
     if demo_mode:
         demo.load(store)
         roots = _demo_roots(store, name, entity_type)
-        if "demo" not in sources_used:
-            sources_used.append("demo")
+        sources_used.append("demo")
 
     graph = build_graph(store)
     findings = run_detectors(graph, roots)
@@ -136,3 +139,45 @@ def summarise(payload: dict) -> str:
     for error in payload.get("errors") or []:
         lines.append(f"! {error['source']}: {error['message']}")
     return "\n".join(lines)
+
+
+def check_sources() -> list:
+    """Probe each configured source with a trivial query.
+
+    Separates "my key is wrong" from "the app is broken", which is otherwise
+    guesswork once a live search comes back thin.
+    """
+    results = []
+
+    if not opensanctions.available():
+        results.append({"source": "OpenSanctions", "state": "not configured",
+                        "detail": "OPENSANCTIONS_API_KEY is empty in .env"})
+    else:
+        try:
+            hits = opensanctions.match(name="Vladimir Putin", entity_type="person", limit=1)
+            results.append({"source": "OpenSanctions", "state": "ok",
+                            "detail": f"key accepted, {len(hits)} candidate(s) for the test query"})
+        except Exception as exc:
+            results.append({"source": "OpenSanctions", "state": "failed",
+                            "detail": config.redact(str(exc))[:240]})
+
+    if not opencorporates.available():
+        results.append({"source": "OpenCorporates", "state": "not configured",
+                        "detail": "OPENCORPORATES_API_TOKEN is empty in .env"})
+    else:
+        try:
+            store = EntityStore()
+            found = opencorporates.search_companies(store, "Barclays", per_page=1, fetch_detail=0)
+            results.append({"source": "OpenCorporates", "state": "ok",
+                            "detail": f"token accepted, {len(found)} company record(s) returned"})
+        except Exception as exc:
+            results.append({"source": "OpenCorporates", "state": "failed",
+                            "detail": config.redact(str(exc))[:240]})
+
+    if not adverse_media.available():
+        results.append({"source": "Adverse media", "state": "not configured",
+                        "detail": "ANTHROPIC_API_KEY is empty (optional)"})
+    else:
+        results.append({"source": "Adverse media", "state": "ok",
+                        "detail": "key present; used only when a search finds nothing"})
+    return results

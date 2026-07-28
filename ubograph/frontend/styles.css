@@ -182,3 +182,8 @@ h4{font:600 12px/1 var(--sans); letter-spacing:.08em; text-transform:uppercase;
 .empty{color:var(--muted); font-size:13.5px}
 a{color:var(--accent)}
 dd a{font-family:var(--sans); font-size:12px}
+
+.empty-state{padding:26px 30px; border-bottom:1px solid var(--line)}
+.empty-state h3{margin:0 0 8px; font-size:18px}
+.empty-state p{margin:0 0 8px; max-width:60ch}
+.empty-state code{font-family:var(--mono); font-size:12.5px}

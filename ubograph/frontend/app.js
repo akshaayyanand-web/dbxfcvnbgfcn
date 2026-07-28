@@ -131,12 +131,29 @@ function render(payload) {
     .join('');
   $('#status').textContent = payload.matched
     ? `${payload.stats.node_count} entities · ${payload.stats.edge_count} relationships`
-    : 'no structured match';
+    : 'no match';
+  renderEmptyState(payload);
   $('#report').innerHTML = '<p class="empty">Pick a name from the Table tab, or click a node on the graph.</p>';
   layout(payload);
   renderTable();
   renderSidebar(payload);
   showTab($('#tab-report').getAttribute('aria-selected') === 'true' ? 'table' : 'graph');
+}
+
+function renderEmptyState(payload) {
+  const banner = $('#empty-state');
+  if (payload.matched) { banner.style.display = 'none'; return; }
+  const live = (payload.sources_used || []).filter((s) => s !== 'demo');
+  banner.style.display = 'block';
+  banner.innerHTML = live.length
+    ? `<h3>No match for “${escapeHtml(payload.query.name || '')}”</h3>
+       <p>Searched: ${escapeHtml(live.join(', '))}. Nothing in those sources matched this
+       name with the identifiers given.</p>
+       <p class="empty">Try removing an optional field (an exact birth date or jurisdiction
+       will exclude a record that has the year only), or check the spelling used by the
+       registry rather than the common transliteration.</p>`
+    : `<h3>No sources configured</h3>
+       <p>Add an API key to <code>.env</code> and restart the server to search live data.</p>`;
 }
 
 /* ------------------------------------------------------------------ *

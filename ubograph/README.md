@@ -31,6 +31,10 @@ cp .env.example .env                             # Windows: copy .env.example .e
 **It runs with no keys at all** — you get the built-in synthetic network, which is
 enough to demo the whole interface. Add keys when you want live data.
 
+The synthetic network appears **only** when no key is configured. Once a key is
+present, a search that finds nothing reports nothing found — an invented network
+shown for a real name would be the worst failure this tool could have.
+
 ### Keys
 
 Open `.env` and paste your keys after the `=` signs:
@@ -41,7 +45,9 @@ OPENCORPORATES_API_TOKEN=your-token-here
 ANTHROPIC_API_KEY=your-key-here     # optional
 ```
 
-Then restart the server. The header chips tell you which sources are actually live.
+Then restart the server. The header chips tell you which sources are actually live,
+and `pipeline.py --check-keys` probes each one and prints the exact API error if a
+key is rejected — worth running before you blame the app for a thin result.
 
 Two things that trip people up: a text editor may save the file as `.env.txt`
 (the chips will still say "off"), and the server has to stay running in its
@@ -57,6 +63,7 @@ terminal while you use the browser.
 ./.venv/bin/python pipeline.py "falcon capital"
 ./.venv/bin/python pipeline.py "Elena Kovacs" --type person --nationality cy
 ./.venv/bin/python pipeline.py "Falcon Capital" --json graph.json
+./.venv/bin/python pipeline.py --check-keys   # test each API key and exit
 ./.venv/bin/python test_ubograph.py       # smoke tests, no pytest needed
 ```
 
