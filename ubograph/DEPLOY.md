@@ -26,8 +26,11 @@ paste secrets.
 
 1. Push your code to GitHub (already done for this branch).
 2. Sign up at [render.com](https://render.com) with your GitHub account.
-3. **New → Blueprint**, pick this repository. Render reads `ubograph/render.yaml`
-   and configures the build, start command and health check itself.
+3. **New → Blueprint**, pick this repository, and set the branch to
+   `claude/gnn-shell-company-detection-hukucy`. Render reads `render.yaml` from
+   the **repository root** (it does not look inside subdirectories — the file
+   points at the `ubograph/` folder itself via `rootDir`) and configures the
+   build, start command and health check for you.
 4. It will prompt for the secrets marked `sync: false`. Fill in:
    - `OPENSANCTIONS_API_KEY`
    - `OPENCORPORATES_API_TOKEN`

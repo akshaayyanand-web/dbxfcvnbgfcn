@@ -71,7 +71,7 @@ terminal while you use the browser.
 ### Putting it on a public URL
 
 See [DEPLOY.md](DEPLOY.md). Render's free tier is the shortest path — it reads
-`render.yaml`, gives you `https://yourname.onrender.com`, and takes the API keys
+`render.yaml` from the repository root, gives you `https://yourname.onrender.com`, and takes the API keys
 as environment variables. A `Dockerfile` is included for Hugging Face Spaces,
 Fly.io, Koyeb or Cloud Run.
 
