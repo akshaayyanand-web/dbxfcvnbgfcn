@@ -25,6 +25,11 @@ def _require_password():
     """
     if not config.APP_PASSWORD:
         return None
+    # The platform's health probe cannot send credentials. Gating it makes the
+    # deploy fail as "unhealthy" while the app itself is perfectly fine, so the
+    # probe is exempt — it exposes nothing but the word "ok".
+    if request.path == "/healthz":
+        return None
     auth = request.authorization
     if auth and auth.username == config.APP_USERNAME and \
             secrets.compare_digest(auth.password or "", config.APP_PASSWORD):

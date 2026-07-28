@@ -83,6 +83,22 @@ then every search fails. It looks like a bug in the code and isn't.
 
 ---
 
+## If the deploy fails
+
+Open the service in Render and read the **Logs** tab — the reason is always
+there, and it is usually one of these:
+
+| What the log says | Cause |
+|---|---|
+| Build succeeds, then "health check failed" / "service unhealthy" | The probe at `/healthz` isn't answering. It is exempt from the password by design; if you changed that, put it back. |
+| `ModuleNotFoundError` on start | The build ran in the wrong directory. `rootDir` must be `ubograph`. |
+| `bash: gunicorn: command not found` | `requirements.txt` didn't install — check the build log above the failure. |
+| Deploy "succeeded" but the URL 401s | That's the password working. Log in with username `ubograph`. |
+
+Paste the last twenty lines of the log if none of those fit.
+
+---
+
 ## After deploying — check it actually works
 
 ```
