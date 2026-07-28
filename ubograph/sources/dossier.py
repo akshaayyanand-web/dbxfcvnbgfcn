@@ -10,12 +10,17 @@ without repeating a value that appears on more than one list.
 """
 from typing import Dict, List, Optional
 
+from schema import english_name
+
 # Display groups, in report order. Anything not listed still appears, under
 # "Other recorded details" — a new FollowTheMoney property should never vanish
 # silently just because this file predates it.
 PROPERTY_GROUPS = [
+    # `name` and `alias` are deliberately absent: the report already carries one
+    # chosen English name as its heading, and repeating every spelling and script
+    # variant under it made the identity block noise rather than information.
     ("Identity", [
-        "name", "alias", "weakAlias", "firstName", "middleName", "secondName",
+        "firstName", "middleName", "secondName",
         "lastName", "fatherName", "patronymic", "motherName", "nameSuffix",
         "title", "gender", "birthDate", "birthPlace", "birthCountry",
         "deathDate", "position", "religion", "ethnicity", "education",
@@ -65,7 +70,7 @@ LABELS = {
 }
 
 # Properties handled elsewhere in the report, or pure plumbing.
-SKIP = {"sanctions", "addressEntity", "associates", "familyPerson", "familyRelative",
+SKIP = {"name", "alias", "weakAlias", "sanctions", "addressEntity", "associates", "familyPerson", "familyRelative",
         "ownershipOwner", "ownershipAsset", "directorshipDirector",
         "directorshipOrganization", "membershipMember", "membershipOrganization",
         "employmentEmployee", "employmentEmployer", "positionOccupancies",
@@ -233,9 +238,13 @@ def build(entity: dict, dataset_titles: Optional[Dict[str, dict]] = None) -> dic
         for d in (entity.get("datasets") or [])
     ]
 
+    name_candidates = [entity.get("caption")]
+    for key in ("name", "alias"):
+        name_candidates += [_stringify(v) for v in (props.get(key) or [])]
+
     return {
         "id": entity.get("id"),
-        "caption": entity.get("caption"),
+        "caption": english_name(name_candidates, entity.get("caption") or ""),
         "schema": entity.get("schema"),
         "target": bool(entity.get("target")),
         "first_seen": entity.get("first_seen"),

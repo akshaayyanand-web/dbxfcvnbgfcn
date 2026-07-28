@@ -149,9 +149,6 @@ _DEMO_DOSSIERS = {
         ],
         "groups": [
             {"title": "Identity", "rows": [
-                {"key": "name", "label": "Name", "values": ["Viktor Branko"]},
-                {"key": "alias", "label": "Also known as",
-                 "values": ["Viktor Branko-Petrović", "V. Branko"]},
                 {"key": "fatherName", "label": "Patronymic / father's name",
                  "values": ["Milanovich"]},
                 {"key": "birthDate", "label": "Date of birth", "values": ["1963-07-25"]},

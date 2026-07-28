@@ -80,7 +80,6 @@ def _facts_table(subject: dict, styles) -> Table:
         ("Jurisdiction", subject.get("jurisdiction_label")),
         ("Registration number", subject.get("reg_number")),
         ("Status", subject.get("status")),
-        ("Also known as", " · ".join(subject.get("aliases") or [])),
         ("Risk flags", ", ".join(subject.get("flags") or []) or "none recorded"),
         ("Risk score", f"{subject.get('risk_score')} / 100"),
         ("Sources", ", ".join(subject.get("sources") or [])),

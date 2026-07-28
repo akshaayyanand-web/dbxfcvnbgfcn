@@ -10,6 +10,7 @@ RAW = {
   "properties": {
     "name": ["Imran Ahmed Khan", "Imran Ahmed Khan"],
     "alias": ["Imran Khan", "Imran Khan", "عمران خان"],
+    "weakAlias": ["I. Khan"],
     "fatherName": ["Ahmed Khan"],
     "birthDate": ["1972-11-05"],
     "birthPlace": ["Lahore"],
@@ -84,9 +85,11 @@ check("birth date captured", rows["birthDate"]["values"] == ["1972-11-05"])
 check("nationality captured", rows["nationality"]["values"] == ["pk"])
 check("passport captured", rows["passportNumber"]["values"] == ["AB1234567"])
 check("national ID captured", rows["idNumber"]["values"] == ["35202-1234567-1"])
-check("repeated name not printed twice", rows["name"]["values"] == ["Imran Ahmed Khan"])
-check("duplicate alias collapsed, script variant kept",
-      rows["alias"]["values"] == ["Imran Khan", "عمران خان"])
+check("name row dropped — the heading already carries it", "name" not in rows)
+check("alias row dropped", "alias" not in rows)
+check("weak alias row dropped", "weakAlias" not in rows)
+check("one English name chosen for the record",
+      d["caption"] == "Imran Ahmed Khan")
 check("address merged from string and nested Address entity",
       len(rows["address"]["values"]) == 2)
 check("unmapped property still surfaces",
@@ -126,8 +129,21 @@ check("addresses combined without repeats",
       sorted(mrows["address"]["values"]) == sorted(
           ["12 Mall Road, Lahore", "12 Mall Road, Lahore, Pakistan", "Flat 4, Karachi"]))
 check("datasets combined without repeats", len(m["datasets"]) == 2)
+check("no name/alias rows survive the merge either",
+      not any(r["key"] in {"name", "alias", "weakAlias"}
+              for g in m["groups"] for r in g["rows"]))
 check("identical sanction not duplicated", len(m["sanctions"]) == 1)
 check("relationships not duplicated", len(m["relationships"]) == 2)
+
+print("\nnon-Latin record falls back gracefully")
+cyrillic = {"id": "NK-ru", "caption": "Владимир Иванов", "schema": "Person",
+            "datasets": [], "properties": {"name": ["Владимир Иванов"]}}
+check("no Latin name available -> original kept",
+      dossier.build(cyrillic, {})["caption"] == "Владимир Иванов")
+mixed = {"id": "NK-mix", "caption": "عمران خان", "schema": "Person", "datasets": [],
+         "properties": {"name": ["عمران خان"], "alias": ["Imran Khan"]}}
+check("Latin alias preferred over non-Latin caption",
+      dossier.build(mixed, {})["caption"] == "Imran Khan")
 
 print("\n100% match merging — the Imran Khan case")
 from resolve import EntityStore

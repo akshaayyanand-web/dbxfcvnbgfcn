@@ -323,7 +323,6 @@ function renderReport(report) {
     ['Jurisdiction', s.jurisdiction_label],
     ['Registration number', s.reg_number],
     ['Status', s.status],
-    ['Also known as', (s.aliases || []).join(' · ')],
     ['Risk flags', (s.flags || []).join(', ')],
     ['Risk score', `${s.risk_score} / 100`],
     ['Sources', (s.sources || []).join(', ')],

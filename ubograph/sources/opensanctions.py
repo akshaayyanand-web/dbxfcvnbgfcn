@@ -16,6 +16,7 @@ from resolve import EntityStore
 from sources import dossier as dossier_builder
 from schema import (
     ADDRESS,
+    english_name,
     COMPANY,
     DIRECTS,
     LINKED_TO,
@@ -119,7 +120,10 @@ def _to_node(entity: dict) -> Node:
     node = Node(
         id=f"os:{entity.get('id')}",
         type=_node_type(schema),
-        name=entity.get("caption") or _first(props, "name") or entity.get("id", "unknown"),
+        name=english_name(
+            [entity.get("caption"), *(props.get("name") or []), *(props.get("alias") or [])],
+            entity.get("id", "unknown"),
+        ),
         country=_first(props, "country") or _first(props, "nationality"),
         birth_date=_first(props, "birthDate"),
         reg_number=_first(props, "registrationNumber") or _first(props, "idNumber"),

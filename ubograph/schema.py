@@ -5,6 +5,7 @@ Nothing downstream (resolver, graph, detectors, frontend) knows or cares which
 API a record came from.
 """
 import re
+import unicodedata
 from dataclasses import dataclass, field
 from typing import Optional
 
@@ -56,6 +57,33 @@ def normalise_name(name: str, entity_type: str = UNKNOWN) -> str:
     while tokens and tokens[0] in _PERSON_TITLES:
         tokens.pop(0)
     return " ".join(tokens)
+
+
+def is_latin(text: str) -> bool:
+    """True when every letter is Latin script (accents and diacritics fine)."""
+    for char in str(text or ""):
+        if char.isalpha() and not unicodedata.name(char, "").startswith("LATIN"):
+            return False
+    return True
+
+
+def english_name(candidates, fallback: str = "") -> str:
+    """Pick the single Latin-script name to display everywhere.
+
+    Sources carry the same person under several spellings and scripts. The
+    reports show one name, so it has to be chosen once and used consistently —
+    the graph, the table and the PDF must never disagree about what to call
+    somebody.
+    """
+    seen = []
+    for candidate in candidates:
+        text = " ".join(str(candidate or "").split())
+        if text and text not in seen:
+            seen.append(text)
+    for text in seen:
+        if is_latin(text):
+            return text
+    return seen[0] if seen else fallback
 
 
 def year_of(date_str: Optional[str]) -> Optional[str]:
