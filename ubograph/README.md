@@ -159,11 +159,24 @@ apart stay two people.
 | `shared_address` | ≥ 4 entities at one registered address (brass plate) | medium |
 | `deep_layering` | An ownership chain ≥ 3 tiers above the target | medium |
 | `high_risk_jurisdiction` | Registration in a limited-disclosure jurisdiction | low |
+| `fatf_jurisdiction` | Registration under a live FATF or UN sanctions-regime listing | high / medium |
 
 Each finding is a lead, not a conclusion — the wording in the UI says so. Company
 formation agents legitimately host hundreds of clients at one address and act as
 nominee directors for many companies; the value is in surfacing the pattern for a
 human to weigh, not in scoring anyone guilty.
+
+`fatf_jurisdiction` is separate from `high_risk_jurisdiction`: the latter is a fixed
+list of jurisdictions known for limited beneficial-ownership disclosure (BVI, Cayman,
+Panama, …), the former reads a dated, sourced country-risk table — FATF's Call for
+Action and Increased Monitoring ("grey") lists plus the UAE's UN targeted-financial-
+sanctions jurisdiction list — supplied via a real client AML risk-rating workbook
+(`frontend/data/country_risk.json`; see `reference.risk_data_meta()` for the exact
+source and the date FATF/UN lists were last updated). A UN-sanctioned-regime or
+FATF-blacklisted jurisdiction scores high, same weight as a direct sanctions hit;
+FATF's grey list scores medium. Like every other detector here, it flags the
+*registration jurisdiction* for enhanced diligence — it is not a finding against the
+entity itself.
 
 **UBO traversal follows ownership edges only.** A director sits in the control
 graph but is not a beneficial owner, and listing a hired director as the UBO is
@@ -194,7 +207,7 @@ sources/
 frontend/index.html  markup: form, tabs, table, report
 frontend/app.js      search, graph rendering, table filtering, report + PDF
 frontend/styles.css  the whole visual layer
-frontend/data/       generated ISO country and jurisdiction lists
+frontend/data/       generated ISO country/jurisdiction lists + sourced country_risk.json
 ```
 
 Adding a source means writing one adapter that emits `Node`s and `Edge`s. Nothing

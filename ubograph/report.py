@@ -300,7 +300,8 @@ def _narrative(subject, findings, current, previous, paths, band) -> List[str]:
             )
 
     structural = [f for f in findings if f.get("kind") in
-                  {"circular_ownership", "nominee_hub", "shared_address", "deep_layering"}]
+                  {"circular_ownership", "nominee_hub", "shared_address", "deep_layering",
+                   "high_risk_jurisdiction", "fatf_jurisdiction"}]
     if structural:
         paragraphs.append(
             "Structural findings involving this entity: "

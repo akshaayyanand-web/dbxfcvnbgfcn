@@ -4,7 +4,7 @@ from typing import Dict, List, Optional
 import networkx as nx
 
 from config import HIGH_RISK_JURISDICTIONS
-from reference import country_label, jurisdiction_label
+from reference import country_label, country_risk, jurisdiction_label, risk_data_meta
 from resolve import EntityStore
 from schema import (
     ADDRESS,
@@ -168,6 +168,66 @@ def detect_high_risk_jurisdictions(graph: nx.MultiDiGraph) -> List[dict]:
     ]
 
 
+def detect_fatf_jurisdictions(graph: nx.MultiDiGraph) -> List[dict]:
+    """Company registration somewhere FATF or the UAE's own sanctions regime
+    currently flags. Separate from the curated secrecy-jurisdiction list above:
+    that one is a fixed judgement call about disclosure practice, this one reads
+    a dated, sourced FATF/UN list — see reference.risk_data_meta() for when it
+    was last updated.
+    """
+    high_hits: Dict[str, List[str]] = {}
+    medium_hits: Dict[str, List[str]] = {}
+    for node_id, data in graph.nodes(data=True):
+        if data.get("type") != COMPANY:
+            continue
+        code = norm_country(data.get("jurisdiction") or data.get("country"))
+        info = country_risk(code)
+        if not info:
+            continue
+        tag, un_regime = info.get("fatf"), info.get("uaeiec")
+        place = info.get("name") or country_label(code) or code
+        if un_regime:
+            high_hits.setdefault(f"{place} (UN Security Council sanctions regime)", []).append(node_id)
+        elif tag == "FATF HRC":
+            high_hits.setdefault(f"{place} (FATF blacklist — Call for Action)", []).append(node_id)
+        elif tag == "FATF Suspended":
+            high_hits.setdefault(f"{place} (FATF-suspended cooperation)", []).append(node_id)
+        elif tag == "FATF JUIM":
+            medium_hits.setdefault(f"{place} (FATF grey list — Increased Monitoring)", []).append(node_id)
+
+    updated = (risk_data_meta().get("fatf_last_update") or "")[:10]
+    findings = []
+    for hits, severity in ((high_hits, "high"), (medium_hits, "medium")):
+        if not hits:
+            continue
+        nodes = sorted({n for group in hits.values() for n in group})
+        breakdown = "; ".join(
+            f"{place}: " + ", ".join(sorted(graph.nodes[n].get("name", n) for n in group))
+            for place, group in sorted(hits.items())
+        )
+        findings.append(
+            {
+                "kind": "fatf_jurisdiction",
+                "severity": severity,
+                "title": (
+                    f"{len(nodes)} "
+                    + ("entity" if len(nodes) == 1 else "entities")
+                    + " registered in a currently flagged jurisdiction"
+                ),
+                "detail": (
+                    breakdown + ". This flags the registration jurisdiction, not the "
+                    "entity itself — treat it the way a real-estate compliance policy "
+                    "treats a high-risk country: a trigger for enhanced diligence, not "
+                    "a finding on its own."
+                    + (f" FATF/UN lists as of {updated}." if updated else "")
+                ),
+                "nodes": nodes,
+                "edges": [],
+            }
+        )
+    return findings
+
+
 def detect_sanctions_and_peps(graph: nx.MultiDiGraph) -> List[dict]:
     findings = []
     for node_id, data in graph.nodes(data=True):
@@ -289,6 +349,7 @@ def run_detectors(graph: nx.MultiDiGraph, roots: Optional[List[str]] = None) -> 
     findings += detect_shared_addresses(graph)
     findings += detect_layering_depth(graph, roots or [])
     findings += detect_high_risk_jurisdictions(graph)
+    findings += detect_fatf_jurisdictions(graph)
     order = {"high": 0, "medium": 1, "low": 2}
     findings.sort(key=lambda f: order.get(f["severity"], 3))
     return findings

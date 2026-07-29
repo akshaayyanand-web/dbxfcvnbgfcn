@@ -1,0 +1,1759 @@
+{
+  "countries": {
+    "ad": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 77.45,
+      "name": "Andorra",
+      "uaeiec": null
+    },
+    "ae": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 54.61,
+      "name": "United Arab Emirates",
+      "uaeiec": null
+    },
+    "af": {
+      "band_score": 10,
+      "fatf": null,
+      "kyc_score": 25.37,
+      "name": "Afghanistan",
+      "uaeiec": null
+    },
+    "ag": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 61.51,
+      "name": "Antigua and Barbuda",
+      "uaeiec": null
+    },
+    "ai": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 65.83,
+      "name": "Anguilla",
+      "uaeiec": null
+    },
+    "al": {
+      "band_score": 8,
+      "fatf": null,
+      "kyc_score": 54.66,
+      "name": "Albania",
+      "uaeiec": null
+    },
+    "am": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 64.81,
+      "name": "Armenia",
+      "uaeiec": null
+    },
+    "ao": {
+      "band_score": 5,
+      "fatf": "FATF JUIM",
+      "kyc_score": 64.53,
+      "name": "Angola",
+      "uaeiec": null
+    },
+    "ar": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 65.29,
+      "name": "Argentina",
+      "uaeiec": null
+    },
+    "as": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 75.9,
+      "name": "American Samoa",
+      "uaeiec": null
+    },
+    "at": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 77.62,
+      "name": "Austria",
+      "uaeiec": null
+    },
+    "au": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 77.88,
+      "name": "Australia",
+      "uaeiec": null
+    },
+    "aw": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 68.36,
+      "name": "Aruba",
+      "uaeiec": null
+    },
+    "ax": {
+      "band_score": 0,
+      "fatf": null,
+      "kyc_score": 81.99,
+      "name": "Aland Islands",
+      "uaeiec": null
+    },
+    "az": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 61.31,
+      "name": "Azerbaijan",
+      "uaeiec": null
+    },
+    "ba": {
+      "band_score": 8,
+      "fatf": null,
+      "kyc_score": 53.25,
+      "name": "Bosnia-Herzegovina",
+      "uaeiec": null
+    },
+    "bb": {
+      "band_score": 8,
+      "fatf": null,
+      "kyc_score": 54.96,
+      "name": "Barbados",
+      "uaeiec": null
+    },
+    "bd": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 69.01,
+      "name": "Bangladesh",
+      "uaeiec": null
+    },
+    "be": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 74.62,
+      "name": "Belgium",
+      "uaeiec": null
+    },
+    "bf": {
+      "band_score": 8,
+      "fatf": null,
+      "kyc_score": 52.06,
+      "name": "Burkina Faso",
+      "uaeiec": null
+    },
+    "bg": {
+      "band_score": 8,
+      "fatf": "FATF JUIM",
+      "kyc_score": 54.3,
+      "name": "Bulgaria",
+      "uaeiec": null
+    },
+    "bh": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 68.39,
+      "name": "Bahrain",
+      "uaeiec": null
+    },
+    "bi": {
+      "band_score": 10,
+      "fatf": null,
+      "kyc_score": 43.52,
+      "name": "Burundi",
+      "uaeiec": null
+    },
+    "bj": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 63.4,
+      "name": "Benin",
+      "uaeiec": null
+    },
+    "bl": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 78.95,
+      "name": "Saint Barthélemy",
+      "uaeiec": null
+    },
+    "bm": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 78.15,
+      "name": "Bermuda",
+      "uaeiec": null
+    },
+    "bn": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 78.6,
+      "name": "Brunei Darussalam",
+      "uaeiec": null
+    },
+    "bo": {
+      "band_score": 5,
+      "fatf": "FATF JUIM",
+      "kyc_score": 66.25,
+      "name": "Bolivia",
+      "uaeiec": null
+    },
+    "bq": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 75.92,
+      "name": "Bonaire, Sint Eustatius and Saba",
+      "uaeiec": null
+    },
+    "br": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 65.06,
+      "name": "Brazil",
+      "uaeiec": null
+    },
+    "bs": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 66.52,
+      "name": "Bahamas",
+      "uaeiec": null
+    },
+    "bt": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 72.3,
+      "name": "Bhutan",
+      "uaeiec": null
+    },
+    "bw": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 72.5,
+      "name": "Botswana",
+      "uaeiec": null
+    },
+    "by": {
+      "band_score": 8,
+      "fatf": null,
+      "kyc_score": 58.83,
+      "name": "Belarus",
+      "uaeiec": null
+    },
+    "bz": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 62.52,
+      "name": "Belize",
+      "uaeiec": null
+    },
+    "ca": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 75.05,
+      "name": "Canada",
+      "uaeiec": null
+    },
+    "cc": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 77.67,
+      "name": "Cocos (Keeling) Islands",
+      "uaeiec": null
+    },
+    "cd": {
+      "band_score": 10,
+      "fatf": "FATF JUIM",
+      "kyc_score": 28.34,
+      "name": "Democratic Republic of Congo",
+      "uaeiec": "UN Sanctions"
+    },
+    "cf": {
+      "band_score": 10,
+      "fatf": null,
+      "kyc_score": 49.02,
+      "name": "Central African Rep",
+      "uaeiec": "UN Sanctions"
+    },
+    "cg": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 64.08,
+      "name": "Congo (Brazzaville)",
+      "uaeiec": null
+    },
+    "ch": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 75.49,
+      "name": "Switzerland",
+      "uaeiec": null
+    },
+    "ci": {
+      "band_score": 5,
+      "fatf": "FATF JUIM",
+      "kyc_score": 62.39,
+      "name": "Cote D'Ivoire",
+      "uaeiec": null
+    },
+    "ck": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 71.87,
+      "name": "Cook Islands",
+      "uaeiec": null
+    },
+    "cl": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 72.26,
+      "name": "Chile",
+      "uaeiec": null
+    },
+    "cm": {
+      "band_score": 10,
+      "fatf": "FATF JUIM",
+      "kyc_score": 48.65,
+      "name": "Cameroon",
+      "uaeiec": null
+    },
+    "cn": {
+      "band_score": 8,
+      "fatf": null,
+      "kyc_score": 54.08,
+      "name": "China",
+      "uaeiec": null
+    },
+    "co": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 62.74,
+      "name": "Colombia",
+      "uaeiec": null
+    },
+    "cr": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 66.16,
+      "name": "Costa Rica",
+      "uaeiec": null
+    },
+    "cu": {
+      "band_score": 8,
+      "fatf": null,
+      "kyc_score": 54.11,
+      "name": "Cuba",
+      "uaeiec": null
+    },
+    "cv": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 67.39,
+      "name": "Cape Verde",
+      "uaeiec": null
+    },
+    "cw": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 60.12,
+      "name": "Curacao",
+      "uaeiec": null
+    },
+    "cx": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 77.67,
+      "name": "Christmas Island",
+      "uaeiec": null
+    },
+    "cy": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 67.26,
+      "name": "Cyprus",
+      "uaeiec": null
+    },
+    "cz": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 74.54,
+      "name": "Czech Republic",
+      "uaeiec": null
+    },
+    "de": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 76.48,
+      "name": "Germany",
+      "uaeiec": null
+    },
+    "dj": {
+      "band_score": 8,
+      "fatf": null,
+      "kyc_score": 58.04,
+      "name": "Djibouti",
+      "uaeiec": null
+    },
+    "dk": {
+      "band_score": 0,
+      "fatf": null,
+      "kyc_score": 81.54,
+      "name": "Denmark",
+      "uaeiec": null
+    },
+    "dm": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 66.84,
+      "name": "Dominica",
+      "uaeiec": null
+    },
+    "do": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 68.72,
+      "name": "Dominican Republic",
+      "uaeiec": null
+    },
+    "dz": {
+      "band_score": 5,
+      "fatf": "FATF JUIM",
+      "kyc_score": 61.72,
+      "name": "Algeria",
+      "uaeiec": null
+    },
+    "ec": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 64.71,
+      "name": "Ecuador",
+      "uaeiec": null
+    },
+    "ee": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 78.63,
+      "name": "Estonia",
+      "uaeiec": null
+    },
+    "eg": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 68.83,
+      "name": "Egypt",
+      "uaeiec": null
+    },
+    "eh": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 66.97,
+      "name": "Western Sahara",
+      "uaeiec": null
+    },
+    "er": {
+      "band_score": 10,
+      "fatf": null,
+      "kyc_score": 45.28,
+      "name": "Eritrea",
+      "uaeiec": null
+    },
+    "es": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 74.29,
+      "name": "Spain",
+      "uaeiec": null
+    },
+    "et": {
+      "band_score": 8,
+      "fatf": null,
+      "kyc_score": 57.15,
+      "name": "Ethiopia",
+      "uaeiec": null
+    },
+    "fi": {
+      "band_score": 0,
+      "fatf": null,
+      "kyc_score": 81.99,
+      "name": "Finland",
+      "uaeiec": null
+    },
+    "fj": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 69.12,
+      "name": "Fiji",
+      "uaeiec": null
+    },
+    "fk": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 78.8,
+      "name": "Falkland Islands (Malvinas)",
+      "uaeiec": null
+    },
+    "fm": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 64.03,
+      "name": "Micronesia",
+      "uaeiec": null
+    },
+    "fo": {
+      "band_score": 0,
+      "fatf": null,
+      "kyc_score": 81.54,
+      "name": "Faroe islands",
+      "uaeiec": null
+    },
+    "fr": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 78.29,
+      "name": "France",
+      "uaeiec": null
+    },
+    "ga": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 64.46,
+      "name": "Gabon",
+      "uaeiec": null
+    },
+    "gb": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 75.21,
+      "name": "United Kingdom",
+      "uaeiec": null
+    },
+    "gd": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 65.13,
+      "name": "Grenada",
+      "uaeiec": null
+    },
+    "ge": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 70.6,
+      "name": "Georgia",
+      "uaeiec": null
+    },
+    "gf": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 78.95,
+      "name": "French Guiana",
+      "uaeiec": null
+    },
+    "gg": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 74.23,
+      "name": "Guernsey",
+      "uaeiec": null
+    },
+    "gh": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 65.82,
+      "name": "Ghana",
+      "uaeiec": null
+    },
+    "gi": {
+      "band_score": 8,
+      "fatf": null,
+      "kyc_score": 58.79,
+      "name": "Gibraltar",
+      "uaeiec": null
+    },
+    "gl": {
+      "band_score": 0,
+      "fatf": null,
+      "kyc_score": 80.57,
+      "name": "Greenland",
+      "uaeiec": null
+    },
+    "gm": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 68.3,
+      "name": "Gambia",
+      "uaeiec": null
+    },
+    "gn": {
+      "band_score": 8,
+      "fatf": null,
+      "kyc_score": 55.2,
+      "name": "Guinea",
+      "uaeiec": null
+    },
+    "gp": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 78.95,
+      "name": "Guadeloupe",
+      "uaeiec": null
+    },
+    "gq": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 62.1,
+      "name": "Equatorial Guinea",
+      "uaeiec": null
+    },
+    "gr": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 73.3,
+      "name": "Greece",
+      "uaeiec": null
+    },
+    "gt": {
+      "band_score": 8,
+      "fatf": null,
+      "kyc_score": 52.99,
+      "name": "Guatemala",
+      "uaeiec": null
+    },
+    "gu": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 75.9,
+      "name": "Guam",
+      "uaeiec": null
+    },
+    "gw": {
+      "band_score": 10,
+      "fatf": null,
+      "kyc_score": 44.01,
+      "name": "Guinea Bissau",
+      "uaeiec": null
+    },
+    "gy": {
+      "band_score": 8,
+      "fatf": null,
+      "kyc_score": 59.25,
+      "name": "Guyana",
+      "uaeiec": null
+    },
+    "hk": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 62.53,
+      "name": "Hong Kong",
+      "uaeiec": null
+    },
+    "hn": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 64.72,
+      "name": "Honduras",
+      "uaeiec": null
+    },
+    "hr": {
+      "band_score": 10,
+      "fatf": null,
+      "kyc_score": 46.97,
+      "name": "Croatia",
+      "uaeiec": null
+    },
+    "ht": {
+      "band_score": 10,
+      "fatf": "FATF JUIM",
+      "kyc_score": 25.7,
+      "name": "Haiti",
+      "uaeiec": null
+    },
+    "hu": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 71.3,
+      "name": "Hungary",
+      "uaeiec": null
+    },
+    "id": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 65.56,
+      "name": "Indonesia",
+      "uaeiec": null
+    },
+    "ie": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 74.05,
+      "name": "Ireland",
+      "uaeiec": null
+    },
+    "il": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 68.23,
+      "name": "Israel",
+      "uaeiec": null
+    },
+    "im": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 73.31,
+      "name": "Isle Of Man",
+      "uaeiec": null
+    },
+    "in": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 62.75,
+      "name": "India",
+      "uaeiec": null
+    },
+    "io": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 78.8,
+      "name": "British Indian Ocean Territory",
+      "uaeiec": null
+    },
+    "iq": {
+      "band_score": 10,
+      "fatf": null,
+      "kyc_score": 45.85,
+      "name": "Iraq",
+      "uaeiec": "UN Sanctions"
+    },
+    "ir": {
+      "band_score": 10,
+      "fatf": "FATF HRC",
+      "kyc_score": 18.34,
+      "name": "Iran",
+      "uaeiec": "UN Sanctions"
+    },
+    "is": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 78.96,
+      "name": "Iceland",
+      "uaeiec": null
+    },
+    "it": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 72.34,
+      "name": "Italy",
+      "uaeiec": null
+    },
+    "je": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 72.85,
+      "name": "Jersey",
+      "uaeiec": null
+    },
+    "jm": {
+      "band_score": 8,
+      "fatf": null,
+      "kyc_score": 54.89,
+      "name": "Jamaica",
+      "uaeiec": null
+    },
+    "jo": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 70.27,
+      "name": "Jordan",
+      "uaeiec": null
+    },
+    "jp": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 75.41,
+      "name": "Japan",
+      "uaeiec": null
+    },
+    "ke": {
+      "band_score": 10,
+      "fatf": "FATF JUIM",
+      "kyc_score": 41.93,
+      "name": "Kenya",
+      "uaeiec": null
+    },
+    "kg": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 65.46,
+      "name": "Kyrgyzstan",
+      "uaeiec": null
+    },
+    "kh": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 62.1,
+      "name": "Cambodia",
+      "uaeiec": null
+    },
+    "ki": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 62.06,
+      "name": "Kiribati",
+      "uaeiec": null
+    },
+    "km": {
+      "band_score": 8,
+      "fatf": null,
+      "kyc_score": 59.5,
+      "name": "Comoros",
+      "uaeiec": null
+    },
+    "kn": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 63.97,
+      "name": "St Kitts & Nevis",
+      "uaeiec": null
+    },
+    "kp": {
+      "band_score": 10,
+      "fatf": "FATF HRC",
+      "kyc_score": 21.8,
+      "name": "North Korea",
+      "uaeiec": "UN Sanctions"
+    },
+    "kr": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 76.33,
+      "name": "South Korea",
+      "uaeiec": null
+    },
+    "kw": {
+      "band_score": 5,
+      "fatf": "FATF JUIM",
+      "kyc_score": 69.01,
+      "name": "Kuwait",
+      "uaeiec": null
+    },
+    "ky": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 67.11,
+      "name": "Cayman Islands",
+      "uaeiec": null
+    },
+    "kz": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 71.08,
+      "name": "Kazakhstan",
+      "uaeiec": null
+    },
+    "la": {
+      "band_score": 8,
+      "fatf": "FATF JUIM",
+      "kyc_score": 58.27,
+      "name": "Lao People's Democratic Republic",
+      "uaeiec": null
+    },
+    "lb": {
+      "band_score": 10,
+      "fatf": "FATF JUIM",
+      "kyc_score": 46.24,
+      "name": "Lebanon",
+      "uaeiec": "UN Sanctions"
+    },
+    "lc": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 63.82,
+      "name": "St Lucia",
+      "uaeiec": null
+    },
+    "li": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 76.77,
+      "name": "Liechtenstein",
+      "uaeiec": null
+    },
+    "lk": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 69.33,
+      "name": "Sri Lanka",
+      "uaeiec": null
+    },
+    "lr": {
+      "band_score": 8,
+      "fatf": null,
+      "kyc_score": 55.34,
+      "name": "Liberia",
+      "uaeiec": null
+    },
+    "ls": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 68.5,
+      "name": "Lesotho",
+      "uaeiec": null
+    },
+    "lt": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 77.92,
+      "name": "Lithuania",
+      "uaeiec": null
+    },
+    "lu": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 76.59,
+      "name": "Luxembourg",
+      "uaeiec": null
+    },
+    "lv": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 74.84,
+      "name": "Latvia",
+      "uaeiec": null
+    },
+    "ly": {
+      "band_score": 10,
+      "fatf": null,
+      "kyc_score": 38.04,
+      "name": "Libya",
+      "uaeiec": "UN Sanctions"
+    },
+    "ma": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 66.97,
+      "name": "Morocco",
+      "uaeiec": null
+    },
+    "mc": {
+      "band_score": 8,
+      "fatf": "FATF JUIM",
+      "kyc_score": 56.87,
+      "name": "Monaco",
+      "uaeiec": null
+    },
+    "md": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 62.46,
+      "name": "Moldova",
+      "uaeiec": null
+    },
+    "me": {
+      "band_score": 8,
+      "fatf": null,
+      "kyc_score": 56.53,
+      "name": "Montenegro",
+      "uaeiec": null
+    },
+    "mf": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 78.95,
+      "name": "Saint Martin (French part)",
+      "uaeiec": null
+    },
+    "mg": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 64.46,
+      "name": "Madagascar",
+      "uaeiec": null
+    },
+    "mh": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 68.89,
+      "name": "Marshall Islands",
+      "uaeiec": null
+    },
+    "mk": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 60.86,
+      "name": "North Macedonia",
+      "uaeiec": null
+    },
+    "ml": {
+      "band_score": 10,
+      "fatf": null,
+      "kyc_score": 37.22,
+      "name": "Mali",
+      "uaeiec": "UN Sanctions"
+    },
+    "mm": {
+      "band_score": 10,
+      "fatf": "FATF HRC",
+      "kyc_score": 24.91,
+      "name": "Myanmar",
+      "uaeiec": null
+    },
+    "mn": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 71.18,
+      "name": "Mongolia",
+      "uaeiec": null
+    },
+    "mo": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 74.93,
+      "name": "Macau",
+      "uaeiec": null
+    },
+    "mp": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 75.81,
+      "name": "North Mariana Islands",
+      "uaeiec": null
+    },
+    "mq": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 78.95,
+      "name": "Martinique",
+      "uaeiec": null
+    },
+    "mr": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 68.92,
+      "name": "Mauritania",
+      "uaeiec": null
+    },
+    "ms": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 68.37,
+      "name": "Montserrat",
+      "uaeiec": null
+    },
+    "mt": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 71.54,
+      "name": "Malta",
+      "uaeiec": null
+    },
+    "mu": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 70.27,
+      "name": "Mauritius",
+      "uaeiec": null
+    },
+    "mv": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 63.8,
+      "name": "Maldives",
+      "uaeiec": null
+    },
+    "mw": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 70.47,
+      "name": "Malawi",
+      "uaeiec": null
+    },
+    "mx": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 64.99,
+      "name": "Mexico",
+      "uaeiec": null
+    },
+    "my": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 65.34,
+      "name": "Malaysia",
+      "uaeiec": null
+    },
+    "mz": {
+      "band_score": 10,
+      "fatf": null,
+      "kyc_score": 42.85,
+      "name": "Mozambique",
+      "uaeiec": null
+    },
+    "na": {
+      "band_score": 8,
+      "fatf": "FATF JUIM",
+      "kyc_score": 56.31,
+      "name": "Namibia",
+      "uaeiec": null
+    },
+    "nc": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 78.95,
+      "name": "New Caledonia",
+      "uaeiec": null
+    },
+    "ne": {
+      "band_score": 8,
+      "fatf": null,
+      "kyc_score": 52.98,
+      "name": "Niger",
+      "uaeiec": null
+    },
+    "nf": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 77.67,
+      "name": "Norfolk Island",
+      "uaeiec": null
+    },
+    "ng": {
+      "band_score": 10,
+      "fatf": null,
+      "kyc_score": 45.6,
+      "name": "Nigeria",
+      "uaeiec": null
+    },
+    "ni": {
+      "band_score": 8,
+      "fatf": null,
+      "kyc_score": 50.93,
+      "name": "Nicaragua",
+      "uaeiec": null
+    },
+    "nl": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 72.77,
+      "name": "Netherlands",
+      "uaeiec": null
+    },
+    "no": {
+      "band_score": 0,
+      "fatf": null,
+      "kyc_score": 82.38,
+      "name": "Norway",
+      "uaeiec": null
+    },
+    "np": {
+      "band_score": 5,
+      "fatf": "FATF JUIM",
+      "kyc_score": 65.4,
+      "name": "Nepal",
+      "uaeiec": null
+    },
+    "nr": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 69.16,
+      "name": "Nauru",
+      "uaeiec": null
+    },
+    "nu": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 67.62,
+      "name": "Niue",
+      "uaeiec": null
+    },
+    "nz": {
+      "band_score": 0,
+      "fatf": null,
+      "kyc_score": 80.2,
+      "name": "New Zealand",
+      "uaeiec": null
+    },
+    "om": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 72.1,
+      "name": "Oman",
+      "uaeiec": null
+    },
+    "pa": {
+      "band_score": 10,
+      "fatf": null,
+      "kyc_score": 47.72,
+      "name": "Panama",
+      "uaeiec": null
+    },
+    "pe": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 67.01,
+      "name": "Peru",
+      "uaeiec": null
+    },
+    "pf": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 78.95,
+      "name": "French Polynesia",
+      "uaeiec": null
+    },
+    "pg": {
+      "band_score": 5,
+      "fatf": "FATF JUIM",
+      "kyc_score": 62.8,
+      "name": "Papua New Guinea",
+      "uaeiec": null
+    },
+    "ph": {
+      "band_score": 10,
+      "fatf": null,
+      "kyc_score": 43.56,
+      "name": "Philippines",
+      "uaeiec": null
+    },
+    "pk": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 60.51,
+      "name": "Pakistan",
+      "uaeiec": null
+    },
+    "pl": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 71.87,
+      "name": "Poland",
+      "uaeiec": null
+    },
+    "pm": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 78.95,
+      "name": "Saint Pierre and Miquelon",
+      "uaeiec": null
+    },
+    "pn": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 78.8,
+      "name": "Pitcairn",
+      "uaeiec": null
+    },
+    "pr": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 77.89,
+      "name": "Puerto Rico",
+      "uaeiec": null
+    },
+    "ps": {
+      "band_score": 10,
+      "fatf": null,
+      "kyc_score": 45.59,
+      "name": "Gaza Strip",
+      "uaeiec": null
+    },
+    "pt": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 76.6,
+      "name": "Portugal",
+      "uaeiec": null
+    },
+    "pw": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 67.82,
+      "name": "Palau",
+      "uaeiec": null
+    },
+    "py": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 64.23,
+      "name": "Paraguay",
+      "uaeiec": null
+    },
+    "qa": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 75.3,
+      "name": "Qatar",
+      "uaeiec": null
+    },
+    "re": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 78.95,
+      "name": "Réunion",
+      "uaeiec": null
+    },
+    "ro": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 71.38,
+      "name": "Romania",
+      "uaeiec": null
+    },
+    "rs": {
+      "band_score": 8,
+      "fatf": null,
+      "kyc_score": 55.74,
+      "name": "Serbia",
+      "uaeiec": null
+    },
+    "ru": {
+      "band_score": 10,
+      "fatf": "FATF Suspended",
+      "kyc_score": 28.75,
+      "name": "Russian Federation",
+      "uaeiec": null
+    },
+    "rw": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 68.36,
+      "name": "Rwanda",
+      "uaeiec": null
+    },
+    "sa": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 71.68,
+      "name": "Saudi Arabia",
+      "uaeiec": null
+    },
+    "sb": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 67.92,
+      "name": "Solomon Islands",
+      "uaeiec": null
+    },
+    "sc": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 62.4,
+      "name": "Seychelles",
+      "uaeiec": null
+    },
+    "sd": {
+      "band_score": 8,
+      "fatf": null,
+      "kyc_score": 50.48,
+      "name": "Sudan",
+      "uaeiec": null
+    },
+    "se": {
+      "band_score": 0,
+      "fatf": null,
+      "kyc_score": 81.15,
+      "name": "Sweden",
+      "uaeiec": null
+    },
+    "sg": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 74.69,
+      "name": "Singapore",
+      "uaeiec": null
+    },
+    "sh": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 78.8,
+      "name": "Saint Helena, Ascension and Tristan",
+      "uaeiec": null
+    },
+    "si": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 65.38,
+      "name": "Slovenia",
+      "uaeiec": null
+    },
+    "sj": {
+      "band_score": 0,
+      "fatf": null,
+      "kyc_score": 82.82,
+      "name": "Svalbard and Mayen",
+      "uaeiec": null
+    },
+    "sk": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 71.12,
+      "name": "Slovakia",
+      "uaeiec": null
+    },
+    "sl": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 60.56,
+      "name": "Sierra Leone",
+      "uaeiec": null
+    },
+    "sm": {
+      "band_score": 0,
+      "fatf": null,
+      "kyc_score": 80.9,
+      "name": "San Marino",
+      "uaeiec": null
+    },
+    "sn": {
+      "band_score": 8,
+      "fatf": null,
+      "kyc_score": 50.12,
+      "name": "Senegal",
+      "uaeiec": null
+    },
+    "so": {
+      "band_score": 10,
+      "fatf": null,
+      "kyc_score": 34.62,
+      "name": "Somalia",
+      "uaeiec": "UN Sanctions"
+    },
+    "sr": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 60.62,
+      "name": "Suriname",
+      "uaeiec": null
+    },
+    "ss": {
+      "band_score": 10,
+      "fatf": "FATF JUIM",
+      "kyc_score": 29.23,
+      "name": "South Sudan",
+      "uaeiec": "UN Sanctions"
+    },
+    "st": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 63.36,
+      "name": "Sao Tome & Prin.",
+      "uaeiec": null
+    },
+    "sv": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 62.77,
+      "name": "El Salvador",
+      "uaeiec": null
+    },
+    "sx": {
+      "band_score": 8,
+      "fatf": null,
+      "kyc_score": 55.21,
+      "name": "St Maarten",
+      "uaeiec": null
+    },
+    "sy": {
+      "band_score": 10,
+      "fatf": "FATF JUIM",
+      "kyc_score": 25.51,
+      "name": "Syria",
+      "uaeiec": null
+    },
+    "sz": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 63.0,
+      "name": "Eswatini",
+      "uaeiec": null
+    },
+    "tc": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 68.92,
+      "name": "Turks & Caicos",
+      "uaeiec": null
+    },
+    "td": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 61.46,
+      "name": "Chad",
+      "uaeiec": null
+    },
+    "tg": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 64.99,
+      "name": "Togo",
+      "uaeiec": null
+    },
+    "th": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 64.29,
+      "name": "Thailand",
+      "uaeiec": null
+    },
+    "tj": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 63.63,
+      "name": "Tajikistan",
+      "uaeiec": null
+    },
+    "tk": {
+      "band_score": 0,
+      "fatf": null,
+      "kyc_score": 80.82,
+      "name": "Tokelau",
+      "uaeiec": null
+    },
+    "tl": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 65.5,
+      "name": "Timor-Leste",
+      "uaeiec": null
+    },
+    "tm": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 65.25,
+      "name": "Turkmenistan",
+      "uaeiec": null
+    },
+    "tn": {
+      "band_score": 8,
+      "fatf": null,
+      "kyc_score": 58.65,
+      "name": "Tunisia",
+      "uaeiec": null
+    },
+    "to": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 66.87,
+      "name": "Tonga",
+      "uaeiec": null
+    },
+    "tr": {
+      "band_score": 8,
+      "fatf": null,
+      "kyc_score": 53.36,
+      "name": "Turkey",
+      "uaeiec": null
+    },
+    "tt": {
+      "band_score": 8,
+      "fatf": null,
+      "kyc_score": 51.55,
+      "name": "Trinidad & Tobago",
+      "uaeiec": null
+    },
+    "tv": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 64.06,
+      "name": "Tuvalu",
+      "uaeiec": null
+    },
+    "tw": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 72.1,
+      "name": "Taiwan",
+      "uaeiec": null
+    },
+    "tz": {
+      "band_score": 10,
+      "fatf": null,
+      "kyc_score": 46.78,
+      "name": "Tanzania",
+      "uaeiec": null
+    },
+    "ua": {
+      "band_score": 8,
+      "fatf": null,
+      "kyc_score": 53.57,
+      "name": "Ukraine",
+      "uaeiec": null
+    },
+    "ug": {
+      "band_score": 8,
+      "fatf": null,
+      "kyc_score": 53.33,
+      "name": "Uganda",
+      "uaeiec": null
+    },
+    "us": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 74.78,
+      "name": "United States",
+      "uaeiec": null
+    },
+    "uy": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 77.94,
+      "name": "Uruguay",
+      "uaeiec": null
+    },
+    "uz": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 69.22,
+      "name": "Uzbekistan",
+      "uaeiec": null
+    },
+    "va": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 77.83,
+      "name": "Vatican City State (Holy See)",
+      "uaeiec": null
+    },
+    "vc": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 65.92,
+      "name": "St Vincent & Gren",
+      "uaeiec": null
+    },
+    "ve": {
+      "band_score": 10,
+      "fatf": "FATF JUIM",
+      "kyc_score": 28.91,
+      "name": "Venezuela",
+      "uaeiec": null
+    },
+    "vg": {
+      "band_score": 5,
+      "fatf": "FATF JUIM",
+      "kyc_score": 63.3,
+      "name": "British Virgin Islands",
+      "uaeiec": null
+    },
+    "vi": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 73.36,
+      "name": "United States Virgin Islands",
+      "uaeiec": null
+    },
+    "vn": {
+      "band_score": 10,
+      "fatf": "FATF JUIM",
+      "kyc_score": 45.76,
+      "name": "Vietnam",
+      "uaeiec": null
+    },
+    "vu": {
+      "band_score": 8,
+      "fatf": null,
+      "kyc_score": 52.07,
+      "name": "Vanuatu",
+      "uaeiec": null
+    },
+    "wf": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 78.95,
+      "name": "Wallis and Futuna",
+      "uaeiec": null
+    },
+    "ws": {
+      "band_score": 5,
+      "fatf": null,
+      "kyc_score": 64.32,
+      "name": "Samoa",
+      "uaeiec": null
+    },
+    "ye": {
+      "band_score": 10,
+      "fatf": "FATF JUIM",
+      "kyc_score": 31.6,
+      "name": "Yemen",
+      "uaeiec": "UN Sanctions"
+    },
+    "yt": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 78.95,
+      "name": "Mayotte",
+      "uaeiec": null
+    },
+    "za": {
+      "band_score": 8,
+      "fatf": null,
+      "kyc_score": 53.07,
+      "name": "South Africa",
+      "uaeiec": null
+    },
+    "zm": {
+      "band_score": 2,
+      "fatf": null,
+      "kyc_score": 71.84,
+      "name": "Zambia",
+      "uaeiec": null
+    },
+    "zw": {
+      "band_score": 8,
+      "fatf": null,
+      "kyc_score": 54.52,
+      "name": "Zimbabwe",
+      "uaeiec": null
+    }
+  },
+  "fatf": {
+    "call_for_action": [
+      "North Korea",
+      "Iran",
+      "Myanmar"
+    ],
+    "increased_monitoring": [
+      "Algeria",
+      "Angola",
+      "Bolivia",
+      "British Virgin Islands",
+      "Bulgaria",
+      "Cameroon",
+      "Cote d'Ivoire",
+      "Democratic Republic of Congo",
+      "Haiti",
+      "Kenya",
+      "Lao People's Democratic Republic",
+      "Lebanon",
+      "Monaco",
+      "Namibia",
+      "Nepal",
+      "South Sudan",
+      "Syria",
+      "Venezuela",
+      "Vietnam",
+      "Yemen",
+      "Kuwait",
+      "Papua New Guinea"
+    ],
+    "suspended": [
+      "Russian Federation"
+    ]
+  },
+  "fatf_last_update": "2025-10-27 00:00:00",
+  "source": "ELIVA Individual Risk Rating 2026 workbook (client-supplied), sheets: Assessment Scoring, FATF, UAEIEC",
+  "uaeiec": {
+    "other_tfs": [
+      "Somalia",
+      "Iraq",
+      "Democratic Republic of Congo",
+      "Lebanon",
+      "Libya",
+      "Central African Rep",
+      "Yemen",
+      "South Sudan",
+      "Mali"
+    ],
+    "proliferation": [
+      "North Korea",
+      "Iran"
+    ]
+  },
+  "uaeiec_last_update": "2025-10-27 00:00:00"
+}

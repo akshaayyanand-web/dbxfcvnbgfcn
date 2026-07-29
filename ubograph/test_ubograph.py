@@ -159,6 +159,36 @@ def test_place_labels():
     check("unknown code passes through", country_label("zz9") == "zz9")
 
 
+def test_fatf_jurisdiction_detector():
+    print("FATF / UN sanctions-regime jurisdictions (from the client risk workbook)")
+    from reference import country_risk
+
+    check("data file loaded — North Korea is UN-sanctioned-regime + FATF blacklist",
+          country_risk("kp").get("fatf") == "FATF HRC" and country_risk("kp").get("uaeiec"))
+    check("Kenya is FATF grey list only, no UN regime",
+          country_risk("ke").get("fatf") == "FATF JUIM" and not country_risk("ke").get("uaeiec"))
+    check("USA carries neither flag", not country_risk("us").get("fatf"))
+
+    store = EntityStore()
+    store.add_node(Node(id="c-un", type=COMPANY, name="Pyongyang Trading Co", jurisdiction="kp"))
+    store.add_node(Node(id="c-grey", type=COMPANY, name="Mekong Ventures Ltd", jurisdiction="vn"))
+    store.add_node(Node(id="c-clean", type=COMPANY, name="Ordinary Holdings Ltd", jurisdiction="us"))
+    graph = build_graph(store)
+    all_findings = run_detectors(graph)
+    findings = [f for f in all_findings if f["kind"] == "fatf_jurisdiction"]
+    high = [f for f in findings if f["severity"] == "high"]
+    medium = [f for f in findings if f["severity"] == "medium"]
+    check("UN-sanctioned-regime jurisdiction produces a high finding",
+          high and "c-un" in high[0]["nodes"])
+    check("FATF grey-list-only jurisdiction produces a medium finding, not high",
+          medium and "c-grey" in medium[0]["nodes"]
+          and not any("c-grey" in f["nodes"] for f in high))
+    check("an unflagged jurisdiction produces no finding",
+          not any("c-clean" in f["nodes"] for f in findings))
+    check("independent of the curated secrecy-jurisdiction detector, which stays silent here",
+          not any(f["kind"] == "high_risk_jurisdiction" for f in all_findings))
+
+
 def test_report_and_pdf():
     print("report and PDF")
     payload = run_search("falcon capital", hops=4)
@@ -206,6 +236,7 @@ if __name__ == "__main__":
         test_risk_bands,
         test_bands_never_contradict_findings,
         test_place_labels,
+        test_fatf_jurisdiction_detector,
         test_report_and_pdf,
         test_identity_matches_surface_in_report,
     ):
