@@ -331,9 +331,9 @@ function affiliationTable(entries, emptyText) {
 
 const RATING_BAND_LABEL = {low: 'Low', medium: 'Medium', high: 'High'};
 
-function countrySelect(id, label) {
+function countrySelect(id, label, defaultCode) {
   const opts = state.countries.map((c) =>
-    `<option value="${escapeHtml(c.code)}">${escapeHtml(c.name)}</option>`).join('');
+    `<option value="${escapeHtml(c.code)}" ${c.code === defaultCode ? 'selected' : ''}>${escapeHtml(c.name)}</option>`).join('');
   return `<label for="${id}">${escapeHtml(label)}</label>
     <select id="${id}"><option value="">Select…</option>${opts}</select>`;
 }
@@ -348,24 +348,27 @@ function optionSelect(id, label, choices) {
 function riskRatingHtml(report) {
   if (report.subject.type !== 'person' || !state.riskRatingOptions) return '';
   const o = state.riskRatingOptions;
+  const nationality = report.subject.country || '';
   return `
     <h3>Client risk rating</h3>
     <p class="note">A separate, manual worksheet — the same weighted scoring rubric a
       real MLRO runs in a KYC risk-rating spreadsheet, not the graph-based score above.
-      Nationality and the screening outcome come from this entity's own record;
-      employment, payment and source of funds are KYC facts no public source carries,
-      so fill them in from the client's file. Source: ${escapeHtml(o.source)}.</p>
+      Nationality and the screening outcome come from this entity's own record.
+      Country of birth/residence/work location default to nationality — correct them if
+      you know otherwise. Employment, payment and source of funds are KYC facts no public
+      source carries, so they start blank until you fill them in from the client's file.
+      Source: ${escapeHtml(o.source)}.</p>
     <div class="rating-form">
-      ${countrySelect('rr-birth', 'Country of birth')}
-      ${countrySelect('rr-residence', 'Country of residence')}
-      ${countrySelect('rr-work', 'Business / work location')}
+      ${countrySelect('rr-birth', 'Country of birth', nationality)}
+      ${countrySelect('rr-residence', 'Country of residence', nationality)}
+      ${countrySelect('rr-work', 'Business / work location', nationality)}
       ${optionSelect('rr-employment-type', 'Employment type', o.employment_type)}
       ${optionSelect('rr-employment-industry', 'Employment industry', o.employment_industry)}
       ${optionSelect('rr-payment', 'Mode of payment', o.mode_of_payment)}
       ${optionSelect('rr-funds', 'Source of funds / wealth', o.source_of_funds)}
     </div>
-    <button class="ghost" id="rr-calculate" type="button">Calculate rating</button>
-    <div id="rr-result"></div>`;
+    <button class="ghost" id="rr-calculate" type="button">Recalculate</button>
+    <div id="rr-result"><p class="empty">Calculating…</p></div>`;
 }
 
 function renderRiskRating(result) {
@@ -476,7 +479,7 @@ function renderReport(report) {
   state.riskRatingInputs = null;
   const rrButton = $('#rr-calculate');
   if (rrButton) {
-    rrButton.addEventListener('click', async () => {
+    const runRiskRating = async () => {
       $('#rr-result').innerHTML = '<p class="empty">Calculating…</p>';
       const inputs = {
         country_of_birth: $('#rr-birth').value,
@@ -496,7 +499,9 @@ function renderReport(report) {
       $('#rr-result').innerHTML = result.error
         ? `<p class="err">${escapeHtml(result.error)}</p>` : renderRiskRating(result);
       if (!result.error) state.riskRatingInputs = inputs;
-    });
+    };
+    rrButton.addEventListener('click', runRiskRating);
+    runRiskRating();  // show a score immediately, from the defaults already filled in
   }
   const mediaFilter = $('#media-filter');
   if (mediaFilter) {
@@ -588,6 +593,7 @@ async function downloadPdf() {
         payload: state.payload,
         node_id: state.report.subject.id,
         ...(state.riskRatingInputs || {}),
+        include_risk_rating: !!state.riskRatingInputs,
       }),
     });
     if (!response.ok) throw new Error('The server could not build the PDF.');

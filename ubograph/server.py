@@ -152,9 +152,10 @@ def api_report():
 @app.post("/api/report.pdf")
 def api_report_pdf():
     """Same content as the on-screen report, plus the client risk rating if the
-    caller has one in progress — send the same fields /api/risk_rating takes
-    (country_of_birth, employment_type, etc.) alongside payload/node_id and the
-    PDF gets a "Client risk rating" section; omit them and the PDF is unchanged.
+    caller has one in progress — set include_risk_rating and send the same
+    fields /api/risk_rating takes (country_of_birth, employment_type, etc.)
+    alongside payload/node_id, and the PDF gets a "Client risk rating"
+    section; leave it unset and the PDF is unchanged.
     """
     body = request.get_json(silent=True) or {}
     payload, node_id = body.get("payload"), body.get("node_id")
@@ -163,12 +164,7 @@ def api_report_pdf():
     report = build_report(payload, node_id)
     if report.get("error"):
         return jsonify(report), 404
-    rating = None
-    if any(body.get(k) for k in (
-        "country_of_birth", "country_of_residence", "business_work_location",
-        "employment_type", "employment_industry", "mode_of_payment", "source_of_funds",
-    )):
-        rating = _rate_from_request(payload, node_id, body)
+    rating = _rate_from_request(payload, node_id, body) if body.get("include_risk_rating") else None
     name = re.sub(r"[^A-Za-z0-9]+", "_", report["subject"].get("name") or "report").strip("_")
     return app.response_class(
         pdf_renderer.render(report, risk_rating=rating),
