@@ -6,10 +6,11 @@ employment, payment mode and source of funds — each weighted, summed and
 rescaled to a 0-100 Low/Medium/High outcome).
 
 Standalone by design: every field, including nationality and the screening
-outcome, is a plain manual selection. It is not looked up against a searched
-entity, a PEP flag or a sanctions hit — this worksheet works exactly the same
-whether or not anyone has ever been searched for, matching the source
-spreadsheet it's modeled on.
+outcome, is a plain manual selection — nothing here is looked up against a
+searched entity automatically, so the worksheet works the same whether or not
+anything has ever been searched for. screening_outcome_for() exists only to
+back an explicit "Screen this name" button (see search.screen_name): a
+deliberate, visible action, not something applied behind the scenes.
 """
 import json
 from functools import lru_cache
@@ -41,6 +42,24 @@ def options() -> dict:
         "weights": r.get("weights", {}),
         "source": r.get("source", ""),
     }
+
+
+_ADVERSE = {"sanctioned", "crime", "wanted", "sanction_linked", "debarred"}
+_PEP = {"pep", "pep_associate"}
+
+
+def screening_outcome_for(risk_flags) -> str:
+    """Map sanctions/PEP flags found by a screening lookup onto the workbook's
+    own screening-outcome labels, worst signal first. Used only by the "Screen
+    this name" action — it fills the dropdown, it doesn't replace it."""
+    flags = set(risk_flags or [])
+    if flags & _ADVERSE:
+        return "On relevant  lists"
+    if flags & _PEP:
+        return "PEP identified"
+    if "leak" in flags:
+        return "Negative News"
+    return "Screened, PEP not identified, not on relevant lists"
 
 
 def _lookup(table: str, label: Optional[str]) -> Optional[float]:

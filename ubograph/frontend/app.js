@@ -366,6 +366,14 @@ function renderRiskAssessmentTab() {
       ${countrySelect('rr-birth', 'Country of birth')}
       ${countrySelect('rr-residence', 'Country of residence')}
       ${countrySelect('rr-work', 'Business / work location')}
+    </div>
+    <label for="rr-screen-name">Name to screen (optional)</label>
+    <div class="screen-row">
+      <input id="rr-screen-name" type="text" placeholder="Full name">
+      <button class="ghost" id="rr-screen" type="button">Screen this name</button>
+    </div>
+    <div id="rr-screen-result"></div>
+    <div class="rating-form">
       ${optionSelect('rr-screening', 'Screening outcome', o.screening_outcome)}
       ${optionSelect('rr-employment-type', 'Employment type', o.employment_type)}
       ${optionSelect('rr-employment-industry', 'Employment industry', o.employment_industry)}
@@ -376,6 +384,35 @@ function renderRiskAssessmentTab() {
     <div id="rr-result"></div>`;
 
   state.riskRatingInputs = null;
+  $('#rr-screen').addEventListener('click', async () => {
+    const name = $('#rr-screen-name').value.trim();
+    if (!name) {
+      $('#rr-screen-result').innerHTML = '<p class="err">Enter a name first.</p>';
+      return;
+    }
+    $('#rr-screen-result').innerHTML = '<p class="empty">Screening…</p>';
+    const response = await fetch('/api/screen', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({name}),
+    });
+    const result = await response.json();
+    if (result.error) {
+      $('#rr-screen-result').innerHTML = `<p class="err">${escapeHtml(result.error)}</p>`;
+      return;
+    }
+    $('#rr-screening').value = result.outcome;
+    const matches = (result.matches || []).map((m) =>
+      `<li>${escapeHtml(m.name)}${m.score != null ? ` (${Math.round(m.score * 100)}% match)` : ''}
+        ${(m.flags || []).map((f) => `<span class="tag-flag ${f}">${escapeHtml(flagLabel(f))}</span>`).join('')}
+      </li>`).join('');
+    $('#rr-screen-result').innerHTML = `
+      <p class="note">Set screening outcome to “${escapeHtml(result.outcome)}”
+        ${result.demo_mode ? '(demo data — no live sanctions key configured)' : ''}.
+        Adjust the dropdown below if you disagree.</p>
+      ${matches ? `<ul class="screen-matches">${matches}</ul>`
+                : '<p class="empty">No matches found.</p>'}`;
+  });
   $('#rr-calculate').addEventListener('click', async () => {
     $('#rr-result').innerHTML = '<p class="empty">Calculating…</p>';
     const inputs = {

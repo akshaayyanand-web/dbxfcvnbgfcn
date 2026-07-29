@@ -8,7 +8,7 @@ from reference import country_label, jurisdiction_label
 from report import build_report
 from resolve import EntityStore
 from schema import COMPANY, OWNS, PERSON, POSSIBLY_SAME_AS, Edge, Node, normalise_name
-from search import run_search
+from search import run_search, screen_name
 
 failures = []
 
@@ -228,6 +228,25 @@ def test_client_risk_rating():
     check("a low-risk profile bands low", low["band"] == "low")
 
 
+def test_screen_name_button():
+    print("'Screen this name' lookup for the risk-rating form")
+    check("blank name is rejected", "error" in screen_name(""))
+
+    clean = screen_name("James Okoro")
+    check("a clean demo record suggests the negative-result label",
+          clean.get("outcome") == "Screened, PEP not identified, not on relevant lists")
+    check("no live key -> flagged as demo data", clean.get("demo_mode") is True)
+
+    sanctioned = screen_name("Viktor Branko")
+    check("a sanctioned demo record suggests 'On relevant lists'",
+          sanctioned.get("outcome") == "On relevant  lists")
+    check("the match itself is returned, not just the label",
+          any("sanctioned" in m["flags"] for m in sanctioned.get("matches", [])))
+
+    pep = screen_name("Elena Kovacs")
+    check("a PEP demo record suggests 'PEP identified'", pep.get("outcome") == "PEP identified")
+
+
 def test_report_and_pdf():
     print("report and PDF")
     payload = run_search("falcon capital", hops=4)
@@ -290,6 +309,7 @@ if __name__ == "__main__":
         test_place_labels,
         test_fatf_jurisdiction_detector,
         test_client_risk_rating,
+        test_screen_name_button,
         test_report_and_pdf,
         test_identity_matches_surface_in_report,
     ):

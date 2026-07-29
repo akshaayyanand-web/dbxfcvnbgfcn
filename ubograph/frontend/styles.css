@@ -170,6 +170,11 @@ td.num{font-family:var(--mono); font-size:12.5px; text-align:right; white-space:
 .rating-form label{font:11px/1.5 var(--sans); letter-spacing:.05em; text-transform:uppercase;
                    color:var(--muted); display:block}
 .rating-form select{width:100%}
+.screen-row{display:flex; gap:8px; margin:6px 0 4px}
+.screen-row input{flex:1; min-width:0}
+#rr-screen-result{margin-bottom:6px}
+.screen-matches{margin:6px 0 0; padding-left:18px; font-size:13px}
+.screen-matches li{margin-bottom:4px}
 #rr-result{margin-top:12px}
 #rr-result table{margin-top:10px}
 

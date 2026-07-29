@@ -4,6 +4,7 @@ from typing import List, Optional
 from rapidfuzz import fuzz
 
 import config
+import risk_rating
 from graph import build_graph, run_detectors, subgraph_json
 from resolve import EntityStore
 from schema import PERSON, normalise_name
@@ -26,6 +27,51 @@ def _demo_roots(store: EntityStore, name: str, entity_type: str) -> List[str]:
             scored.append((score, node_id))
     scored.sort(reverse=True)
     return [node_id for _, node_id in scored[:5]]
+
+
+def screen_name(name: str, entity_type: str = "any") -> dict:
+    """A standalone sanctions/PEP screening lookup for the risk-rating tool's
+    "Screen this name" button. Separate from the graph search above: no
+    network expansion, just the raw match candidates and what each one is
+    flagged for, so the screening outcome it suggests is never a black box.
+    """
+    name = (name or "").strip()
+    if not name:
+        return {"error": "A name is required."}
+
+    if opensanctions.available():
+        try:
+            results = opensanctions.match(name=name, entity_type=entity_type, limit=5)
+        except opensanctions.OpenSanctionsError as exc:
+            return {"error": config.redact(str(exc))}
+        matches = [
+            {
+                "name": (r.get("caption") or name),
+                "score": r.get("score"),
+                "flags": sorted(opensanctions._risk_flags(r)),
+            }
+            for r in results
+        ]
+        demo_mode = False
+    else:
+        # No live key: fall back to the same synthetic network the rest of the
+        # app demos with, so the button still does something before keys arrive.
+        store = EntityStore()
+        demo.load(store)
+        roots = _demo_roots(store, name, entity_type)
+        matches = [
+            {"name": store.nodes[r].name, "score": None,
+             "flags": sorted(store.nodes[r].risk_flags)}
+            for r in roots
+        ]
+        demo_mode = True
+
+    all_flags = {flag for m in matches for flag in m["flags"]}
+    return {
+        "outcome": risk_rating.screening_outcome_for(all_flags),
+        "matches": matches,
+        "demo_mode": demo_mode,
+    }
 
 
 def run_search(

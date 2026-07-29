@@ -10,7 +10,7 @@ import pdf as pdf_renderer
 import reference
 import risk_rating
 from report import build_report
-from search import run_search
+from search import run_search, screen_name
 
 app = Flask(__name__, static_folder="frontend", static_url_path="")
 
@@ -119,6 +119,19 @@ def api_risk_rating():
     """
     body = request.get_json(silent=True) or {}
     return jsonify(_rate_from_request(body))
+
+
+@app.post("/api/screen")
+def api_screen():
+    """"Screen this name" — a quick, standalone sanctions/PEP lookup for the
+    Risk Assessment tab. Returns the suggested screening-rubric outcome plus
+    the raw matches behind it; the caller still picks the dropdown value.
+    """
+    body = request.get_json(silent=True) or {}
+    result = screen_name(body.get("name", ""), body.get("entity_type") or "any")
+    if result.get("error"):
+        return jsonify(result), 400
+    return jsonify(result)
 
 
 @app.post("/api/report")
