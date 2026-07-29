@@ -80,7 +80,15 @@
 
     <div class="pane active" id="pane-graph">
       <div id="empty-state" class="empty-state" style="display:none"></div>
-      <canvas id="canvas"></canvas>
+      <div class="graph-wrap">
+        <canvas id="canvas"></canvas>
+        <div class="graph-toolbar">
+          <button type="button" id="zoom-in" title="Zoom in" aria-label="Zoom in">+</button>
+          <button type="button" id="zoom-out" title="Zoom out" aria-label="Zoom out">−</button>
+          <button type="button" id="zoom-fit" title="Fit to view" aria-label="Fit to view">⤢</button>
+        </div>
+        <div id="graph-tooltip" class="graph-tooltip" hidden></div>
+      </div>
       <div class="legend">
         <span><i></i>asserted relationship</span>
         <span><i class="dashed"></i>possible same entity — verify</span>

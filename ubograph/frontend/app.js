@@ -754,6 +754,24 @@ function renderSidebar(payload) {
 /* ------------------------------------------------------------------ *
  * Force-directed graph
  * ------------------------------------------------------------------ */
+const GOLDEN_ANGLE = 2.399963;
+
+function assignParallelOffsets() {
+  // Two entities are sometimes linked more than once (e.g. both an ownership
+  // and a directorship record) — without an offset those edges would be drawn
+  // exactly on top of each other and look like one.
+  const groups = {};
+  sim.edges.forEach((e) => {
+    const key = [e.source, e.target].sort().join('|');
+    (groups[key] = groups[key] || []).push(e);
+  });
+  Object.values(groups).forEach((group) => {
+    group.forEach((e, i) => {
+      e.curve = group.length > 1 ? (i - (group.length - 1) / 2) * 20 : 0;
+    });
+  });
+}
+
 function layout(payload) {
   const degree = {};
   payload.edges.forEach((e) => {
@@ -761,28 +779,67 @@ function layout(payload) {
     degree[e.target] = (degree[e.target] || 0) + 1;
   });
   const width = canvas.clientWidth || 800, height = canvas.clientHeight || 600;
-  sim.nodes = payload.nodes.map((n, i) => ({
-    ...n,
-    x: width / 2 + Math.cos(i) * (80 + i * 9),
-    y: height / 2 + Math.sin(i) * (80 + i * 9),
-    vx: 0, vy: 0,
-    r: 6 + Math.min(12, Math.sqrt(degree[n.id] || 1) * 3.2) + (n.is_root ? 3 : 0),
-  }));
+  // A golden-angle spiral spaces the starting positions evenly, so the
+  // simulation settles into a clean layout in fewer steps than a naive
+  // cos(i)/sin(i) spiral, which bunches nodes unevenly.
+  sim.nodes = payload.nodes.map((n, i) => {
+    const angle = i * GOLDEN_ANGLE, radius = 16 * Math.sqrt(i);
+    return {
+      ...n,
+      x: width / 2 + Math.cos(angle) * radius,
+      y: height / 2 + Math.sin(angle) * radius,
+      vx: 0, vy: 0,
+      r: 6 + Math.min(12, Math.sqrt(degree[n.id] || 1) * 3.2) + (n.is_root ? 3 : 0),
+    };
+  });
   const index = Object.fromEntries(sim.nodes.map((n) => [n.id, n]));
   sim.edges = payload.edges
     .map((e) => ({...e, s: index[e.source], t: index[e.target]}))
     .filter((e) => e.s && e.t);
+  assignParallelOffsets();
   view = {x: 0, y: 0, k: 1};
-  tick(220);
+  tick(260, fitView);
 }
 
-function tick(steps) {
+function fitView() {
+  if (!sim.nodes.length) return;
+  const pad = 64;
+  const width = canvas.clientWidth, height = canvas.clientHeight;
+  let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+  sim.nodes.forEach((n) => {
+    minX = Math.min(minX, n.x - n.r);
+    minY = Math.min(minY, n.y - n.r);
+    maxX = Math.max(maxX, n.x + n.r);
+    maxY = Math.max(maxY, n.y + n.r);
+  });
+  const spanX = Math.max(1, maxX - minX), spanY = Math.max(1, maxY - minY);
+  const k = Math.max(0.2, Math.min(2.2,
+    Math.min((width - pad * 2) / spanX, (height - pad * 2) / spanY)));
+  const cx = (minX + maxX) / 2, cy = (minY + maxY) / 2;
+  view = {k, x: width / 2 - cx * k, y: height / 2 - cy * k};
+  draw();
+}
+
+function zoomBy(factor) {
+  const width = canvas.clientWidth, height = canvas.clientHeight;
+  const cx = width / 2, cy = height / 2;
+  view.x = cx - (cx - view.x) * factor;
+  view.y = cy - (cy - view.y) * factor;
+  view.k = Math.max(0.15, Math.min(4, view.k * factor));
+  draw();
+}
+$('#zoom-in').addEventListener('click', () => zoomBy(1.25));
+$('#zoom-out').addEventListener('click', () => zoomBy(0.8));
+$('#zoom-fit').addEventListener('click', fitView);
+
+function tick(steps, onDone) {
   cancelAnimationFrame(raf);
   let remaining = steps;
   const step = () => {
     for (let pass = 0; pass < 2; pass++) physics();
     draw();
     if (--remaining > 0) raf = requestAnimationFrame(step);
+    else if (onDone) onDone();
   };
   step();
 }
@@ -796,16 +853,25 @@ function physics() {
       const b = nodes[j];
       const dx = b.x - a.x, dy = b.y - a.y;
       const dist2 = dx * dx + dy * dy || 0.01;
-      if (dist2 > 90000) continue;
-      const dist = Math.sqrt(dist2), force = 2600 / dist2;
+      if (dist2 > 115600) continue;
+      const dist = Math.sqrt(dist2), force = 3000 / dist2;
       const fx = (dx / dist) * force, fy = (dy / dist) * force;
       a.vx -= fx; a.vy -= fy; b.vx += fx; b.vy += fy;
+      // A harder push once two nodes actually overlap, so labels never end
+      // up stacked directly on top of each other.
+      const minSep = a.r + b.r + 26;
+      if (dist < minSep) {
+        const push = (minSep - dist) * 0.05;
+        const ux = dx / dist, uy = dy / dist;
+        a.vx -= ux * push; a.vy -= uy * push;
+        b.vx += ux * push; b.vy += uy * push;
+      }
     }
   }
   sim.edges.forEach((e) => {
     const dx = e.t.x - e.s.x, dy = e.t.y - e.s.y;
     const dist = Math.hypot(dx, dy) || 0.01;
-    const force = (dist - 110) * 0.012;
+    const force = (dist - 130) * 0.012;
     const fx = (dx / dist) * force, fy = (dy / dist) * force;
     e.s.vx += fx; e.s.vy += fy; e.t.vx -= fx; e.t.vy -= fy;
   });
@@ -813,9 +879,9 @@ function physics() {
     n.vx += (width / 2 - n.x) * 0.0016;
     n.vy += (height / 2 - n.y) * 0.0016;
     if (n === dragNode) { n.vx = n.vy = 0; return; }
-    n.vx *= 0.82; n.vy *= 0.82;
-    n.x += Math.max(-18, Math.min(18, n.vx));
-    n.y += Math.max(-18, Math.min(18, n.vy));
+    n.vx *= 0.85; n.vy *= 0.85;
+    n.x += Math.max(-12, Math.min(12, n.vx));
+    n.y += Math.max(-12, Math.min(12, n.vy));
   });
 }
 
@@ -840,18 +906,31 @@ function draw() {
   const dim = highlight.size > 0;
   sim.edges.forEach((e) => {
     const lit = !dim || (highlight.has(e.source) && highlight.has(e.target));
-    ctx.globalAlpha = lit ? 1 : 0.14;
+    ctx.globalAlpha = lit ? 1 : 0.12;
     ctx.strokeStyle = e.asserted ? css('--edge') : css('--link');
     ctx.lineWidth = e.asserted ? (e.share_pct ? 1.2 + e.share_pct / 60 : 1.3) : 1.4;
     ctx.setLineDash(e.asserted ? [] : [5, 4]);
     ctx.beginPath();
     ctx.moveTo(e.s.x, e.s.y);
-    ctx.lineTo(e.t.x, e.t.y);
+    let controlX = e.s.x, controlY = e.s.y;
+    if (e.curve) {
+      const mx = (e.s.x + e.t.x) / 2, my = (e.s.y + e.t.y) / 2;
+      const dx = e.t.x - e.s.x, dy = e.t.y - e.s.y;
+      const len = Math.hypot(dx, dy) || 1;
+      controlX = mx + (-dy / len) * e.curve;
+      controlY = my + (dx / len) * e.curve;
+      ctx.quadraticCurveTo(controlX, controlY, e.t.x, e.t.y);
+    } else {
+      ctx.lineTo(e.t.x, e.t.y);
+    }
     ctx.stroke();
-    if (e.asserted) arrow(e.s, e.t);
+    if (e.asserted) arrow(controlX, controlY, e.t);
     ctx.setLineDash([]);
   });
 
+  // Labels sit above nodes in their own pass, so a big node's text is never
+  // painted over by a later, smaller node drawn on top of it.
+  const labels = [];
   sim.nodes.forEach((n) => {
     const lit = !dim || highlight.has(n.id);
     ctx.globalAlpha = lit ? 1 : 0.16;
@@ -871,20 +950,28 @@ function draw() {
       ctx.lineWidth = n.id === selected ? 2.5 : 1.5;
       ctx.stroke();
     }
-    if (n.r > 9 || lit) {
-      ctx.fillStyle = css('--ink');
-      ctx.font = '12px ui-sans-serif, system-ui, sans-serif';
-      ctx.textAlign = 'center';
-      const label = (n.name || '').length > 26 ? n.name.slice(0, 24) + '…' : (n.name || '');
-      ctx.fillText(label, n.x, n.y + n.r + 13);
-    }
+    if (n.r > 9 || lit || view.k > 1.4) labels.push(n);
   });
+
   ctx.globalAlpha = 1;
+  ctx.font = '12px ' + css('--sans');
+  ctx.textAlign = 'center';
+  labels.forEach((n) => {
+    const label = (n.name || '').length > 26 ? n.name.slice(0, 24) + '…' : (n.name || '');
+    const y = n.y + n.r + 13;
+    // A halo in the page background colour keeps labels legible over edges
+    // and other nodes, instead of plain text that disappears into clutter.
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = css('--bg');
+    ctx.strokeText(label, n.x, y);
+    ctx.fillStyle = css('--ink');
+    ctx.fillText(label, n.x, y);
+  });
   ctx.restore();
 }
 
-function arrow(from, to) {
-  const angle = Math.atan2(to.y - from.y, to.x - from.x);
+function arrow(fromX, fromY, to) {
+  const angle = Math.atan2(to.y - fromY, to.x - fromX);
   const tipX = to.x - Math.cos(angle) * (to.r + 3);
   const tipY = to.y - Math.sin(angle) * (to.r + 3);
   ctx.beginPath();
@@ -911,14 +998,26 @@ canvas.addEventListener('mousedown', (event) => {
   if (node) dragNode = node;
   else panning = {x: event.clientX - view.x, y: event.clientY - view.y};
   canvas.classList.add('dragging');
+  canvas.style.cursor = '';  // let the .dragging class's grabbing cursor take over
 });
+const tooltip = $('#graph-tooltip');
+function showTooltip(node, event) {
+  if (!node) { tooltip.hidden = true; return; }
+  const wrapRect = canvas.parentElement.getBoundingClientRect();
+  tooltip.hidden = false;
+  tooltip.style.left = `${event.clientX - wrapRect.left}px`;
+  tooltip.style.top = `${event.clientY - wrapRect.top - 12}px`;
+  tooltip.innerHTML = `<b>${escapeHtml(node.name || '')}</b>${escapeHtml(BAND_LABEL[node.risk_band] || '')}`;
+}
 canvas.addEventListener('mousemove', (event) => {
   const point = toWorld(event);
-  if (dragNode) { dragNode.x = point.x; dragNode.y = point.y; tick(30); return; }
+  if (dragNode) { dragNode.x = point.x; dragNode.y = point.y; tick(30); showTooltip(null); return; }
   if (panning) { view.x = event.clientX - panning.x; view.y = event.clientY - panning.y; draw(); return; }
   const node = nodeAt(point);
-  canvas.title = node ? `${node.name} — ${BAND_LABEL[node.risk_band] || ''}` : '';
+  canvas.style.cursor = node ? 'pointer' : 'grab';
+  showTooltip(node, event);
 });
+canvas.addEventListener('mouseleave', () => showTooltip(null));
 window.addEventListener('mouseup', () => {
   if (dragNode) tick(60);
   dragNode = null;
