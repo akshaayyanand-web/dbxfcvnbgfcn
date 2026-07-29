@@ -226,6 +226,8 @@ downstream knows which API a record came from.
 | `POST /api/report.pdf` | Same input → a PDF file |
 | `GET /api/risk_rating/options` | Dropdown option lists and weights for the client risk-rating panel |
 | `POST /api/risk_rating` | `{nationality, country_of_birth, country_of_residence, business_work_location, screening_outcome, employment_type, employment_industry, mode_of_payment, source_of_funds}` → a weighted score. Standalone — no payload or node_id. |
+| `POST /api/risk_rating.pdf` | Same input → the worksheet as its own PDF |
+| `POST /api/screen` | `{name, entity_type}` → a suggested screening outcome plus the raw matches found |
 
 The report endpoints take the result set the browser already holds, so opening a
 report and downloading a PDF cost no extra API quota.

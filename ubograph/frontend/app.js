@@ -380,7 +380,10 @@ function renderRiskAssessmentTab() {
       ${optionSelect('rr-payment', 'Mode of payment', o.mode_of_payment)}
       ${optionSelect('rr-funds', 'Source of funds / wealth', o.source_of_funds)}
     </div>
-    <button class="ghost" id="rr-calculate" type="button">Calculate rating</button>
+    <div class="actions">
+      <button class="ghost" id="rr-calculate" type="button">Calculate rating</button>
+      <button class="ghost" id="rr-download" type="button" disabled>Download PDF</button>
+    </div>
     <div id="rr-result"></div>`;
 
   state.riskRatingInputs = null;
@@ -434,7 +437,37 @@ function renderRiskAssessmentTab() {
     const result = await response.json();
     $('#rr-result').innerHTML = result.error
       ? `<p class="err">${escapeHtml(result.error)}</p>` : renderRiskRating(result);
-    if (!result.error) state.riskRatingInputs = inputs;
+    if (!result.error) {
+      state.riskRatingInputs = inputs;
+      $('#rr-download').disabled = false;
+    }
+  });
+  $('#rr-download').addEventListener('click', async () => {
+    const button = $('#rr-download');
+    button.disabled = true;
+    button.textContent = 'Building PDF…';
+    try {
+      const response = await fetch('/api/risk_rating.pdf', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(state.riskRatingInputs || {}),
+      });
+      if (!response.ok) throw new Error('The server could not build the PDF.');
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'UBOgraph_Client_Risk_Rating.pdf';
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 4000);
+    } catch (error) {
+      alert(error.message);
+    } finally {
+      button.disabled = false;
+      button.textContent = 'Download PDF';
+    }
   });
 }
 

@@ -1,6 +1,7 @@
 """Renders a report dict (from report.build_report) into a PDF."""
 import io
 import re
+from datetime import datetime
 from typing import List
 
 from reportlab.lib import colors
@@ -410,6 +411,40 @@ def render(report: dict, risk_rating: dict = None) -> bytes:
         canvas.setFont("Helvetica", 7.5)
         canvas.setFillColor(MUTED)
         canvas.drawString(20 * mm, 12 * mm, f"UBOgraph · {subject.get('name')}")
+        canvas.drawRightString(A4[0] - 20 * mm, 12 * mm, f"page {document.page}")
+        canvas.restoreState()
+
+    doc.build(flow, onFirstPage=footer, onLaterPages=footer)
+    return buffer.getvalue()
+
+
+def render_risk_rating(rating: dict) -> bytes:
+    """A standalone PDF for the Risk Assessment tab's worksheet — independent
+    of any entity, search, or report, exactly like the tab itself."""
+    styles = _styles()
+    buffer = io.BytesIO()
+    doc = SimpleDocTemplate(
+        buffer, pagesize=A4,
+        leftMargin=20 * mm, rightMargin=20 * mm, topMargin=18 * mm, bottomMargin=18 * mm,
+        title="Client Risk Rating",
+        author="UBOgraph",
+    )
+    flow = [
+        Paragraph("Client Risk Rating", styles["title"]),
+        Paragraph(
+            f"Generated {datetime.now().strftime('%Y-%m-%d %H:%M')} · "
+            "standalone worksheet, not tied to any search or entity",
+            styles["sub"],
+        ),
+        HRFlowable(width="100%", color=LINE, spaceBefore=4, spaceAfter=2),
+    ]
+    flow += _risk_rating_flow(rating, styles)
+
+    def footer(canvas, document):
+        canvas.saveState()
+        canvas.setFont("Helvetica", 7.5)
+        canvas.setFillColor(MUTED)
+        canvas.drawString(20 * mm, 12 * mm, "UBOgraph · Client Risk Rating")
         canvas.drawRightString(A4[0] - 20 * mm, 12 * mm, f"page {document.page}")
         canvas.restoreState()
 

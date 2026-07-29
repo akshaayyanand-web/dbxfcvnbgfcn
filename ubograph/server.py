@@ -121,6 +121,20 @@ def api_risk_rating():
     return jsonify(_rate_from_request(body))
 
 
+@app.post("/api/risk_rating.pdf")
+def api_risk_rating_pdf():
+    """The Risk Assessment tab's worksheet as its own PDF — same manual inputs
+    as /api/risk_rating, no payload or node_id, no dependency on any report.
+    """
+    body = request.get_json(silent=True) or {}
+    rating = _rate_from_request(body)
+    return app.response_class(
+        pdf_renderer.render_risk_rating(rating),
+        mimetype="application/pdf",
+        headers={"Content-Disposition": 'attachment; filename="UBOgraph_Client_Risk_Rating.pdf"'},
+    )
+
+
 @app.post("/api/screen")
 def api_screen():
     """"Screen this name" — a quick, standalone sanctions/PEP lookup for the

@@ -247,6 +247,24 @@ def test_screen_name_button():
     check("a PEP demo record suggests 'PEP identified'", pep.get("outcome") == "PEP identified")
 
 
+def test_standalone_risk_rating_pdf():
+    print("client risk rating as its own PDF")
+    rating = risk_rating.rate(
+        nationality="af", country_of_birth="kw", country_of_residence="kw",
+        business_work_location="ae",
+        screening_outcome="Screened, PEP not identified, not on relevant lists",
+        employment_type="Salaried", employment_industry="Asset Management",
+        mode_of_payment="Manager's Cheque", source_of_funds="Employment (Salaried)",
+    )
+    data = pdf_renderer.render_risk_rating(rating)
+    check("standalone PDF renders on its own, no entity or report needed",
+          data.startswith(b"%PDF") and len(data) > 1500)
+
+    empty = pdf_renderer.render_risk_rating(risk_rating.rate())
+    check("an empty worksheet still renders rather than crashing",
+          empty.startswith(b"%PDF"))
+
+
 def test_report_and_pdf():
     print("report and PDF")
     payload = run_search("falcon capital", hops=4)
@@ -310,6 +328,7 @@ if __name__ == "__main__":
         test_fatf_jurisdiction_detector,
         test_client_risk_rating,
         test_screen_name_button,
+        test_standalone_risk_rating_pdf,
         test_report_and_pdf,
         test_identity_matches_surface_in_report,
     ):
