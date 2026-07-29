@@ -3,6 +3,7 @@ import sys
 
 import pdf as pdf_renderer
 from graph import band_reason, build_graph, find_ubos, risk_band, run_detectors
+import risk_rating
 from reference import country_label, jurisdiction_label
 from report import build_report
 from resolve import EntityStore
@@ -189,6 +190,47 @@ def test_fatf_jurisdiction_detector():
           not any(f["kind"] == "high_risk_jurisdiction" for f in all_findings))
 
 
+def test_client_risk_rating():
+    print("client risk rating (ELIVA workbook rubric)")
+    check("screening maps sanctioned to 'on relevant lists'",
+          risk_rating.screening_outcome_for({"sanctioned"}) == "On relevant  lists")
+    check("screening maps pep to 'PEP identified'",
+          risk_rating.screening_outcome_for({"pep"}) == "PEP identified")
+    check("clean record maps to the negative-result label",
+          risk_rating.screening_outcome_for(set())
+          == "Screened, PEP not identified, not on relevant lists")
+
+    # Reproduces the workbook's own worked example exactly (Assessment sheet:
+    # Afghan national, born and residing in Kuwait, works in the UAE, clean
+    # screening, salaried in Asset Management, paid by manager's cheque,
+    # salary as source of funds -> the workbook computes 57, "High Risk").
+    result = risk_rating.rate(
+        nationality="af", country_of_birth="kw", country_of_residence="kw",
+        business_work_location="ae",
+        screening_outcome="Screened, PEP not identified, not on relevant lists",
+        employment_type="Salaried", employment_industry="Asset Management",
+        mode_of_payment="Manager's Cheque", source_of_funds="Employment (Salaried)",
+    )
+    check("matches the workbook's own worked example (score 57)", result["score"] == 57.0)
+    check("57 bands as High", result["band"] == "high")
+    check("all nine criteria scored", result["complete"] and not result["missing"])
+
+    check("missing fields are reported, not silently zeroed",
+          risk_rating.rate(nationality="us")["missing"])
+    check("an unknown label scores nothing rather than guessing",
+          risk_rating.rate(employment_type="Not a real category")
+          ["rows"][5]["weighted_score"] is None)
+
+    low = risk_rating.rate(
+        nationality="us", country_of_birth="us", country_of_residence="us",
+        business_work_location="us",
+        screening_outcome="Screened, PEP not identified, not on relevant lists",
+        employment_type="Salaried", employment_industry="Education",
+        mode_of_payment="Local Bank Transfer", source_of_funds="Employment (Salaried)",
+    )
+    check("a low-risk profile bands low", low["band"] == "low")
+
+
 def test_report_and_pdf():
     print("report and PDF")
     payload = run_search("falcon capital", hops=4)
@@ -237,6 +279,7 @@ if __name__ == "__main__":
         test_bands_never_contradict_findings,
         test_place_labels,
         test_fatf_jurisdiction_detector,
+        test_client_risk_rating,
         test_report_and_pdf,
         test_identity_matches_surface_in_report,
     ):

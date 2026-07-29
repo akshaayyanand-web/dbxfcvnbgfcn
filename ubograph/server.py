@@ -8,6 +8,7 @@ from flask import Flask, Response, jsonify, request, send_from_directory
 import config
 import pdf as pdf_renderer
 import reference
+import risk_rating
 from report import build_report
 from search import run_search
 
@@ -85,6 +86,44 @@ def api_reference():
         "countries": reference.countries(),
         "jurisdictions": reference.jurisdictions(),
     })
+
+
+@app.get("/api/risk_rating/options")
+def api_risk_rating_options():
+    """Dropdown option lists and weights for the client risk-rating panel."""
+    return jsonify(risk_rating.options())
+
+
+@app.post("/api/risk_rating")
+def api_risk_rating():
+    """Score one entity against the client risk-rating rubric.
+
+    Nationality and screening come from the entity already in the result set,
+    not the request body — overriding either would defeat the point of having
+    screened the entity in the first place. Everything else (birth/residence/
+    work-location country, employment, payment, source of funds) is a KYC fact
+    no public source carries, so it's supplied by the caller.
+    """
+    body = request.get_json(silent=True) or {}
+    payload, node_id = body.get("payload"), body.get("node_id")
+    if not payload or not node_id:
+        return jsonify({"error": "payload and node_id are required."}), 400
+    node = next((n for n in payload.get("nodes", []) if n.get("id") == node_id), None)
+    if not node:
+        return jsonify({"error": "That entity is not in the current result set."}), 404
+
+    result = risk_rating.rate(
+        nationality=node.get("country"),
+        country_of_birth=body.get("country_of_birth"),
+        country_of_residence=body.get("country_of_residence"),
+        business_work_location=body.get("business_work_location"),
+        screening_outcome=risk_rating.screening_outcome_for(node.get("risk_flags")),
+        employment_type=body.get("employment_type"),
+        employment_industry=body.get("employment_industry"),
+        mode_of_payment=body.get("mode_of_payment"),
+        source_of_funds=body.get("source_of_funds"),
+    )
+    return jsonify(result)
 
 
 @app.post("/api/report")

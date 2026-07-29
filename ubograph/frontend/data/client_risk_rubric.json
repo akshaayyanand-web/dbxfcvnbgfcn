@@ -1,0 +1,346 @@
+{
+  "source": "ELIVA Individual Risk Rating 2026 workbook (client-supplied), sheet: Assessment Scoring / Assessment",
+  "weights": {
+    "nationality": 0.15,
+    "country_of_birth": 0.1,
+    "country_of_residence": 0.1,
+    "screening": 0.1,
+    "employment_type": 0.1,
+    "employment_industry": 0.1,
+    "business_work_location": 0.1,
+    "mode_of_payment": 0.15,
+    "source_of_funds": 0.1
+  },
+  "bands": {
+    "low": [
+      0,
+      25
+    ],
+    "medium": [
+      26,
+      50
+    ],
+    "high": [
+      51,
+      100
+    ]
+  },
+  "employment_industry": [
+    {
+      "label": "Aerospace & Defence",
+      "score": 8.0
+    },
+    {
+      "label": "Agribusiness and commodity foods",
+      "score": 4.0
+    },
+    {
+      "label": "Apartment Houses",
+      "score": 10.0
+    },
+    {
+      "label": "Art and Antique Dealers",
+      "score": 10.0
+    },
+    {
+      "label": "Asset Management",
+      "score": 8.0
+    },
+    {
+      "label": "Auction Houses",
+      "score": 10.0
+    },
+    {
+      "label": "Banking",
+      "score": 8.0
+    },
+    {
+      "label": "Beauty Shops",
+      "score": 10.0
+    },
+    {
+      "label": "Building materials",
+      "score": 8.0
+    },
+    {
+      "label": "Business and consumer services",
+      "score": 4.0
+    },
+    {
+      "label": "Car Washes",
+      "score": 10.0
+    },
+    {
+      "label": "Casino",
+      "score": 10.0
+    },
+    {
+      "label": "Chemicals",
+      "score": 8.0
+    },
+    {
+      "label": "Constructions Companies / Developers",
+      "score": 10.0
+    },
+    {
+      "label": "Consumer durables",
+      "score": 6.0
+    },
+    {
+      "label": "Containers and packaging",
+      "score": 4.0
+    },
+    {
+      "label": "Currency Dealer or Exchanger",
+      "score": 10.0
+    },
+    {
+      "label": "Education",
+      "score": 2.0
+    },
+    {
+      "label": "Engineering",
+      "score": 6.0
+    },
+    {
+      "label": "Environmental services",
+      "score": 2.0
+    },
+    {
+      "label": "Financial Services",
+      "score": 8.0
+    },
+    {
+      "label": "Gambling Services",
+      "score": 10.0
+    },
+    {
+      "label": "Gaming",
+      "score": 10.0
+    },
+    {
+      "label": "General Trading",
+      "score": 10.0
+    },
+    {
+      "label": "Health care equipment",
+      "score": 2.0
+    },
+    {
+      "label": "Health care services",
+      "score": 2.0
+    },
+    {
+      "label": "Hotels",
+      "score": 10.0
+    },
+    {
+      "label": "Lawyers & Accountants",
+      "score": 10.0
+    },
+    {
+      "label": "Leisure and sports",
+      "score": 8.0
+    },
+    {
+      "label": "Liquor Stores",
+      "score": 10.0
+    },
+    {
+      "label": "Luxury Good Dealers",
+      "score": 10.0
+    },
+    {
+      "label": "Manufacturing",
+      "score": 6.0
+    },
+    {
+      "label": "Media and entertainment",
+      "score": 4.0
+    },
+    {
+      "label": "Metals and mining",
+      "score": 10.0
+    },
+    {
+      "label": "Movie Theatres",
+      "score": 10.0
+    },
+    {
+      "label": "Oil & Gas",
+      "score": 8.0
+    },
+    {
+      "label": "Real Estate",
+      "score": 10.0
+    },
+    {
+      "label": "Restaurants",
+      "score": 10.0
+    },
+    {
+      "label": "Retail stores",
+      "score": 10.0
+    },
+    {
+      "label": "Technology software and services",
+      "score": 4.0
+    },
+    {
+      "label": "Telecommunications",
+      "score": 2.0
+    },
+    {
+      "label": "Transportation",
+      "score": 10.0
+    },
+    {
+      "label": "Transportation infrastructure",
+      "score": 2.0
+    },
+    {
+      "label": "Travel Agencies",
+      "score": 10.0
+    },
+    {
+      "label": "Used Car or Motorcycle Dealers",
+      "score": 10.0
+    },
+    {
+      "label": "Virtual Asset Service Provider (VASPs)",
+      "score": 10.0
+    },
+    {
+      "label": "Shell Companies",
+      "score": 10.0
+    },
+    {
+      "label": "Money Service Business (MSBs)",
+      "score": 10.0
+    },
+    {
+      "label": "Mechanics & Work Shops",
+      "score": 8.0
+    },
+    {
+      "label": "Others",
+      "score": 5.0
+    }
+  ],
+  "screening_outcome": [
+    {
+      "label": "PEP identified",
+      "score": 10.0
+    },
+    {
+      "label": "On relevant  lists",
+      "score": 10.0
+    },
+    {
+      "label": "Negative News",
+      "score": 8.0
+    },
+    {
+      "label": "Screened, PEP not identified, not on relevant lists",
+      "score": 0.0
+    }
+  ],
+  "employment_type": [
+    {
+      "label": "Unemployed",
+      "score": 10.0
+    },
+    {
+      "label": "Sole Proprietor",
+      "score": 10.0
+    },
+    {
+      "label": "Partnership",
+      "score": 6.0
+    },
+    {
+      "label": "Company Shareholder",
+      "score": 6.0
+    },
+    {
+      "label": "Salaried",
+      "score": 2.0
+    }
+  ],
+  "source_of_funds": [
+    {
+      "label": "Employment (Salaried)",
+      "score": 2.0
+    },
+    {
+      "label": "Employment (Retirement Income)",
+      "score": 0.0
+    },
+    {
+      "label": "Employment (Self-employed)",
+      "score": 6.0
+    },
+    {
+      "label": "Business Earnings",
+      "score": 8.0
+    },
+    {
+      "label": "Inheritance/Family Gift",
+      "score": 10.0
+    },
+    {
+      "label": "Insurance Proceeds/Settlement",
+      "score": 6.0
+    },
+    {
+      "label": "Divorce Settlement",
+      "score": 2.0
+    },
+    {
+      "label": "Investment Income/Returns",
+      "score": 4.0
+    },
+    {
+      "label": "Winnings (Government Lottery)",
+      "score": 10.0
+    },
+    {
+      "label": "Winnings (Non-Government Lottery)",
+      "score": 10.0
+    },
+    {
+      "label": "Earnings (Sale of Business)",
+      "score": 6.0
+    },
+    {
+      "label": "Earnings (Sale of Property)",
+      "score": 6.0
+    },
+    {
+      "label": "Earnings (Sale of Investments)",
+      "score": 4.0
+    }
+  ],
+  "mode_of_payment": [
+    {
+      "label": "Cash",
+      "score": 10.0
+    },
+    {
+      "label": "Manager's Cheque",
+      "score": 10.0
+    },
+    {
+      "label": "Wire Transfer",
+      "score": 5.0
+    },
+    {
+      "label": "Cheque",
+      "score": 0.0
+    },
+    {
+      "label": "Local Bank Transfer",
+      "score": 0.0
+    }
+  ]
+}

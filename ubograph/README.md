@@ -196,6 +196,7 @@ server.py            Flask: static frontend + /api/status, /api/search, /api/exp
 report.py            per-entity report structure (screen and PDF share it)
 pdf.py               ReportLab rendering of that structure
 reference.py         ISO country / jurisdiction lookup
+risk_rating.py       client risk-rating rubric (ELIVA workbook, digitized)
 pipeline.py          command line entry point
 test_ubograph.py     smoke tests
 sources/
@@ -207,7 +208,7 @@ sources/
 frontend/index.html  markup: form, tabs, table, report
 frontend/app.js      search, graph rendering, table filtering, report + PDF
 frontend/styles.css  the whole visual layer
-frontend/data/       generated ISO country/jurisdiction lists + sourced country_risk.json
+frontend/data/       generated ISO lists + sourced country_risk.json / client_risk_rubric.json
 ```
 
 Adding a source means writing one adapter that emits `Node`s and `Edge`s. Nothing
@@ -223,9 +224,26 @@ downstream knows which API a record came from.
 | `GET /api/reference` | Country and jurisdiction lists for the dropdowns |
 | `POST /api/report` | `{payload, node_id}` → the report structure for one entity |
 | `POST /api/report.pdf` | Same input → a PDF file |
+| `GET /api/risk_rating/options` | Dropdown option lists and weights for the client risk-rating panel |
+| `POST /api/risk_rating` | `{payload, node_id, country_of_birth, country_of_residence, business_work_location, employment_type, employment_industry, mode_of_payment, source_of_funds}` → a weighted score |
 
 The report endpoints take the result set the browser already holds, so opening a
 report and downloading a PDF cost no extra API quota.
+
+### Client risk rating
+
+A second, independent score alongside the graph-based one, shown on a person's
+report: the exact weighted rubric from a real client's AML risk-rating workbook
+(nationality, country of birth/residence, business/work-location country, the
+sanctions/PEP screening outcome, employment type and industry, mode of payment,
+source of funds — each scored 0-10 and weighted, summed, then rescaled to
+0-100). Nationality and the screening outcome are read from the entity's own
+record and can't be overridden from the form — overriding a screening result
+would defeat the point of having screened it. Employment, payment mode and
+source of funds are ordinary KYC facts no public registry or sanctions list
+carries, so those stay manual selections, exactly as they would in the source
+workbook. See `risk_rating.py` for the scoring rule and
+`frontend/data/client_risk_rubric.json` for where the numbers came from.
 
 The frontend only ever calls `/api/search`, so the visual layer can be reworked
 freely without touching the backend.
