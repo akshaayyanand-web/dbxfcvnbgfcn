@@ -94,21 +94,17 @@ def api_risk_rating_options():
     return jsonify(risk_rating.options())
 
 
-def _rate_from_request(payload: dict, node_id: str, body: dict):
-    """Look up the node and score it. Always recomputed server-side, even for
-    the PDF — nationality and screening come from the entity's own record, not
-    whatever a client claims, so a downloaded PDF can't be made to show a score
-    that doesn't match what's actually in the result set.
+def _rate_from_request(body: dict) -> dict:
+    """Every field taken straight from the request — no search, entity or
+    screening result required. This is a standalone worksheet, not something
+    derived from whoever might currently be selected in the app.
     """
-    node = next((n for n in payload.get("nodes", []) if n.get("id") == node_id), None)
-    if not node:
-        return None
     return risk_rating.rate(
-        nationality=node.get("country"),
+        nationality=body.get("nationality"),
         country_of_birth=body.get("country_of_birth"),
         country_of_residence=body.get("country_of_residence"),
         business_work_location=body.get("business_work_location"),
-        screening_outcome=risk_rating.screening_outcome_for(node.get("risk_flags")),
+        screening_outcome=body.get("screening_outcome"),
         employment_type=body.get("employment_type"),
         employment_industry=body.get("employment_industry"),
         mode_of_payment=body.get("mode_of_payment"),
@@ -118,22 +114,11 @@ def _rate_from_request(payload: dict, node_id: str, body: dict):
 
 @app.post("/api/risk_rating")
 def api_risk_rating():
-    """Score one entity against the client risk-rating rubric.
-
-    Nationality and screening come from the entity already in the result set,
-    not the request body — overriding either would defeat the point of having
-    screened the entity in the first place. Everything else (birth/residence/
-    work-location country, employment, payment, source of funds) is a KYC fact
-    no public source carries, so it's supplied by the caller.
+    """Score a client against the risk-rating rubric from manual inputs alone —
+    independent of any search, entity or PEP/sanctions screening result.
     """
     body = request.get_json(silent=True) or {}
-    payload, node_id = body.get("payload"), body.get("node_id")
-    if not payload or not node_id:
-        return jsonify({"error": "payload and node_id are required."}), 400
-    result = _rate_from_request(payload, node_id, body)
-    if result is None:
-        return jsonify({"error": "That entity is not in the current result set."}), 404
-    return jsonify(result)
+    return jsonify(_rate_from_request(body))
 
 
 @app.post("/api/report")
@@ -164,7 +149,7 @@ def api_report_pdf():
     report = build_report(payload, node_id)
     if report.get("error"):
         return jsonify(report), 404
-    rating = _rate_from_request(payload, node_id, body) if body.get("include_risk_rating") else None
+    rating = _rate_from_request(body) if body.get("include_risk_rating") else None
     name = re.sub(r"[^A-Za-z0-9]+", "_", report["subject"].get("name") or "report").strip("_")
     return app.response_class(
         pdf_renderer.render(report, risk_rating=rating),

@@ -3,15 +3,13 @@
 Digitizes the exact scoring model a real MLRO runs in Excel today (nationality,
 birth/residence/work-location country risk, sanctions/PEP screening outcome,
 employment, payment mode and source of funds — each weighted, summed and
-rescaled to a 0-100 Low/Medium/High outcome) so a UBOgraph report can produce
-the same number.
+rescaled to a 0-100 Low/Medium/High outcome).
 
-Employment, payment mode and source of funds are KYC facts no public source
-carries — OpenSanctions and OpenCorporates have no idea how a client is paid
-or where their salary comes from. Those stay manual inputs. Nationality and
-the sanctions/PEP screening outcome are NOT manual: nationality is a graph
-fact and screening comes straight from the entity's own risk_flags, because
-letting a user override either would defeat the point of screening at all.
+Standalone by design: every field, including nationality and the screening
+outcome, is a plain manual selection. It is not looked up against a searched
+entity, a PEP flag or a sanctions hit — this worksheet works exactly the same
+whether or not anyone has ever been searched for, matching the source
+spreadsheet it's modeled on.
 """
 import json
 from functools import lru_cache
@@ -21,11 +19,6 @@ from typing import Optional
 from reference import country_label, country_risk
 
 _DATA = Path(__file__).resolve().parent / "frontend" / "data" / "client_risk_rubric.json"
-
-# The workbook's own screening-outcome labels (kept verbatim, including its
-# double space in "relevant  lists", so _lookup() matches the source data).
-_ADVERSE = {"sanctioned", "crime", "wanted", "sanction_linked", "debarred"}
-_PEP = {"pep", "pep_associate"}
 
 
 @lru_cache(maxsize=1)
@@ -40,6 +33,7 @@ def options() -> dict:
     """Dropdown option lists and weights, for the frontend to render the form."""
     r = _rubric()
     return {
+        "screening_outcome": [row["label"] for row in r.get("screening_outcome", [])],
         "employment_industry": [row["label"] for row in r.get("employment_industry", [])],
         "employment_type": [row["label"] for row in r.get("employment_type", [])],
         "source_of_funds": [row["label"] for row in r.get("source_of_funds", [])],
@@ -47,20 +41,6 @@ def options() -> dict:
         "weights": r.get("weights", {}),
         "source": r.get("source", ""),
     }
-
-
-def screening_outcome_for(risk_flags) -> str:
-    """Map a node's OpenSanctions-derived flags onto the workbook's own screening
-    categories, worst signal first. Not user-editable — this is what screening
-    actually found, not a guess to override."""
-    flags = set(risk_flags or [])
-    if flags & _ADVERSE:
-        return "On relevant  lists"
-    if flags & _PEP:
-        return "PEP identified"
-    if "leak" in flags:
-        return "Negative News"
-    return "Screened, PEP not identified, not on relevant lists"
 
 
 def _lookup(table: str, label: Optional[str]) -> Optional[float]:

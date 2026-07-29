@@ -42,7 +42,10 @@ async function loadReference() {
   const response = await fetch('/api/reference');
   const {countries, jurisdictions} = await response.json();
   state.countries = countries;
-  fetch('/api/risk_rating/options').then((r) => r.json()).then((o) => { state.riskRatingOptions = o; });
+  fetch('/api/risk_rating/options').then((r) => r.json()).then((o) => {
+    state.riskRatingOptions = o;
+    renderRiskAssessmentTab();
+  });
 
   const nationality = $('#nationality');
   countries.forEach((c) => nationality.add(new Option(`${c.name} (${c.code.toUpperCase()})`, c.code)));
@@ -149,7 +152,6 @@ function render(payload) {
     : 'no match';
   renderEmptyState(payload);
   $('#report').innerHTML = '<p class="empty">Pick a name from the Table tab, or click a node on the graph.</p>';
-  $('#risk-assessment').innerHTML = '<p class="empty">Open a person\'s report first, then come back to this tab.</p>';
   layout(payload);
   renderTable();
   renderSidebar(payload);
@@ -309,7 +311,6 @@ async function openReport(nodeId) {
   }
   state.report = report;
   renderReport(report);
-  renderRiskAssessmentTab(report);
   selected = nodeId;
   highlight = new Set([nodeId]);
   draw();
@@ -347,33 +348,25 @@ function optionSelect(id, label, choices) {
     <select id="${id}"><option value="">Select…</option>${opts}</select>`;
 }
 
-function renderRiskAssessmentTab(report) {
+function renderRiskAssessmentTab() {
   const target = $('#risk-assessment');
-  const s = report.subject;
-  if (s.type !== 'person') {
-    target.innerHTML = `<p class="empty">${escapeHtml(s.name)} is a ${escapeHtml(s.type)},
-      not a person — the client risk rating only applies to individuals.</p>`;
-    return;
-  }
   if (!state.riskRatingOptions) {
-    target.innerHTML = '<p class="empty">Risk-rating data did not load — try reopening the report.</p>';
+    target.innerHTML = '<p class="empty">Risk-rating data did not load — try refreshing the page.</p>';
     return;
   }
   const o = state.riskRatingOptions;
-  const nationality = s.country || '';
   target.innerHTML = `
-    <h2>${escapeHtml(s.name)}</h2>
-    <p class="meta">Client risk rating · the same weighted rubric a real MLRO runs in a
-      KYC risk-rating spreadsheet — a separate score from the graph-based report.</p>
-    <p class="note">Nationality and the screening outcome come from this entity's own
-      record and can't be edited here. Country of birth/residence/work location default
-      to nationality — correct them if you know otherwise. Employment, payment and source
-      of funds are KYC facts no public source carries, so fill them in from the client's
-      file. Source: ${escapeHtml(o.source)}.</p>
+    <h2>Client risk rating</h2>
+    <p class="meta">A standalone worksheet — the same weighted rubric a real MLRO runs in a
+      KYC risk-rating spreadsheet. It is not tied to any search, entity, or PEP/sanctions
+      screening result: enter a client's details below and it scores exactly what you enter.</p>
+    <p class="note">Source: ${escapeHtml(o.source)}.</p>
     <div class="rating-form">
-      ${countrySelect('rr-birth', 'Country of birth', nationality)}
-      ${countrySelect('rr-residence', 'Country of residence', nationality)}
-      ${countrySelect('rr-work', 'Business / work location', nationality)}
+      ${countrySelect('rr-nationality', 'Nationality')}
+      ${countrySelect('rr-birth', 'Country of birth')}
+      ${countrySelect('rr-residence', 'Country of residence')}
+      ${countrySelect('rr-work', 'Business / work location')}
+      ${optionSelect('rr-screening', 'Screening outcome', o.screening_outcome)}
       ${optionSelect('rr-employment-type', 'Employment type', o.employment_type)}
       ${optionSelect('rr-employment-industry', 'Employment industry', o.employment_industry)}
       ${optionSelect('rr-payment', 'Mode of payment', o.mode_of_payment)}
@@ -386,9 +379,11 @@ function renderRiskAssessmentTab(report) {
   $('#rr-calculate').addEventListener('click', async () => {
     $('#rr-result').innerHTML = '<p class="empty">Calculating…</p>';
     const inputs = {
+      nationality: $('#rr-nationality').value,
       country_of_birth: $('#rr-birth').value,
       country_of_residence: $('#rr-residence').value,
       business_work_location: $('#rr-work').value,
+      screening_outcome: $('#rr-screening').value,
       employment_type: $('#rr-employment-type').value,
       employment_industry: $('#rr-employment-industry').value,
       mode_of_payment: $('#rr-payment').value,
@@ -397,7 +392,7 @@ function renderRiskAssessmentTab(report) {
     const response = await fetch('/api/risk_rating', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({payload: state.payload, node_id: s.id, ...inputs}),
+      body: JSON.stringify(inputs),
     });
     const result = await response.json();
     $('#rr-result').innerHTML = result.error

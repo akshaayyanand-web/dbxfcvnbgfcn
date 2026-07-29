@@ -192,13 +192,10 @@ def test_fatf_jurisdiction_detector():
 
 def test_client_risk_rating():
     print("client risk rating (ELIVA workbook rubric)")
-    check("screening maps sanctioned to 'on relevant lists'",
-          risk_rating.screening_outcome_for({"sanctioned"}) == "On relevant  lists")
-    check("screening maps pep to 'PEP identified'",
-          risk_rating.screening_outcome_for({"pep"}) == "PEP identified")
-    check("clean record maps to the negative-result label",
-          risk_rating.screening_outcome_for(set())
-          == "Screened, PEP not identified, not on relevant lists")
+    check("screening outcome is one of the workbook's own options",
+          "PEP identified" in risk_rating.options()["screening_outcome"])
+    check("rate() is standalone — no payload, node or search required",
+          risk_rating.rate(nationality="af")["rows"][0]["selected"] == "Afghanistan")
 
     # Reproduces the workbook's own worked example exactly (Assessment sheet:
     # Afghan national, born and residing in Kuwait, works in the UAE, clean
@@ -254,7 +251,7 @@ def test_report_and_pdf():
     rating = risk_rating.rate(
         nationality="af", country_of_birth="kw", country_of_residence="kw",
         business_work_location="ae",
-        screening_outcome=risk_rating.screening_outcome_for(set()),
+        screening_outcome="Screened, PEP not identified, not on relevant lists",
         employment_type="Salaried", employment_industry="Asset Management",
         mode_of_payment="Manager's Cheque", source_of_funds="Employment (Salaried)",
     )
