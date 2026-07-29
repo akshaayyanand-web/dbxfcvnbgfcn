@@ -101,8 +101,9 @@ They are the most valuable part of the form, which is why the UI explains them
 rather than hiding them. OpenSanctions scores a multi-attribute match far higher
 than a name-only one, so a birth year or nationality is the single most effective
 way to kill namesake false positives. Nationality is a dropdown of all 249 ISO
-countries; date of birth is day / month / year selects where the year alone is enough
-(often all a registry publishes); jurisdiction is a grouped dropdown covering every
+countries; date of birth is a single year select — that's what a registry usually
+publishes anyway, and a day/month a searcher rarely knows added friction without
+adding much match accuracy; jurisdiction is a grouped dropdown covering every
 country plus the sub-national registries that matter — US states, UAE emirates,
 Canadian provinces, Australian states — in the `us_de` / `ae_du` form the APIs expect.
 Registration number shows for companies.

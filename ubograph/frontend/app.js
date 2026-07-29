@@ -64,20 +64,13 @@ async function loadReference() {
     jurisdiction.appendChild(optgroup);
   }
 
-  const day = $('#dob_day'), month = $('#dob_month'), year = $('#dob_year');
-  for (let d = 1; d <= 31; d++) day.add(new Option(String(d), String(d).padStart(2, '0')));
-  ['January', 'February', 'March', 'April', 'May', 'June', 'July',
-   'August', 'September', 'October', 'November', 'December']
-    .forEach((name, index) => month.add(new Option(name, String(index + 1).padStart(2, '0'))));
+  const year = $('#dob_year');
   const thisYear = new Date().getFullYear();
   for (let y = thisYear; y >= 1900; y--) year.add(new Option(String(y), String(y)));
 }
 
 function birthDateValue() {
-  const year = $('#dob_year').value, month = $('#dob_month').value, day = $('#dob_day').value;
-  if (!year) return '';                       // year is the anchor; without it, send nothing
-  if (!month) return year;                    // year alone is a valid partial date
-  return day ? `${year}-${month}-${day}` : `${year}-${month}`;
+  return $('#dob_year').value;
 }
 
 /* ------------------------------------------------------------------ *
