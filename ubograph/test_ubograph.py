@@ -192,7 +192,7 @@ def test_fatf_jurisdiction_detector():
 
 
 def test_client_risk_rating():
-    print("client risk rating (ELIVA workbook rubric)")
+    print("client risk rating (client-supplied workbook rubric)")
     check("screening outcome is one of the workbook's own options",
           "PEP identified" in risk_rating.options()["screening_outcome"])
     check("rate() is standalone — no payload, node or search required",

@@ -1737,7 +1737,7 @@
     ]
   },
   "fatf_last_update": "2025-10-27 00:00:00",
-  "source": "ELIVA Individual Risk Rating 2026 workbook (client-supplied), sheets: Assessment Scoring, FATF, UAEIEC",
+  "source": "Client-supplied Individual Risk Rating workbook, sheets: Assessment Scoring, FATF, UAEIEC",
   "uaeiec": {
     "other_tfs": [
       "Somalia",

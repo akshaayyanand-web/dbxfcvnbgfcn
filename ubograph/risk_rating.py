@@ -1,4 +1,4 @@
-"""Individual client risk rating — the ELIVA workbook's own weighted rubric.
+"""Individual client risk rating — a client-supplied AML workbook's weighted rubric.
 
 Digitizes the exact scoring model a real MLRO runs in Excel today (nationality,
 birth/residence/work-location country risk, sanctions/PEP screening outcome,
@@ -89,9 +89,9 @@ def rate(
     mode_of_payment: Optional[str] = None,
     source_of_funds: Optional[str] = None,
 ) -> dict:
-    """Score one client the way the ELIVA workbook does: each factor's raw 0-10
-    score times its fixed weight, summed, then multiplied by 10 to land on the
-    workbook's 0-100 Low(0-25)/Medium(26-50)/High(51-100) scale.
+    """Score one client the way the source workbook does: each factor's raw
+    0-10 score times its fixed weight, summed, then multiplied by 10 to land
+    on the workbook's 0-100 Low(0-25)/Medium(26-50)/High(51-100) scale.
 
     Country arguments take ISO codes; the rest take the workbook's own labels
     (see options() for the exact strings a dropdown should offer).

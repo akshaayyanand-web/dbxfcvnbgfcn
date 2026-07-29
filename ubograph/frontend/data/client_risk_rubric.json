@@ -1,5 +1,5 @@
 {
-  "source": "ELIVA Individual Risk Rating 2026 workbook (client-supplied), sheet: Assessment Scoring / Assessment",
+  "source": "Client-supplied Individual Risk Rating workbook, sheet: Assessment Scoring / Assessment",
   "weights": {
     "nationality": 0.15,
     "country_of_birth": 0.1,

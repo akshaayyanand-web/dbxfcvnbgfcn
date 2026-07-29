@@ -197,7 +197,7 @@ server.py            Flask: static frontend + /api/status, /api/search, /api/exp
 report.py            per-entity report structure (screen and PDF share it)
 pdf.py               ReportLab rendering of that structure
 reference.py         ISO country / jurisdiction lookup
-risk_rating.py       client risk-rating rubric (ELIVA workbook, digitized)
+risk_rating.py       client risk-rating rubric (client-supplied workbook, digitized)
 geocode.py           free, keyless address geocoding + satellite-image URLs
 pipeline.py          command line entry point
 test_ubograph.py     smoke tests
