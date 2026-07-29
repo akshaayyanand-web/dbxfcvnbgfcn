@@ -94,6 +94,28 @@ def api_risk_rating_options():
     return jsonify(risk_rating.options())
 
 
+def _rate_from_request(payload: dict, node_id: str, body: dict):
+    """Look up the node and score it. Always recomputed server-side, even for
+    the PDF — nationality and screening come from the entity's own record, not
+    whatever a client claims, so a downloaded PDF can't be made to show a score
+    that doesn't match what's actually in the result set.
+    """
+    node = next((n for n in payload.get("nodes", []) if n.get("id") == node_id), None)
+    if not node:
+        return None
+    return risk_rating.rate(
+        nationality=node.get("country"),
+        country_of_birth=body.get("country_of_birth"),
+        country_of_residence=body.get("country_of_residence"),
+        business_work_location=body.get("business_work_location"),
+        screening_outcome=risk_rating.screening_outcome_for(node.get("risk_flags")),
+        employment_type=body.get("employment_type"),
+        employment_industry=body.get("employment_industry"),
+        mode_of_payment=body.get("mode_of_payment"),
+        source_of_funds=body.get("source_of_funds"),
+    )
+
+
 @app.post("/api/risk_rating")
 def api_risk_rating():
     """Score one entity against the client risk-rating rubric.
@@ -108,21 +130,9 @@ def api_risk_rating():
     payload, node_id = body.get("payload"), body.get("node_id")
     if not payload or not node_id:
         return jsonify({"error": "payload and node_id are required."}), 400
-    node = next((n for n in payload.get("nodes", []) if n.get("id") == node_id), None)
-    if not node:
+    result = _rate_from_request(payload, node_id, body)
+    if result is None:
         return jsonify({"error": "That entity is not in the current result set."}), 404
-
-    result = risk_rating.rate(
-        nationality=node.get("country"),
-        country_of_birth=body.get("country_of_birth"),
-        country_of_residence=body.get("country_of_residence"),
-        business_work_location=body.get("business_work_location"),
-        screening_outcome=risk_rating.screening_outcome_for(node.get("risk_flags")),
-        employment_type=body.get("employment_type"),
-        employment_industry=body.get("employment_industry"),
-        mode_of_payment=body.get("mode_of_payment"),
-        source_of_funds=body.get("source_of_funds"),
-    )
     return jsonify(result)
 
 
@@ -141,6 +151,11 @@ def api_report():
 
 @app.post("/api/report.pdf")
 def api_report_pdf():
+    """Same content as the on-screen report, plus the client risk rating if the
+    caller has one in progress — send the same fields /api/risk_rating takes
+    (country_of_birth, employment_type, etc.) alongside payload/node_id and the
+    PDF gets a "Client risk rating" section; omit them and the PDF is unchanged.
+    """
     body = request.get_json(silent=True) or {}
     payload, node_id = body.get("payload"), body.get("node_id")
     if not payload or not node_id:
@@ -148,9 +163,15 @@ def api_report_pdf():
     report = build_report(payload, node_id)
     if report.get("error"):
         return jsonify(report), 404
+    rating = None
+    if any(body.get(k) for k in (
+        "country_of_birth", "country_of_residence", "business_work_location",
+        "employment_type", "employment_industry", "mode_of_payment", "source_of_funds",
+    )):
+        rating = _rate_from_request(payload, node_id, body)
     name = re.sub(r"[^A-Za-z0-9]+", "_", report["subject"].get("name") or "report").strip("_")
     return app.response_class(
-        pdf_renderer.render(report),
+        pdf_renderer.render(report, risk_rating=rating),
         mimetype="application/pdf",
         headers={"Content-Disposition": f'attachment; filename="UBOgraph_{name}.pdf"'},
     )

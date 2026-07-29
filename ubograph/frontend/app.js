@@ -473,28 +473,29 @@ function renderReport(report) {
   $$('#report .namebtn').forEach((button) => {
     button.addEventListener('click', () => openReport(button.dataset.node));
   });
+  state.riskRatingInputs = null;
   const rrButton = $('#rr-calculate');
   if (rrButton) {
     rrButton.addEventListener('click', async () => {
       $('#rr-result').innerHTML = '<p class="empty">Calculating…</p>';
+      const inputs = {
+        country_of_birth: $('#rr-birth').value,
+        country_of_residence: $('#rr-residence').value,
+        business_work_location: $('#rr-work').value,
+        employment_type: $('#rr-employment-type').value,
+        employment_industry: $('#rr-employment-industry').value,
+        mode_of_payment: $('#rr-payment').value,
+        source_of_funds: $('#rr-funds').value,
+      };
       const response = await fetch('/api/risk_rating', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({
-          payload: state.payload,
-          node_id: report.subject.id,
-          country_of_birth: $('#rr-birth').value,
-          country_of_residence: $('#rr-residence').value,
-          business_work_location: $('#rr-work').value,
-          employment_type: $('#rr-employment-type').value,
-          employment_industry: $('#rr-employment-industry').value,
-          mode_of_payment: $('#rr-payment').value,
-          source_of_funds: $('#rr-funds').value,
-        }),
+        body: JSON.stringify({payload: state.payload, node_id: report.subject.id, ...inputs}),
       });
       const result = await response.json();
       $('#rr-result').innerHTML = result.error
         ? `<p class="err">${escapeHtml(result.error)}</p>` : renderRiskRating(result);
+      if (!result.error) state.riskRatingInputs = inputs;
     });
   }
   const mediaFilter = $('#media-filter');
@@ -583,7 +584,11 @@ async function downloadPdf() {
     const response = await fetch('/api/report.pdf', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({payload: state.payload, node_id: state.report.subject.id}),
+      body: JSON.stringify({
+        payload: state.payload,
+        node_id: state.report.subject.id,
+        ...(state.riskRatingInputs || {}),
+      }),
     });
     if (!response.ok) throw new Error('The server could not build the PDF.');
     const blob = await response.blob();

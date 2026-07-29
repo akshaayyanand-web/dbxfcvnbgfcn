@@ -153,6 +153,64 @@ def _findings_block(findings: List[dict], styles) -> List:
     return flow
 
 
+def _risk_rating_flow(rating: dict, styles) -> List:
+    """The client risk-rating worksheet, only when the caller supplied one —
+    a separate, manual score computed in the browser, not derived from the
+    graph above it."""
+    if not rating or not rating.get("rows"):
+        return []
+    band_colour = {"low": "green", "medium": "orange", "high": "red"}
+    band_label = {"low": "LOW RISK", "medium": "MEDIUM RISK", "high": "HIGH RISK"}
+    flow = [
+        Paragraph("Client risk rating", styles["h2"]),
+        Paragraph(
+            "A separate, manual worksheet using the same weighted rubric as a real "
+            "client AML risk-rating spreadsheet — not derived from the graph above.",
+            styles["small"],
+        ),
+    ]
+    if rating.get("band"):
+        chip = Table(
+            [[Paragraph(
+                f'<font color="white"><b>{band_label[rating["band"]]} '
+                f'— {_clean(rating["score"])} / 100</b></font>', styles["small"],
+            )]],
+            colWidths=[62 * mm],
+        )
+        chip.setStyle(TableStyle([
+            ("BACKGROUND", (0, 0), (-1, -1), BAND_COLOUR.get(band_colour[rating["band"]], MUTED)),
+            ("LEFTPADDING", (0, 0), (-1, -1), 8), ("RIGHTPADDING", (0, 0), (-1, -1), 8),
+            ("TOPPADDING", (0, 0), (-1, -1), 5), ("BOTTOMPADDING", (0, 0), (-1, -1), 5),
+        ]))
+        flow += [chip, Spacer(1, 6)]
+    else:
+        flow.append(Paragraph("Incomplete — not every field was selected.", styles["small"]))
+
+    header = ["Criterion", "Selected", "Score", "Weight", "Weighted"]
+    data = [[Paragraph(_clean(h), styles["cellhead"]) for h in header]]
+    for row in rating["rows"]:
+        data.append([
+            Paragraph(_clean(row["criterion"]), styles["cell"]),
+            Paragraph(_clean(row.get("selected") or "—"), styles["cell"]),
+            Paragraph(_clean(row.get("score") if row.get("score") is not None else "—"), styles["cell"]),
+            Paragraph(_clean(row.get("weight") if row.get("weight") is not None else "—"), styles["cell"]),
+            Paragraph(_clean(row.get("weighted_score") if row.get("weighted_score") is not None else "—"),
+                      styles["cell"]),
+        ])
+    table = Table(data, colWidths=[42 * mm, 48 * mm, 18 * mm, 18 * mm, 22 * mm], repeatRows=1)
+    table.setStyle(TableStyle([
+        ("VALIGN", (0, 0), (-1, -1), "TOP"),
+        ("LINEBELOW", (0, 0), (-1, 0), 0.6, LINE),
+        ("LINEBELOW", (0, 1), (-1, -1), 0.25, LINE),
+        ("TOPPADDING", (0, 0), (-1, -1), 4), ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
+    ]))
+    flow.append(table)
+    if rating.get("missing"):
+        flow.append(Paragraph(f"Not yet scored: {_clean(', '.join(rating['missing']))}.", styles["small"]))
+    flow.append(Paragraph(f"Source: {_clean(rating.get('source'))}", styles["small"]))
+    return flow
+
+
 def _dossier_flow(report: dict, styles) -> List:
     """Full source detail: what each list actually records about the subject."""
     dossier = report.get("dossier")
@@ -256,7 +314,7 @@ def _dossier_flow(report: dict, styles) -> List:
     return flow
 
 
-def render(report: dict) -> bytes:
+def render(report: dict, risk_rating: dict = None) -> bytes:
     styles = _styles()
     subject = report["subject"]
     buffer = io.BytesIO()
@@ -291,6 +349,8 @@ def render(report: dict) -> bytes:
     if report.get("findings"):
         flow.append(Paragraph("Findings", styles["h2"]))
         flow += _findings_block(report["findings"], styles)
+
+    flow += _risk_rating_flow(risk_rating, styles)
 
     affiliations = report.get("affiliations", {})
     if affiliations.get("current"):

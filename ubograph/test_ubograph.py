@@ -251,6 +251,19 @@ def test_report_and_pdf():
     data = pdf_renderer.render(sanctioned)
     check("PDF renders", data.startswith(b"%PDF") and len(data) > 2000)
 
+    rating = risk_rating.rate(
+        nationality="af", country_of_birth="kw", country_of_residence="kw",
+        business_work_location="ae",
+        screening_outcome=risk_rating.screening_outcome_for(set()),
+        employment_type="Salaried", employment_industry="Asset Management",
+        mode_of_payment="Manager's Cheque", source_of_funds="Employment (Salaried)",
+    )
+    rated_pdf = pdf_renderer.render(sanctioned, risk_rating=rating)
+    check("PDF with a client risk rating still renders and grows",
+          rated_pdf.startswith(b"%PDF") and len(rated_pdf) > len(data))
+    check("a rating with nothing selected adds no section",
+          len(pdf_renderer.render(sanctioned, risk_rating={"rows": []})) == len(data))
+
     missing = build_report(payload, "does-not-exist")
     check("unknown entity returns an error, not a crash", "error" in missing)
 
