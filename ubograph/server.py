@@ -6,6 +6,7 @@ import secrets
 from flask import Flask, Response, jsonify, request, send_from_directory
 
 import config
+import geocode
 import pdf as pdf_renderer
 import reference
 import risk_rating
@@ -119,6 +120,31 @@ def api_risk_rating():
     """
     body = request.get_json(silent=True) or {}
     return jsonify(_rate_from_request(body))
+
+
+@app.post("/api/geocode")
+def api_geocode():
+    """Turn a free-text address into coordinates plus a satellite-image URL
+    and an OpenStreetMap link — free, keyless, for the address-entity report's
+    satellite view. Geocoding failures return an empty result, not a 500;
+    an address that doesn't resolve is common and not an application error.
+    """
+    body = request.get_json(silent=True) or {}
+    address = body.get("address", "")
+    try:
+        hit = geocode.geocode(address)
+    except geocode.GeocodeError as exc:
+        return jsonify({"error": str(exc)}), 502
+    if not hit:
+        return jsonify({"found": False})
+    return jsonify({
+        "found": True,
+        "lat": hit["lat"],
+        "lon": hit["lon"],
+        "display_name": hit["display_name"],
+        "satellite_url": geocode.satellite_image_url(hit["lat"], hit["lon"]),
+        "osm_url": geocode.osm_url(hit["lat"], hit["lon"]),
+    })
 
 
 @app.post("/api/risk_rating.pdf")

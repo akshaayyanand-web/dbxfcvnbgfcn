@@ -3,6 +3,7 @@ import sys
 
 import pdf as pdf_renderer
 from graph import band_reason, build_graph, find_ubos, risk_band, run_detectors
+import geocode
 import risk_rating
 from reference import country_label, jurisdiction_label
 from report import build_report
@@ -247,6 +248,24 @@ def test_screen_name_button():
     check("a PEP demo record suggests 'PEP identified'", pep.get("outcome") == "PEP identified")
 
 
+def test_satellite_view_urls():
+    print("satellite view URL building (no key, no network needed for this part)")
+    url = geocode.satellite_image_url(25.0772, 55.1409, size=500)
+    check("satellite URL points at Esri World Imagery", "World_Imagery" in url)
+    check("satellite URL carries a bbox around the point",
+          "bbox=55.13" in url or "bbox=55.14" in url)
+    check("no api key or token anywhere in the URL",
+          "key=" not in url.lower() and "token=" not in url.lower())
+
+    osm = geocode.osm_url(25.0772, 55.1409)
+    check("OSM link carries the same coordinates", "25.0772" in osm and "55.1409" in osm)
+
+    check("blank address geocodes to nothing, not an error", geocode.geocode("") is None)
+    # geocode() itself calls the live Nominatim API — like OpenSanctions and
+    # OpenCorporates, that's not reachable from this sandbox, so the actual
+    # network call isn't exercised here.
+
+
 def test_standalone_risk_rating_pdf():
     print("client risk rating as its own PDF")
     rating = risk_rating.rate(
@@ -328,6 +347,7 @@ if __name__ == "__main__":
         test_fatf_jurisdiction_detector,
         test_client_risk_rating,
         test_screen_name_button,
+        test_satellite_view_urls,
         test_standalone_risk_rating_pdf,
         test_report_and_pdf,
         test_identity_matches_surface_in_report,

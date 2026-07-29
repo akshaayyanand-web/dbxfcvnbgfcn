@@ -197,6 +197,7 @@ report.py            per-entity report structure (screen and PDF share it)
 pdf.py               ReportLab rendering of that structure
 reference.py         ISO country / jurisdiction lookup
 risk_rating.py       client risk-rating rubric (ELIVA workbook, digitized)
+geocode.py           free, keyless address geocoding + satellite-image URLs
 pipeline.py          command line entry point
 test_ubograph.py     smoke tests
 sources/
@@ -228,6 +229,7 @@ downstream knows which API a record came from.
 | `POST /api/risk_rating` | `{nationality, country_of_birth, country_of_residence, business_work_location, screening_outcome, employment_type, employment_industry, mode_of_payment, source_of_funds}` → a weighted score. Standalone — no payload or node_id. |
 | `POST /api/risk_rating.pdf` | Same input → the worksheet as its own PDF |
 | `POST /api/screen` | `{name, entity_type}` → a suggested screening outcome plus the raw matches found |
+| `POST /api/geocode` | `{address}` → coordinates, a satellite-image URL, and an OpenStreetMap link |
 
 The report endpoints take the result set the browser already holds, so opening a
 report and downloading a PDF cost no extra API quota.
@@ -243,10 +245,22 @@ rescaled to 0-100). Every field, including nationality and the screening
 outcome, is a manual selection — nothing here is looked up against a searched
 name or a PEP/sanctions hit, so it works identically whether or not anything
 has ever been searched for. See `risk_rating.py` for the scoring rule and
-`frontend/data/client_risk_rubric.json` for where the numbers came from.
+`frontend/data/client_risk_rubric.json` for where the numbers came from. A
+"Screen this name" button runs a standalone sanctions/PEP lookup and suggests
+a screening outcome (still editable), and "Download PDF" produces the
+worksheet as its own document — no entity or report required for either.
 
-The frontend only ever calls `/api/search`, so the visual layer can be reworked
-freely without touching the backend.
+### Satellite view
+
+Opening the report for an address entity (the diamond nodes — a registered
+address, most often surfaced via the `shared_address` finding) adds a
+"Location" section: the address is geocoded via OpenStreetMap's Nominatim
+(free, no key) and shown as a static satellite image from Esri's World
+Imagery service (also free, no key), with a link to the same point on the
+full interactive OpenStreetMap. Good for a quick "is this a real building or
+a brass-plate address" check, not for anything needing survey accuracy. See
+`geocode.py`. Both services are unauthenticated and rate-limited for
+reasonable individual use — not meant for bulk lookups.
 
 ## The three views
 

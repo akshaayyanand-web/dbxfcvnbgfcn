@@ -490,6 +490,39 @@ function renderRiskRating(result) {
       <tbody>${rows}</tbody></table>`;
 }
 
+async function loadSatelliteView(address) {
+  const target = $('#satellite-view');
+  if (!target) return;
+  try {
+    const response = await fetch('/api/geocode', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({address}),
+    });
+    const result = await response.json();
+    if (result.error) {
+      target.innerHTML = `<p class="err">${escapeHtml(result.error)}</p>`;
+      return;
+    }
+    if (!result.found) {
+      target.innerHTML = '<p class="empty">Could not place this address on a map — ' +
+        'free-zone and generic addresses often don’t geocode cleanly.</p>';
+      return;
+    }
+    target.innerHTML = `
+      <div class="satellite-frame">
+        <img src="${escapeHtml(result.satellite_url)}" alt="Satellite view of ${escapeHtml(address)}"
+             loading="lazy">
+        <span class="satellite-pin"></span>
+      </div>
+      <p class="note">${escapeHtml(result.display_name)} ·
+        <a href="${escapeHtml(result.osm_url)}" target="_blank" rel="noopener">Open in OpenStreetMap</a> ·
+        satellite imagery: Esri, geocoding: OpenStreetMap — free, no API key.</p>`;
+  } catch (error) {
+    target.innerHTML = `<p class="err">${escapeHtml(error.message)}</p>`;
+  }
+}
+
 function renderReport(report) {
   const s = report.subject;
   const facts = [
@@ -525,6 +558,9 @@ function renderReport(report) {
     ${(s.source_urls || []).length ? `<dl class="facts">${s.source_urls.map((u) =>
       `<dt>Source</dt><dd><a href="${escapeHtml(u)}" target="_blank" rel="noopener">${escapeHtml(u)}</a></dd>`
     ).join('')}</dl>` : ''}
+
+    ${s.type === 'address' ? `<h3>Location</h3>
+      <div id="satellite-view"><p class="empty">Looking up location…</p></div>` : ''}
 
     ${dossierHtml(report)}
 
@@ -574,6 +610,7 @@ function renderReport(report) {
   $$('#report .namebtn').forEach((button) => {
     button.addEventListener('click', () => openReport(button.dataset.node));
   });
+  if (s.type === 'address') loadSatelliteView(s.name);
   const mediaFilter = $('#media-filter');
   if (mediaFilter) {
     mediaFilter.addEventListener('change', (event) => {
