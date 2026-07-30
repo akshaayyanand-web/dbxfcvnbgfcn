@@ -6,14 +6,18 @@ import secrets
 from flask import Flask, Response, jsonify, request, send_from_directory
 
 import config
+import db
+import edd
 import geocode
+import goaml
 import pdf as pdf_renderer
 import reference
 import risk_rating
 from report import build_report
-from search import run_search, screen_name
+from search import batch_screen, run_search, screen_name
 
 app = Flask(__name__, static_folder="frontend", static_url_path="")
+db.init()
 
 
 @app.before_request
@@ -77,6 +81,7 @@ def api_search():
     )
     if payload.get("error"):
         return jsonify(payload), 400
+    db.log_activity("search", params.get("name", ""))
     return jsonify(payload)
 
 
@@ -184,6 +189,7 @@ def api_report():
     report = build_report(payload, node_id)
     if report.get("error"):
         return jsonify(report), 404
+    db.log_activity("report_viewed", report["subject"].get("name", ""))
     return jsonify(report)
 
 
@@ -229,6 +235,237 @@ def api_export():
         mimetype="application/json",
         headers={"Content-Disposition": f'attachment; filename="{filename}.json"'},
     )
+
+
+@app.post("/api/edd.pdf")
+def api_edd_pdf():
+    """The Enhanced Due Diligence checklist for one entity, as its own PDF."""
+    body = request.get_json(silent=True) or {}
+    payload, node_id = body.get("payload"), body.get("node_id")
+    if not payload or not node_id:
+        return jsonify({"error": "payload and node_id are required."}), 400
+    report = build_report(payload, node_id)
+    if report.get("error"):
+        return jsonify(report), 404
+    rows = edd.build_checklist(report)
+    name = re.sub(r"[^A-Za-z0-9]+", "_", report["subject"].get("name") or "report").strip("_")
+    db.log_activity("edd_checklist", report["subject"].get("name", ""))
+    return app.response_class(
+        pdf_renderer.render_edd_checklist(report, rows),
+        mimetype="application/pdf",
+        headers={"Content-Disposition": f'attachment; filename="SanctionsPlus_EDD_{name}.pdf"'},
+    )
+
+
+@app.post("/api/mou.pdf")
+def api_mou_pdf():
+    """A resale MOU draft with the searched entity pre-filled as buyer or seller."""
+    body = request.get_json(silent=True) or {}
+    payload, node_id = body.get("payload"), body.get("node_id")
+    if not payload or not node_id:
+        return jsonify({"error": "payload and node_id are required."}), 400
+    report = build_report(payload, node_id)
+    if report.get("error"):
+        return jsonify(report), 404
+    role = body.get("role") if body.get("role") in ("seller", "purchaser") else "purchaser"
+    name = re.sub(r"[^A-Za-z0-9]+", "_", report["subject"].get("name") or "report").strip("_")
+    db.log_activity("mou_draft", report["subject"].get("name", ""))
+    return app.response_class(
+        pdf_renderer.render_mou_draft(report, role=role),
+        mimetype="application/pdf",
+        headers={"Content-Disposition": f'attachment; filename="SanctionsPlus_MOU_{name}.pdf"'},
+    )
+
+
+@app.post("/api/goaml.xml")
+def api_goaml_xml():
+    """A starting-point goAML XML draft for one entity — see goaml.py for the
+    honest limits (not validated against the real goAML schema)."""
+    body = request.get_json(silent=True) or {}
+    payload, node_id = body.get("payload"), body.get("node_id")
+    if not payload or not node_id:
+        return jsonify({"error": "payload and node_id are required."}), 400
+    report = build_report(payload, node_id)
+    if report.get("error"):
+        return jsonify(report), 404
+    name = re.sub(r"[^A-Za-z0-9]+", "_", report["subject"].get("name") or "report").strip("_")
+    db.log_activity("goaml_export", report["subject"].get("name", ""))
+    return app.response_class(
+        goaml.build_xml(report, reason=body.get("reason", "")),
+        mimetype="application/xml",
+        headers={"Content-Disposition": f'attachment; filename="SanctionsPlus_goAML_{name}.xml"'},
+    )
+
+
+@app.post("/api/batch_screen")
+def api_batch_screen():
+    """Screen a list of names in one pass. Accepts either a JSON body
+    {"names": [...], "entity_type": "any"} or a multipart file upload under
+    "file" — one name per line, or the first column of a CSV.
+    """
+    entity_type = (request.form.get("entity_type") or request.args.get("entity_type")
+                   or "any")
+    names = []
+    if "file" in request.files:
+        raw = request.files["file"].read().decode("utf-8", errors="ignore")
+        for line in raw.splitlines():
+            first_cell = line.split(",")[0].strip().strip('"')
+            if first_cell and first_cell.lower() not in ("name", "names"):
+                names.append(first_cell)
+    else:
+        body = request.get_json(silent=True) or {}
+        names = body.get("names") or []
+        entity_type = body.get("entity_type") or entity_type
+    if not names:
+        return jsonify({"error": "No names found — upload a CSV/text file or send {\"names\": [...]}."}), 400
+    if len(names) > 200:
+        return jsonify({"error": f"{len(names)} names is too many for one batch (limit 200) — "
+                                  "split the list to stay within API rate limits."}), 400
+    results = batch_screen(names, entity_type=entity_type)
+    db.log_activity("batch_screen", f"{len(names)} names")
+    return jsonify({"results": results})
+
+
+@app.get("/api/batch_screen.csv")
+def api_batch_screen_csv():
+    """Same as /api/batch_screen but returns the results as a downloadable CSV
+    — pass the names as repeated ?name=... query params (kept as GET so the
+    browser can trigger a file download directly).
+    """
+    names = request.args.getlist("name")
+    entity_type = request.args.get("entity_type") or "any"
+    if not names:
+        return jsonify({"error": "No names supplied."}), 400
+    results = batch_screen(names, entity_type=entity_type)
+    lines = ["name,matched,matched_name,type,risk_band,risk_score,flags,country"]
+    for r in results:
+        if r.get("error"):
+            lines.append(f'"{r["name"]}",error,,,,,{r["error"]},')
+        elif not r.get("matched"):
+            lines.append(f'"{r["name"]}",false,,,,,,')
+        else:
+            flags = "|".join(r.get("flags") or [])
+            lines.append(
+                f'"{r["name"]}",true,"{r.get("matched_name", "")}",{r.get("type", "")},'
+                f'{r.get("risk_band", "")},{r.get("risk_score", "")},"{flags}",{r.get("country", "")}'
+            )
+    db.log_activity("batch_screen_csv", f"{len(names)} names")
+    return app.response_class(
+        "\n".join(lines),
+        mimetype="text/csv",
+        headers={"Content-Disposition": 'attachment; filename="SanctionsPlus_batch_screening.csv"'},
+    )
+
+
+@app.post("/api/cases")
+def api_cases_create():
+    """Save the current result set + entity as a named case for later."""
+    body = request.get_json(silent=True) or {}
+    payload, node_id = body.get("payload"), body.get("node_id")
+    name = (body.get("name") or "").strip()
+    if not payload or not node_id or not name:
+        return jsonify({"error": "name, payload and node_id are required."}), 400
+    report = build_report(payload, node_id)
+    node_name = report["subject"].get("name") if not report.get("error") else node_id
+    case_id = db.save_case(name, node_id, node_name, payload, notes=body.get("notes", ""))
+    return jsonify({"id": case_id})
+
+
+@app.get("/api/cases")
+def api_cases_list():
+    return jsonify({"cases": db.list_cases()})
+
+
+@app.get("/api/cases/<int:case_id>")
+def api_cases_get(case_id):
+    case = db.get_case(case_id)
+    if not case:
+        return jsonify({"error": "No such case."}), 404
+    return jsonify(case)
+
+
+@app.post("/api/cases/<int:case_id>/notes")
+def api_cases_notes(case_id):
+    body = request.get_json(silent=True) or {}
+    if not db.update_case_notes(case_id, body.get("notes", "")):
+        return jsonify({"error": "No such case."}), 404
+    return jsonify({"ok": True})
+
+
+@app.delete("/api/cases/<int:case_id>")
+def api_cases_delete(case_id):
+    if not db.delete_case(case_id):
+        return jsonify({"error": "No such case."}), 404
+    return jsonify({"ok": True})
+
+
+@app.post("/api/watchlist")
+def api_watchlist_add():
+    body = request.get_json(silent=True) or {}
+    name = (body.get("name") or "").strip()
+    if not name:
+        return jsonify({"error": "A name is required."}), 400
+    watch_id = db.add_watch(
+        name, entity_type=body.get("entity_type") or "any",
+        nationality=body.get("nationality"), birth_date=body.get("birth_date"),
+    )
+    return jsonify({"id": watch_id})
+
+
+@app.get("/api/watchlist")
+def api_watchlist_list():
+    return jsonify({"watches": db.list_watches()})
+
+
+@app.delete("/api/watchlist/<int:watch_id>")
+def api_watchlist_delete(watch_id):
+    if not db.delete_watch(watch_id):
+        return jsonify({"error": "No such watch."}), 404
+    return jsonify({"ok": True})
+
+
+def _check_watch(watch: dict) -> dict:
+    payload = run_search(
+        name=watch["name"], entity_type=watch["entity_type"],
+        nationality=watch.get("nationality"), birth_date=watch.get("birth_date"), hops=1,
+    )
+    root = next((n for n in payload.get("nodes", []) if n.get("is_root")), None)
+    new_flags = sorted(root.get("risk_flags") or []) if root else []
+    new_band = root.get("risk_band") if root else None
+    previous_flags = set(watch.get("last_flags") or [])
+    newly_added = sorted(set(new_flags) - previous_flags)
+    db.update_watch_result(watch["id"], new_flags, new_band)
+    if newly_added:
+        db.log_activity("watch_alert", f"{watch['name']}: new flag(s) {', '.join(newly_added)}")
+    return {
+        "id": watch["id"], "name": watch["name"], "matched": bool(root),
+        "risk_band": new_band, "flags": new_flags, "new_flags": newly_added,
+    }
+
+
+@app.post("/api/watchlist/<int:watch_id>/check")
+def api_watchlist_check(watch_id):
+    watch = db.get_watch(watch_id)
+    if not watch:
+        return jsonify({"error": "No such watch."}), 404
+    return jsonify(_check_watch(watch))
+
+
+@app.post("/api/watchlist/check_all")
+def api_watchlist_check_all():
+    """Re-screen every saved watch in one call. There's no scheduler built
+    into this app — Render's free tier has no cron — so "ongoing monitoring"
+    means pointing an external scheduler (Render's own paid Cron Jobs, or a
+    free service like cron-job.org) at this endpoint on whatever cadence
+    makes sense, rather than it running itself.
+    """
+    results = [_check_watch(watch) for watch in db.list_watches()]
+    return jsonify({"results": results})
+
+
+@app.get("/api/activity")
+def api_activity():
+    return jsonify({"activity": db.recent_activity()})
 
 
 @app.get("/healthz")

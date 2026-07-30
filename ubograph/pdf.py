@@ -418,6 +418,158 @@ def render(report: dict, risk_rating: dict = None) -> bytes:
     return buffer.getvalue()
 
 
+def render_edd_checklist(report: dict, rows: List[dict]) -> bytes:
+    """The Enhanced Due Diligence checklist as its own PDF, so it can sit in a
+    client file alongside the main report rather than only living on screen."""
+    styles = _styles()
+    subject = report["subject"]
+    buffer = io.BytesIO()
+    doc = SimpleDocTemplate(
+        buffer, pagesize=A4,
+        leftMargin=20 * mm, rightMargin=20 * mm, topMargin=18 * mm, bottomMargin=18 * mm,
+        title=f"EDD checklist — {subject.get('name')}",
+        author="Sanctions+",
+    )
+    answer_colour = {"Yes": BAND_COLOUR["red"], "No": BAND_COLOUR["green"]}
+    flow = [
+        Paragraph("Enhanced Due Diligence Checklist", styles["title"]),
+        Paragraph(
+            f"{_clean(subject.get('name'))} · generated {datetime.now().strftime('%Y-%m-%d %H:%M')}",
+            styles["sub"],
+        ),
+        Paragraph(
+            "Each answer is sourced from this entity's record where the data exists. "
+            "“Not available” means this tool has no source for that fact — it must be "
+            "confirmed from the client's own file, not treated as a “no”.",
+            styles["small"],
+        ),
+        HRFlowable(width="100%", color=LINE, spaceBefore=4, spaceAfter=8),
+    ]
+    for row in rows:
+        colour = answer_colour.get(row["answer"], MUTED)
+        table = Table(
+            [[
+                "",
+                Paragraph(
+                    f'<b>{_clean(row["question"])}</b><br/>'
+                    f'<font color="#{colour.hexval()[2:]}"><b>{_clean(row["answer"])}</b></font>'
+                    f'<br/><font size="9">{_clean(row["basis"])}</font>',
+                    styles["cell"],
+                ),
+            ]],
+            colWidths=[3 * mm, None],
+        )
+        table.setStyle(TableStyle([
+            ("BACKGROUND", (0, 0), (0, 0), colour),
+            ("VALIGN", (0, 0), (-1, -1), "TOP"),
+            ("LEFTPADDING", (1, 0), (1, 0), 7),
+            ("TOPPADDING", (0, 0), (-1, -1), 6), ("BOTTOMPADDING", (0, 0), (-1, -1), 6),
+        ]))
+        flow += [table, Spacer(1, 6)]
+
+    flow.append(Spacer(1, 8))
+    flow.append(HRFlowable(width="100%", color=LINE, spaceAfter=6))
+    flow.append(Paragraph(
+        "A lead for a human reviewer, not a compliance determination — sign-off on the "
+        "business relationship remains a judgement call for the compliance officer.",
+        styles["small"],
+    ))
+
+    def footer(canvas, document):
+        canvas.saveState()
+        canvas.setFont("Helvetica", 7.5)
+        canvas.setFillColor(MUTED)
+        canvas.drawString(20 * mm, 12 * mm, f"Sanctions+ · EDD checklist · {subject.get('name')}")
+        canvas.drawRightString(A4[0] - 20 * mm, 12 * mm, f"page {document.page}")
+        canvas.restoreState()
+
+    doc.build(flow, onFirstPage=footer, onLaterPages=footer)
+    return buffer.getvalue()
+
+
+def render_mou_draft(report: dict, role: str = "purchaser") -> bytes:
+    """A resale MOU draft with the searched entity pre-filled as buyer or
+    seller — everything else (price, property, dates) is left blank for the
+    lawyer to complete. Modeled loosely on a standard UAE resale MOU; it is a
+    starting draft, not a substitute for the firm's own reviewed template."""
+    styles = _styles()
+    subject = report["subject"]
+    buffer = io.BytesIO()
+    doc = SimpleDocTemplate(
+        buffer, pagesize=A4,
+        leftMargin=20 * mm, rightMargin=20 * mm, topMargin=18 * mm, bottomMargin=18 * mm,
+        title="Memorandum of Understanding (draft)",
+        author="Sanctions+",
+    )
+    blank = "……………………………………………"
+    seller = _clean(subject.get("name")) if role == "seller" else blank
+    purchaser = _clean(subject.get("name")) if role == "purchaser" else blank
+
+    def field_row(label, value):
+        return Table(
+            [[Paragraph(_clean(label), styles["cellhead"]), Paragraph(value, styles["cell"])]],
+            colWidths=[55 * mm, None],
+        )
+
+    flow = [
+        Paragraph("Memorandum of Understanding", styles["title"]),
+        Paragraph(
+            f"DRAFT — generated {datetime.now().strftime('%Y-%m-%d %H:%M')}. "
+            f"{_clean(subject.get('name'))} pre-filled as {role}; every other field is a "
+            "placeholder for the acting lawyer to complete and review before use.",
+            styles["sub"],
+        ),
+        HRFlowable(width="100%", color=LINE, spaceBefore=4, spaceAfter=8),
+
+        Paragraph("Schedule A — Parties", styles["h2"]),
+        field_row("Seller", f"{seller}, holder of EID No. {blank}"),
+        Spacer(1, 4),
+        field_row("Purchaser", f"{purchaser}, holder of EID No. {blank}"),
+        Spacer(1, 4),
+        field_row("Broker", blank),
+        Spacer(1, 10),
+
+        Paragraph("Schedule B — Property", styles["h2"]),
+        field_row("Location", blank),
+        Spacer(1, 3), field_row("Developer", blank),
+        Spacer(1, 3), field_row("Project / unit number", blank),
+        Spacer(1, 3), field_row("Unit type / size", blank),
+        Spacer(1, 10),
+
+        Paragraph("Schedule C — Purchase price & fees", styles["h2"]),
+        field_row("Original price", blank),
+        Spacer(1, 3), field_row("Net selling price", blank),
+        Spacer(1, 3), field_row("Security deposit", blank),
+        Spacer(1, 3), field_row("Agency fee", blank),
+        Spacer(1, 10),
+
+        Paragraph("Schedule D — Signatures", styles["h2"]),
+        Paragraph(f"Seller: {blank}&nbsp;&nbsp;&nbsp; Date: {blank}", styles["body"]),
+        Paragraph(f"Purchaser: {blank}&nbsp;&nbsp;&nbsp; Date: {blank}", styles["body"]),
+        Paragraph(f"Broker: {blank}&nbsp;&nbsp;&nbsp; Date: {blank}", styles["body"]),
+
+        Spacer(1, 10),
+        HRFlowable(width="100%", color=LINE, spaceAfter=6),
+        Paragraph(
+            "This draft is a starting point only. It has not been reviewed by counsel, "
+            "carries no legal terms beyond the schedules above, and must be completed "
+            "and checked against the firm's own approved template before use.",
+            styles["small"],
+        ),
+    ]
+
+    def footer(canvas, document):
+        canvas.saveState()
+        canvas.setFont("Helvetica", 7.5)
+        canvas.setFillColor(MUTED)
+        canvas.drawString(20 * mm, 12 * mm, "Sanctions+ · MOU draft")
+        canvas.drawRightString(A4[0] - 20 * mm, 12 * mm, f"page {document.page}")
+        canvas.restoreState()
+
+    doc.build(flow, onFirstPage=footer, onLaterPages=footer)
+    return buffer.getvalue()
+
+
 def render_risk_rating(rating: dict) -> bytes:
     """A standalone PDF for the Risk Assessment tab's worksheet — independent
     of any entity, search, or report, exactly like the tab itself."""

@@ -3,6 +3,8 @@ __pycache__/
 *.pyc
 .venv/
 venv/
-/data/          # bulk source downloads, not frontend/data
+# /data/ holds runtime files (the workspace SQLite db, bulk source downloads)
+# — not frontend/data/, which is committed reference data for the app itself.
+/data/
 *.json.gz
 .DS_Store

@@ -199,6 +199,9 @@ pdf.py               ReportLab rendering of that structure
 reference.py         ISO country / jurisdiction lookup
 risk_rating.py       client risk-rating rubric (client-supplied workbook, digitized)
 geocode.py           free, keyless address geocoding + satellite-image URLs
+edd.py               Enhanced Due Diligence checklist, sourced from the graph
+goaml.py             goAML XML draft export (starting point, not schema-validated)
+db.py                SQLite: saved cases, the watchlist, the activity log
 pipeline.py          command line entry point
 test_ubograph.py     smoke tests
 sources/
@@ -231,6 +234,16 @@ downstream knows which API a record came from.
 | `POST /api/risk_rating.pdf` | Same input → the worksheet as its own PDF |
 | `POST /api/screen` | `{name, entity_type}` → a suggested screening outcome plus the raw matches found |
 | `POST /api/geocode` | `{address}` → coordinates, a satellite-image URL, and an OpenStreetMap link |
+| `POST /api/edd.pdf` | `{payload, node_id}` → the Enhanced Due Diligence checklist as a PDF |
+| `POST /api/mou.pdf` | `{payload, node_id, role}` → an MOU draft with the entity pre-filled as `"purchaser"` or `"seller"` |
+| `POST /api/goaml.xml` | `{payload, node_id, reason}` → a starting-point goAML XML draft |
+| `POST /api/batch_screen` | `{names: [...], entity_type}` or a multipart `file` upload → a risk read on every name |
+| `GET /api/batch_screen.csv` | Same, as a downloadable CSV — repeated `?name=` query params |
+| `POST /api/cases` · `GET /api/cases` · `GET /api/cases/<id>` · `POST /api/cases/<id>/notes` · `DELETE /api/cases/<id>` | Save / list / open / annotate / delete a case (a named snapshot of one entity's result set) |
+| `POST /api/watchlist` · `GET /api/watchlist` · `DELETE /api/watchlist/<id>` | Add / list / remove a name from ongoing-monitoring |
+| `POST /api/watchlist/<id>/check` · `POST /api/watchlist/check_all` | Re-screen one watched name, or all of them — point an external cron at `check_all` for real automatic monitoring |
+| `GET /api/activity` | Recent activity log (searches, report views, exports, case/watchlist changes) |
+| `POST /api/geocode` | `{address}` → coordinates, a satellite-image URL, and an OpenStreetMap link |
 
 The report endpoints take the result set the browser already holds, so opening a
 report and downloading a PDF cost no extra API quota.
@@ -262,6 +275,59 @@ full interactive OpenStreetMap. Good for a quick "is this a real building or
 a brass-plate address" check, not for anything needing survey accuracy. See
 `geocode.py`. Both services are unauthenticated and rate-limited for
 reasonable individual use — not meant for bulk lookups.
+
+### Documents for the file: EDD checklist, MOU draft, goAML export
+
+Three more buttons on a report, each producing a document a lawyer or MLRO
+would otherwise assemble by hand:
+
+- **EDD checklist** — walks through the same enhanced-due-diligence triggers
+  a real AML policy runs (sanctioned? PEP? high-risk jurisdiction? complex
+  ownership structure?), each answered from this entity's own record. Where
+  this tool genuinely has no source for a fact (business type, residency,
+  transaction history), it says "not available" rather than guessing "no" —
+  see `edd.py`.
+- **MOU draft** — a resale Memorandum of Understanding with the searched
+  entity pre-filled as buyer or seller and every other field (price,
+  property, dates) left as a placeholder. A starting point for the acting
+  lawyer to complete and review, not a substitute for the firm's own
+  approved template.
+- **goAML export** — a draft XML with the entity's name, DOB/registration,
+  identifiers, address and findings filled in. **Not validated against the
+  actual goAML XSD** (that schema isn't published anywhere this tool can
+  read it from) — treat it as a head start to complete inside goAML, not a
+  ready-to-submit file. See `goaml.py` for exactly what it does and doesn't
+  claim.
+
+### Workspace: cases, watchlist, batch screening, activity log
+
+A fourth tab, backed by a small SQLite database (`db.py`, stored at
+`data/sanctionsplus.db`, gitignored):
+
+- **Saved cases** — snapshot one entity's result set under a name, with a
+  free-text note, so you can come back to it without re-running the search.
+  "Save as case" is a button on the report; open or delete it from the
+  Workspace tab.
+- **Watchlist** — add a name to monitor, then "Check now" (or "Check all
+  now") re-screens it and calls out any flag that's new since the last
+  check. There's no scheduler built into a Render free-tier app, so real
+  *ongoing* monitoring means pointing an external cron (Render's own paid
+  Cron Jobs, or a free service like cron-job.org) at
+  `POST /api/watchlist/check_all` on whatever cadence fits — daily or
+  weekly, not more often, since it spends your OpenSanctions quota.
+- **Batch screening** — upload a CSV or text file (one name per line, or the
+  first column of a CSV) and get every name screened in one pass, with a
+  downloadable CSV of the results. Capped at 200 names per batch and runs
+  sequentially, to stay inside a live API's rate limit rather than burst it.
+- **Activity log** — every search, report view, export and case/watchlist
+  change, with a timestamp, so there's a record of what was checked and when.
+
+**The honest limit on all of it:** Render's free tier resets its filesystem
+on every redeploy and on the spin-down that follows ~15 minutes of no
+traffic, so cases, the watchlist and the activity log do not persist
+indefinitely — this is a working-session convenience, not a system of
+record. A real deployment that needs cases and an audit trail to survive
+would need a managed database (e.g. Render's paid Postgres) behind `db.py`.
 
 ## The three views
 

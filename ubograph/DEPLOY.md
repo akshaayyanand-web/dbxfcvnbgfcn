@@ -113,9 +113,30 @@ Then open the URL in a browser, log in, and run one real search. The header chip
 tell you what's live, and any API error appears in red in the left panel rather
 than failing silently.
 
+## Ongoing monitoring (the Workspace tab's watchlist)
+
+The watchlist re-screens a name only when something calls
+`POST /api/watchlist/check_all` — there's no scheduler built into the app,
+because Render's free tier doesn't run background workers. To make it actually
+"ongoing":
+
+1. **Free option:** point [cron-job.org](https://cron-job.org) (or any similar
+   free scheduler) at
+   `https://your-app.onrender.com/api/watchlist/check_all`, method `POST`,
+   with HTTP Basic Auth set to your `sanctionsplus` / `APP_PASSWORD`
+   credentials, once a day or once a week.
+2. **Paid option:** Render's own **Cron Jobs** (a separate paid service type)
+   can run `curl -u sanctionsplus:$APP_PASSWORD -X POST
+   https://your-app.onrender.com/api/watchlist/check_all` on a schedule.
+
+Either way, each check spends live API quota per watched name — daily or
+weekly is plenty; don't point a scheduler at it every few minutes.
+
 ## Cost
 
 Everything above is free at the tier described. What is *not* free is your API
 quota: each search makes a match call plus entity expansions, so a public URL
 without a password can drain a trial key quickly. That is the whole reason
-`APP_PASSWORD` exists.
+`APP_PASSWORD` exists. Cases, the watchlist and the activity log live in a
+SQLite file on local disk (see README's Workspace section) — free, but reset
+on every redeploy and free-tier spin-down.

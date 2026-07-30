@@ -3,13 +3,16 @@ import sys
 
 import pdf as pdf_renderer
 from graph import band_reason, build_graph, find_ubos, risk_band, run_detectors
+import db
+import edd
 import geocode
+import goaml
 import risk_rating
 from reference import country_label, jurisdiction_label
 from report import build_report
 from resolve import EntityStore
 from schema import COMPANY, OWNS, PERSON, POSSIBLY_SAME_AS, Edge, Node, normalise_name
-from search import run_search, screen_name
+from search import batch_screen, run_search, screen_name
 
 failures = []
 
@@ -284,6 +287,101 @@ def test_standalone_risk_rating_pdf():
           empty.startswith(b"%PDF"))
 
 
+def test_edd_checklist():
+    print("EDD checklist")
+    payload = run_search("falcon capital", hops=4)
+    webb = next(n["id"] for n in payload["nodes"] if n["name"] == "Marcus Webb")
+    report = build_report(payload, webb)
+    rows = edd.build_checklist(report)
+    check("all seven trigger questions are present", len(rows) == 7)
+    complex_row = next(r for r in rows if "complexity" in r["question"])
+    check("nominee director's complex-structure question answers Yes",
+          complex_row["answer"] == "Yes")
+    unavailable = [r for r in rows if r["answer"].startswith("Not available")]
+    check("facts this tool has no source for say so, not a guessed No",
+          len(unavailable) == 3)
+
+    branko = next(n["id"] for n in payload["nodes"] if n["name"] == "Viktor Branko")
+    sanctioned_report = build_report(payload, branko)
+    sanctioned_rows = edd.build_checklist(sanctioned_report)
+    check("a sanctioned entity answers Yes to the sanctions question",
+          sanctioned_rows[0]["answer"] == "Yes")
+
+    data = pdf_renderer.render_edd_checklist(report, rows)
+    check("EDD checklist renders as its own PDF", data.startswith(b"%PDF") and len(data) > 1500)
+
+
+def test_mou_draft():
+    print("MOU draft")
+    payload = run_search("falcon capital", hops=4)
+    webb = next(n["id"] for n in payload["nodes"] if n["name"] == "Marcus Webb")
+    report = build_report(payload, webb)
+    purchaser_pdf = pdf_renderer.render_mou_draft(report, role="purchaser")
+    seller_pdf = pdf_renderer.render_mou_draft(report, role="seller")
+    check("MOU draft renders as purchaser", purchaser_pdf.startswith(b"%PDF"))
+    check("MOU draft renders as seller", seller_pdf.startswith(b"%PDF"))
+    check("purchaser vs seller pre-fill actually differs", purchaser_pdf != seller_pdf)
+
+
+def test_goaml_export():
+    print("goAML XML draft")
+    payload = run_search("falcon capital", hops=4)
+    branko = next(n["id"] for n in payload["nodes"] if n["name"] == "Viktor Branko")
+    report = build_report(payload, branko)
+    xml_bytes = goaml.build_xml(report, reason="Sanctions hit found during onboarding")
+    check("well-formed XML with a declaration", xml_bytes.startswith(b"<?xml"))
+    check("marked as a draft, not a validated submission", b'draft="true"' in xml_bytes)
+    check("subject name is present", b"Viktor Branko" in xml_bytes)
+    check("the reason for the report carries through", b"Sanctions hit found" in xml_bytes)
+
+
+def test_batch_screen():
+    print("batch screening")
+    results = batch_screen(["Viktor Branko", "Elena Kovacs", "Definitely Nobody Xyz"])
+    by_name = {r["name"]: r for r in results}
+    check("sanctioned entity matched with its flags",
+          by_name["Viktor Branko"]["matched"] and
+          "sanctioned" in by_name["Viktor Branko"]["flags"])
+    check("PEP matched with red band absent (orange only)",
+          by_name["Elena Kovacs"]["risk_band"] == "orange")
+    check("a name with no match says so, not an error",
+          by_name["Definitely Nobody Xyz"]["matched"] is False)
+    check("blank names are skipped, not counted as no-match",
+          len(batch_screen(["", "  ", "Viktor Branko"])) == 1)
+
+
+def test_db_persistence(tmp_path_str="/tmp/claude-0/-home-user-dbxfcvnbgfcn/c1a81b38-8897-5298-910e-b3b2bf0d638b/scratchpad/test_sanctionsplus.db"):
+    print("cases, watchlist and activity log persistence")
+    import pathlib
+    db._DB_PATH = pathlib.Path(tmp_path_str)
+    if db._DB_PATH.exists():
+        db._DB_PATH.unlink()
+    db.init()
+
+    case_id = db.save_case("Test case", "demo:marcus-webb", "Marcus Webb",
+                            {"nodes": [], "edges": []}, notes="initial note")
+    check("case is listed", any(c["id"] == case_id for c in db.list_cases()))
+    fetched = db.get_case(case_id)
+    check("fetched case carries its payload back", fetched["payload"] == {"nodes": [], "edges": []})
+    check("update_case_notes changes the note",
+          db.update_case_notes(case_id, "updated") and db.get_case(case_id)["notes"] == "updated")
+    check("deleting an unknown case reports False", not db.delete_case(999999))
+    check("deleting a real case reports True", db.delete_case(case_id))
+    check("deleted case is gone", db.get_case(case_id) is None)
+
+    watch_id = db.add_watch("Viktor Branko")
+    check("watch is listed", any(w["id"] == watch_id for w in db.list_watches()))
+    db.update_watch_result(watch_id, ["sanctioned", "crime"], "red")
+    watch = db.get_watch(watch_id)
+    check("watch result round-trips as a list", watch["last_flags"] == ["sanctioned", "crime"])
+    check("watch band updates", watch["last_band"] == "red")
+    check("removing a watch works", db.delete_watch(watch_id))
+
+    db.log_activity("test_action", "some detail")
+    recent = db.recent_activity(limit=5)
+    check("activity log records the action", recent[0]["action"] == "test_action")
+
+
 def test_report_and_pdf():
     print("report and PDF")
     payload = run_search("falcon capital", hops=4)
@@ -349,6 +447,11 @@ if __name__ == "__main__":
         test_screen_name_button,
         test_satellite_view_urls,
         test_standalone_risk_rating_pdf,
+        test_edd_checklist,
+        test_mou_draft,
+        test_goaml_export,
+        test_batch_screen,
+        test_db_persistence,
         test_report_and_pdf,
         test_identity_matches_surface_in_report,
     ):

@@ -75,6 +75,7 @@
       <button class="tab" id="tab-table" role="tab" aria-selected="false" type="button">Table</button>
       <button class="tab" id="tab-report" role="tab" aria-selected="false" type="button">Report</button>
       <button class="tab" id="tab-risk" role="tab" aria-selected="false" type="button">Risk Assessment</button>
+      <button class="tab" id="tab-workspace" role="tab" aria-selected="false" type="button">Workspace</button>
       <span class="spacer" id="status">ready</span>
     </div>
 
@@ -152,6 +153,52 @@
     <div class="pane" id="pane-risk">
       <div class="report" id="risk-assessment">
         <p class="empty">Loading…</p>
+      </div>
+    </div>
+
+    <div class="pane" id="pane-workspace">
+      <div class="workspace" id="workspace">
+        <section class="ws-section">
+          <h3>Saved cases</h3>
+          <p class="note">A case is a snapshot of one entity's result set, saved so you can
+            come back to it without re-running the search. Open a report and use
+            "Save as case" there to add one.</p>
+          <div id="cases-list"><p class="empty">Loading…</p></div>
+        </section>
+
+        <section class="ws-section">
+          <h3>Watchlist — ongoing monitoring</h3>
+          <p class="note">Names checked here get re-screened on demand (there's no
+            built-in scheduler on the free tier — point an external cron at
+            <code>/api/watchlist/check_all</code> for real automatic monitoring; see
+            DEPLOY.md). A new flag since the last check is called out.</p>
+          <div class="ws-form">
+            <input id="watch-name" type="text" placeholder="Full name to monitor">
+            <button class="ghost" id="watch-add" type="button">Add</button>
+            <button class="ghost" id="watch-check-all" type="button">Check all now</button>
+          </div>
+          <div id="watchlist-list"><p class="empty">Loading…</p></div>
+        </section>
+
+        <section class="ws-section">
+          <h3>Batch screening</h3>
+          <p class="note">Upload a CSV or text file (one name per line, or the first column
+            of a CSV) to screen a whole list in one pass — onboarding a portfolio, an
+            annual refresh, etc. Runs a shallow 1-hop search per name; open a name
+            individually from the Table tab for the full network.</p>
+          <div class="ws-form">
+            <input id="batch-file" type="file" accept=".csv,.txt">
+            <button class="ghost" id="batch-run" type="button">Screen file</button>
+          </div>
+          <div id="batch-result"></div>
+        </section>
+
+        <section class="ws-section">
+          <h3>Activity log</h3>
+          <p class="note">Every search, report view, saved case and export, with a
+            timestamp — a record of what was checked and when.</p>
+          <div id="activity-list"><p class="empty">Loading…</p></div>
+        </section>
       </div>
     </div>
   </section>

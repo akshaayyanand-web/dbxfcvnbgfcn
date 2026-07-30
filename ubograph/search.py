@@ -74,6 +74,42 @@ def screen_name(name: str, entity_type: str = "any") -> dict:
     }
 
 
+def batch_screen(names: List[str], entity_type: str = "any") -> List[dict]:
+    """Screen a whole list of names in one pass — for onboarding a portfolio
+    or an annual refresh instead of searching one client at a time.
+
+    Runs a shallow (1-hop) search per name so a long list doesn't multiply
+    into a full network expansion for every row; open the name individually
+    from the Table tab for the full picture. Sequential, not parallel — a
+    quota-respecting choice, not a performance one, so a long list will take
+    a while.
+    """
+    results = []
+    for raw_name in names:
+        name = (raw_name or "").strip()
+        if not name:
+            continue
+        payload = run_search(name=name, entity_type=entity_type, hops=1)
+        if payload.get("error"):
+            results.append({"name": name, "error": payload["error"]})
+            continue
+        root = next((n for n in payload.get("nodes", []) if n.get("is_root")), None)
+        if not root:
+            results.append({"name": name, "matched": False})
+            continue
+        results.append({
+            "name": name,
+            "matched": True,
+            "matched_name": root.get("name"),
+            "type": root.get("type"),
+            "risk_band": root.get("risk_band"),
+            "risk_score": root.get("risk_score"),
+            "flags": root.get("risk_flags") or [],
+            "country": root.get("country"),
+        })
+    return results
+
+
 def run_search(
     name: str,
     entity_type: str = "any",

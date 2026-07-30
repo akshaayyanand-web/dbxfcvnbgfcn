@@ -119,13 +119,14 @@ $('#form').addEventListener('submit', async (event) => {
  * Tabs
  * ------------------------------------------------------------------ */
 function showTab(name) {
-  ['graph', 'table', 'report', 'risk'].forEach((tab) => {
+  ['graph', 'table', 'report', 'risk', 'workspace'].forEach((tab) => {
     $('#tab-' + tab).setAttribute('aria-selected', String(tab === name));
     $('#pane-' + tab).classList.toggle('active', tab === name);
   });
   if (name === 'graph') resize();
+  if (name === 'workspace') loadWorkspace();
 }
-['graph', 'table', 'report', 'risk'].forEach((tab) => {
+['graph', 'table', 'report', 'risk', 'workspace'].forEach((tab) => {
   $('#tab-' + tab).addEventListener('click', () => showTab(tab));
 });
 
@@ -541,6 +542,11 @@ function renderReport(report) {
     <span class="band-chip ${s.risk_band}">${BAND_LABEL[s.risk_band] || s.risk_band}</span>
     <div class="actions">
       <button class="ghost" id="download-pdf" type="button">Download PDF</button>
+      <button class="ghost" id="download-edd" type="button">EDD checklist</button>
+      <button class="ghost" id="download-mou" type="button">MOU draft</button>
+      <button class="ghost" id="download-goaml" type="button">goAML export</button>
+      <button class="ghost" id="save-case" type="button">Save as case</button>
+      <button class="ghost" id="add-watch-btn" type="button">Add to watchlist</button>
       <button class="ghost" id="back-to-table" type="button">Back to table</button>
     </div>
     <p>${escapeHtml(s.band_reason)}</p>
@@ -600,6 +606,51 @@ function renderReport(report) {
 
   $('#download-pdf').addEventListener('click', downloadPdf);
   $('#back-to-table').addEventListener('click', () => showTab('table'));
+  $('#download-edd').addEventListener('click', (event) => downloadDocument(
+    event.currentTarget, '/api/edd.pdf', subjectFilename('EDD', 'pdf'), {}, 'Building…'));
+  $('#download-mou').addEventListener('click', (event) => {
+    const role = confirm('OK = pre-fill as Purchaser. Cancel = pre-fill as Seller.')
+      ? 'purchaser' : 'seller';
+    downloadDocument(event.currentTarget, '/api/mou.pdf', subjectFilename('MOU', 'pdf'), {role}, 'Building…');
+  });
+  $('#download-goaml').addEventListener('click', (event) => downloadDocument(
+    event.currentTarget, '/api/goaml.xml', subjectFilename('goAML', 'xml'), {}, 'Building…'));
+  $('#save-case').addEventListener('click', async (event) => {
+    const name = prompt('Name this case:', s.name);
+    if (!name) return;
+    const button = event.currentTarget;
+    button.disabled = true;
+    try {
+      const response = await fetch('/api/cases', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({payload: state.payload, node_id: s.id, name}),
+      });
+      if (!response.ok) throw new Error('Could not save the case.');
+      button.textContent = 'Saved';
+      setTimeout(() => { button.textContent = 'Save as case'; button.disabled = false; }, 1500);
+    } catch (error) {
+      alert(error.message);
+      button.disabled = false;
+    }
+  });
+  $('#add-watch-btn').addEventListener('click', async (event) => {
+    const button = event.currentTarget;
+    button.disabled = true;
+    try {
+      const response = await fetch('/api/watchlist', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({name: s.name, entity_type: s.type}),
+      });
+      if (!response.ok) throw new Error('Could not add to the watchlist.');
+      button.textContent = 'Added';
+      setTimeout(() => { button.textContent = 'Add to watchlist'; button.disabled = false; }, 1500);
+    } catch (error) {
+      alert(error.message);
+      button.disabled = false;
+    }
+  });
   $$('#report .namebtn').forEach((button) => {
     button.addEventListener('click', () => openReport(button.dataset.node));
   });
@@ -713,6 +764,42 @@ async function downloadPdf() {
     button.disabled = false;
     button.textContent = 'Download PDF';
   }
+}
+
+async function downloadDocument(button, url, filename, extraBody, busyText) {
+  const original = button.textContent;
+  button.disabled = true;
+  button.textContent = busyText;
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({payload: state.payload, node_id: state.report.subject.id, ...extraBody}),
+    });
+    if (!response.ok) {
+      const problem = await response.json().catch(() => ({}));
+      throw new Error(problem.error || 'The server could not build that file.');
+    }
+    const blob = await response.blob();
+    const objectUrl = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = objectUrl;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(objectUrl), 4000);
+  } catch (error) {
+    alert(error.message);
+  } finally {
+    button.disabled = false;
+    button.textContent = original;
+  }
+}
+
+function subjectFilename(suffix, ext) {
+  const name = (state.report.subject.name || 'entity').replace(/[^A-Za-z0-9]+/g, '_');
+  return `SanctionsPlus_${suffix}_${name}.${ext}`;
 }
 
 /* ------------------------------------------------------------------ *
@@ -1039,6 +1126,175 @@ canvas.addEventListener('wheel', (event) => {
   view.k = Math.max(0.25, Math.min(3.5, view.k * factor));
   draw();
 }, {passive: false});
+
+/* ------------------------------------------------------------------ *
+ * Workspace: cases, watchlist, batch screening, activity log
+ * ------------------------------------------------------------------ */
+function timeAgo(unixSeconds) {
+  const diff = Date.now() / 1000 - unixSeconds;
+  if (diff < 60) return 'just now';
+  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+  return new Date(unixSeconds * 1000).toLocaleDateString();
+}
+
+async function loadWorkspace() {
+  renderCasesList();
+  renderWatchlist();
+  renderActivity();
+}
+
+async function renderCasesList() {
+  const target = $('#cases-list');
+  const response = await fetch('/api/cases');
+  const {cases} = await response.json();
+  if (!cases.length) { target.innerHTML = '<p class="empty">No cases saved yet.</p>'; return; }
+  target.innerHTML = `<table><thead><tr><th>Name</th><th>Entity</th><th>Saved</th><th>Notes</th><th></th></tr></thead>
+    <tbody>${cases.map((c) => `<tr>
+      <td>${escapeHtml(c.name)}</td>
+      <td>${escapeHtml(c.node_name || '')}</td>
+      <td>${timeAgo(c.updated_at)}</td>
+      <td><input type="text" class="case-notes" data-id="${c.id}" value="${escapeHtml(c.notes || '')}"
+                 placeholder="Add a note…"></td>
+      <td>
+        <button class="ghost small" data-open-case="${c.id}" data-node="${escapeHtml(c.node_id)}" type="button">Open</button>
+        <button class="ghost small" data-delete-case="${c.id}" type="button">Delete</button>
+      </td>
+    </tr>`).join('')}</tbody></table>`;
+
+  $$('#cases-list [data-open-case]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      const caseData = await (await fetch(`/api/cases/${button.dataset.openCase}`)).json();
+      if (caseData.error) { alert(caseData.error); return; }
+      state.payload = caseData.payload;
+      layout(caseData.payload);
+      renderTable();
+      renderSidebar(caseData.payload);
+      openReport(caseData.node_id);
+    });
+  });
+  $$('#cases-list [data-delete-case]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      if (!confirm('Delete this case?')) return;
+      await fetch(`/api/cases/${button.dataset.deleteCase}`, {method: 'DELETE'});
+      renderCasesList();
+    });
+  });
+  $$('#cases-list .case-notes').forEach((input) => {
+    input.addEventListener('change', () => {
+      fetch(`/api/cases/${input.dataset.id}/notes`, {
+        method: 'POST', headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({notes: input.value}),
+      });
+    });
+  });
+}
+
+async function renderWatchlist() {
+  const target = $('#watchlist-list');
+  const response = await fetch('/api/watchlist');
+  const {watches} = await response.json();
+  if (!watches.length) { target.innerHTML = '<p class="empty">Nothing on the watchlist yet.</p>'; return; }
+  target.innerHTML = `<table><thead><tr><th>Name</th><th>Last checked</th><th>Band</th><th>Flags</th><th></th></tr></thead>
+    <tbody>${watches.map((w) => `<tr>
+      <td>${escapeHtml(w.name)}</td>
+      <td>${w.last_checked_at ? timeAgo(w.last_checked_at) : 'never'}</td>
+      <td>${w.last_band ? `<span class="band-chip ${w.last_band}" style="font-size:10px;padding:3px 8px">${escapeHtml(w.last_band)}</span>` : '—'}</td>
+      <td>${(w.last_flags || []).map((f) => `<span class="tag-flag ${f}">${escapeHtml(flagLabel(f))}</span>`).join('') || '—'}</td>
+      <td>
+        <button class="ghost small" data-check-watch="${w.id}" type="button">Check now</button>
+        <button class="ghost small" data-remove-watch="${w.id}" type="button">Remove</button>
+      </td>
+    </tr>`).join('')}</tbody></table>`;
+
+  $$('#watchlist-list [data-check-watch]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      button.disabled = true; button.textContent = 'Checking…';
+      const result = await (await fetch(`/api/watchlist/${button.dataset.checkWatch}/check`, {method: 'POST'})).json();
+      if (result.new_flags && result.new_flags.length) {
+        alert(`New flag(s) for ${result.name}: ${result.new_flags.join(', ')}`);
+      }
+      renderWatchlist();
+    });
+  });
+  $$('#watchlist-list [data-remove-watch]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      await fetch(`/api/watchlist/${button.dataset.removeWatch}`, {method: 'DELETE'});
+      renderWatchlist();
+    });
+  });
+}
+
+async function renderActivity() {
+  const target = $('#activity-list');
+  const response = await fetch('/api/activity');
+  const {activity} = await response.json();
+  if (!activity.length) { target.innerHTML = '<p class="empty">Nothing logged yet.</p>'; return; }
+  target.innerHTML = `<table><thead><tr><th>When</th><th>Action</th><th>Detail</th></tr></thead>
+    <tbody>${activity.map((a) => `<tr>
+      <td>${timeAgo(a.at)}</td>
+      <td>${escapeHtml(a.action.replace(/_/g, ' '))}</td>
+      <td>${escapeHtml(a.detail || '')}</td>
+    </tr>`).join('')}</tbody></table>`;
+}
+
+$('#watch-add').addEventListener('click', async () => {
+  const input = $('#watch-name');
+  const name = input.value.trim();
+  if (!name) return;
+  await fetch('/api/watchlist', {
+    method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({name}),
+  });
+  input.value = '';
+  renderWatchlist();
+});
+
+$('#watch-check-all').addEventListener('click', async (event) => {
+  const button = event.currentTarget;
+  button.disabled = true;
+  button.textContent = 'Checking…';
+  const {results} = await (await fetch('/api/watchlist/check_all', {method: 'POST'})).json();
+  const alerts = results.filter((r) => r.new_flags && r.new_flags.length);
+  button.disabled = false;
+  button.textContent = 'Check all now';
+  if (alerts.length) {
+    alert(alerts.map((r) => `${r.name}: new flag(s) ${r.new_flags.join(', ')}`).join('\n'));
+  }
+  renderWatchlist();
+});
+
+$('#batch-run').addEventListener('click', async (event) => {
+  const fileInput = $('#batch-file');
+  if (!fileInput.files.length) { alert('Choose a CSV or text file first.'); return; }
+  const button = event.currentTarget;
+  button.disabled = true;
+  button.textContent = 'Screening…';
+  $('#batch-result').innerHTML = '<p class="empty">Screening…</p>';
+  try {
+    const formData = new FormData();
+    formData.append('file', fileInput.files[0]);
+    const response = await fetch('/api/batch_screen', {method: 'POST', body: formData});
+    const data = await response.json();
+    if (data.error) throw new Error(data.error);
+    $('#batch-result').innerHTML = `
+      <table><thead><tr><th>Name</th><th>Matched</th><th>Type</th><th>Band</th><th>Flags</th></tr></thead>
+        <tbody>${data.results.map((r) => `<tr>
+          <td>${escapeHtml(r.name)}</td>
+          <td>${r.error ? `<span class="err">${escapeHtml(r.error)}</span>`
+              : r.matched ? escapeHtml(r.matched_name) : 'no match'}</td>
+          <td>${escapeHtml(r.type || '—')}</td>
+          <td>${r.risk_band ? `<span class="band-chip ${r.risk_band}" style="font-size:10px;padding:3px 8px">${escapeHtml(r.risk_band)}</span>` : '—'}</td>
+          <td>${(r.flags || []).map((f) => `<span class="tag-flag ${f}">${escapeHtml(flagLabel(f))}</span>`).join('') || '—'}</td>
+        </tr>`).join('')}</tbody></table>
+      <p class="note"><a href="/api/batch_screen.csv?${data.results.map((r) => `name=${encodeURIComponent(r.name)}`).join('&')}&entity_type=any"
+        target="_blank" rel="noopener">Download results as CSV</a></p>`;
+  } catch (error) {
+    $('#batch-result').innerHTML = `<p class="err">${escapeHtml(error.message)}</p>`;
+  } finally {
+    button.disabled = false;
+    button.textContent = 'Screen file';
+  }
+});
 
 /* ------------------------------------------------------------------ */
 syncOptional();
