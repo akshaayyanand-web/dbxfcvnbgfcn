@@ -17,7 +17,7 @@ NOMINATIM_URL = "https://nominatim.openstreetmap.org/search"
 # Nominatim's usage policy requires a descriptive User-Agent identifying the
 # application, and caps unregistered use at roughly one request per second —
 # both honoured here. Not for bulk/automated lookups.
-USER_AGENT = "UBOgraph/1.0 (beneficial-ownership due-diligence tool)"
+USER_AGENT = "SanctionsPlus/1.0 (beneficial-ownership due-diligence tool)"
 
 SATELLITE_DELTA = 0.0015  # ~166m at the equator: close enough to see one building
 

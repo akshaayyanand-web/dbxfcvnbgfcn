@@ -1,4 +1,4 @@
-/* UBOgraph frontend: search form, force-directed graph, entity table, report. */
+/* Sanctions+ frontend: search form, force-directed graph, entity table, report. */
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => Array.from(document.querySelectorAll(selector));
 
@@ -450,7 +450,7 @@ function renderRiskAssessmentTab() {
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = 'UBOgraph_Client_Risk_Rating.pdf';
+      link.download = 'SanctionsPlus_Client_Risk_Rating.pdf';
       document.body.appendChild(link);
       link.click();
       link.remove();
@@ -702,7 +702,7 @@ async function downloadPdf() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `UBOgraph_${(state.report.subject.name || 'report').replace(/[^A-Za-z0-9]+/g, '_')}.pdf`;
+    link.download = `SanctionsPlus_${(state.report.subject.name || 'report').replace(/[^A-Za-z0-9]+/g, '_')}.pdf`;
     document.body.appendChild(link);
     link.click();
     link.remove();

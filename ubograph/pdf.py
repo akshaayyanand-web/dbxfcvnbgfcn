@@ -323,7 +323,7 @@ def render(report: dict, risk_rating: dict = None) -> bytes:
         buffer, pagesize=A4,
         leftMargin=20 * mm, rightMargin=20 * mm, topMargin=18 * mm, bottomMargin=18 * mm,
         title=f"Due diligence report — {subject.get('name')}",
-        author="UBOgraph",
+        author="Sanctions+",
     )
 
     flow = [
@@ -410,7 +410,7 @@ def render(report: dict, risk_rating: dict = None) -> bytes:
         canvas.saveState()
         canvas.setFont("Helvetica", 7.5)
         canvas.setFillColor(MUTED)
-        canvas.drawString(20 * mm, 12 * mm, f"UBOgraph · {subject.get('name')}")
+        canvas.drawString(20 * mm, 12 * mm, f"Sanctions+ · {subject.get('name')}")
         canvas.drawRightString(A4[0] - 20 * mm, 12 * mm, f"page {document.page}")
         canvas.restoreState()
 
@@ -427,7 +427,7 @@ def render_risk_rating(rating: dict) -> bytes:
         buffer, pagesize=A4,
         leftMargin=20 * mm, rightMargin=20 * mm, topMargin=18 * mm, bottomMargin=18 * mm,
         title="Client Risk Rating",
-        author="UBOgraph",
+        author="Sanctions+",
     )
     flow = [
         Paragraph("Client Risk Rating", styles["title"]),
@@ -444,7 +444,7 @@ def render_risk_rating(rating: dict) -> bytes:
         canvas.saveState()
         canvas.setFont("Helvetica", 7.5)
         canvas.setFillColor(MUTED)
-        canvas.drawString(20 * mm, 12 * mm, "UBOgraph · Client Risk Rating")
+        canvas.drawString(20 * mm, 12 * mm, "Sanctions+ · Client Risk Rating")
         canvas.drawRightString(A4[0] - 20 * mm, 12 * mm, f"page {document.page}")
         canvas.restoreState()
 

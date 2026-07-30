@@ -38,7 +38,7 @@ def _require_password():
         return None
     return Response(
         "Authentication required.", 401,
-        {"WWW-Authenticate": 'Basic realm="UBOgraph"'},
+        {"WWW-Authenticate": 'Basic realm="Sanctions+"'},
     )
 
 
@@ -157,7 +157,7 @@ def api_risk_rating_pdf():
     return app.response_class(
         pdf_renderer.render_risk_rating(rating),
         mimetype="application/pdf",
-        headers={"Content-Disposition": 'attachment; filename="UBOgraph_Client_Risk_Rating.pdf"'},
+        headers={"Content-Disposition": 'attachment; filename="SanctionsPlus_Client_Risk_Rating.pdf"'},
     )
 
 
@@ -207,7 +207,7 @@ def api_report_pdf():
     return app.response_class(
         pdf_renderer.render(report, risk_rating=rating),
         mimetype="application/pdf",
-        headers={"Content-Disposition": f'attachment; filename="UBOgraph_{name}.pdf"'},
+        headers={"Content-Disposition": f'attachment; filename="SanctionsPlus_{name}.pdf"'},
     )
 
 
@@ -223,7 +223,7 @@ def api_export():
         jurisdiction=request.args.get("jurisdiction") or None,
     )
     body = json.dumps(payload, indent=2)
-    filename = (payload.get("query", {}).get("name") or "ubograph").replace(" ", "_")
+    filename = (payload.get("query", {}).get("name") or "sanctions-plus").replace(" ", "_")
     return app.response_class(
         body,
         mimetype="application/json",
@@ -239,7 +239,7 @@ def healthz():
 
 if __name__ == "__main__":
     status = config.status()
-    print("UBOgraph")
+    print("Sanctions+")
     print(f"  OpenSanctions : {'live' if status['opensanctions'] else 'off'}")
     print(f"  OpenCorporates: {'live' if status['opencorporates'] else 'off'}")
     print(f"  Adverse media : {'live' if status['adverse_media'] else 'off'}")

@@ -1,6 +1,6 @@
 :root{
   --bg:#f7f5f0; --panel:#fffdf8; --ink:#1c1a17; --muted:#6b645a;
-  --line:#ddd6c9; --edge:#a89c88; --accent:#7a4b1e; --accent-soft:#f0e6d8;
+  --line:#ddd6c9; --edge:#a89c88; --accent:#1f3a5f; --accent-soft:#e4e9f0;
   --red:#a5321f; --orange:#b07407; --green:#4f6b44; --link:#b07407;
   --red-soft:#f7e7e3; --orange-soft:#f8eeda; --green-soft:#e8eee4;
   --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
@@ -9,7 +9,7 @@
 @media (prefers-color-scheme:dark){
   :root{
     --bg:#161513; --panel:#1e1c19; --ink:#ece7de; --muted:#a09889;
-    --line:#332f29; --edge:#6b6357; --accent:#d8a56d; --accent-soft:#2a241c;
+    --line:#332f29; --edge:#6b6357; --accent:#7fa6d9; --accent-soft:#1c2733;
     --red:#e2705c; --orange:#dda23f; --green:#8fa87d; --link:#dda23f;
     --red-soft:#2e1e1a; --orange-soft:#2c2417; --green-soft:#1e251c;
   }
@@ -25,7 +25,8 @@ header{
   box-shadow:0 1px 0 rgba(20,16,8,.03), 0 2px 8px rgba(20,16,8,.04);
   position:relative; z-index:2;
 }
-header h1{font-size:19px; margin:0}
+header h1{font-size:19px; margin:0; font-weight:700; letter-spacing:-.01em}
+header h1 .brand-plus{color:var(--accent); font-weight:800}
 header .tag{color:var(--muted); font-size:13px}
 .chips{margin-left:auto; display:flex; gap:8px; flex-wrap:wrap}
 .chip{

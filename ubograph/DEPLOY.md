@@ -1,4 +1,4 @@
-# Putting UBOgraph on a public URL
+# Putting Sanctions+ on a public URL
 
 This is a Python web app, not a static site, so Netlify / GitHub Pages / Vercel's
 static hosting won't run it — those serve files, and this needs a process that can
@@ -35,8 +35,8 @@ paste secrets.
    - `OPENSANCTIONS_API_KEY`
    - `OPENCORPORATES_API_TOKEN`
    - `ANTHROPIC_API_KEY` (optional)
-   - `APP_PASSWORD` — pick something; the username is `ubograph`
-5. Deploy. First build takes a few minutes. You get `https://ubograph.onrender.com`
+   - `APP_PASSWORD` — pick something; the username is `sanctionsplus`
+5. Deploy. First build takes a few minutes. You get `https://sanctions-plus.onrender.com`
    (the name is taken from `render.yaml`; adjust it there if it clashes).
 
 **The free-tier catch:** the instance sleeps after about 15 minutes of no traffic,
@@ -93,7 +93,7 @@ there, and it is usually one of these:
 | Build succeeds, then "health check failed" / "service unhealthy" | The probe at `/healthz` isn't answering. It is exempt from the password by design; if you changed that, put it back. |
 | `ModuleNotFoundError` on start | The build ran in the wrong directory. `rootDir` must be `ubograph`. |
 | `bash: gunicorn: command not found` | `requirements.txt` didn't install — check the build log above the failure. |
-| Deploy "succeeded" but the URL 401s | That's the password working. Log in with username `ubograph`. |
+| Deploy "succeeded" but the URL 401s | That's the password working. Log in with username `sanctionsplus`. |
 
 Paste the last twenty lines of the log if none of those fit.
 
@@ -102,7 +102,7 @@ Paste the last twenty lines of the log if none of those fit.
 ## After deploying — check it actually works
 
 ```
-curl -u ubograph:YOURPASSWORD https://your-app.onrender.com/api/status
+curl -u sanctionsplus:YOURPASSWORD https://your-app.onrender.com/api/status
 ```
 
 Should return `"opensanctions": true, "opencorporates": true`. If a source shows

@@ -3,7 +3,7 @@
 # paste into the dashboard (sync: false keeps them out of the repository).
 services:
   - type: web
-    name: ubograph
+    name: sanctions-plus
     runtime: python
     plan: free
     rootDir: ubograph
@@ -25,4 +25,4 @@ services:
       - key: APP_PASSWORD
         sync: false
       - key: APP_USERNAME
-        value: ubograph
+        value: sanctionsplus

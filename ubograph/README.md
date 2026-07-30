@@ -1,4 +1,4 @@
-# UBOgraph
+# Sanctions+
 
 Maps multi-layered corporate ownership structures so a commercial or M&A lawyer can
 see who ultimately controls a company — including through free-zone and offshore
