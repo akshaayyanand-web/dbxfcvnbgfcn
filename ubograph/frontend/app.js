@@ -540,14 +540,22 @@ function renderReport(report) {
     <p class="meta">Beneficial ownership &amp; risk report · generated ${escapeHtml(report.generated_at)}
       ${report.demo_mode ? ' · <b>sample data, not a real record</b>' : ''}</p>
     <span class="band-chip ${s.risk_band}">${BAND_LABEL[s.risk_band] || s.risk_band}</span>
-    <div class="actions">
-      <button class="ghost" id="download-pdf" type="button">Download PDF</button>
-      <button class="ghost" id="download-edd" type="button">EDD checklist</button>
-      <button class="ghost" id="download-mou" type="button">MOU draft</button>
-      <button class="ghost" id="download-goaml" type="button">goAML export</button>
-      <button class="ghost" id="save-case" type="button">Save as case</button>
-      <button class="ghost" id="add-watch-btn" type="button">Add to watchlist</button>
-      <button class="ghost" id="back-to-table" type="button">Back to table</button>
+    <div class="action-groups">
+      <div class="action-group">
+        <button class="primary" id="download-pdf" type="button">Download PDF</button>
+      </div>
+      <div class="action-group">
+        <span class="action-label">Documents</span>
+        <button class="ghost small" id="download-edd" type="button">EDD checklist</button>
+        <button class="ghost small" id="download-mou" type="button">MOU draft</button>
+        <button class="ghost small" id="download-goaml" type="button">goAML export</button>
+      </div>
+      <div class="action-group">
+        <span class="action-label">Workspace</span>
+        <button class="ghost small" id="save-case" type="button">Save as case</button>
+        <button class="ghost small" id="add-watch-btn" type="button">Add to watchlist</button>
+      </div>
+      <button class="link-back" id="back-to-table" type="button">← Back to table</button>
     </div>
     <p>${escapeHtml(s.band_reason)}</p>
 
