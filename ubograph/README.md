@@ -209,6 +209,7 @@ risk_rating.py       client risk-rating rubric (client-supplied workbook, digiti
 geocode.py           free, keyless address geocoding + satellite-image URLs
 edd.py               Enhanced Due Diligence checklist, sourced from the graph
 goaml.py             goAML XML draft export (starting point, not schema-validated)
+reasons.py           "reason for reporting" reference library (STR/SAR red-flag codes)
 db.py                SQLite: saved cases, the watchlist, the activity log
 pipeline.py          command line entry point
 test_ubograph.py     smoke tests
@@ -244,7 +245,9 @@ downstream knows which API a record came from.
 | `POST /api/geocode` | `{address}` → coordinates, a satellite-image URL, and an OpenStreetMap link |
 | `POST /api/edd.pdf` | `{payload, node_id}` → the Enhanced Due Diligence checklist as a PDF |
 | `POST /api/mou.pdf` | `{payload, node_id, role}` → an MOU draft with the entity pre-filled as `"purchaser"` or `"seller"` |
-| `POST /api/goaml.xml` | `{payload, node_id, reason}` → a starting-point goAML XML draft |
+| `GET /api/reasons` | `?q=` → the "reason for reporting" reference library (code + description), optionally filtered |
+| `POST /api/goaml.xml` | `{payload, node_id, reason, reason_code, report_type}` → a starting-point goAML XML draft (`report_type` is `"STR"` or `"SAR"`) |
+| `POST /api/goaml_match.xml` | `{name, match, report_type}` → a goAML draft for one screening hit (`report_type` is `"CNMR"` or `"PNMR"`) |
 | `POST /api/batch_screen` | `{names: [...], entity_type}` or a multipart `file` upload → a risk read on every name |
 | `GET /api/batch_screen.csv` | Same, as a downloadable CSV — repeated `?name=` query params |
 | `POST /api/cases` · `GET /api/cases` · `GET /api/cases/<id>` · `POST /api/cases/<id>/notes` · `DELETE /api/cases/<id>` | Save / list / open / annotate / delete a case (a named snapshot of one entity's result set) |
@@ -301,11 +304,24 @@ would otherwise assemble by hand:
   lawyer to complete and review, not a substitute for the firm's own
   approved template.
 - **goAML export** — a draft XML with the entity's name, DOB/registration,
-  identifiers, address and findings filled in. **Not validated against the
-  actual goAML XSD** (that schema isn't published anywhere this tool can
-  read it from) — treat it as a head start to complete inside goAML, not a
-  ready-to-submit file. See `goaml.py` for exactly what it does and doesn't
-  claim.
+  identifiers, address and findings filled in, as either a Suspicious
+  Transaction Report (STR) or a Suspicious Activity Report (SAR) — pick
+  which when downloading. An optional "reason for reporting" field is backed
+  by `reasons.py`, a 280+ code reference library of standard red-flag
+  typologies (funnel accounts, structuring, shell-company indicators, TFS
+  matches and the like); typing a keyword and picking a code carries its own
+  wording straight into the draft instead of writing the reason from
+  scratch. **Not validated against the actual goAML XSD** (that schema isn't
+  published anywhere this tool can read it from) — treat it as a head start
+  to complete inside goAML, not a ready-to-submit file. See `goaml.py` for
+  exactly what it does and doesn't claim.
+- **goAML match report (CNMR/PNMR)** — a lightweight goAML draft generated
+  straight from a "Screen this name" hit (Risk Assessment tab), for the
+  Confirmed or Partial Name Match Report a DNFBP files against the UAE's
+  Targeted Financial Sanctions regime once a name match turns up — separate
+  from the full entity STR/SAR above, and carrying the standard reminder
+  that a confirmed or partial match should be reported through goAML within
+  five days, alongside any funds-freeze action taken.
 
 ### Workspace: cases, watchlist, batch screening, activity log
 

@@ -7,6 +7,7 @@ import db
 import edd
 import geocode
 import goaml
+import reasons
 import risk_rating
 from reference import country_label, fatf_marking, jurisdiction_label
 from report import build_report
@@ -383,6 +384,67 @@ def test_goaml_export():
     check("marked as a draft, not a validated submission", b'draft="true"' in xml_bytes)
     check("subject name is present", b"Viktor Branko" in xml_bytes)
     check("the reason for the report carries through", b"Sanctions hit found" in xml_bytes)
+    check("defaults to STR", b"<report_type>STR</report_type>" in xml_bytes)
+
+    sar_bytes = goaml.build_xml(report, report_type="SAR")
+    check("report_type can be switched to SAR", b"<report_type>SAR</report_type>" in sar_bytes)
+    check("an unknown report_type falls back to STR rather than erroring",
+          b"<report_type>STR</report_type>" in goaml.build_xml(report, report_type="NOPE"))
+
+    with_code = goaml.build_xml(report, reason_code="BCNNP")
+    check("a recognised reason code adds its own label",
+          b"<reason_code>BCNNP</reason_code>" in with_code
+          and b"payroll" in with_code)
+    check("an unrecognised reason code is silently skipped, not invented",
+          b"<reason_code>" not in goaml.build_xml(report, reason_code="ZZZZZ"))
+
+
+def test_reasons_reference():
+    print("reasons.py — 'reason for reporting' reference library")
+    all_reasons = reasons.list_reasons()
+    check("the reference library loaded a substantial code list", len(all_reasons) > 100)
+    check("every entry has both a code and a description",
+          all(r.get("code") and r.get("description") for r in all_reasons))
+
+    check("get_reason() is case-insensitive", reasons.get_reason("bcnnp") is not None)
+    check("an unknown code returns None, not an error", reasons.get_reason("ZZZZZ") is None)
+    check("no code -> None", reasons.get_reason(None) is None)
+
+    hits = reasons.list_reasons("shell")
+    check("keyword search matches on description text", len(hits) > 0)
+    check("keyword search results actually contain the keyword",
+          all("shell" in r["description"].lower() for r in hits))
+
+
+def test_goaml_match_report():
+    print("goAML draft for a single screening match (CNMR/PNMR)")
+    match = {
+        "name": "Viktor Branko", "score": 0.95, "country": "Serbia",
+        "fatf_marking": None, "flags": ["sanctioned", "crime"],
+    }
+    confirmed = goaml.build_match_xml("Viktor Branko", match, report_type="CNMR")
+    check("well-formed XML with a declaration", confirmed.startswith(b"<?xml"))
+    check("marked as a draft", b'draft="true"' in confirmed)
+    check("report type is CNMR with its full label",
+          b"<report_type>CNMR</report_type>" in confirmed
+          and b"Confirmed Name Match" in confirmed)
+    check("carries the UAE TFS 5-day filing note", b"5 days" in confirmed)
+    check("the matched record's name and score are present",
+          b"Viktor Branko" in confirmed and b"95.0" in confirmed)
+    check("flags carry through", b"<flag>sanctioned</flag>" in confirmed)
+
+    partial = goaml.build_match_xml("Viktor Branko", match, report_type="PNMR")
+    check("report type can be PNMR instead", b"<report_type>PNMR</report_type>" in partial)
+    check("an unknown report_type falls back to PNMR rather than erroring",
+          b"<report_type>PNMR</report_type>" in goaml.build_match_xml("x", match, report_type="NOPE"))
+
+    marked = goaml.build_match_xml(
+        "Someone", {"name": "Someone", "score": None, "country": "Kuwait",
+                     "fatf_marking": "grey_list", "flags": []},
+        report_type="PNMR",
+    )
+    check("a FATF marking on the match carries into the draft",
+          b"<fatf_marking>grey_list</fatf_marking>" in marked)
 
 
 def test_batch_screen():
@@ -494,6 +556,7 @@ if __name__ == "__main__":
         test_place_labels,
         test_fatf_jurisdiction_detector,
         test_fatf_black_and_grey_list_markings,
+        test_fatf_marking_helper,
         test_client_risk_rating,
         test_screen_name_button,
         test_satellite_view_urls,
@@ -501,6 +564,8 @@ if __name__ == "__main__":
         test_edd_checklist,
         test_mou_draft,
         test_goaml_export,
+        test_reasons_reference,
+        test_goaml_match_report,
         test_batch_screen,
         test_db_persistence,
         test_report_and_pdf,

@@ -14,6 +14,13 @@ import xml.etree.ElementTree as ET
 from datetime import datetime
 from typing import Optional
 
+import reasons as reasons_ref
+
+REPORT_TYPES = {
+    "STR": "Suspicious Transaction Report",
+    "SAR": "Suspicious Activity Report",
+}
+
 
 def _sub(parent, tag, text=None):
     el = ET.SubElement(parent, tag)
@@ -22,9 +29,11 @@ def _sub(parent, tag, text=None):
     return el
 
 
-def build_xml(report: dict, reason: str = "") -> bytes:
+def build_xml(report: dict, reason: str = "", reason_code: Optional[str] = None,
+              report_type: str = "STR") -> bytes:
     subject = report["subject"]
     is_person = subject.get("type") == "person"
+    report_type = report_type if report_type in REPORT_TYPES else "STR"
 
     root = ET.Element("report")
     root.set("draft", "true")
@@ -33,7 +42,13 @@ def build_xml(report: dict, reason: str = "") -> bytes:
     header = _sub(root, "report_header")
     _sub(header, "generated_by", "Sanctions+")
     _sub(header, "generated_at", datetime.now().strftime("%Y-%m-%dT%H:%M:%S"))
-    _sub(header, "report_type", "STR")  # Suspicious Transaction Report — adjust if this is an SAR
+    _sub(header, "report_type", report_type)
+    _sub(header, "report_type_label", REPORT_TYPES[report_type])
+
+    matched_reason = reasons_ref.get_reason(reason_code)
+    if matched_reason:
+        _sub(header, "reason_code", matched_reason["code"])
+        _sub(header, "reason_code_label", matched_reason["description"])
     _sub(header, "reason_for_report", reason or "FILL IN: why this report is being considered")
 
     entity = _sub(root, "reporting_entity")
@@ -88,6 +103,56 @@ def build_xml(report: dict, reason: str = "") -> bytes:
         _sub(f_el, "detail", finding.get("detail"))
 
     _sub(root, "narrative", " ".join(report.get("narrative", [])))
+
+    xml_bytes = ET.tostring(root, encoding="utf-8", xml_declaration=True)
+    return xml_bytes
+
+
+MATCH_REPORT_TYPES = {
+    "CNMR": "Confirmed Name Match Report",
+    "PNMR": "Partial Name Match Report",
+}
+
+
+def build_match_xml(screened_name: str, match: dict, report_type: str = "PNMR") -> bytes:
+    """A goAML draft for a single sanctions/PEP screening hit — the Confirmed
+    or Partial Name Match Report a DNFBP files against the Targeted Financial
+    Sanctions (TFS) regime once a name match is identified, separate from a
+    full STR/SAR. UAE TFS guidance calls for this within five days of
+    identifying the match, alongside any funds-freeze taken in the meantime —
+    this only drafts the report, it doesn't track or enforce that deadline.
+    """
+    report_type = report_type if report_type in MATCH_REPORT_TYPES else "PNMR"
+
+    root = ET.Element("report")
+    root.set("draft", "true")
+    root.set("note", "Starting point only — not validated against the goAML XSD. Complete in goAML.")
+
+    header = _sub(root, "report_header")
+    _sub(header, "generated_by", "Sanctions+")
+    _sub(header, "generated_at", datetime.now().strftime("%Y-%m-%dT%H:%M:%S"))
+    _sub(header, "report_type", report_type)
+    _sub(header, "report_type_label", MATCH_REPORT_TYPES[report_type])
+    _sub(header, "filing_note",
+         "UAE TFS guidance: report a confirmed or partial name match through goAML "
+         "within 5 days of identifying it, alongside any funds-freeze action taken.")
+
+    screened = _sub(root, "screened_name")
+    _sub(screened, "name_searched", screened_name)
+
+    matched = _sub(root, "matched_record")
+    _sub(matched, "name", match.get("name"))
+    if match.get("score") is not None:
+        _sub(matched, "match_score_pct", round(match["score"] * 100, 1))
+    _sub(matched, "country", match.get("country"))
+    if match.get("fatf_marking"):
+        _sub(matched, "fatf_marking", match["fatf_marking"])
+
+    flags_el = _sub(root, "flags")
+    for flag in match.get("flags") or []:
+        _sub(flags_el, "flag", flag)
+
+    _sub(root, "action_taken", "FILL IN: funds frozen / relationship declined / under review")
 
     xml_bytes = ET.tostring(root, encoding="utf-8", xml_declaration=True)
     return xml_bytes

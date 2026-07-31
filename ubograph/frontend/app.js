@@ -406,11 +406,13 @@ function renderRiskAssessmentTab() {
       return;
     }
     $('#rr-screening').value = result.outcome;
-    const matches = (result.matches || []).map((m) =>
+    state.lastScreen = {name, matches: result.matches || []};
+    const matches = (result.matches || []).map((m, i) =>
       `<li>${escapeHtml(m.name)}${m.score != null ? ` (${Math.round(m.score * 100)}% match)` : ''}
         ${m.country ? ` — ${escapeHtml(m.country)}` : ''}
         ${m.fatf_marking ? `<span class="sev marking-${m.fatf_marking}">${escapeHtml(MARKING_LABEL[m.fatf_marking])}</span>` : ''}
         ${(m.flags || []).map((f) => `<span class="tag-flag ${f}">${escapeHtml(flagLabel(f))}</span>`).join('')}
+        <button class="ghost small" type="button" data-goaml-match="${i}">goAML report</button>
       </li>`).join('');
     $('#rr-screen-result').innerHTML = `
       <p class="note">Set screening outcome to “${escapeHtml(result.outcome)}”
@@ -418,6 +420,10 @@ function renderRiskAssessmentTab() {
         Adjust the dropdown below if you disagree.</p>
       ${matches ? `<ul class="screen-matches">${matches}</ul>`
                 : '<p class="empty">No matches found.</p>'}`;
+    $$('[data-goaml-match]').forEach((button) => button.addEventListener('click', () => {
+      const match = state.lastScreen.matches[Number(button.dataset.goamlMatch)];
+      generateMatchReport(button, state.lastScreen.name, match);
+    }));
   });
   $('#rr-calculate').addEventListener('click', async () => {
     $('#rr-result').innerHTML = '<p class="empty">Calculating…</p>';
@@ -558,6 +564,9 @@ function renderReport(report) {
         <span class="action-label">Documents</span>
         <button class="ghost small" id="download-edd" type="button">EDD checklist</button>
         <button class="ghost small" id="download-mou" type="button">MOU draft</button>
+        <input id="goaml-reason" type="text" list="goaml-reason-list"
+          placeholder="Reason for reporting (optional)" class="reason-input">
+        <datalist id="goaml-reason-list"></datalist>
         <button class="ghost small" id="download-goaml" type="button">goAML export</button>
       </div>
       <div class="action-group">
@@ -631,8 +640,16 @@ function renderReport(report) {
       ? 'purchaser' : 'seller';
     downloadDocument(event.currentTarget, '/api/mou.pdf', subjectFilename('MOU', 'pdf'), {role}, 'Building…');
   });
-  $('#download-goaml').addEventListener('click', (event) => downloadDocument(
-    event.currentTarget, '/api/goaml.xml', subjectFilename('goAML', 'xml'), {}, 'Building…'));
+  loadReasonOptions();
+  $('#download-goaml').addEventListener('click', (event) => {
+    const raw = $('#goaml-reason').value.trim();
+    const code = raw.split(' — ')[0].trim();
+    const reportType = confirm('OK = Suspicious Transaction Report (STR). Cancel = Suspicious Activity Report (SAR).')
+      ? 'STR' : 'SAR';
+    downloadDocument(event.currentTarget, '/api/goaml.xml', subjectFilename('goAML', 'xml'), {
+      reason: raw, reason_code: code, report_type: reportType,
+    }, 'Building…');
+  });
   $('#save-case').addEventListener('click', async (event) => {
     const name = prompt('Name this case:', s.name);
     if (!name) return;
@@ -812,6 +829,57 @@ async function downloadDocument(button, url, filename, extraBody, busyText) {
   } finally {
     button.disabled = false;
     button.textContent = original;
+  }
+}
+
+async function generateMatchReport(button, name, match) {
+  const reportType = confirm(
+    'OK = Confirmed Name Match Report (CNMR) — this is the same entity.\n'
+    + 'Cancel = Partial Name Match Report (PNMR) — similar but not confirmed.'
+  ) ? 'CNMR' : 'PNMR';
+  const original = button.textContent;
+  button.disabled = true;
+  button.textContent = 'Building…';
+  try {
+    const response = await fetch('/api/goaml_match.xml', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({name, match, report_type: reportType}),
+    });
+    if (!response.ok) {
+      const problem = await response.json().catch(() => ({}));
+      throw new Error(problem.error || 'The server could not build that file.');
+    }
+    const blob = await response.blob();
+    const objectUrl = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = objectUrl;
+    link.download = `SanctionsPlus_${reportType}_${name.replace(/[^A-Za-z0-9]+/g, '_')}.xml`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(objectUrl), 4000);
+  } catch (error) {
+    alert(error.message);
+  } finally {
+    button.disabled = false;
+    button.textContent = original;
+  }
+}
+
+let reasonOptionsLoaded = false;
+async function loadReasonOptions() {
+  const list = $('#goaml-reason-list');
+  if (!list) return;
+  if (reasonOptionsLoaded) return;
+  try {
+    const response = await fetch('/api/reasons');
+    const data = await response.json();
+    list.innerHTML = (data.reasons || [])
+      .map((r) => `<option value="${escapeHtml(r.code)} — ${escapeHtml(r.description)}">`).join('');
+    reasonOptionsLoaded = true;
+  } catch {
+    // Optional convenience — goAML export still works without it.
   }
 }
 

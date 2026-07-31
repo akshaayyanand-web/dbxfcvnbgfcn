@@ -11,6 +11,7 @@ import edd
 import geocode
 import goaml
 import pdf as pdf_renderer
+import reasons
 import reference
 import risk_rating
 from report import build_report
@@ -277,6 +278,14 @@ def api_mou_pdf():
     )
 
 
+@app.get("/api/reasons")
+def api_reasons():
+    """The "reason for reporting" reference library — a standard STR/SAR
+    red-flag typology, searchable by code or keyword, for picking a
+    recognised reason instead of writing one from scratch each time."""
+    return jsonify({"source": reasons.source(), "reasons": reasons.list_reasons(request.args.get("q"))})
+
+
 @app.post("/api/goaml.xml")
 def api_goaml_xml():
     """A starting-point goAML XML draft for one entity — see goaml.py for the
@@ -291,9 +300,34 @@ def api_goaml_xml():
     name = re.sub(r"[^A-Za-z0-9]+", "_", report["subject"].get("name") or "report").strip("_")
     db.log_activity("goaml_export", report["subject"].get("name", ""))
     return app.response_class(
-        goaml.build_xml(report, reason=body.get("reason", "")),
+        goaml.build_xml(
+            report,
+            reason=body.get("reason", ""),
+            reason_code=body.get("reason_code"),
+            report_type=body.get("report_type") or "STR",
+        ),
         mimetype="application/xml",
         headers={"Content-Disposition": f'attachment; filename="SanctionsPlus_goAML_{name}.xml"'},
+    )
+
+
+@app.post("/api/goaml_match.xml")
+def api_goaml_match_xml():
+    """A goAML draft for a single screening hit from "Screen this name" — a
+    Confirmed or Partial Name Match Report (CNMR/PNMR), separate from the
+    full entity STR/SAR above. See goaml.build_match_xml for the UAE TFS
+    5-day filing note this carries."""
+    body = request.get_json(silent=True) or {}
+    name, match = body.get("name"), body.get("match")
+    if not name or not match:
+        return jsonify({"error": "name and match are required."}), 400
+    report_type = body.get("report_type") if body.get("report_type") in goaml.MATCH_REPORT_TYPES else "PNMR"
+    filename = re.sub(r"[^A-Za-z0-9]+", "_", name).strip("_")
+    db.log_activity(f"goaml_{report_type.lower()}", name)
+    return app.response_class(
+        goaml.build_match_xml(name, match, report_type=report_type),
+        mimetype="application/xml",
+        headers={"Content-Disposition": f'attachment; filename="SanctionsPlus_{report_type}_{filename}.xml"'},
     )
 
 
