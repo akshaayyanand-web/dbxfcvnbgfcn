@@ -30,6 +30,13 @@ const FLAG_LABEL = {
 };
 const flagLabel = (flag) => FLAG_LABEL[flag] || flag.replace(/_/g, ' ');
 
+const MARKING_LABEL = {black_list: 'Black list', grey_list: 'Grey list'};
+// A FATF black/grey list finding gets its own marking, distinct from the
+// generic high/medium severity pill, so "this jurisdiction is on the FATF
+// black list" doesn't read the same as "this entity is sanctioned".
+function findingClass(f) { return f.marking ? `marking-${f.marking}` : f.severity; }
+function findingBadgeText(f) { return f.marking ? MARKING_LABEL[f.marking] : f.severity; }
+
 function escapeHtml(value) {
   return String(value ?? '').replace(/[&<>"']/g,
     (c) => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
@@ -575,8 +582,8 @@ function renderReport(report) {
     ${(report.narrative || []).map((p) => `<p>${escapeHtml(p)}</p>`).join('')}
 
     ${(report.findings || []).length ? `<h3>Findings</h3>${report.findings.map((f) => `
-      <div class="finding ${f.severity}">
-        <div class="t"><span class="sev ${f.severity}">${escapeHtml(f.severity)}</span>${escapeHtml(f.title)}</div>
+      <div class="finding ${findingClass(f)}">
+        <div class="t"><span class="sev ${findingClass(f)}">${escapeHtml(findingBadgeText(f))}</span>${escapeHtml(f.title)}</div>
         <div class="d">${escapeHtml(f.detail)}</div>
       </div>`).join('')}` : ''}
 
@@ -817,8 +824,8 @@ function renderSidebar(payload) {
   const parts = [];
   parts.push(`<div class="section"><h4>Red flags</h4>` + (
     (payload.findings || []).length
-      ? payload.findings.map((f, i) => `<div class="finding ${f.severity}" data-finding="${i}">
-          <div class="t"><span class="sev ${f.severity}">${escapeHtml(f.severity)}</span>${escapeHtml(f.title)}</div>
+      ? payload.findings.map((f, i) => `<div class="finding ${findingClass(f)}" data-finding="${i}">
+          <div class="t"><span class="sev ${findingClass(f)}">${escapeHtml(findingBadgeText(f))}</span>${escapeHtml(f.title)}</div>
           <div class="d">${escapeHtml(f.detail)}</div></div>`).join('')
       : '<p class="empty">Nothing flagged in this subgraph.</p>') + '</div>');
 

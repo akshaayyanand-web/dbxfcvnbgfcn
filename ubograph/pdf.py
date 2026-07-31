@@ -22,6 +22,8 @@ BAND_COLOUR = {
     "red": colors.HexColor("#A5321F"),
     "orange": colors.HexColor("#B07407"),
     "green": colors.HexColor("#4F6B44"),
+    "black_list": colors.HexColor("#111111"),
+    "grey_list": colors.HexColor("#767267"),
 }
 INK = colors.HexColor("#1C1A17")
 MUTED = colors.HexColor("#6B645A")
@@ -132,7 +134,10 @@ def _findings_block(findings: List[dict], styles) -> List:
     flow = []
     severity_band = {"high": "red", "medium": "orange", "low": "green"}
     for finding in findings:
-        band = severity_band.get(finding.get("severity"), "green")
+        # FATF's own black/grey list gets a literal black/grey marking here
+        # too, instead of borrowing the red/orange severity colour that
+        # would read as "this entity is sanctioned".
+        band = finding.get("marking") or severity_band.get(finding.get("severity"), "green")
         row = Table(
             [[
                 "",

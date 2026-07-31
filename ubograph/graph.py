@@ -174,9 +174,19 @@ def detect_fatf_jurisdictions(graph: nx.MultiDiGraph) -> List[dict]:
     that one is a fixed judgement call about disclosure practice, this one reads
     a dated, sourced FATF/UN list — see reference.risk_data_meta() for when it
     was last updated.
+
+    FATF's own two lists get their own marking so a reader can tell "grey
+    list" and "black list" apart at a glance, rather than both just reading as
+    a generic red/orange severity pill: Call for Action is informally the
+    "black list", Increased Monitoring is informally the "grey list". The UN
+    sanctions regime and FATF's (rare) suspended-cooperation status are
+    distinct concepts — real and severe, but not literally either FATF list —
+    so they stay on the plain high-severity styling instead of borrowing a
+    label that isn't accurate for them.
     """
-    high_hits: Dict[str, List[str]] = {}
-    medium_hits: Dict[str, List[str]] = {}
+    black_hits: Dict[str, List[str]] = {}
+    grey_hits: Dict[str, List[str]] = {}
+    other_high_hits: Dict[str, List[str]] = {}
     for node_id, data in graph.nodes(data=True):
         if data.get("type") != COMPANY:
             continue
@@ -186,45 +196,53 @@ def detect_fatf_jurisdictions(graph: nx.MultiDiGraph) -> List[dict]:
             continue
         tag, un_regime = info.get("fatf"), info.get("uaeiec")
         place = info.get("name") or country_label(code) or code
-        if un_regime:
-            high_hits.setdefault(f"{place} (UN Security Council sanctions regime)", []).append(node_id)
-        elif tag == "FATF HRC":
-            high_hits.setdefault(f"{place} (FATF blacklist — Call for Action)", []).append(node_id)
-        elif tag == "FATF Suspended":
-            high_hits.setdefault(f"{place} (FATF-suspended cooperation)", []).append(node_id)
+        if tag == "FATF HRC":
+            black_hits.setdefault(place, []).append(node_id)
         elif tag == "FATF JUIM":
-            medium_hits.setdefault(f"{place} (FATF grey list — Increased Monitoring)", []).append(node_id)
+            grey_hits.setdefault(place, []).append(node_id)
+        elif un_regime:
+            other_high_hits.setdefault(f"{place} (UN Security Council sanctions regime)", []).append(node_id)
+        elif tag == "FATF Suspended":
+            other_high_hits.setdefault(f"{place} (FATF-suspended cooperation)", []).append(node_id)
 
     updated = (risk_data_meta().get("fatf_last_update") or "")[:10]
-    findings = []
-    for hits, severity in ((high_hits, "high"), (medium_hits, "medium")):
-        if not hits:
-            continue
-        nodes = sorted({n for group in hits.values() for n in group})
-        breakdown = "; ".join(
+    updated_note = f" FATF/UN lists as of {updated}." if updated else ""
+
+    def _breakdown(hits: Dict[str, List[str]]) -> str:
+        return "; ".join(
             f"{place}: " + ", ".join(sorted(graph.nodes[n].get("name", n) for n in group))
             for place, group in sorted(hits.items())
         )
-        findings.append(
-            {
-                "kind": "fatf_jurisdiction",
-                "severity": severity,
-                "title": (
-                    f"{len(nodes)} "
-                    + ("entity" if len(nodes) == 1 else "entities")
-                    + " registered in a currently flagged jurisdiction"
-                ),
-                "detail": (
-                    breakdown + ". This flags the registration jurisdiction, not the "
-                    "entity itself — treat it the way a real-estate compliance policy "
-                    "treats a high-risk country: a trigger for enhanced diligence, not "
-                    "a finding on its own."
-                    + (f" FATF/UN lists as of {updated}." if updated else "")
-                ),
-                "nodes": nodes,
-                "edges": [],
-            }
-        )
+
+    findings = []
+    groups = (
+        (black_hits, "high", "black_list", "FATF black list (Call for Action)"),
+        (grey_hits, "medium", "grey_list", "FATF grey list (Increased Monitoring)"),
+        (other_high_hits, "high", None, "a live FATF or UN sanctions-regime listing"),
+    )
+    for hits, severity, marking, list_name in groups:
+        if not hits:
+            continue
+        nodes = sorted({n for group in hits.values() for n in group})
+        finding = {
+            "kind": "fatf_jurisdiction",
+            "severity": severity,
+            "title": (
+                f"{len(nodes)} " + ("entity" if len(nodes) == 1 else "entities")
+                + f" registered under {list_name}"
+            ),
+            "detail": (
+                _breakdown(hits) + ". This flags the registration jurisdiction, not the "
+                "entity itself — treat it the way a real-estate compliance policy "
+                "treats a high-risk country: a trigger for enhanced diligence, not "
+                "a finding on its own." + updated_note
+            ),
+            "nodes": nodes,
+            "edges": [],
+        }
+        if marking:
+            finding["marking"] = marking
+        findings.append(finding)
     return findings
 
 

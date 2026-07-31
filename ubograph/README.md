@@ -179,6 +179,14 @@ FATF's grey list scores medium. Like every other detector here, it flags the
 *registration jurisdiction* for enhanced diligence — it is not a finding against the
 entity itself.
 
+FATF's Call for Action and Increased Monitoring lists get their own **black
+list** / **grey list** marking — a literal black or grey badge, distinct
+from the red/orange severity pill used everywhere else — so a reader can
+tell "this jurisdiction is on FATF's black list" apart from "this entity is
+sanctioned" at a glance instead of both looking like the same red flag. The
+UN sanctions-regime and FATF-suspended-cooperation cases stay on the plain
+severity colour, since neither is literally either FATF list.
+
 **UBO traversal follows ownership edges only.** A director sits in the control
 graph but is not a beneficial owner, and listing a hired director as the UBO is
 precisely the outcome a nominee arrangement is designed to produce.

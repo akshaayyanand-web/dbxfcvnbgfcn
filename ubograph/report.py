@@ -125,6 +125,7 @@ def build_report(payload: dict, node_id: str) -> dict:
             "title": f["title"],
             "detail": f["detail"],
             "kind": f.get("kind"),
+            "marking": f.get("marking"),
         }
         for f in payload.get("findings", [])
         if node_id in (f.get("nodes") or [])

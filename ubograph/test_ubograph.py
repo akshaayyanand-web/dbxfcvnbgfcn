@@ -194,6 +194,37 @@ def test_fatf_jurisdiction_detector():
           not any(f["kind"] == "high_risk_jurisdiction" for f in all_findings))
 
 
+def test_fatf_black_and_grey_list_markings():
+    print("FATF black list / grey list markings")
+    store = EntityStore()
+    # North Korea: FATF Call for Action -> "black list" marking.
+    store.add_node(Node(id="c-black", type=COMPANY, name="Pyongyang Trading Co", jurisdiction="kp"))
+    # Vietnam: FATF Increased Monitoring only -> "grey list" marking.
+    store.add_node(Node(id="c-grey", type=COMPANY, name="Mekong Ventures Ltd", jurisdiction="vn"))
+    # Somalia: UN Security Council regime but no FATF listing at all -> high
+    # severity, no black/grey marking (it isn't literally either FATF list).
+    store.add_node(Node(id="c-un-only", type=COMPANY, name="Mogadishu Traders Ltd", jurisdiction="so"))
+    graph = build_graph(store)
+    findings = [f for f in run_detectors(graph) if f["kind"] == "fatf_jurisdiction"]
+
+    black = next((f for f in findings if f.get("marking") == "black_list"), None)
+    grey = next((f for f in findings if f.get("marking") == "grey_list"), None)
+    un_only = next((f for f in findings if "c-un-only" in f["nodes"]), None)
+
+    check("FATF Call for Action gets a black_list marking", black is not None)
+    check("black_list marking is on the right node and severity high",
+          black and "c-black" in black["nodes"] and black["severity"] == "high")
+    check("'black list' appears in the title text", black and "black list" in black["title"].lower())
+
+    check("FATF Increased Monitoring gets a grey_list marking", grey is not None)
+    check("grey_list marking is on the right node and severity medium",
+          grey and "c-grey" in grey["nodes"] and grey["severity"] == "medium")
+    check("'grey list' appears in the title text", grey and "grey list" in grey["title"].lower())
+
+    check("a UN-regime-only jurisdiction (no FATF listing) is high severity with no marking",
+          un_only and un_only["severity"] == "high" and "marking" not in un_only)
+
+
 def test_client_risk_rating():
     print("client risk rating (client-supplied workbook rubric)")
     check("screening outcome is one of the workbook's own options",
@@ -443,6 +474,7 @@ if __name__ == "__main__":
         test_bands_never_contradict_findings,
         test_place_labels,
         test_fatf_jurisdiction_detector,
+        test_fatf_black_and_grey_list_markings,
         test_client_risk_rating,
         test_screen_name_button,
         test_satellite_view_urls,
