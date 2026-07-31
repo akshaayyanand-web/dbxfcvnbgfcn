@@ -17,7 +17,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Optional
 
-from reference import country_label, country_risk
+from reference import country_label, country_risk, fatf_marking
 
 _DATA = Path(__file__).resolve().parent / "frontend" / "data" / "client_risk_rubric.json"
 
@@ -74,7 +74,12 @@ def _lookup(table: str, label: Optional[str]) -> Optional[float]:
 def _country_row(criterion: str, code: Optional[str]) -> dict:
     info = country_risk(code) if code else {}
     label = info.get("name") or (country_label(code) if code else None)
-    return {"criterion": criterion, "selected": label, "score": info.get("band_score")}
+    return {
+        "criterion": criterion,
+        "selected": label,
+        "score": info.get("band_score"),
+        "marking": fatf_marking(code) if code else None,
+    }
 
 
 def rate(

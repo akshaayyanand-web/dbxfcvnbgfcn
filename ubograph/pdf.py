@@ -192,12 +192,19 @@ def _risk_rating_flow(rating: dict, styles) -> List:
     else:
         flow.append(Paragraph("Incomplete — not every field was selected.", styles["small"]))
 
+    marking_label = {"black_list": "BLACK LIST", "grey_list": "GREY LIST"}
+    marking_colour = {"black_list": "#111111", "grey_list": "#767267"}
     header = ["Criterion", "Selected", "Score", "Weight", "Weighted"]
     data = [[Paragraph(_clean(h), styles["cellhead"]) for h in header]]
     for row in rating["rows"]:
+        selected = _clean(row.get("selected") or "—")
+        marking = row.get("marking")
+        if marking:
+            selected += (f' <font color="{marking_colour[marking]}">'
+                         f'<b>[{marking_label[marking]}]</b></font>')
         data.append([
             Paragraph(_clean(row["criterion"]), styles["cell"]),
-            Paragraph(_clean(row.get("selected") or "—"), styles["cell"]),
+            Paragraph(selected, styles["cell"]),
             Paragraph(_clean(row.get("score") if row.get("score") is not None else "—"), styles["cell"]),
             Paragraph(_clean(row.get("weight") if row.get("weight") is not None else "—"), styles["cell"]),
             Paragraph(_clean(row.get("weighted_score") if row.get("weighted_score") is not None else "—"),

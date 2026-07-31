@@ -408,6 +408,8 @@ function renderRiskAssessmentTab() {
     $('#rr-screening').value = result.outcome;
     const matches = (result.matches || []).map((m) =>
       `<li>${escapeHtml(m.name)}${m.score != null ? ` (${Math.round(m.score * 100)}% match)` : ''}
+        ${m.country ? ` — ${escapeHtml(m.country)}` : ''}
+        ${m.fatf_marking ? `<span class="sev marking-${m.fatf_marking}">${escapeHtml(MARKING_LABEL[m.fatf_marking])}</span>` : ''}
         ${(m.flags || []).map((f) => `<span class="tag-flag ${f}">${escapeHtml(flagLabel(f))}</span>`).join('')}
       </li>`).join('');
     $('#rr-screen-result').innerHTML = `
@@ -475,7 +477,8 @@ function renderRiskAssessmentTab() {
 function renderRiskRating(result) {
   const rows = result.rows.map((r) => `<tr>
       <td>${escapeHtml(r.criterion)}</td>
-      <td>${escapeHtml(r.selected || '—')}</td>
+      <td>${escapeHtml(r.selected || '—')}
+        ${r.marking ? `<span class="sev marking-${r.marking}">${escapeHtml(MARKING_LABEL[r.marking])}</span>` : ''}</td>
       <td class="num">${r.score ?? '—'}</td>
       <td class="num">${r.weight ?? '—'}</td>
       <td class="num">${r.weighted_score ?? '—'}</td>

@@ -8,7 +8,7 @@ import edd
 import geocode
 import goaml
 import risk_rating
-from reference import country_label, jurisdiction_label
+from reference import country_label, fatf_marking, jurisdiction_label
 from report import build_report
 from resolve import EntityStore
 from schema import COMPANY, OWNS, PERSON, POSSIBLY_SAME_AS, Edge, Node, normalise_name
@@ -225,6 +225,14 @@ def test_fatf_black_and_grey_list_markings():
           un_only and un_only["severity"] == "high" and "marking" not in un_only)
 
 
+def test_fatf_marking_helper():
+    print("reference.fatf_marking() — shared black/grey list lookup")
+    check("North Korea (FATF Call for Action) is black_list", fatf_marking("kp") == "black_list")
+    check("Kuwait (FATF Increased Monitoring) is grey_list", fatf_marking("kw") == "grey_list")
+    check("a clean jurisdiction has no marking", fatf_marking("us") is None)
+    check("no code -> no marking", fatf_marking(None) is None)
+
+
 def test_client_risk_rating():
     print("client risk rating (client-supplied workbook rubric)")
     check("screening outcome is one of the workbook's own options",
@@ -246,6 +254,12 @@ def test_client_risk_rating():
     check("matches the workbook's own worked example (score 57)", result["score"] == 57.0)
     check("57 bands as High", result["band"] == "high")
     check("all nine criteria scored", result["complete"] and not result["missing"])
+    check("Kuwait country-of-birth row carries the grey_list marking",
+          result["rows"][1]["marking"] == "grey_list")
+    check("the UAE work-location row has no marking (not FATF-listed)",
+          result["rows"][3]["marking"] is None)
+    check("a non-country row (Screening) has no marking key at all",
+          "marking" not in result["rows"][4])
 
     check("missing fields are reported, not silently zeroed",
           risk_rating.rate(nationality="us")["missing"])
@@ -280,6 +294,11 @@ def test_screen_name_button():
 
     pep = screen_name("Elena Kovacs")
     check("a PEP demo record suggests 'PEP identified'", pep.get("outcome") == "PEP identified")
+
+    check("each match carries a country label (for demo data)",
+          all("country" in m for m in sanctioned.get("matches", [])))
+    check("a demo match from a non-FATF-listed country has no marking",
+          all(m.get("fatf_marking") is None for m in sanctioned.get("matches", [])))
 
 
 def test_satellite_view_urls():

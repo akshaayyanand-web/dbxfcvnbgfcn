@@ -6,6 +6,7 @@ from rapidfuzz import fuzz
 import config
 import risk_rating
 from graph import build_graph, run_detectors, subgraph_json
+from reference import country_label, fatf_marking
 from resolve import EntityStore
 from schema import PERSON, normalise_name
 from sources import adverse_media, demo, opencorporates, opensanctions
@@ -44,14 +45,17 @@ def screen_name(name: str, entity_type: str = "any") -> dict:
             results = opensanctions.match(name=name, entity_type=entity_type, limit=5)
         except opensanctions.OpenSanctionsError as exc:
             return {"error": config.redact(str(exc))}
-        matches = [
-            {
+        matches = []
+        for r in results:
+            props = r.get("properties") or {}
+            country = opensanctions._first(props, "country") or opensanctions._first(props, "nationality")
+            matches.append({
                 "name": (r.get("caption") or name),
                 "score": r.get("score"),
                 "flags": sorted(opensanctions._risk_flags(r)),
-            }
-            for r in results
-        ]
+                "country": country_label(country) if country else None,
+                "fatf_marking": fatf_marking(country) if country else None,
+            })
         demo_mode = False
     else:
         # No live key: fall back to the same synthetic network the rest of the
@@ -60,8 +64,12 @@ def screen_name(name: str, entity_type: str = "any") -> dict:
         demo.load(store)
         roots = _demo_roots(store, name, entity_type)
         matches = [
-            {"name": store.nodes[r].name, "score": None,
-             "flags": sorted(store.nodes[r].risk_flags)}
+            {
+                "name": store.nodes[r].name, "score": None,
+                "flags": sorted(store.nodes[r].risk_flags),
+                "country": country_label(store.nodes[r].country) if store.nodes[r].country else None,
+                "fatf_marking": fatf_marking(store.nodes[r].country) if store.nodes[r].country else None,
+            }
             for r in roots
         ]
         demo_mode = True

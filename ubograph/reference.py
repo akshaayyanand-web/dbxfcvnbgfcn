@@ -71,6 +71,20 @@ def country_risk(code) -> dict:
     return _load_risk().get("countries", {}).get(key, {})
 
 
+def fatf_marking(code):
+    """'black_list' for FATF Call for Action, 'grey_list' for Increased
+    Monitoring, None otherwise. The one place this mapping lives, so the
+    graph detector, the client risk-rating rows, and the "Screen this name"
+    results all agree on what counts as which list.
+    """
+    tag = country_risk(code).get("fatf")
+    if tag == "FATF HRC":
+        return "black_list"
+    if tag == "FATF JUIM":
+        return "grey_list"
+    return None
+
+
 def risk_data_meta() -> dict:
     """Provenance for country_risk(): source description and FATF/UN list update dates."""
     data = _load_risk()
