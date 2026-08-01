@@ -300,6 +300,17 @@ open-web findings from talking past each other:
   be in that database, never gets reported as genuinely not found. Candidates
   scoring below `MATCH_SCORE_THRESHOLD` (env var, default `0.5`) are dropped
   before they can become a root. See `opensanctions._filter_weak_matches`.
+- **Every OpenSanctions result carries its match confidence as a visible
+  note**, not just an internal score thrown away after filtering. A `/match`
+  score reflects how well a record's text fits the query, not whether it's
+  actually the same person — a name-only search can still surface a real,
+  unrelated namesake above the threshold. Each report (and its PDF) shows
+  "Matched the search '...' at N% confidence", flagged as an explicit weak
+  match below 70% (`opensanctions.LOW_CONFIDENCE_MATCH`) — so a shaky result
+  is never presented with the same unqualified confidence as a strong one.
+  Add a birth year, nationality or jurisdiction to the search — the
+  single most effective way to push a true match's score up and a
+  namesake's down.
 - **The open-web findings are folded into the same report**, not left in a
   separate box nobody reads — a report's Findings section carries both the
   structured detector hits and the adverse-media claims together, each

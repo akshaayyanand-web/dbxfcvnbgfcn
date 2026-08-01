@@ -571,6 +571,8 @@ function renderReport(report) {
     <p class="meta">Beneficial ownership &amp; risk report · generated ${escapeHtml(report.generated_at)}
       ${report.demo_mode ? ' · <b>sample data, not a real record</b>' : ''}</p>
     <span class="band-chip ${s.risk_band}">${BAND_LABEL[s.risk_band] || s.risk_band}</span>
+    ${(s.notes || []).length ? `<div class="notes">${s.notes.map((n) =>
+      `<p class="${/weak match/i.test(n) ? 'warn' : 'note'}">${escapeHtml(n)}</p>`).join('')}</div>` : ''}
     <div class="action-groups">
       <div class="action-group">
         <button class="primary" id="download-pdf" type="button">Download PDF</button>

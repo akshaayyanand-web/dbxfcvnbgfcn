@@ -449,6 +449,26 @@ def _filter_weak_matches(results: List[dict], min_score: float = MATCH_SCORE_THR
     return [r for r in results if float(r.get("score") or 0) >= min_score]
 
 
+# Below this, a match is real (cleared MATCH_SCORE_THRESHOLD) but still shaky
+# enough that a human should look at it before trusting the name on screen —
+# a /match score reflects how well a record fits the query text, not whether
+# it is actually the same person, and that gap is exactly what let an
+# unrelated namesake sit unlabelled where a real name should have been.
+LOW_CONFIDENCE_MATCH = 0.7
+
+
+def _note_match_confidence(store: EntityStore, node_id: str, queried_name: str, score: float) -> None:
+    node = store.nodes.get(node_id)
+    if not node:
+        return
+    pct = round(score * 100)
+    note = f'Matched the search "{queried_name}" at {pct}% confidence.'
+    if score < LOW_CONFIDENCE_MATCH:
+        note += " This is a weak match — confirm this is actually the same person or entity before relying on it."
+    if note not in node.notes:
+        node.notes.append(note)
+
+
 def search_and_expand(store: EntityStore, query: dict, expand: int = 2) -> List[str]:
     """Match the query, collapse certain duplicates, then pull the network."""
     results = match(
@@ -484,6 +504,7 @@ def search_and_expand(store: EntityStore, query: dict, expand: int = 2) -> List[
                 node_id = ingest_entity(detailed, store, seen) or node_id
                 candidate["entity"] = detailed
                 node_for_raw[entity["id"]] = node_id
+        _note_match_confidence(store, node_id, query["name"], candidate["score"])
         if node_id not in roots:
             roots.append(node_id)
 

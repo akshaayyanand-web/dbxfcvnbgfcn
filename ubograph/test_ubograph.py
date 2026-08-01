@@ -229,6 +229,31 @@ def test_fatf_black_and_grey_list_markings():
           un_only and un_only["severity"] == "high" and "marking" not in un_only)
 
 
+def test_match_confidence_note():
+    print("opensanctions._note_match_confidence — surfacing how weak a match really is")
+    store = EntityStore()
+    store.add_node(Node(id="os-1", type=PERSON, name="Akbar Ali"))
+
+    opensanctions._note_match_confidence(store, "os-1", "m.a yusuff ali", 0.55)
+    note = store.nodes["os-1"].notes[-1]
+    check("the note names the searched query and a percentage", "m.a yusuff ali" in note and "55%" in note)
+    check("a score below LOW_CONFIDENCE_MATCH gets an explicit weak-match warning",
+          "weak match" in note.lower())
+
+    store2 = EntityStore()
+    store2.add_node(Node(id="os-2", type=PERSON, name="Real Match"))
+    opensanctions._note_match_confidence(store2, "os-2", "real match", 0.95)
+    strong_note = store2.nodes["os-2"].notes[-1]
+    check("a strong match records confidence without the weak-match warning",
+          "95%" in strong_note and "weak match" not in strong_note.lower())
+
+    check("an unknown node id is a no-op, not an error",
+          opensanctions._note_match_confidence(store, "nope", "x", 0.5) is None)
+
+    opensanctions._note_match_confidence(store, "os-1", "m.a yusuff ali", 0.55)
+    check("the same note isn't appended twice", store.nodes["os-1"].notes.count(note) == 1)
+
+
 def test_merge_by_score():
     print("opensanctions._merge_by_score — combining Person + Company /match queries")
     person_results = [{"score": 0.4, "match": {"id": "e1"}}, {"score": 0.9, "match": {"id": "e2"}}]
@@ -688,6 +713,7 @@ if __name__ == "__main__":
         test_fatf_jurisdiction_detector,
         test_fatf_black_and_grey_list_markings,
         test_fatf_marking_helper,
+        test_match_confidence_note,
         test_merge_by_score,
         test_weak_match_filtering,
         test_adverse_media_runs_every_search,

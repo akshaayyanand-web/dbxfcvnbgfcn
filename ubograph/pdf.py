@@ -348,6 +348,11 @@ def render(report: dict, risk_rating: dict = None) -> bytes:
         _band_chip(subject.get("risk_band", "green"), styles["small"]),
         Spacer(1, 6),
         Paragraph(_clean(subject.get("band_reason")), styles["body"]),
+    ]
+    for note in subject.get("notes") or []:
+        colour = "#b45309" if "weak match" in note.lower() else "#666666"
+        flow.append(Paragraph(f'<font color="{colour}">{_clean(note)}</font>', styles["small"]))
+    flow += [
         HRFlowable(width="100%", color=LINE, spaceBefore=4, spaceAfter=2),
 
         Paragraph("Identifying details", styles["h2"]),
