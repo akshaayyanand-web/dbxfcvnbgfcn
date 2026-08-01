@@ -324,9 +324,9 @@ def _identity_conflict(a: dict, b: dict) -> Optional[str]:
     return None
 
 
-def match(
+def _match_schema(
     name: str,
-    entity_type: str = "any",
+    schema: str,
     nationality: Optional[str] = None,
     birth_date: Optional[str] = None,
     reg_number: Optional[str] = None,
@@ -334,11 +334,9 @@ def match(
     scope: str = "default",
     limit: int = 5,
 ) -> List[dict]:
-    """POST /match — the optional fields are what kill namesake false positives."""
-    if not available():
-        return []
-
-    schema = {"person": "Person", "company": "Company"}.get(entity_type, "LegalEntity")
+    """POST /match against one concrete FollowTheMoney schema (Person or
+    Company) — the optional fields are what kill namesake false positives,
+    and only apply once the schema is concrete enough to carry them."""
     properties: Dict[str, List[str]] = {"name": [name]}
     if nationality:
         properties["nationality" if schema == "Person" else "country"] = [nationality]
@@ -369,6 +367,56 @@ def match(
     block = (data.get("responses") or {}).get("q1") or {}
     results = block.get("results") or []
     return [r for r in results if isinstance(r, dict)]
+
+
+def _merge_by_score(*result_lists: List[dict]) -> List[dict]:
+    """Combine several /match result lists, keeping each entity's best score."""
+    best: Dict[str, dict] = {}
+    for results in result_lists:
+        for r in results:
+            entity = r if r.get("schema") else r.get("match") or {}
+            entity_id = entity.get("id")
+            if not entity_id:
+                continue
+            if entity_id not in best or (r.get("score") or 0) > (best[entity_id].get("score") or 0):
+                best[entity_id] = r
+    return sorted(best.values(), key=lambda r: -(r.get("score") or 0))
+
+
+def match(
+    name: str,
+    entity_type: str = "any",
+    nationality: Optional[str] = None,
+    birth_date: Optional[str] = None,
+    reg_number: Optional[str] = None,
+    jurisdiction: Optional[str] = None,
+    scope: str = "default",
+    limit: int = 5,
+) -> List[dict]:
+    """POST /match — the optional fields are what kill namesake false positives.
+
+    When entity_type is "person" or "company", queries that concrete schema
+    directly. When it's unspecified ("any" — the search form's own default),
+    this used to fall back to FollowTheMoney's abstract "LegalEntity" schema,
+    which strips out every person/company-specific identifying property
+    (nationality, birth date, registration number) and leaves a name-only
+    query against the loosest schema OpenSanctions has — exactly the shape of
+    query that returns a same-surname stranger ranked above "not found". So
+    "any" instead queries Person and Company as two separate concrete
+    schemas and merges the results by best score, at the cost of a second API
+    call.
+    """
+    if not available():
+        return []
+
+    if entity_type == "person":
+        return _match_schema(name, "Person", nationality, birth_date, reg_number, jurisdiction, scope, limit)
+    if entity_type == "company":
+        return _match_schema(name, "Company", nationality, birth_date, reg_number, jurisdiction, scope, limit)
+
+    person_results = _match_schema(name, "Person", nationality, birth_date, reg_number, jurisdiction, scope, limit)
+    company_results = _match_schema(name, "Company", nationality, birth_date, reg_number, jurisdiction, scope, limit)
+    return _merge_by_score(person_results, company_results)[:limit]
 
 
 def fetch_entity(entity_id: str, nested: bool = True) -> Optional[dict]:

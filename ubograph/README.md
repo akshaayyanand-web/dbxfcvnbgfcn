@@ -284,6 +284,15 @@ that could catch it. See `sources/adverse_media.py` for the Anthropic/Gemini
 provider split. Two things work together to keep the searched name and the
 open-web findings from talking past each other:
 
+- **Searching with "Any" entity type no longer falls back to a vague schema.**
+  OpenSanctions' `/match` used to query the abstract `LegalEntity` schema
+  whenever the entity type wasn't specified — which strips out every
+  person/company-specific identifying property (nationality, birth date,
+  registration number) and leaves a name-only query against the loosest
+  schema OpenSanctions has, exactly the shape of query that ranks a
+  same-surname stranger above "not found". "Any" now queries `Person` and
+  `Company` as two separate concrete schemas and merges the results by best
+  score instead. See `opensanctions.match`.
 - **Weak OpenSanctions matches are filtered out before they can pose as "the"
   result.** A bare name search scores every same-ish-sounding record; without
   a floor, an unrelated namesake with a low score becomes the reported entity

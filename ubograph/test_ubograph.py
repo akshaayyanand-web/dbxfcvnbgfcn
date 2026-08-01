@@ -229,6 +229,19 @@ def test_fatf_black_and_grey_list_markings():
           un_only and un_only["severity"] == "high" and "marking" not in un_only)
 
 
+def test_merge_by_score():
+    print("opensanctions._merge_by_score — combining Person + Company /match queries")
+    person_results = [{"score": 0.4, "match": {"id": "e1"}}, {"score": 0.9, "match": {"id": "e2"}}]
+    company_results = [{"score": 0.95, "match": {"id": "e1"}}, {"score": 0.1, "match": {"id": "e3"}}]
+    merged = opensanctions._merge_by_score(person_results, company_results)
+    by_id = {r["match"]["id"]: r["score"] for r in merged}
+    check("an entity seen in both lists keeps its best score", by_id["e1"] == 0.95)
+    check("an entity seen in only one list is still present", by_id["e2"] == 0.9 and by_id["e3"] == 0.1)
+    check("results come back sorted best score first",
+          [r["score"] for r in merged] == sorted((r["score"] for r in merged), reverse=True))
+    check("no results in, no results out", opensanctions._merge_by_score([], []) == [])
+
+
 def test_weak_match_filtering():
     print("opensanctions._filter_weak_matches — a weak namesake isn't 'the' result")
     results = [
@@ -675,6 +688,7 @@ if __name__ == "__main__":
         test_fatf_jurisdiction_detector,
         test_fatf_black_and_grey_list_markings,
         test_fatf_marking_helper,
+        test_merge_by_score,
         test_weak_match_filtering,
         test_adverse_media_runs_every_search,
         test_client_risk_rating,
