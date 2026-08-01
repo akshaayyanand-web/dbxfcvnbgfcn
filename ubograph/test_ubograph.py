@@ -6,6 +6,7 @@ from graph import band_reason, build_graph, find_ubos, risk_band, run_detectors
 import config
 import db
 from sources import adverse_media
+from sources import opencorporates
 from sources import opensanctions
 import edd
 import geocode
@@ -311,6 +312,57 @@ def test_adverse_media_runs_every_search():
               calls == [])
     finally:
         adverse_media.available, adverse_media.research = original_available, original_research
+
+
+def test_adverse_media_becomes_its_own_entity():
+    print("an ordinary person/business with web coverage but no structured hit gets a real entry")
+    original = (
+        opensanctions.available, opensanctions.search_and_expand,
+        opencorporates.available, adverse_media.available, adverse_media.research,
+    )
+    try:
+        opensanctions.available = lambda: True
+        opensanctions.search_and_expand = lambda store, query, expand=2: []
+        opencorporates.available = lambda: False
+
+        adverse_media.available = lambda: True
+        adverse_media.research = lambda name, context_bits=None: {
+            "available": True,
+            "summary": "A prominent retail and hospitality businessman, covered in regional business press.",
+            "findings": [{"claim": "Named in a regional business magazine profile.",
+                          "source_title": "Example Business Weekly", "source_url": "https://example.com/profile",
+                          "date": "2023-05-01", "category": "corporate"}],
+            "related_entities": [],
+        }
+        payload = run_search(name="Some Business Person", entity_type="any")
+        check("the search now counts as matched, not 'no match'", payload["matched"] is True)
+        check("a node was actually created for them", len(payload["nodes"]) == 1)
+        node = payload["nodes"][0]
+        check("it's the searched entity, not demo data", node["name"] == "Some Business Person"
+              and payload["demo_mode"] is False)
+        check("it's flagged as the root", node.get("is_root") is True)
+        check("no risk flags are fabricated from unverified web text", node["risk_flags"] == [])
+        check("it bands green — no adverse findings, not 'unscored'", node["risk_band"] == "green")
+
+        root_report = build_report(payload, node["id"])
+        check("the report carries the open-web summary as a note", any(
+            "regional business press" in n for n in root_report["subject"]["notes"]))
+        check("the report is explicit that this is unverified, not a registry hit", any(
+            "unverified" in n.lower() for n in root_report["subject"]["notes"]))
+        check("the media claim still shows up in Findings", any(
+            f.get("kind") == "adverse_media" for f in root_report["findings"]))
+
+        # Nothing credible found at all -> still correctly "no match", not a junk entity.
+        adverse_media.research = lambda name, context_bits=None: {
+            "available": True, "summary": "No reliable open-source information found.",
+            "findings": [], "related_entities": [],
+        }
+        empty_payload = run_search(name="Nobody At All", entity_type="any")
+        check("no web content -> still reported as not found, no entity invented",
+              empty_payload["matched"] is False and not empty_payload["nodes"])
+    finally:
+        (opensanctions.available, opensanctions.search_and_expand,
+         opencorporates.available, adverse_media.available, adverse_media.research) = original
 
 
 def test_fatf_marking_helper():
@@ -717,6 +769,7 @@ if __name__ == "__main__":
         test_merge_by_score,
         test_weak_match_filtering,
         test_adverse_media_runs_every_search,
+        test_adverse_media_becomes_its_own_entity,
         test_client_risk_rating,
         test_screen_name_button,
         test_satellite_view_urls,

@@ -318,9 +318,18 @@ open-web findings from talking past each other:
   "medium" severity so scraped narrative can never outrank a verified
   finding. Only the entity actually searched for gets this treatment
   (`is_root`) — findings never leak onto an unrelated owner or director
-  pulled into the same graph. When nothing structured matches at all, the
-  same open-web panel renders directly on the "no match" screen instead of
-  going nowhere.
+  pulled into the same graph.
+- **An ordinary person or business with no sanctions/PEP/registry hit but
+  real web coverage gets its own entry**, not just a paragraph on a "no
+  match" screen. When the structured sources (live, not demo) find nothing
+  and the open-web search actually turned something up, that becomes a
+  proper node — a Table row, a Graph node, a full report and PDF — sourced
+  entirely from the open web and clearly labelled as such: no risk flags or
+  score are fabricated from unverified narrative (it always bands green),
+  and every note and finding says outright that this isn't a registry hit.
+  Search "Definitely No Web Coverage Of This" and it still correctly comes
+  back "no match" — this only fires when the web search found something
+  real. See `search._add_adverse_media_node`.
 
 Batch screening (`batch_screen`) opts out of this — screening a whole
 portfolio would otherwise turn one API key into hundreds of web-search calls

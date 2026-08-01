@@ -8,7 +8,7 @@ import risk_rating
 from graph import build_graph, run_detectors, subgraph_json
 from reference import country_label, fatf_marking
 from resolve import EntityStore
-from schema import PERSON, normalise_name
+from schema import COMPANY, PERSON, Node, normalise_name
 from sources import adverse_media, demo, opencorporates, opensanctions
 
 DEMO_MATCH_THRESHOLD = 72
@@ -28,6 +28,55 @@ def _demo_roots(store: EntityStore, name: str, entity_type: str) -> List[str]:
             scored.append((score, node_id))
     scored.sort(reverse=True)
     return [node_id for _, node_id in scored[:5]]
+
+
+_NO_MEDIA_FOUND = "no reliable open-source information found"
+
+
+def _media_has_content(media: Optional[dict]) -> bool:
+    """Did adverse-media research actually turn something up, as opposed to
+    running cleanly and finding nothing (or failing outright)?"""
+    if not media or not media.get("available") or media.get("error"):
+        return False
+    if media.get("findings"):
+        return True
+    summary = (media.get("summary") or "").strip().lower()
+    return bool(summary) and _NO_MEDIA_FOUND not in summary
+
+
+def _add_adverse_media_node(store: EntityStore, name: str, entity_type: str, media: dict) -> str:
+    """Ordinary people and businesses with no sanctions/PEP/registry hit still
+    turn up in web search — someone with real media coverage but nothing
+    adverse enough to be in a screening database. Without this, that research
+    had nowhere to live except a side panel on a "no match" screen; this
+    gives it an actual entry, so it gets a Table row, a Graph node and a
+    proper report like anything else found — unmistakably marked as
+    unverified and sourced from the open web, never a structured registry.
+    """
+    node_type = COMPANY if entity_type == "company" else PERSON
+    node_id = f"webonly:{normalise_name(name, node_type)}"
+
+    notes = []
+    if media.get("summary"):
+        notes.append(media["summary"])
+    notes.append(
+        "No match in the sanctions, PEP or company-registry sources checked. This "
+        "entry is built entirely from open-web search results and is unverified — "
+        "nothing here has been confirmed against a primary source."
+    )
+
+    source_urls = []
+    for finding in media.get("findings") or []:
+        url = finding.get("source_url")
+        if url and url not in source_urls:
+            source_urls.append(url)
+
+    store.add_node(Node(
+        id=node_id, type=node_type, name=name,
+        sources={"adverse_media"}, source_ids={f"adverse_media:{node_id}"},
+        source_urls=source_urls, notes=notes,
+    ))
+    return node_id
 
 
 def screen_name(name: str, entity_type: str = "any") -> dict:
@@ -184,6 +233,24 @@ def run_search(
         roots = _demo_roots(store, name, entity_type)
         sources_used.append("demo")
 
+    # Runs on every search, not only when the structured sources found nothing —
+    # a weak or wrong structured match (a namesake, a stale record) shouldn't
+    # silently suppress the one check that could catch it. The cost is a web-search
+    # call on every search rather than only on a miss; report.py folds anything
+    # this finds about the actually-searched name into that entity's own report.
+    media = None
+    if include_adverse_media and adverse_media.available():
+        media = adverse_media.research(name, query)
+
+    # An ordinary person or business with no sanctions/PEP/registry hit isn't
+    # "nothing" if the open web has real coverage of them — give that its own
+    # entry instead of leaving it stranded in the media panel with no Table
+    # row, Graph node or report to open. Only for live sources: demo mode
+    # already has its own synthetic roots.
+    if not roots and not demo_mode and _media_has_content(media):
+        roots = [_add_adverse_media_node(store, name, entity_type, media)]
+        sources_used.append("adverse_media")
+
     graph = build_graph(store)
     findings = run_detectors(graph, roots)
     payload = subgraph_json(graph, roots, hops=hops, findings=findings)
@@ -195,18 +262,9 @@ def run_search(
             "errors": errors,
             "demo_mode": demo_mode,
             "matched": bool(roots),
+            "adverse_media": media,
         }
     )
-
-    # Runs on every search, not only when the structured sources found nothing —
-    # a weak or wrong structured match (a namesake, a stale record) shouldn't
-    # silently suppress the one check that could catch it. The cost is a web-search
-    # call on every search rather than only on a miss; report.py folds anything
-    # this finds about the actually-searched name into that entity's own report.
-    if include_adverse_media and adverse_media.available():
-        payload["adverse_media"] = adverse_media.research(name, query)
-    else:
-        payload["adverse_media"] = None
 
     return payload
 
