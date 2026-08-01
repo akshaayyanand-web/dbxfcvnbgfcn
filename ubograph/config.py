@@ -24,6 +24,12 @@ _load_dotenv()
 OPENSANCTIONS_API_KEY = os.environ.get("OPENSANCTIONS_API_KEY", "").strip()
 OPENCORPORATES_API_TOKEN = os.environ.get("OPENCORPORATES_API_TOKEN", "").strip()
 ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "").strip()
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "").strip()
+GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash").strip()
+
+# Which adverse-media provider to use when more than one key is configured.
+# "auto" (default) prefers Anthropic for backward compatibility, then Gemini.
+ADVERSE_MEDIA_PROVIDER = os.environ.get("ADVERSE_MEDIA_PROVIDER", "auto").strip().lower()
 
 OPENSANCTIONS_BASE_URL = os.environ.get(
     "OPENSANCTIONS_BASE_URL", "https://api.opensanctions.org"
@@ -72,7 +78,7 @@ def redact(text: str) -> str:
     """
     if not text:
         return ""
-    for secret in (OPENCORPORATES_API_TOKEN, OPENSANCTIONS_API_KEY, ANTHROPIC_API_KEY):
+    for secret in (OPENCORPORATES_API_TOKEN, OPENSANCTIONS_API_KEY, ANTHROPIC_API_KEY, GEMINI_API_KEY):
         if secret and len(secret) >= 6:
             text = text.replace(secret, "***redacted***")
     return text
@@ -83,6 +89,6 @@ def status() -> dict:
     return {
         "opensanctions": bool(OPENSANCTIONS_API_KEY),
         "opencorporates": bool(OPENCORPORATES_API_TOKEN),
-        "adverse_media": bool(ANTHROPIC_API_KEY),
+        "adverse_media": bool(ANTHROPIC_API_KEY or GEMINI_API_KEY),
         "demo_mode": not (OPENSANCTIONS_API_KEY or OPENCORPORATES_API_TOKEN),
     }

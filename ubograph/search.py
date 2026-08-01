@@ -266,8 +266,9 @@ def check_sources() -> list:
 
     if not adverse_media.available():
         results.append({"source": "Adverse media", "state": "not configured",
-                        "detail": "ANTHROPIC_API_KEY is empty (optional)"})
+                        "detail": "ANTHROPIC_API_KEY and GEMINI_API_KEY are both empty (optional)"})
     else:
         results.append({"source": "Adverse media", "state": "ok",
-                        "detail": "key present; used only when a search finds nothing"})
+                        "detail": f"{adverse_media.provider()} key present; "
+                                  f"used only when a search finds nothing"})
     return results

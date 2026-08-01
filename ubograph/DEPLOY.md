@@ -34,7 +34,8 @@ paste secrets.
 4. It will prompt for the secrets marked `sync: false`. Fill in:
    - `OPENSANCTIONS_API_KEY`
    - `OPENCORPORATES_API_TOKEN`
-   - `ANTHROPIC_API_KEY` (optional)
+   - `ANTHROPIC_API_KEY` (optional — adverse media)
+   - `GEMINI_API_KEY` (optional — adverse media, alternative to Anthropic)
    - `APP_PASSWORD` — pick something; the username is `sanctionsplus`
 5. Deploy. First build takes a few minutes. You get `https://sanctions-plus.onrender.com`
    (the name is taken from `render.yaml`; adjust it there if it clashes).

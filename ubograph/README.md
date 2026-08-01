@@ -42,7 +42,8 @@ Open `.env` and paste your keys after the `=` signs:
 ```
 OPENSANCTIONS_API_KEY=your-key-here
 OPENCORPORATES_API_TOKEN=your-token-here
-ANTHROPIC_API_KEY=your-key-here     # optional
+ANTHROPIC_API_KEY=your-key-here     # optional — adverse media (see below)
+GEMINI_API_KEY=your-key-here        # optional — adverse media, alternative to Anthropic
 ```
 
 Then restart the server. The header chips tell you which sources are actually live,
@@ -216,7 +217,7 @@ test_ubograph.py     smoke tests
 sources/
   opensanctions.py   /match + nested /entities, FollowTheMoney relationship walker
   opencorporates.py  company search, company detail, officer search
-  adverse_media.py   open-web fallback via the Claude API
+  adverse_media.py   open-web fallback via Claude or Gemini (whichever key is set)
   dossier.py         raw OpenSanctions entity -> structured dossier, and merging
   demo.py            synthetic network + sample dossier for keyless demos
 frontend/index.html  markup: form, tabs, table, report

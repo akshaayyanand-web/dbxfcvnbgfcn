@@ -3,7 +3,9 @@ import sys
 
 import pdf as pdf_renderer
 from graph import band_reason, build_graph, find_ubos, risk_band, run_detectors
+import config
 import db
+from sources import adverse_media
 import edd
 import geocode
 import goaml
@@ -320,6 +322,37 @@ def test_satellite_view_urls():
     # network call isn't exercised here.
 
 
+def test_adverse_media_provider_selection():
+    print("adverse media — Anthropic/Gemini provider selection (no network needed)")
+    original = (adverse_media.ANTHROPIC_API_KEY, adverse_media.GEMINI_API_KEY,
+                config.ADVERSE_MEDIA_PROVIDER)
+    try:
+        adverse_media.ANTHROPIC_API_KEY = ""
+        adverse_media.GEMINI_API_KEY = ""
+        config.ADVERSE_MEDIA_PROVIDER = "auto"
+        check("neither key configured -> not available", not adverse_media.available())
+        check("no provider chosen when nothing is configured", adverse_media.provider() is None)
+
+        adverse_media.GEMINI_API_KEY = "gm-test-key"
+        check("Gemini alone is enough to be available", adverse_media.available())
+        check("Gemini alone is selected as the provider", adverse_media.provider() == "gemini")
+
+        adverse_media.ANTHROPIC_API_KEY = "an-test-key"
+        check("with both keys set, auto prefers Anthropic (backward compatible)",
+              adverse_media.provider() == "anthropic")
+
+        config.ADVERSE_MEDIA_PROVIDER = "gemini"
+        check("ADVERSE_MEDIA_PROVIDER can force Gemini even with both keys set",
+              adverse_media.provider() == "gemini")
+
+        config.ADVERSE_MEDIA_PROVIDER = "anthropic"
+        adverse_media.GEMINI_API_KEY = ""
+        check("forcing a provider whose key is missing falls back to whichever is configured",
+              adverse_media.provider() == "anthropic")
+    finally:
+        adverse_media.ANTHROPIC_API_KEY, adverse_media.GEMINI_API_KEY, config.ADVERSE_MEDIA_PROVIDER = original
+
+
 def test_standalone_risk_rating_pdf():
     print("client risk rating as its own PDF")
     rating = risk_rating.rate(
@@ -560,6 +593,7 @@ if __name__ == "__main__":
         test_client_risk_rating,
         test_screen_name_button,
         test_satellite_view_urls,
+        test_adverse_media_provider_selection,
         test_standalone_risk_rating_pdf,
         test_edd_checklist,
         test_mou_draft,
