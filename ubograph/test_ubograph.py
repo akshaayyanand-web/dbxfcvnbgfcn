@@ -6,6 +6,7 @@ from graph import band_reason, build_graph, find_ubos, risk_band, run_detectors
 import config
 import db
 from sources import adverse_media
+from sources import opensanctions
 import edd
 import geocode
 import goaml
@@ -226,6 +227,52 @@ def test_fatf_black_and_grey_list_markings():
 
     check("a UN-regime-only jurisdiction (no FATF listing) is high severity with no marking",
           un_only and un_only["severity"] == "high" and "marking" not in un_only)
+
+
+def test_weak_match_filtering():
+    print("opensanctions._filter_weak_matches — a weak namesake isn't 'the' result")
+    results = [
+        {"score": 0.95, "match": {"id": "os-1"}},
+        {"score": 0.42, "match": {"id": "os-2"}},
+        {"score": 0.5, "match": {"id": "os-3"}},
+        {"score": None, "match": {"id": "os-4"}},
+    ]
+    kept = opensanctions._filter_weak_matches(results, min_score=0.5)
+    kept_ids = [r["match"]["id"] for r in kept]
+    check("a strong match is kept", "os-1" in kept_ids)
+    check("a weak match below the floor is dropped", "os-2" not in kept_ids)
+    check("a match exactly at the floor is kept (inclusive)", "os-3" in kept_ids)
+    check("a missing score is treated as 0 and dropped", "os-4" not in kept_ids)
+    check("all weak matches filtered out of an all-weak list -> empty, not a fallback pick",
+          opensanctions._filter_weak_matches([{"score": 0.1, "match": {"id": "x"}}], min_score=0.5) == [])
+
+
+def test_adverse_media_runs_every_search():
+    print("adverse media runs on every search now, not only when nothing structured is found")
+    calls = []
+
+    def fake_available():
+        return True
+
+    def fake_research(name, context_bits=None):
+        calls.append(name)
+        return {"available": True, "summary": "", "findings": [], "related_entities": []}
+
+    original_available, original_research = adverse_media.available, adverse_media.research
+    try:
+        adverse_media.available = fake_available
+        adverse_media.research = fake_research
+
+        run_search("Viktor Branko")  # a name that DOES match in demo mode (roots non-empty)
+        check("adverse media still runs even when a structured match was found",
+              "Viktor Branko" in calls)
+
+        calls.clear()
+        batch_screen(["Viktor Branko"])
+        check("batch screening opts out — one API key shouldn't fan out per row",
+              calls == [])
+    finally:
+        adverse_media.available, adverse_media.research = original_available, original_research
 
 
 def test_fatf_marking_helper():
@@ -527,6 +574,44 @@ def test_db_persistence(tmp_path_str="/tmp/claude-0/-home-user-dbxfcvnbgfcn/c1a8
     check("activity log records the action", recent[0]["action"] == "test_action")
 
 
+def test_report_folds_adverse_media_findings():
+    print("report.py folds adverse-media claims into the same Findings list")
+    payload = run_search("falcon capital", hops=4)
+    root_id = next(n["id"] for n in payload["nodes"] if n.get("is_root"))
+    webb = next(n["id"] for n in payload["nodes"] if n["name"] == "Marcus Webb")
+    payload["adverse_media"] = {
+        "available": True,
+        "summary": "Press coverage of a regulatory inquiry.",
+        "findings": [
+            {"claim": "Named in a regulatory inquiry into offshore structuring.",
+             "source_title": "Example Gazette", "source_url": "https://example.com/a",
+             "date": "2024-01-01", "category": "regulatory"},
+            {"claim": "", "source_title": "ignored — blank claim", "category": "other"},
+        ],
+        "related_entities": [],
+    }
+
+    root_report = build_report(payload, root_id)
+    media_findings = [f for f in root_report["findings"] if f.get("kind") == "adverse_media"]
+    check("the root entity's report picks up the adverse-media claim", len(media_findings) == 1)
+    check("severity is capped sensibly by category (regulatory -> medium)",
+          media_findings[0]["severity"] == "medium")
+    check("the finding is unmistakably labelled unverified",
+          "unverified" in media_findings[0]["title"].lower())
+    check("a blank claim is skipped, not turned into an empty finding",
+          not any("ignored" in f["detail"] for f in media_findings))
+
+    other_report = build_report(payload, webb)
+    check("a non-searched entity in the same graph does NOT inherit the search subject's media",
+          not any(f.get("kind") == "adverse_media" for f in other_report["findings"]))
+
+    payload["adverse_media"] = {"available": True, "error": "The model declined this request.",
+                                 "summary": "", "findings": [], "related_entities": []}
+    errored_report = build_report(payload, root_id)
+    check("an errored adverse-media result contributes no findings",
+          not any(f.get("kind") == "adverse_media" for f in errored_report["findings"]))
+
+
 def test_report_and_pdf():
     print("report and PDF")
     payload = run_search("falcon capital", hops=4)
@@ -590,6 +675,8 @@ if __name__ == "__main__":
         test_fatf_jurisdiction_detector,
         test_fatf_black_and_grey_list_markings,
         test_fatf_marking_helper,
+        test_weak_match_filtering,
+        test_adverse_media_runs_every_search,
         test_client_risk_rating,
         test_screen_name_button,
         test_satellite_view_urls,
@@ -602,6 +689,7 @@ if __name__ == "__main__":
         test_goaml_match_report,
         test_batch_screen,
         test_db_persistence,
+        test_report_folds_adverse_media_findings,
         test_report_and_pdf,
         test_identity_matches_surface_in_report,
     ):

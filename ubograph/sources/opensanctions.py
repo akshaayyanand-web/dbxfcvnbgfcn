@@ -11,7 +11,7 @@ from typing import Dict, List, Optional, Tuple
 
 import requests
 
-from config import HTTP_TIMEOUT, OPENSANCTIONS_API_KEY, OPENSANCTIONS_BASE_URL
+from config import HTTP_TIMEOUT, MATCH_SCORE_THRESHOLD, OPENSANCTIONS_API_KEY, OPENSANCTIONS_BASE_URL
 from resolve import EntityStore
 from sources import dossier as dossier_builder
 from schema import (
@@ -388,6 +388,19 @@ def fetch_entity(entity_id: str, nested: bool = True) -> Optional[dict]:
     return response.json()
 
 
+def _filter_weak_matches(results: List[dict], min_score: float = MATCH_SCORE_THRESHOLD) -> List[dict]:
+    """Drop /match candidates scoring below `min_score`.
+
+    A bare name search scores every same-ish-sounding record, however loosely
+    related — without this, an unrelated namesake with a weak score becomes
+    "the" result just because it's the top of a short list, and the real
+    person (who may simply not be in this database) never gets reported as
+    genuinely not found. The searched name still gets a second look via the
+    adverse-media open-web fallback either way.
+    """
+    return [r for r in results if float(r.get("score") or 0) >= min_score]
+
+
 def search_and_expand(store: EntityStore, query: dict, expand: int = 2) -> List[str]:
     """Match the query, collapse certain duplicates, then pull the network."""
     results = match(
@@ -399,6 +412,7 @@ def search_and_expand(store: EntityStore, query: dict, expand: int = 2) -> List[
         jurisdiction=query.get("jurisdiction"),
         scope=query.get("scope") or "default",
     )
+    results = _filter_weak_matches(results)
 
     candidates = []
     for result in results:

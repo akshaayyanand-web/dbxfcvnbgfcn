@@ -276,6 +276,37 @@ has ever been searched for. See `risk_rating.py` for the scoring rule and
 a screening outcome (still editable), and "Download PDF" produces the
 worksheet as its own document — no entity or report required for either.
 
+### Adverse media (open-web research)
+
+Runs on every search now, not only when the structured sources find nothing —
+a weak or wrong structured match shouldn't silently suppress the one check
+that could catch it. See `sources/adverse_media.py` for the Anthropic/Gemini
+provider split. Two things work together to keep the searched name and the
+open-web findings from talking past each other:
+
+- **Weak OpenSanctions matches are filtered out before they can pose as "the"
+  result.** A bare name search scores every same-ish-sounding record; without
+  a floor, an unrelated namesake with a low score becomes the reported entity
+  just by being first in a short list — the actual person, who may simply not
+  be in that database, never gets reported as genuinely not found. Candidates
+  scoring below `MATCH_SCORE_THRESHOLD` (env var, default `0.5`) are dropped
+  before they can become a root. See `opensanctions._filter_weak_matches`.
+- **The open-web findings are folded into the same report**, not left in a
+  separate box nobody reads — a report's Findings section carries both the
+  structured detector hits and the adverse-media claims together, each
+  claim still clearly labelled "Open-web (unverified)" and capped at
+  "medium" severity so scraped narrative can never outrank a verified
+  finding. Only the entity actually searched for gets this treatment
+  (`is_root`) — findings never leak onto an unrelated owner or director
+  pulled into the same graph. When nothing structured matches at all, the
+  same open-web panel renders directly on the "no match" screen instead of
+  going nowhere.
+
+Batch screening (`batch_screen`) opts out of this — screening a whole
+portfolio would otherwise turn one API key into hundreds of web-search calls
+per run. Run a name individually from the Table tab to get the open-web
+check.
+
 ### Satellite view
 
 Opening the report for an address entity (the diamond nodes — a registered

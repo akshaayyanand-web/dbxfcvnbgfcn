@@ -90,14 +90,17 @@ def batch_screen(names: List[str], entity_type: str = "any") -> List[dict]:
     into a full network expansion for every row; open the name individually
     from the Table tab for the full picture. Sequential, not parallel — a
     quota-respecting choice, not a performance one, so a long list will take
-    a while.
+    a while. Adverse media is skipped here even when configured — searching
+    it on every name in a portfolio would turn one API key's quota into
+    hundreds of web-search calls per batch; run a name individually from the
+    Table tab to get that check.
     """
     results = []
     for raw_name in names:
         name = (raw_name or "").strip()
         if not name:
             continue
-        payload = run_search(name=name, entity_type=entity_type, hops=1)
+        payload = run_search(name=name, entity_type=entity_type, hops=1, include_adverse_media=False)
         if payload.get("error"):
             results.append({"name": name, "error": payload["error"]})
             continue
@@ -127,6 +130,7 @@ def run_search(
     jurisdiction: Optional[str] = None,
     scope: str = "default",
     hops: int = 3,
+    include_adverse_media: bool = True,
 ) -> dict:
     name = (name or "").strip()
     if not name:
@@ -194,8 +198,12 @@ def run_search(
         }
     )
 
-    # Only fall back to the open web when the structured sources found nothing.
-    if not roots and adverse_media.available():
+    # Runs on every search, not only when the structured sources found nothing —
+    # a weak or wrong structured match (a namesake, a stale record) shouldn't
+    # silently suppress the one check that could catch it. The cost is a web-search
+    # call on every search rather than only on a miss; report.py folds anything
+    # this finds about the actually-searched name into that entity's own report.
+    if include_adverse_media and adverse_media.available():
         payload["adverse_media"] = adverse_media.research(name, query)
     else:
         payload["adverse_media"] = None

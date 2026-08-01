@@ -13,6 +13,15 @@ from reference import country_label, jurisdiction_label
 from schema import COMPANY, DIRECTS, OWNS, PERSON, POSSIBLY_SAME_AS, SHAREHOLDER_OF
 
 CONTROL_TYPES = {OWNS, SHAREHOLDER_OF, DIRECTS}
+
+# Never let scraped, unattributed web narrative outrank a verified structured
+# finding — capped at "medium" even for a category like "sanctions", and only
+# folded into findings for the actual searched entity (is_root), never for
+# other people or companies incidentally pulled into the same graph.
+_MEDIA_SEVERITY = {
+    "litigation": "medium", "regulatory": "medium", "sanctions": "medium",
+    "corporate": "low", "political": "low", "other": "low",
+}
 ROLE_LABEL = {
     OWNS: "Owner",
     SHAREHOLDER_OF: "Shareholder",
@@ -52,6 +61,31 @@ def _is_past(value: Optional[str]) -> bool:
 
 def _node_index(payload: dict) -> dict:
     return {n["id"]: n for n in payload.get("nodes", [])}
+
+
+def _adverse_media_findings(media: Optional[dict]) -> List[dict]:
+    """Fold open-web claims into the same Findings list as structured detector
+    hits, so a report is one mixed picture rather than a separate side panel
+    nobody reads — each one still unmistakably labelled as unverified."""
+    if not media or not media.get("available") or media.get("error"):
+        return []
+    out = []
+    for f in media.get("findings") or []:
+        claim = (f.get("claim") or "").strip()
+        if not claim:
+            continue
+        source = f.get("source_title") or "unattributed source"
+        detail = f"{claim} — {source}"
+        if f.get("source_url"):
+            detail += f" ({f['source_url']})"
+        out.append({
+            "severity": _MEDIA_SEVERITY.get(f.get("category"), "low"),
+            "title": f"Open-web (unverified): {claim[:120]}",
+            "detail": detail,
+            "kind": "adverse_media",
+            "marking": None,
+        })
+    return out
 
 
 def _describe_share(edge: dict) -> str:
@@ -130,6 +164,8 @@ def build_report(payload: dict, node_id: str) -> dict:
         for f in payload.get("findings", [])
         if node_id in (f.get("nodes") or [])
     ]
+    if subject.get("is_root"):
+        findings += _adverse_media_findings(payload.get("adverse_media"))
 
     # --- ownership route to the searched company ----------------------
     ownership_paths = [

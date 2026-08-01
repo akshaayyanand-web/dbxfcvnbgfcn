@@ -31,6 +31,11 @@ GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash").strip()
 # "auto" (default) prefers Anthropic for backward compatibility, then Gemini.
 ADVERSE_MEDIA_PROVIDER = os.environ.get("ADVERSE_MEDIA_PROVIDER", "auto").strip().lower()
 
+# A /match candidate scoring below this is treated as noise, not a result — an
+# unrelated same-ish-sounding name should never stand in for "we found them".
+# The searched name still surfaces via the adverse-media open-web fallback instead.
+MATCH_SCORE_THRESHOLD = float(os.environ.get("MATCH_SCORE_THRESHOLD", "0.5"))
+
 OPENSANCTIONS_BASE_URL = os.environ.get(
     "OPENSANCTIONS_BASE_URL", "https://api.opensanctions.org"
 ).rstrip("/")

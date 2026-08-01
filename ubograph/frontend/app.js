@@ -173,6 +173,21 @@ function renderEmptyState(payload) {
        registry rather than the common transliteration.</p>`
     : `<h3>No sources configured</h3>
        <p>Add an API key to <code>.env</code> and restart the server to search live data.</p>`;
+
+  const media = payload.adverse_media;
+  if (media && media.available) {
+    banner.innerHTML += `<h3>Open-web research (unverified)</h3>
+      <div class="amber">
+        <p class="warn">Retrieved by web search, not from a registry. Check every claim
+          against its source before use.</p>
+        ${media.error ? `<p>${escapeHtml(media.error)}</p>` : ''}
+        <p>${escapeHtml(media.summary || '')}</p>
+        <ul>${(media.findings || []).map((f) => `<li>${escapeHtml(f.claim || '')}
+          ${f.source_url ? ` <a href="${escapeHtml(f.source_url)}" target="_blank" rel="noopener">${escapeHtml(f.source_title || 'source')}</a>` : ''}
+          ${f.date ? ` <span class="empty">${escapeHtml(f.date)}</span>` : ''}</li>`).join('')
+          || '<li class="empty">Nothing credible surfaced.</li>'}</ul>
+      </div>`;
+  }
 }
 
 /* ------------------------------------------------------------------ *
