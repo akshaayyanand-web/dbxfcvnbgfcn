@@ -1,0 +1,51 @@
+{%- comment -%}
+  "Which one is for me?" comparison modal, populated from `model_info` blocks so merchants can
+  describe any option values (not just Classic/Roller) without touching code.
+  Expects: section
+{%- endcomment -%}
+{%- assign model_blocks = section.blocks | where: 'type', 'model_info' -%}
+{%- if model_blocks.size > 0 -%}
+  <dialog class="plt-modal" data-plt-model-modal aria-labelledby="plt-model-modal-title-{{ section.id }}">
+    <div class="plt-modal__head">
+      <span class="plt-modal__title" id="plt-model-modal-title-{{ section.id }}">{{ section.settings.model_modal_title | default: 'Compare Models' }}</span>
+      <button type="button" class="plt-modal__close" data-plt-model-modal-close aria-label="Close">&times;</button>
+    </div>
+    <div class="plt-modal__grid">
+      {%- for block in model_blocks -%}
+        {%- liquid
+          assign modal_img_url = blank
+          if block.settings.image
+            assign modal_img_url = block.settings.image | image_url: width: 480
+          else
+            case block.settings.title
+              when 'Classic Edition'
+                assign modal_img_url = 'product-lumatra-swatch-classic.png' | asset_url
+              when 'Roller Edition'
+                assign modal_img_url = 'product-lumatra-swatch-roller.png' | asset_url
+            endcase
+          endif
+        -%}
+        <div class="plt-modal__card" {{ block.shopify_attributes }}>
+          {%- if modal_img_url != blank -%}
+            <div class="plt-modal__card-img">
+              <img
+                src="{{ modal_img_url }}"
+                alt="{{ block.settings.title | escape }}"
+                width="480"
+                height="304"
+                loading="lazy"
+              >
+            </div>
+          {%- endif -%}
+          {%- if block.settings.badge != blank -%}
+            <div class="plt-modal__card-badge">{{ block.settings.badge }}</div>
+          {%- else -%}
+            <div class="plt-modal__card-spacer"></div>
+          {%- endif -%}
+          <div class="plt-modal__card-title">{{ block.settings.title }}</div>
+          <p class="plt-modal__card-text">{{ block.settings.description }}</p>
+        </div>
+      {%- endfor -%}
+    </div>
+  </dialog>
+{%- endif -%}

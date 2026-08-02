@@ -1,0 +1,47 @@
+{%- comment -%}
+  Shared inline-SVG icon library for sections/product-lumatra.liquid.
+  Usage: {% render 'icon-product-lumatra', icon: 'cart', width: 20, height: 21, stroke: '#2B2320', stroke_width: 1.4 %}
+  Icons not reused across the template are kept inline at their call site instead of added here.
+{%- endcomment -%}
+{%- liquid
+  assign icon = icon | default: 'check'
+  assign width = width | default: 20
+  assign height = height | default: 20
+  assign stroke = stroke | default: '#2B2320'
+  assign stroke_width = stroke_width | default: 1.4
+  assign fill = fill | default: 'none'
+-%}
+{%- case icon -%}
+  {%- when 'menu' -%}
+    <svg width="{{ width }}" height="{{ height }}" viewBox="0 0 24 18" fill="none" aria-hidden="true" focusable="false"><path d="M0 1H24" stroke="{{ stroke }}" stroke-width="1.6"/><path d="M0 9H24" stroke="{{ stroke }}" stroke-width="1.6"/><path d="M0 17H24" stroke="{{ stroke }}" stroke-width="1.6"/></svg>
+
+  {%- when 'account' -%}
+    <svg width="{{ width }}" height="{{ height }}" viewBox="0 0 20 22" fill="none" aria-hidden="true" focusable="false"><path d="M2 6L10 1L18 6V20C18 20.55 17.55 21 17 21H3C2.45 21 2 20.55 2 20V6Z" stroke="{{ stroke }}" stroke-width="1.4"/><path d="M7 10C7 12 8.5 13.5 10 13.5C11.5 13.5 13 12 13 10" stroke="{{ stroke }}" stroke-width="1.4"/></svg>
+
+  {%- when 'cart' -%}
+    <svg width="{{ width }}" height="{{ height }}" viewBox="0 0 20 21" fill="none" aria-hidden="true" focusable="false"><path d="M1 6H19L18 20H2L1 6Z" stroke="{{ stroke }}" stroke-width="1.4"/><path d="M6 6V4.5C6 2.5 7.5 1 10 1C12.5 1 14 2.5 14 4.5V6" stroke="{{ stroke }}" stroke-width="1.4"/></svg>
+
+  {%- when 'plane' -%}
+    <svg width="{{ width }}" height="{{ height }}" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><path d="M2 16L22 8L20 13L2 16Z" stroke="{{ stroke }}" stroke-width="1.5" stroke-linejoin="round"/></svg>
+
+  {%- when 'truck' -%}
+    <svg width="{{ width }}" height="{{ height }}" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><path d="M1 5H15V17H1V5Z" stroke="{{ stroke }}" stroke-width="{{ stroke_width }}"/><path d="M15 9H19L22 12.5V17H15V9Z" stroke="{{ stroke }}" stroke-width="{{ stroke_width }}"/></svg>
+
+  {%- when 'truck-wheels' -%}
+    <svg width="{{ width }}" height="{{ height }}" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><path d="M1 5H15V17H1V5Z" stroke="{{ stroke }}" stroke-width="{{ stroke_width }}"/><path d="M15 9H19L22 12.5V17H15V9Z" stroke="{{ stroke }}" stroke-width="{{ stroke_width }}"/><circle cx="6" cy="19" r="2" stroke="{{ stroke }}" stroke-width="{{ stroke_width }}"/><circle cx="18" cy="19" r="2" stroke="{{ stroke }}" stroke-width="{{ stroke_width }}"/></svg>
+
+  {%- when 'shield' -%}
+    <svg width="{{ width }}" height="{{ height }}" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><path d="M12 2L21 5.5V11C21 16 17.5 20 12 22C6.5 20 3 16 3 11V5.5L12 2Z" stroke="{{ stroke }}" stroke-width="{{ stroke_width }}"/></svg>
+
+  {%- when 'check' -%}
+    <svg width="{{ width }}" height="{{ height }}" viewBox="0 0 10 8" fill="none" aria-hidden="true" focusable="false"><path d="M1 4L3.5 6.5L9 1" stroke="{{ stroke }}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+
+  {%- when 'check-circle' -%}
+    <svg width="{{ width }}" height="{{ height }}" viewBox="0 0 12 10" fill="none" aria-hidden="true" focusable="false"><path d="M1 5L4.5 8.5L11 1" stroke="{{ stroke }}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+
+  {%- when 'close' -%}
+    <svg width="{{ width }}" height="{{ height }}" viewBox="0 0 10 10" fill="none" aria-hidden="true" focusable="false"><path d="M1 1L9 9M9 1L1 9" stroke="{{ stroke }}" stroke-width="1.4" stroke-linecap="round"/></svg>
+
+  {%- when 'info' -%}
+    <span style="display:inline-flex; align-items:center; justify-content:center; width:{{ width }}px; height:{{ height }}px; border-radius:50%; background:{{ stroke }}; color:#fff; font-size:{{ width | times: 0.72 | round }}px; line-height:1; flex-shrink:0;" aria-hidden="true">i</span>
+{%- endcase -%}
