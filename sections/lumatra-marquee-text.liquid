@@ -1,0 +1,27 @@
+{{ 'lumatra.css' | asset_url | stylesheet_tag }}
+{%- liquid
+  assign items = section.settings.items | newline_to_br | strip_newlines | split: '<br />'
+-%}
+<div class="lm-marquee" style="--lm-marquee-duration:{{ section.settings.duration | default: 18 }}s;">
+  <div class="lm-marquee-track">
+    {%- for n in (1..2) -%}
+      {%- for item in items -%}
+        {%- assign trimmed = item | strip -%}
+        {%- if trimmed != blank -%}<span class="lm-marquee-item">{{ trimmed }}</span>{%- endif -%}
+      {%- endfor -%}
+    {%- endfor -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Lumatra: Marquee banner",
+  "settings": [
+    { "type": "textarea", "id": "items", "label": "Items (one per line)", "default": "Up to 60% Off\nOver 100,000+ Sold\nUp to 60% Off\nOver 100,000+ Sold" },
+    { "type": "range", "id": "duration", "label": "Scroll duration (lower = faster)", "min": 8, "max": 40, "step": 1, "default": 18, "unit": "s" }
+  ],
+  "presets": [
+    { "name": "Lumatra: Marquee banner" }
+  ]
+}
+{% endschema %}

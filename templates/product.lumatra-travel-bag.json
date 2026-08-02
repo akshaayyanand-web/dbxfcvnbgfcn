@@ -1,0 +1,1140 @@
+{
+  "sections": {
+    "lumatrastyle": {
+      "type": "lumatrastyle",
+      "settings": {
+        "template_suffix": "lumatra-travel-bag",
+        "color_theme": "cream"
+      }
+    },
+    "main": {
+      "type": "product-information",
+      "blocks": {
+        "disclosures_g9mWze": {
+          "type": "disclosures",
+          "name": "t:names.disclosures",
+          "settings": {
+            "heading": "Disclosures",
+            "heading_preset": "h5",
+            "open_by_default": false,
+            "icon": "caret",
+            "disclosure_heading_preset": "h6",
+            "text_color": "",
+            "dividers": true,
+            "divider_color": "{{ settings.color_palette.color2 }}",
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {}
+        },
+        "media-gallery": {
+          "type": "_product-media-gallery",
+          "static": true,
+          "settings": {
+            "media_presentation": "grid",
+            "media_columns": "two",
+            "image_gap": 4,
+            "large_first_image": false,
+            "icons_style": "none",
+            "slideshow_controls_style": "counter",
+            "slideshow_mobile_controls_style": "dots",
+            "thumbnail_position": "right",
+            "thumbnail_width": 44,
+            "thumbnail_radius": 0,
+            "aspect_ratio": "adapt",
+            "constrain_to_viewport": true,
+            "media_fit": "contain",
+            "media_radius": 0,
+            "extend_media": false,
+            "zoom": true,
+            "video_loop": false,
+            "hide_variants": true,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {}
+        },
+        "product-details": {
+          "type": "_product-details",
+          "static": true,
+          "settings": {
+            "width": "fill",
+            "custom_width": 100,
+            "width_mobile": "fill",
+            "custom_width_mobile": 100,
+            "height": "fit",
+            "details_position": "flex-start",
+            "gap": 28,
+            "sticky_details_desktop": true,
+            "background_media": "none",
+            "background_color": "",
+            "video_position": "cover",
+            "background_image_position": "cover",
+            "border": "none",
+            "border_width": 1,
+            "border_opacity": 100,
+            "border_color": "",
+            "border_radius": 0,
+            "padding-block-start": 24,
+            "padding-block-end": 24,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {
+            "group_icgrde": {
+              "type": "group",
+              "name": "Header",
+              "settings": {
+                "content_direction": "column",
+                "vertical_on_mobile": true,
+                "horizontal_alignment": "flex-start",
+                "vertical_alignment": "center",
+                "align_baseline": false,
+                "horizontal_alignment_flex_direction_column": "flex-start",
+                "vertical_alignment_flex_direction_column": "center",
+                "gap": 12,
+                "width": "fill",
+                "custom_width": 100,
+                "width_mobile": "fill",
+                "custom_width_mobile": 100,
+                "height": "fit",
+                "custom_height": 100,
+                "background_media": "none",
+                "background_color": "",
+                "video_position": "cover",
+                "background_image_position": "cover",
+                "toggle_overlay": false,
+                "overlay_color": "#00000026",
+                "overlay_style": "solid",
+                "gradient_direction": "to top",
+                "border": "none",
+                "border_width": 1,
+                "border_opacity": 100,
+                "border_color": "",
+                "border_radius": 0,
+                "link": "",
+                "open_in_new_tab": false,
+                "placeholder": "",
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {
+                "text_xrnftG": {
+                  "type": "text",
+                  "name": "Product title",
+                  "settings": {
+                    "text": "<h1>{{ closest.product.title }}</h1>",
+                    "width": "100%",
+                    "max_width": "normal",
+                    "alignment": "left",
+                    "type_preset": "h3",
+                    "font": "var(--font-primary--family)",
+                    "font_size": "1rem",
+                    "line_height": "normal",
+                    "letter_spacing": "normal",
+                    "case": "none",
+                    "wrap": "pretty",
+                    "text_color": "",
+                    "background": false,
+                    "background_color": "#00000026",
+                    "corner_radius": 0,
+                    "padding-block-start": 0,
+                    "padding-block-end": 0,
+                    "padding-inline-start": 0,
+                    "padding-inline-end": 0
+                  },
+                  "blocks": {}
+                },
+                "price_tVjtKg": {
+                  "type": "price",
+                  "settings": {
+                    "show_sale_price_first": true,
+                    "show_installments": false,
+                    "show_tax_info": false,
+                    "type_preset": "paragraph",
+                    "width": "100%",
+                    "alignment": "left",
+                    "font": "var(--font-body--family)",
+                    "font_size": "1rem",
+                    "line_height": "normal",
+                    "letter_spacing": "normal",
+                    "case": "none",
+                    "text_color": "",
+                    "padding-block-start": 4,
+                    "padding-block-end": 0,
+                    "padding-inline-start": 0,
+                    "padding-inline-end": 0
+                  },
+                  "blocks": {}
+                }
+              },
+              "block_order": [
+                "text_xrnftG",
+                "price_tVjtKg"
+              ]
+            },
+            "divider_VJhene": {
+              "type": "_divider",
+              "name": "t:names.divider",
+              "settings": {
+                "thickness": 1,
+                "corner_radius": "square",
+                "divider_color": "{{ settings.color_palette.color2 }}",
+                "width_percent": 100,
+                "padding-block-start": 0,
+                "padding-block-end": 0
+              },
+              "blocks": {}
+            },
+            "variant_picker_R3rGDr": {
+              "type": "variant-picker",
+              "settings": {
+                "variant_style": "buttons",
+                "show_swatches": false,
+                "option_label_text_color": "",
+                "variant_style_class": "default",
+                "custom_variant_background": "{{ settings.color_palette.background }}",
+                "custom_variant_text": "{{ settings.color_palette.foreground }}",
+                "custom_variant_border": "{{ settings.color_palette.foreground }}",
+                "selected_variant_style_class": "default",
+                "custom_selected_variant_background": "{{ settings.color_palette.foreground }}",
+                "custom_selected_variant_text": "{{ settings.color_palette.background }}",
+                "custom_selected_variant_border": "{{ settings.color_palette.foreground }}",
+                "alignment": "left",
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            },
+            "buy_buttons_eYQEYi": {
+              "type": "buy-buttons",
+              "settings": {
+                "stacking": true,
+                "text_color": "",
+                "show_pickup_availability": false,
+                "gift_card_form": true,
+                "recipient_button_style": "default",
+                "recipient_button_background": "{{ settings.color_palette.background }}",
+                "recipient_button_text": "{{ settings.color_palette.foreground }}",
+                "recipient_button_border": "{{ settings.color_palette.foreground }}",
+                "selected_recipient_button_style": "default",
+                "selected_recipient_button_background": "{{ settings.color_palette.foreground }}",
+                "selected_recipient_button_text": "{{ settings.color_palette.background }}",
+                "selected_recipient_button_border": "{{ settings.color_palette.foreground }}",
+                "input_style": "default",
+                "input_background_color": "{{ settings.color_palette.background }}",
+                "input_text_color": "{{ settings.color_palette.foreground }}",
+                "input_border_color": "{{ settings.color_palette.foreground }}",
+                "border_width": 1,
+                "border_radius": 0,
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {
+                "quantity": {
+                  "type": "quantity",
+                  "static": true,
+                  "settings": {
+                    "input_style": "default",
+                    "input_background_color": "{{ settings.color_palette.background }}",
+                    "input_text_color": "{{ settings.color_palette.foreground }}",
+                    "input_border_color": "{{ settings.color_palette.foreground }}",
+                    "border_width": 1,
+                    "border_radius": 0
+                  },
+                  "blocks": {}
+                },
+                "add-to-cart": {
+                  "type": "add-to-cart",
+                  "static": true,
+                  "settings": {
+                    "style_class": "button",
+                    "custom_button_background": "{{ settings.color_palette.foreground }}",
+                    "custom_button_text": "{{ settings.color_palette.background }}",
+                    "custom_button_border": "{{ settings.color_palette.background }}"
+                  },
+                  "blocks": {}
+                },
+                "accelerated-checkout": {
+                  "type": "accelerated-checkout",
+                  "static": true,
+                  "settings": {},
+                  "blocks": {}
+                }
+              },
+              "block_order": []
+            },
+            "text_aEtTtq": {
+              "type": "text",
+              "name": "Product description",
+              "settings": {
+                "text": "{{ closest.product.description }}",
+                "width": "100%",
+                "max_width": "normal",
+                "alignment": "left",
+                "type_preset": "rte",
+                "font": "var(--font-primary--family)",
+                "font_size": "1rem",
+                "line_height": "normal",
+                "letter_spacing": "normal",
+                "case": "none",
+                "wrap": "pretty",
+                "text_color": "",
+                "background": false,
+                "background_color": "#00000026",
+                "corner_radius": 0,
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            }
+          },
+          "block_order": [
+            "group_icgrde",
+            "divider_VJhene",
+            "variant_picker_R3rGDr",
+            "buy_buttons_eYQEYi",
+            "text_aEtTtq"
+          ]
+        }
+      },
+      "block_order": [
+        "disclosures_g9mWze"
+      ],
+      "settings": {
+        "content_width": "content-center-aligned",
+        "desktop_media_position": "left",
+        "equal_columns": false,
+        "limit_details_width": false,
+        "gap": 48,
+        "enable_sticky_add_to_cart": true,
+        "background_color": "",
+        "padding-block-start": 0,
+        "padding-block-end": 0
+      }
+    },
+    "buybox_extras": {
+      "type": "lumatra-buybox-extras",
+      "blocks": {
+        "badge_1": {
+          "type": "badge",
+          "settings": {
+            "text": "✈ Carry-on approved on 100+ Airlines"
+          }
+        },
+        "badge_2": {
+          "type": "badge",
+          "settings": {
+            "text": "🏆 2026 TOP-RATED TRAVEL BAG"
+          }
+        },
+        "video_1": {
+          "type": "video",
+          "settings": {
+            "fallback_image": "lumatra-video-a",
+            "label": "Why Women Love This Design"
+          }
+        },
+        "video_2": {
+          "type": "video",
+          "settings": {
+            "fallback_image": "lumatra-video-b",
+            "label": "Why This Is My Go-To Travel Bag"
+          }
+        },
+        "video_3": {
+          "type": "video",
+          "settings": {
+            "fallback_image": "lumatra-video-c",
+            "label": "How to Pack Like a Pro"
+          }
+        },
+        "check_1": {
+          "type": "checklist_item",
+          "settings": {
+            "text": "Holds 38+ Items of Clothing, Plus 5 Pairs of Shoes"
+          }
+        },
+        "check_2": {
+          "type": "checklist_item",
+          "settings": {
+            "text": "Switch Between Shoulder & Rolling in Seconds"
+          }
+        },
+        "check_3": {
+          "type": "checklist_item",
+          "settings": {
+            "text": "Wrinkle-Free Packing for Any Outfit"
+          }
+        },
+        "check_4": {
+          "type": "checklist_item",
+          "settings": {
+            "text": "Skip the Check-in Line & save up to $65 on fees"
+          }
+        },
+        "trust_1": {
+          "type": "trust_item",
+          "settings": {
+            "title": "100,000+ Happy Customers",
+            "text": "Join thousands who take their Lumatra on every trip"
+          }
+        },
+        "trust_2": {
+          "type": "trust_item",
+          "settings": {
+            "title": "100-Day Guarantee",
+            "text": "We stand behind every Lumatra bag — if it's not right, we'll make it right."
+          }
+        },
+        "acc_model": {
+          "type": "accordion_item",
+          "settings": {
+            "title": "Which one is for me?",
+            "body": "Classic Edition — Perfect for swift escapes and on-the-go travelers. Lightweight and portable; carry by hand or over the shoulder.\n\nRoller Edition — Detachable handle & wheels come off in seconds: a roller bag when you need it, a duffel when you don't."
+          }
+        },
+        "acc_details": {
+          "type": "accordion_item",
+          "settings": {
+            "title": "Details",
+            "body": "What makes it great:\n• Space for Every Outfit, Plus Extras\n• Wrinkle-Free Packing System\n• Detachable Wheels Option Available\n• Dedicated Shoe Compartment\n• Multi-pockets for Make-up\n• Airline-Approved Carry-On Size\n\nOther details:\nTSA Carry-on Approved Size. Material: Premium, eco-friendly PU leather. Water-Resistant Coating. Weight: 2.2 lbs (1.1 kg). Dimensions: 20\" x 9\" x 12.5\". Non-slip zippers."
+          }
+        },
+        "acc_included": {
+          "type": "accordion_item",
+          "settings": {
+            "title": "What's Included",
+            "body": "For every Lumatra Travel Bag ordered, you'll receive:\n• 1x Padded Shoulder Strap\n• 1x Toiletry/Shoe Bag\n• 1x Travel Guide (82 Pages)\n• 100-Day Return Guarantee\n• 24/7 Customer Support\n\nAll for free!"
+          }
+        },
+        "acc_shipping": {
+          "type": "accordion_item",
+          "settings": {
+            "title": "Shipping | Returns",
+            "body": "All Lumatra orders are fulfilled and shipped anywhere in the United States in 4-6 working days on average.\nWorldwide shipping (other than US) takes 5-10 working days depending on location.\nAll orders come with tracking information once shipped."
+          }
+        }
+      },
+      "block_order": [
+        "badge_1",
+        "badge_2",
+        "video_1",
+        "video_2",
+        "video_3",
+        "check_1",
+        "check_2",
+        "check_3",
+        "check_4",
+        "trust_1",
+        "trust_2",
+        "acc_model",
+        "acc_details",
+        "acc_included",
+        "acc_shipping"
+      ],
+      "settings": {}
+    },
+    "marquee_top": {
+      "type": "lumatra-marquee-text",
+      "settings": {
+        "items": "Up to 60% Off\nOver 100,000+ Sold\nUp to 60% Off\nOver 100,000+ Sold",
+        "duration": 20
+      }
+    },
+    "marquee_sale_1": {
+      "type": "lumatra-marquee-text",
+      "settings": {
+        "items": "Limited-Time Sale\nLow Stock\nLimited-Time Sale\nLow Stock\nLimited-Time Sale\nLow Stock",
+        "duration": 14
+      }
+    },
+    "feature_1": {
+      "type": "lumatra-feature",
+      "settings": {
+        "badge": "NEW",
+        "title": "Wheels when you need them, straps when you don't",
+        "text": "Effortlessly switch from rolling through airports to a comfortable shoulder carry. Travel light or remove the wheels for a streamlined look.",
+        "fallback_image": "lumatra-feat-wheels"
+      }
+    },
+    "feature_2": {
+      "type": "lumatra-feature",
+      "settings": {
+        "title": "Your Clothes, Always Wrinkle-Free (no exaggeration)",
+        "text": "Built-in hanger and wrinkle-resistant lining mean your outfits arrive as fresh as when you packed them—no ironing needed.",
+        "fallback_image": "lumatra-feat-clothes"
+      }
+    },
+    "feature_3": {
+      "type": "lumatra-feature",
+      "settings": {
+        "title": "Fits in Overhead Bins, No Luggage Fees",
+        "text": "Designed to meet airline carry-on requirements, so you can skip check-in lines and save on fees. Travel smarter, without compromises.",
+        "fallback_image": "lumatra-feat-dims"
+      }
+    },
+    "press": {
+      "type": "lumatra-press",
+      "blocks": {
+        "q1": {
+          "type": "quote",
+          "settings": {
+            "publication": "Traveler",
+            "text": "Finally, a bag that gets it! No more picking and choosing or last-minute regrets—Lumatra lets you bring everything you love, effortlessly organized and ready to go."
+          }
+        },
+        "q2": {
+          "type": "quote",
+          "settings": {
+            "publication": "INSIDER",
+            "text": "Perfectly designed for women on the move, the Lumatra Bag combines style and functionality. It's a lifesaver for keeping outfits wrinkle-free and packing stress-free."
+          }
+        },
+        "q3": {
+          "type": "quote",
+          "settings": {
+            "publication": "TRAVEL+LEISURE",
+            "text": "A chic, carry-on solution that lets you skip the check-in line, save on fees, and pack all your essentials without compromise. Lumatra redefines travel simplicity and style."
+          }
+        }
+      },
+      "block_order": [
+        "q1",
+        "q2",
+        "q3"
+      ],
+      "settings": {}
+    },
+    "marquee_sale_2": {
+      "type": "lumatra-marquee-text",
+      "settings": {
+        "items": "Limited-Time Sale\nLow Stock\nLimited-Time Sale\nLow Stock\nLimited-Time Sale\nLow Stock",
+        "duration": 14
+      }
+    },
+    "problem": {
+      "type": "lumatra-problem",
+      "blocks": {
+        "pc1": {
+          "type": "problem_card",
+          "settings": {
+            "pre": "Dragging around a ",
+            "bold": "heavy suitcase",
+            "post": " through crowds? NOT fun."
+          }
+        },
+        "pc2": {
+          "type": "problem_card",
+          "settings": {
+            "pre": "Having to leave your ",
+            "bold": "favorite outfits",
+            "post": " at home? Been there."
+          }
+        },
+        "pc3": {
+          "type": "problem_card",
+          "settings": {
+            "pre": "Nothing says vacation-ready like an ironed dress… except when ",
+            "bold": "you don't have one.",
+            "post": ""
+          }
+        },
+        "pc4": {
+          "type": "problem_card",
+          "settings": {
+            "pre": "Paying extra for ",
+            "bold": "baggage?",
+            "post": " That money could go towards cocktails!"
+          }
+        },
+        "ic1": {
+          "type": "icon_item",
+          "settings": {
+            "title": "Fits 10+ Days of Outfits",
+            "text": "Space for every look you need."
+          }
+        },
+        "ic2": {
+          "type": "icon_item",
+          "settings": {
+            "title": "Multiple Pairs of Shoes",
+            "text": "Pack heels, sneakers, and more."
+          }
+        },
+        "ic3": {
+          "type": "icon_item",
+          "settings": {
+            "title": "Toiletries & Essentials",
+            "text": "Organized and easy to find."
+          }
+        },
+        "ic4": {
+          "type": "icon_item",
+          "settings": {
+            "title": "Wrinkle-Free Packing",
+            "text": "Outfits stay fresh and ready."
+          }
+        }
+      },
+      "block_order": [
+        "pc1",
+        "pc2",
+        "pc3",
+        "pc4",
+        "ic1",
+        "ic2",
+        "ic3",
+        "ic4"
+      ],
+      "settings": {}
+    },
+    "marquee_sale_3": {
+      "type": "lumatra-marquee-text",
+      "settings": {
+        "items": "Limited-Time Sale\nLow Stock\nLimited-Time Sale\nLow Stock\nLimited-Time Sale\nLow Stock",
+        "duration": 14
+      }
+    },
+    "split_wheels": {
+      "type": "lumatra-split",
+      "settings": {
+        "background": "panel",
+        "heading": "Snap Them On, Roll Smoothly, And Say Goodbye To Heavy Lifting.",
+        "copy": "No more awkward lifting or juggling heavy bags. Snap on the wheels, glide through the airport like it's nothing, and when you're done, just pop them off and tuck them inside.",
+        "cta_label": "Configure Your Bag",
+        "show_trust_row": true,
+        "fallback_image": "lumatra-handle",
+        "image_alt": "Telescopic handle and smooth snap-on wheels",
+        "overlay_label_1_title": "TELESCOPIC HANDLE",
+        "overlay_label_1_text": "Smooth rolling, set to your ideal height.",
+        "overlay_label_2_title": "SMOOTH WHEELS",
+        "overlay_label_2_text": "Snap-On Wheels for Easy Rolling"
+      }
+    },
+    "split_weather": {
+      "type": "lumatra-split",
+      "blocks": {
+        "mf1": {
+          "type": "mini_feature",
+          "settings": {
+            "title": "Weather-Ready",
+            "text": "Water-resistant PU leather protects against spills, rain, and unpredictable travel moments."
+          }
+        },
+        "mf2": {
+          "type": "mini_feature",
+          "settings": {
+            "title": "Built For The Long Haul",
+            "text": "Durable fabric and stitching keep it looking fresh, no matter where you take it."
+          }
+        },
+        "mf3": {
+          "type": "mini_feature",
+          "settings": {
+            "title": "Eco-Friendly & High-Quality",
+            "text": "Stylish, sustainable, and designed to stand the test of time."
+          }
+        }
+      },
+      "block_order": [
+        "mf1",
+        "mf2",
+        "mf3"
+      ],
+      "settings": {
+        "background": "white",
+        "fallback_image": "lumatra-weather-a",
+        "image_alt": "Woman rolling the Lumatra bag in cold weather",
+        "fallback_image_2": "lumatra-weather-b",
+        "image_2_alt": "Close-up of water-resistant Lumatra bag material"
+      }
+    },
+    "split_carryon": {
+      "type": "lumatra-split",
+      "blocks": {
+        "al1": {
+          "type": "airline_logo",
+          "settings": {
+            "name": "spirit",
+            "color": "#ffcc00",
+            "italic": true
+          }
+        },
+        "al2": {
+          "type": "airline_logo",
+          "settings": {
+            "name": "FRONTIER",
+            "color": "#00543c",
+            "italic": false
+          }
+        },
+        "al3": {
+          "type": "airline_logo",
+          "settings": {
+            "name": "UNITED",
+            "color": "#002244",
+            "italic": false
+          }
+        },
+        "al4": {
+          "type": "airline_logo",
+          "settings": {
+            "name": "American Airlines",
+            "color": "#c41230",
+            "italic": false
+          }
+        },
+        "al5": {
+          "type": "airline_logo",
+          "settings": {
+            "name": "DELTA",
+            "color": "#c8102e",
+            "italic": false
+          }
+        },
+        "al6": {
+          "type": "airline_logo",
+          "settings": {
+            "name": "Southwest",
+            "color": "#304cb2",
+            "italic": true
+          }
+        },
+        "sc1": {
+          "type": "stat_card",
+          "settings": {
+            "value": "$0.00",
+            "label": "Skip baggage claim, save time",
+            "style": "dark"
+          }
+        },
+        "sc2": {
+          "type": "stat_card",
+          "settings": {
+            "value": "$650+",
+            "label": "Extra costs, wait times",
+            "style": "light"
+          }
+        }
+      },
+      "block_order": [
+        "al1",
+        "al2",
+        "al3",
+        "al4",
+        "al5",
+        "al6",
+        "sc1",
+        "sc2"
+      ],
+      "settings": {
+        "background": "cream",
+        "heading": "Carry-On Approved—Skip The Check-In Line",
+        "copy": "Designed to meet carry-on requirements for all major airlines, the Lumatra bag lets you breeze through the airport without waiting at baggage claim.",
+        "fee_pill_text": "$ Based on $65 in Check-In fees per trip"
+      }
+    },
+    "lifestyle_marquee": {
+      "type": "lumatra-lifestyle-marquee",
+      "blocks": {
+        "p1": {
+          "type": "photo",
+          "settings": {
+            "fallback_image": "lumatra-life-1"
+          }
+        },
+        "p2": {
+          "type": "photo",
+          "settings": {
+            "fallback_image": "lumatra-life-2"
+          }
+        },
+        "p3": {
+          "type": "photo",
+          "settings": {
+            "fallback_image": "lumatra-life-3"
+          }
+        },
+        "p4": {
+          "type": "photo",
+          "settings": {
+            "fallback_image": "lumatra-life-4"
+          }
+        },
+        "p5": {
+          "type": "photo",
+          "settings": {
+            "fallback_image": "lumatra-life-5"
+          }
+        }
+      },
+      "block_order": [
+        "p1",
+        "p2",
+        "p3",
+        "p4",
+        "p5"
+      ],
+      "settings": {}
+    },
+    "comparison": {
+      "type": "lumatra-comparison",
+      "blocks": {
+        "r1": {
+          "type": "row",
+          "settings": {
+            "text": "One-Time Fee, Saves on Fees"
+          }
+        },
+        "r2": {
+          "type": "row",
+          "settings": {
+            "text": "Fits 38 Clothes & 5 Shoes"
+          }
+        },
+        "r3": {
+          "type": "row",
+          "settings": {
+            "text": "Carry-On Approved"
+          }
+        },
+        "r4": {
+          "type": "row",
+          "settings": {
+            "text": "Anti-Wrinkle Design"
+          }
+        },
+        "r5": {
+          "type": "row",
+          "settings": {
+            "text": "Built-in Hanger"
+          }
+        },
+        "r6": {
+          "type": "row",
+          "settings": {
+            "text": "Detachable Wheels & Handle"
+          }
+        },
+        "r7": {
+          "type": "row",
+          "settings": {
+            "text": "Durable & Waterproof"
+          }
+        },
+        "r8": {
+          "type": "row",
+          "settings": {
+            "text": "Organization Compartments"
+          }
+        }
+      },
+      "block_order": [
+        "r1",
+        "r2",
+        "r3",
+        "r4",
+        "r5",
+        "r6",
+        "r7",
+        "r8"
+      ],
+      "settings": {
+        "cta_label": "Configure Your Bag"
+      }
+    },
+    "marquee_new_customer": {
+      "type": "lumatra-marquee-text",
+      "settings": {
+        "items": "New Customer Offer\nEnds Today\nNew Customer Offer\nEnds Today",
+        "duration": 14
+      }
+    },
+    "testimonial": {
+      "type": "lumatra-testimonial",
+      "blocks": {
+        "t1": {
+          "type": "testimonial",
+          "settings": {
+            "name": "Katherine Smith",
+            "quote": "I used to dread dragging my luggage through airports, but with Lumatra, I just snap on the wheels, and it glides effortlessly."
+          }
+        },
+        "t2": {
+          "type": "testimonial",
+          "settings": {
+            "name": "Stephanie Luiz",
+            "quote": "It fits all my essentials, including shoes for every occasion and outfits for a full week! Lumatra has given me back control over my packing."
+          }
+        },
+        "t3": {
+          "type": "testimonial",
+          "settings": {
+            "name": "Hannah Thompson",
+            "quote": "The built-in hanger and anti-wrinkle lining in the Lumatra bag really work. Clothes stay wrinkle-free and ready to be worn!"
+          }
+        }
+      },
+      "block_order": [
+        "t1",
+        "t2",
+        "t3"
+      ],
+      "settings": {}
+    },
+    "faq": {
+      "type": "lumatra-faq",
+      "blocks": {
+        "f1": {
+          "type": "faq",
+          "settings": {
+            "question": "Does it Fit as a Carry-On?",
+            "answer": "Yes! We've specifically designed the bag to fit as a carry-on on all airlines, including Spirit, United, Frontier, American, Delta, Southwest, Alaska and Hawaiian. Don't see your airline? Email us at support@lumatra.com and we'll confirm within 24 hours."
+          }
+        },
+        "f2": {
+          "type": "faq",
+          "settings": {
+            "question": "How Do Returns Work?",
+            "answer": "We stand behind every Lumatra Travel Bag. If anything's not right, our 100-Day Guarantee has you covered — just reach us and we'll make it right. We respond personally within 24 hours."
+          }
+        },
+        "f3": {
+          "type": "faq",
+          "settings": {
+            "question": "How Much Clothing Can I Pack?",
+            "answer": "You can comfortably pack up to 10 days' worth of everyday clothing, along with 2 to 3 wrinkle-free dresses, ensuring you're prepared for extended stays or varied occasions."
+          }
+        },
+        "f4": {
+          "type": "faq",
+          "settings": {
+            "question": "Is It Waterproof?",
+            "answer": "Yes, it's crafted with a water-resistant PU leather exterior, ensuring your belongings stay dry and protected against rain or accidental spills."
+          }
+        },
+        "f5": {
+          "type": "faq",
+          "settings": {
+            "question": "What Is The Bag Made Of?",
+            "answer": "Our Travel Bags are made out of super high-fiber PU leather. This is a form of vegan leather that is both sustainable and climate friendly."
+          }
+        },
+        "f6": {
+          "type": "faq",
+          "settings": {
+            "question": "Can this Bag Really Save me Money?",
+            "answer": "The average cost of a checked bag for a round-trip flight ranges between $85–125. That means using the Lumatra travel bag (which classifies as a carry-on) essentially pays for itself on your first trip — and the bag is built to last 15-20 years."
+          }
+        }
+      },
+      "block_order": [
+        "f1",
+        "f2",
+        "f3",
+        "f4",
+        "f5",
+        "f6"
+      ],
+      "settings": {}
+    },
+    "promise": {
+      "type": "lumatra-promise",
+      "blocks": {
+        "pr1": {
+          "type": "item",
+          "settings": {
+            "icon": "shipping",
+            "title": "Enjoy Fast Shipping",
+            "text": "Enjoy fast & secure shipping anywhere in U.S."
+          }
+        },
+        "pr2": {
+          "type": "item",
+          "settings": {
+            "icon": "rating",
+            "title": "More than 100,000+ Lumatra Bags Sold",
+            "text": "Trusted by more than 100,000 women and top rated as the must-have travel bag"
+          }
+        },
+        "pr3": {
+          "type": "item",
+          "settings": {
+            "icon": "support",
+            "title": "24/7 Live-Chat Support, just for you.",
+            "text": "Get quick answers from our friendly support team, available 24/7."
+          }
+        },
+        "pr4": {
+          "type": "item",
+          "settings": {
+            "icon": "secure",
+            "title": "SSL Encryption for Safe and Secure Payments",
+            "text": "SSL-secured Shop Pay, Apple Pay, PayPal / Credit Card payments."
+          }
+        }
+      },
+      "block_order": [
+        "pr1",
+        "pr2",
+        "pr3",
+        "pr4"
+      ],
+      "settings": {}
+    },
+    "reviews": {
+      "type": "lumatra-reviews",
+      "blocks": {
+        "rb1": {
+          "type": "rating_bar",
+          "settings": {
+            "stars": "5",
+            "percent": 90,
+            "count": "1019"
+          }
+        },
+        "rb2": {
+          "type": "rating_bar",
+          "settings": {
+            "stars": "4",
+            "percent": 27,
+            "count": "310"
+          }
+        },
+        "rb3": {
+          "type": "rating_bar",
+          "settings": {
+            "stars": "3",
+            "percent": 1,
+            "count": "17"
+          }
+        },
+        "rb4": {
+          "type": "rating_bar",
+          "settings": {
+            "stars": "2",
+            "percent": 0,
+            "count": "0"
+          }
+        },
+        "rb5": {
+          "type": "rating_bar",
+          "settings": {
+            "stars": "1",
+            "percent": 0,
+            "count": "0"
+          }
+        },
+        "cr1": {
+          "type": "customer_review",
+          "settings": {
+            "name": "Aria P.",
+            "text": "I have so much room, I feel like I can almost take more with me. Perfect space for long dresses or suits for business."
+          }
+        },
+        "cr2": {
+          "type": "customer_review",
+          "settings": {
+            "name": "Stacy P.",
+            "text": "My husband loves the snow colored one I got for his birthday so much!! He didn't even bring a suitcase when we went to Europe for 2 weeks."
+          }
+        },
+        "cr3": {
+          "type": "customer_review",
+          "settings": {
+            "name": "Mariah C.",
+            "text": "Love it so far! You can definitely feel the premium leather when you touch it – feels the same as some designer bags that I have at home."
+          }
+        },
+        "cr4": {
+          "type": "customer_review",
+          "settings": {
+            "name": "Polly F.",
+            "text": "Went to Italy for a wedding. It fit both my dress and my partners suit in the garment portion and was easy to zip into the bag for my extra clothes."
+          }
+        },
+        "cr5": {
+          "type": "customer_review",
+          "settings": {
+            "name": "Jennifer H.",
+            "text": "Cute garment bag for a trip! My sister gave me this as a birthday present and it can make my clothes wrinkle-free."
+          }
+        },
+        "cr6": {
+          "type": "customer_review",
+          "settings": {
+            "name": "Elizabeth L.",
+            "text": "Perfect for plane rides. Had zero issues getting it through Spirit Airlines as a carry-on bag and I fit everything I needed!"
+          }
+        },
+        "cr7": {
+          "type": "customer_review",
+          "settings": {
+            "name": "Kaci W.",
+            "text": "The color is so beautiful, and it fits all my clothes when I visit my family in Korea!"
+          }
+        },
+        "cr8": {
+          "type": "customer_review",
+          "settings": {
+            "name": "Ivy W.",
+            "text": "Great bag for sleepovers! My daughter loves it. Looks much prettier in person too :)"
+          }
+        }
+      },
+      "block_order": [
+        "rb1",
+        "rb2",
+        "rb3",
+        "rb4",
+        "rb5",
+        "cr1",
+        "cr2",
+        "cr3",
+        "cr4",
+        "cr5",
+        "cr6",
+        "cr7",
+        "cr8"
+      ],
+      "settings": {}
+    }
+  },
+  "order": [
+    "lumatrastyle",
+    "main",
+    "buybox_extras",
+    "marquee_top",
+    "marquee_sale_1",
+    "feature_1",
+    "feature_2",
+    "feature_3",
+    "press",
+    "marquee_sale_2",
+    "problem",
+    "marquee_sale_3",
+    "split_wheels",
+    "split_weather",
+    "split_carryon",
+    "lifestyle_marquee",
+    "comparison",
+    "marquee_new_customer",
+    "testimonial",
+    "faq",
+    "promise",
+    "reviews"
+  ]
+}

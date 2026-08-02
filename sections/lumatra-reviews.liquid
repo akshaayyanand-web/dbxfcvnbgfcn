@@ -1,0 +1,98 @@
+{{ 'lumatra.css' | asset_url | stylesheet_tag }}
+{%- liquid
+  assign bars = section.blocks | where: 'type', 'rating_bar'
+  assign reviews = section.blocks | where: 'type', 'customer_review'
+-%}
+<div id="{{ section.settings.anchor_id | default: 'lumatra-reviews' }}" class="lm-page lm-creambg">
+  <div class="lm-sec">
+    <div class="lm-fx lm-wrap lm-gap24" style="align-items:center;margin-bottom:30px">
+      <div class="lm-tc">
+        <div style="font-family:'Oswald',sans-serif;font-size:40px;font-weight:600">{{ section.settings.average | default: '4.7' }}</div>
+        <div class="lm-stars">★★★★★</div>
+        <div class="lm-fs12" style="color:var(--lm-muted-2);margin-top:4px">{{ section.settings.review_count | default: '1346' }} reviews</div>
+      </div>
+      {%- if bars.size > 0 -%}
+        <div class="lm-col lm-gap8" style="flex:1 1 280px;max-width:420px">
+          {%- for block in bars -%}
+            <div class="lm-histrow" {{ block.shopify_attributes }}>
+              <span class="lm-stars lm-fs12" style="width:26px">{{ block.settings.stars }} ★</span>
+              <div class="lm-bar"><div class="lm-barfill" style="width:{{ block.settings.percent }}%"></div></div>
+              <span style="width:34px;text-align:right">({{ block.settings.count }})</span>
+            </div>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+    </div>
+
+    {%- if reviews.size > 0 -%}
+      <input type="checkbox" id="lm-reviews-toggle-{{ section.id }}" class="lm-review-toggle-cb">
+      <div class="lm-review-grid">
+        {%- for block in reviews -%}
+          <div class="lm-review-card{% if forloop.index > 8 %} lm-review-more{% endif %}" {{ block.shopify_attributes }}>
+            {%- if block.settings.image != blank -%}
+              <img src="{{ block.settings.image | image_url: width: 460 }}" loading="lazy" alt="{{ block.settings.name | escape }} review photo">
+            {%- endif -%}
+            <div class="lm-review-body">
+              <div class="lm-review-name">{{ block.settings.name }}</div>
+              <div class="lm-stars lm-fs12" style="margin-bottom:6px">★★★★★</div>
+              <div class="lm-review-text">{{ block.settings.text }}</div>
+            </div>
+          </div>
+        {%- endfor -%}
+      </div>
+      {%- if reviews.size > 8 -%}
+        <div class="lm-tc lm-review-toggle-wrap" style="margin-top:8px">
+          <label for="lm-reviews-toggle-{{ section.id }}" class="lm-review-toggle-btn">
+            <span class="lm-toggle-more">{{ section.settings.more_label | default: 'See more reviews' }}</span>
+            <span class="lm-toggle-less">{{ section.settings.less_label | default: 'Show fewer reviews' }}</span>
+          </label>
+        </div>
+      {%- endif -%}
+    {%- endif -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Lumatra: Reviews",
+  "settings": [
+    { "type": "text", "id": "anchor_id", "label": "Anchor id (linked to from the buy box rating)", "default": "lumatra-reviews" },
+    { "type": "text", "id": "average", "label": "Average rating", "default": "4.7" },
+    { "type": "text", "id": "review_count", "label": "Review count", "default": "1346" },
+    { "type": "text", "id": "more_label", "label": "\"See more\" label", "default": "See more reviews" },
+    { "type": "text", "id": "less_label", "label": "\"Show fewer\" label", "default": "Show fewer reviews" }
+  ],
+  "blocks": [
+    { "type": "rating_bar", "name": "Rating bar", "settings": [
+      { "type": "text", "id": "stars", "label": "Stars", "default": "5" },
+      { "type": "range", "id": "percent", "label": "Percent filled", "min": 0, "max": 100, "step": 1, "default": 90 },
+      { "type": "text", "id": "count", "label": "Count", "default": "1019" }
+    ]},
+    { "type": "customer_review", "name": "Review", "settings": [
+      { "type": "text", "id": "name", "label": "Name", "default": "Customer" },
+      { "type": "image_picker", "id": "image", "label": "Photo (optional)" },
+      { "type": "textarea", "id": "text", "label": "Review text" }
+    ]}
+  ],
+  "presets": [
+    {
+      "name": "Lumatra: Reviews",
+      "blocks": [
+        { "type": "rating_bar", "settings": { "stars": "5", "percent": 90, "count": "1019" } },
+        { "type": "rating_bar", "settings": { "stars": "4", "percent": 27, "count": "310" } },
+        { "type": "rating_bar", "settings": { "stars": "3", "percent": 1, "count": "17" } },
+        { "type": "rating_bar", "settings": { "stars": "2", "percent": 0, "count": "0" } },
+        { "type": "rating_bar", "settings": { "stars": "1", "percent": 0, "count": "0" } },
+        { "type": "customer_review", "settings": { "name": "Aria P.", "text": "I have so much room, I feel like I can almost take more with me. Perfect space for long dresses or suits for business." } },
+        { "type": "customer_review", "settings": { "name": "Stacy P.", "text": "My husband loves the snow colored one I got for his birthday so much!! He didn't even bring a suitcase when we went to Europe for 2 weeks." } },
+        { "type": "customer_review", "settings": { "name": "Mariah C.", "text": "Love it so far! You can definitely feel the premium leather when you touch it – feels the same as some designer bags that I have at home." } },
+        { "type": "customer_review", "settings": { "name": "Polly F.", "text": "Went to Italy for a wedding. It fit both my dress and my partners suit in the garment portion and was easy to zip into the bag for my extra clothes." } },
+        { "type": "customer_review", "settings": { "name": "Jennifer H.", "text": "Cute garment bag for a trip! My sister gave me this as a birthday present and it can make my clothes wrinkle-free. TSA even asked me where I got it 😂" } },
+        { "type": "customer_review", "settings": { "name": "Elizabeth L.", "text": "Perfect for plane rides. Had zero issues getting it through Spirit Airlines as a carry-on bag and I fit everything I needed!" } },
+        { "type": "customer_review", "settings": { "name": "Kaci W.", "text": "The color is so beautiful, and it fits all my clothes when I visit my family in Korea!" } },
+        { "type": "customer_review", "settings": { "name": "Ivy W.", "text": "Great bag for sleepovers! My daughter loves it. Looks much prettier in person too :)" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

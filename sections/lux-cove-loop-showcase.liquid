@@ -1,0 +1,130 @@
+{{ 'lux-cove.css' | asset_url | stylesheet_tag }}
+
+<!-- Fixed: Strict overrides to force infinite scrolling without pausing on click/hover and setting uniform padding bounds -->
+<style>
+  #shopify-section-{{ section.id }} .lc-sec {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+  }
+  #shopify-section-{{ section.id }} .lc-loop,
+  #shopify-section-{{ section.id }} .lc-looptrack,
+  #shopify-section-{{ section.id }} .lc-loopcard {
+    pointer-events: none !important; /* Disables hover and click state pauses completely */
+  }
+</style>
+
+<!-- Fixed: Switches background instantly based on your dropdown selection using your exact hex codes -->
+<div class="{% if section.settings.bg_color == 'pink' %}lc-pinkbg{% else %}lc-creambg{% endif %}" 
+     data-screen-label="Showcase loop"
+     style="background-color: {% if section.settings.bg_color == 'pink' %}#f6e3e5{% else %}#fbf7f3{% endif %} !important; background: {% if section.settings.bg_color == 'pink' %}#f6e3e5{% else %}#fbf7f3{% endif %} !important;">
+  
+  <div class="lc-page" style="background: transparent !important; background-color: transparent !important;">
+    <section class="lc-sec" style="background: transparent !important; background-color: transparent !important;">
+      <div class="lc-sec-head">
+        <span class="lc-eyebrow">{{ section.settings.eyebrow }}</span>
+        <h2 class="lc-sec-t">{{ section.settings.heading }}</h2>
+        <span class="lc-rule"></span>
+      </div>
+      {%- if section.blocks.size > 0 -%}
+        {%- capture loop_content -%}
+          {%- for block in section.blocks -%}
+            <div class="lc-loopcard" {{ block.shopify_attributes }}>
+              {%- if block.settings.image != blank -%}
+                <img src="{{ block.settings.image | image_url: width: 700 }}" 
+                     width="700"
+                     height="{{ 700 | divided_by: block.settings.image.aspect_ratio | round }}"
+                     loading="lazy"
+                     alt="{{ block.settings.name | default: 'Customer result' | escape_once }}">
+              {%- elsif block.settings.external_image_url != blank -%}
+                <img src="{{ block.settings.external_image_url }}" 
+                     width="700"
+                     height="700"
+                     loading="lazy"
+                     style="object-fit: cover;"
+                     alt="{{ block.settings.name | default: 'Customer result' | escape_once }}">
+              {%- elsif block.settings.fallback_image != 'none' -%}
+                <img src="{{ block.settings.fallback_image | append: '.jpg' | asset_url }}" 
+                     width="700"
+                     height="700"
+                     loading="lazy"
+                     style="object-fit: cover;"
+                     alt="{{ block.settings.name | default: 'Customer result' | escape_once }}">
+              {%- endif -%}
+              <div class="lc-ystars lc-mt12 lc-tc">★★★★★</div>
+              <p class="lc-quote">"{{ block.settings.quote }}"</p>
+              {%- if block.settings.name != blank -%}
+                <div class="lc-fw6 lc-tc lc-mt12">— {{ block.settings.name }}</div>
+              {%- endif -%}
+            </div>
+          {%- endfor -%}
+        {%- endcapture -%}
+        <div class="lc-loop">
+          <!-- Fixed: Tied animation-duration directly to the range settings slider configuration value -->
+          <div class="lc-looptrack" style="animation-duration: {{ section.settings.speed }}s !important;">
+            {{ loop_content }}{{ loop_content }}
+          </div>
+        </div>
+      {%- endif -%}
+    </section>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Lux Cove: Loop showcase",
+  "settings": [
+    { 
+      "type": "select", 
+      "id": "bg_color", 
+      "label": "Choose Background Color", 
+      "options": [
+        { "value": "cream", "label": "Cream (#fbf7f3)" },
+        { "value": "pink", "label": "Pink (#f6e3e5)" }
+      ],
+      "default": "cream" 
+    },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Before & after" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Real Customers, Real Results" },
+    { 
+      "type": "range", 
+      "id": "speed", 
+      "label": "Scroll speed (Lower seconds = faster)", 
+      "min": 5, 
+      "max": 100, 
+      "step": 1, 
+      "default": 35 
+    }
+  ],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Card",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Image" },
+        { "type": "url", "id": "external_image_url", "label": "External image URL (used until you pick one above)" },
+        { "type": "select", "id": "fallback_image", "label": "Placeholder image (used until neither of the above is set)", "options": [
+          { "value": "none", "label": "None" },
+          { "value": "lc-ba1", "label": "Before/after 1" },
+          { "value": "lc-ba2", "label": "Before/after 2" },
+          { "value": "lc-ba3", "label": "Before/after 3" },
+          { "value": "lc-hc1", "label": "Happy customer 1" },
+          { "value": "lc-hc2", "label": "Happy customer 2" },
+          { "value": "lc-hc3", "label": "Happy customer 3" }
+        ], "default": "none" },
+        { "type": "textarea", "id": "quote", "label": "Quote", "default": "This changed my routine completely." },
+        { "type": "text", "id": "name", "label": "Name (optional)" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Lux Cove: Loop showcase",
+      "blocks": [
+        { "type": "item", "settings": { "fallback_image": "lc-ba1", "quote": "After just a week, my eye bags and dark circles have almost disappeared! My skin looks brighter, and people keep telling me I look younger!" } },
+        { "type": "item", "settings": { "fallback_image": "lc-ba2", "quote": "I'm in my 40's and just wanted to feel more like myself again. My skin looks healthier and I've had a few compliments." } },
+        { "type": "item", "settings": { "fallback_image": "lc-ba3", "quote": "I've tried so many creams that never worked, but this device actually delivers. My under-eyes look lifted." } }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,314 @@
+{{ 'lumatra.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'lumatra.js' | asset_url }}" defer="defer"></script>
+
+{%- comment -%}
+  Sits directly under the native "Product information" section. Adds everything the
+  Lumatra design needs that Horizon's own buy box doesn't provide: trust pills, the
+  "Buy 1 / Buy 2 & Save" pricing picker, the why-love-it checklist, trust rows, video
+  showcase, the savings calculator, and a Details/Included/Shipping accordion.
+  Pricing is computed from the real product price/compare-at price — nothing here is
+  a fixed dollar amount. The actual Add to Cart button stays Horizon's native one
+  (in the section above); picking "Buy 2" here just sets its quantity to 2 — see
+  assets/lumatra.js — so the real cart, cart drawer and cart icon stay authoritative.
+{%- endcomment -%}
+
+{%- liquid
+  assign current_variant = product.selected_or_first_available_variant | default: product.variants.first
+  assign bundle_discount = section.settings.bundle_discount_percent | default: 30
+  assign single_price = current_variant.price
+  assign single_compare = current_variant.compare_at_price
+  assign discount_keep = 100 | minus: bundle_discount
+  assign double_price = single_price | times: 2 | times: discount_keep | divided_by: 100
+  assign double_each = double_price | divided_by: 2
+  assign double_compare = single_price | times: 2
+  if single_compare and single_compare > single_price
+    assign double_compare = single_compare | times: 2
+  endif
+
+  assign rating_value = section.settings.default_rating
+  assign rating_count = section.settings.default_rating_count
+  if product.metafields.reviews.rating.value
+    assign rating_value = product.metafields.reviews.rating.value
+  endif
+  if product.metafields.reviews.rating_count.value
+    assign rating_count = product.metafields.reviews.rating_count.value
+  endif
+
+  assign badge_blocks = section.blocks | where: 'type', 'badge'
+  assign checklist_blocks = section.blocks | where: 'type', 'checklist_item'
+  assign trust_blocks = section.blocks | where: 'type', 'trust_item'
+  assign video_blocks = section.blocks | where: 'type', 'video'
+  assign accordion_blocks = section.blocks | where: 'type', 'accordion_item'
+-%}
+
+<div class="lm-page lm-creambg">
+  <div class="lm-container" style="padding-top:8px;padding-bottom:40px;">
+
+    {%- if badge_blocks.size > 0 or section.settings.show_rating -%}
+      <div class="lm-fx lm-wrap lm-gap8" style="margin-bottom:14px">
+        {%- for block in badge_blocks -%}
+          <div class="lm-badge" {{ block.shopify_attributes }}>{{ block.settings.text }}</div>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+    {%- if section.settings.show_rating -%}
+      <div class="lm-fx lm-ac lm-gap8" style="margin-bottom:22px">
+        <span class="lm-stars">★★★★★</span>
+        <a href="#{{ section.settings.reviews_anchor | default: 'lumatra-reviews' }}" style="font-size:13px;color:var(--lm-ink);text-decoration:underline">{{ rating_count }} Reviews</a>
+      </div>
+    {%- endif -%}
+
+    <div class="lm-fx lm-jb" style="align-items:center;margin-bottom:10px">
+      <span class="lm-fs14 lm-fw6">{{ section.settings.bundle_headline | default: 'Summer Sale: BOGO 30% Off + Fast Shipping' }}</span>
+    </div>
+
+    <div data-lm-bundle-wrap>
+      <input class="lm-bundle-input" type="radio" name="lm-bundle-{{ section.id }}" id="lm-bundle-single-{{ section.id }}" value="single" data-lm-bundle-radio>
+      <label for="lm-bundle-single-{{ section.id }}" class="lm-bundle-opt">
+        <span class="lm-fx lm-ac lm-gap12">
+          <span class="lm-bundle-radio" aria-hidden="true"></span>
+          <span>
+            <span class="lm-fs14 lm-fw6" style="display:block">{{ section.settings.bundle_single_title | default: 'Buy 1' }}</span>
+            <span class="lm-fs12" style="display:block;color:var(--lm-muted-1)">{{ section.settings.bundle_single_desc | default: 'The Ultimate Carry-On Bag' }}</span>
+          </span>
+        </span>
+        <span style="text-align:right;white-space:nowrap">
+          <span class="lm-bundle-price">{{ single_price | money }}</span><br>
+          {%- if single_compare > single_price -%}<span class="lm-bundle-compare">{{ single_compare | money }}</span>{%- endif -%}
+        </span>
+      </label>
+
+      <input class="lm-bundle-input" type="radio" name="lm-bundle-{{ section.id }}" id="lm-bundle-double-{{ section.id }}" value="double" data-lm-bundle-radio checked>
+      <div class="lm-bundle-group">
+        <label for="lm-bundle-double-{{ section.id }}" class="lm-bundle-head">
+          <span class="lm-fx lm-ac lm-gap12">
+            <span class="lm-bundle-radio" aria-hidden="true"></span>
+            <span>
+              <span class="lm-fs14 lm-fw6" style="display:block">{{ section.settings.bundle_double_title | default: 'Buy 2 & Save' }} {{ bundle_discount }}%</span>
+              <span class="lm-fs12" style="display:block;color:var(--lm-muted-1)">{{ section.settings.bundle_double_desc | default: 'Match Bags With Your Partner' }}</span>
+            </span>
+          </span>
+          <span style="text-align:right;white-space:nowrap">
+            <span class="lm-bundle-price">{{ double_price | money }}</span><br>
+            <span class="lm-bundle-compare">{{ double_compare | money }}</span>
+          </span>
+        </label>
+        <span class="lm-bundle-flash">{{ section.settings.bundle_flash_label | default: 'FLASH SALE' }} - {{ double_each | money }} EACH</span>
+      </div>
+    </div>
+
+    {%- if section.settings.low_stock_text != blank -%}
+      {%- assign show_low_stock = false -%}
+      {%- if current_variant.inventory_management == 'shopify' and current_variant.inventory_quantity > 0 and current_variant.inventory_quantity <= section.settings.low_stock_threshold -%}
+        {%- assign show_low_stock = true -%}
+      {%- endif -%}
+      {%- if show_low_stock -%}
+        <div class="lm-fx lm-ac lm-jc lm-gap8" style="margin-top:14px">
+          <span class="lm-pulsedot" aria-hidden="true"></span>
+          <span class="lm-fs13 lm-fw6" style="color:var(--lm-maroon)">{{ section.settings.low_stock_text }}</span>
+        </div>
+      {%- endif -%}
+    {%- endif -%}
+
+    {%- if video_blocks.size > 0 -%}
+      <div style="margin-top:32px">
+        <div class="lm-fs12 lm-fw7" style="letter-spacing:.03em;text-transform:uppercase;margin-bottom:12px">{{ section.settings.videos_heading | default: 'See the Lumatra Bag in Action' }}</div>
+        <div class="lm-videos">
+          {%- for block in video_blocks -%}
+            <div class="lm-video-card" {{ block.shopify_attributes }}>
+              <div class="lm-video-thumb">
+                {%- if block.settings.image != blank -%}
+                  <img src="{{ block.settings.image | image_url: width: 260 }}" width="130" height="164" loading="lazy" alt="{{ block.settings.label | escape }}">
+                {%- elsif block.settings.fallback_image != 'none' -%}
+                  <img src="{{ block.settings.fallback_image | append: '.png' | asset_url }}" width="130" height="164" loading="lazy" style="object-fit:cover" alt="{{ block.settings.label | escape }}">
+                {%- endif -%}
+              </div>
+              <div class="lm-video-label">{{ block.settings.label }}</div>
+            </div>
+          {%- endfor -%}
+        </div>
+      </div>
+    {%- endif -%}
+
+    {%- if checklist_blocks.size > 0 -%}
+      <div style="margin-top:26px">
+        <div class="lm-fs12 lm-fw7" style="letter-spacing:.03em;text-transform:uppercase;margin-bottom:12px">{{ section.settings.checklist_heading | default: 'Why Women Love It:' }}</div>
+        <ul class="lm-checklist">
+          {%- for block in checklist_blocks -%}
+            <li class="lm-check-item" {{ block.shopify_attributes }}>
+              <span class="lm-check-icon"><svg width="10" height="8" viewBox="0 0 10 8" fill="none" aria-hidden="true"><path d="M1 4L3.5 6.5L9 1" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              <span class="lm-check-text">{{ block.settings.text }}</span>
+            </li>
+          {%- endfor -%}
+        </ul>
+      </div>
+    {%- endif -%}
+
+    {%- if trust_blocks.size > 0 -%}
+      <div style="border-top:1px solid var(--lm-border-soft);margin-top:24px;padding-top:20px">
+        {%- for block in trust_blocks -%}
+          <div class="lm-trustline" {{ block.shopify_attributes }}>
+            <div>
+              <div class="lm-trustline__title">{{ block.settings.title }}</div>
+              <div class="lm-trustline__text">{{ block.settings.text }}</div>
+            </div>
+          </div>
+        {%- endfor -%}
+        {%- if section.settings.airline_names != blank -%}
+          <details class="lm-airlines-toggle">
+            <summary>{{ section.settings.airlines_cta | default: 'See list of approved airlines' }}</summary>
+            <div class="lm-airlines-panel">
+              {%- assign airline_names = section.settings.airline_names | newline_to_br | strip_newlines | split: '<br />' -%}
+              {%- for name in airline_names -%}
+                {%- assign trimmed = name | strip -%}
+                {%- if trimmed != blank -%}<span class="lm-airline-chip">{{ trimmed }}</span>{%- endif -%}
+              {%- endfor -%}
+            </div>
+          </details>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    {%- if section.settings.savings_text != blank -%}
+      <div class="lm-savings">
+        <div class="lm-savings__title">{{ section.settings.savings_title_pre | default: 'Save' }} <strong>{{ section.settings.savings_title_strong | default: 'BIG' }}</strong> {{ section.settings.savings_title_post | default: 'on Every Trip' }}</div>
+        <div class="lm-fs13" style="color:var(--lm-muted-1);line-height:1.5;margin-bottom:16px">{{ section.settings.savings_text }}</div>
+        <div class="lm-savings__row">
+          <span class="lm-h3" style="font-size:14px">{{ shop.name }}</span>
+          <span class="lm-fs13 lm-fw6">{{ section.settings.savings_us_value | default: '$0 In Luggage Fees' }}</span>
+        </div>
+        <div class="lm-fx lm-jb lm-ac">
+          <span class="lm-savings__pill">{{ section.settings.savings_them_label | default: 'Checked Bag Fees (Per Trip)' }}</span>
+          <span class="lm-fs13 lm-fw6">{{ section.settings.savings_them_value | default: '$65+ Per Trip' }}</span>
+        </div>
+        <div class="lm-savings__foot">{{ section.settings.savings_footnote | default: '*Annual Cost for 5 trips | $325+ saved' }}</div>
+      </div>
+    {%- endif -%}
+
+    {%- if accordion_blocks.size > 0 -%}
+      <div style="margin-top:30px">
+        {%- for block in accordion_blocks -%}
+          <div class="lm-acc" {{ block.shopify_attributes }}>
+            <button type="button" class="lm-acc-h" data-lm-toggle aria-expanded="false">
+              <span>{{ block.settings.title }}</span>
+              <span class="lm-chev" data-lm-chev>⌄</span>
+            </button>
+            <div class="lm-acc-b" data-lm-body hidden>{{ block.settings.body }}</div>
+          </div>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Lumatra: Buy box extras",
+  "settings": [
+    { "type": "checkbox", "id": "show_rating", "label": "Show star rating row", "default": true },
+    { "type": "text", "id": "reviews_anchor", "label": "Reviews section anchor id to link to", "default": "lumatra-reviews" },
+    { "type": "text", "id": "default_rating", "label": "Fallback average rating", "default": "4.7", "info": "Used only if product.metafields.reviews.rating is empty." },
+    { "type": "text", "id": "default_rating_count", "label": "Fallback review count", "default": "1346" },
+    { "type": "header", "content": "Bundle pricing" },
+    { "type": "paragraph", "content": "Single price/compare-at come from the product's real price. Double price is computed from it, not a fixed number." },
+    { "type": "text", "id": "bundle_headline", "label": "Bundle section headline", "default": "Summer Sale: BOGO 30% Off + Fast Shipping" },
+    { "type": "range", "id": "bundle_discount_percent", "label": "\"Buy 2\" discount", "min": 0, "max": 70, "step": 5, "default": 30, "unit": "%" },
+    { "type": "text", "id": "bundle_single_title", "label": "Single option title", "default": "Buy 1" },
+    { "type": "text", "id": "bundle_single_desc", "label": "Single option description", "default": "The Ultimate Carry-On Bag" },
+    { "type": "text", "id": "bundle_double_title", "label": "Double option title (% appended automatically)", "default": "Buy 2 & Save" },
+    { "type": "text", "id": "bundle_double_desc", "label": "Double option description", "default": "Match Bags With Your Partner" },
+    { "type": "text", "id": "bundle_flash_label", "label": "Flash sale badge prefix", "default": "FLASH SALE" },
+    { "type": "header", "content": "Stock" },
+    { "type": "number", "id": "low_stock_threshold", "label": "Low-stock threshold", "default": 10 },
+    { "type": "text", "id": "low_stock_text", "label": "Low-stock warning text (blank to disable)", "default": "Warning: Low Stock Remaining" },
+    { "type": "header", "content": "Video showcase heading" },
+    { "type": "text", "id": "videos_heading", "label": "Heading", "default": "See the Lumatra Bag in Action" },
+    { "type": "header", "content": "Checklist heading" },
+    { "type": "text", "id": "checklist_heading", "label": "Heading", "default": "Why Women Love It:" },
+    { "type": "header", "content": "Airlines" },
+    { "type": "text", "id": "airlines_cta", "label": "Toggle label", "default": "See list of approved airlines" },
+    { "type": "textarea", "id": "airline_names", "label": "Approved airlines (one per line)", "default": "Spirit\nUnited\nFrontier\nAmerican\nDelta\nSouthwest\nAlaska\nJetBlue\nHawaiian\nAllegiant" },
+    { "type": "header", "content": "Savings calculator card" },
+    { "type": "text", "id": "savings_title_pre", "label": "Title (before emphasis)", "default": "Save" },
+    { "type": "text", "id": "savings_title_strong", "label": "Title (emphasized word)", "default": "BIG" },
+    { "type": "text", "id": "savings_title_post", "label": "Title (after emphasis)", "default": "on Every Trip" },
+    { "type": "textarea", "id": "savings_text", "label": "Body copy (blank hides the whole card)", "default": "Why pay extra luggage fees? With the Lumatra Bag, you can skip the check-in line and keep your travel budget intact." },
+    { "type": "text", "id": "savings_us_value", "label": "Your brand's value", "default": "$0 In Luggage Fees" },
+    { "type": "text", "id": "savings_them_label", "label": "Comparison pill label", "default": "Checked Bag Fees (Per Trip)" },
+    { "type": "text", "id": "savings_them_value", "label": "Comparison value", "default": "$65+ Per Trip" },
+    { "type": "text", "id": "savings_footnote", "label": "Footnote", "default": "*Annual Cost for 5 trips | $325+ saved" }
+  ],
+  "blocks": [
+    { "type": "badge", "name": "Trust badge", "settings": [
+      { "type": "text", "id": "text", "label": "Text", "default": "✈ Carry-on approved on 100+ Airlines" }
+    ]},
+    { "type": "video", "name": "Video showcase card", "settings": [
+      { "type": "image_picker", "id": "image", "label": "Thumbnail" },
+      { "type": "select", "id": "fallback_image", "label": "Placeholder (used until an image is picked)", "options": [
+        { "value": "none", "label": "None" },
+        { "value": "lumatra-video-a", "label": "Video thumb A" },
+        { "value": "lumatra-video-b", "label": "Video thumb B" },
+        { "value": "lumatra-video-c", "label": "Video thumb C" }
+      ], "default": "none" },
+      { "type": "text", "id": "label", "label": "Caption", "default": "Why Women Love This Design" }
+    ]},
+    { "type": "checklist_item", "name": "Checklist item", "settings": [
+      { "type": "text", "id": "text", "label": "Text", "default": "Holds 38+ Items of Clothing, Plus 5 Pairs of Shoes" }
+    ]},
+    { "type": "trust_item", "name": "Trust row", "settings": [
+      { "type": "text", "id": "title", "label": "Title", "default": "100,000+ Happy Customers" },
+      { "type": "textarea", "id": "text", "label": "Text", "default": "Join thousands who take their Lumatra on every trip" }
+    ]},
+    { "type": "accordion_item", "name": "Accordion item", "settings": [
+      { "type": "text", "id": "title", "label": "Title", "default": "Details" },
+      { "type": "textarea", "id": "body", "label": "Body (plain text, one line per bullet)", "default": "Details go here." }
+    ]}
+  ],
+  "presets": [
+    {
+      "name": "Lumatra: Buy box extras",
+      "blocks": [
+        { "type": "badge", "settings": { "text": "✈ Carry-on approved on 100+ Airlines" } },
+        { "type": "badge", "settings": { "text": "🏆 2026 TOP-RATED TRAVEL BAG" } },
+        { "type": "video", "settings": { "fallback_image": "lumatra-video-a", "label": "Why Women Love This Design" } },
+        { "type": "video", "settings": { "fallback_image": "lumatra-video-b", "label": "Why This Is My Go-To Travel Bag" } },
+        { "type": "video", "settings": { "fallback_image": "lumatra-video-c", "label": "How to Pack Like a Pro" } },
+        { "type": "checklist_item", "settings": { "text": "Holds 38+ Items of Clothing, Plus 5 Pairs of Shoes" } },
+        { "type": "checklist_item", "settings": { "text": "Switch Between Shoulder & Rolling in Seconds" } },
+        { "type": "checklist_item", "settings": { "text": "Wrinkle-Free Packing for Any Outfit" } },
+        { "type": "checklist_item", "settings": { "text": "Skip the Check-in Line & save up to $65 on fees" } },
+        { "type": "trust_item", "settings": { "title": "100,000+ Happy Customers", "text": "Join thousands who take their Lumatra on every trip" } },
+        { "type": "trust_item", "settings": { "title": "100-Day Guarantee", "text": "We stand behind every Lumatra bag — if it's not right, we'll make it right." } },
+        {
+          "type": "accordion_item",
+          "settings": {
+            "title": "Which one is for me?",
+            "body": "Classic Edition — Perfect for swift escapes and on-the-go travelers. Lightweight and portable; carry by hand or over the shoulder.\n\nRoller Edition — Detachable handle & wheels come off in seconds: a roller bag when you need it, a duffel when you don't."
+          }
+        },
+        {
+          "type": "accordion_item",
+          "settings": {
+            "title": "Details",
+            "body": "What makes it great:\n• Space for Every Outfit, Plus Extras\n• Wrinkle-Free Packing System\n• Detachable Wheels Option Available\n• Dedicated Shoe Compartment\n• Multi-pockets for Make-up\n• Airline-Approved Carry-On Size\n\nOther details:\nTSA Carry-on Approved Size. Material: Premium, eco-friendly PU leather. Water-Resistant Coating. Weight: 2.2 lbs (1.1 kg). Dimensions: 20\" x 9\" x 12.5\". Non-slip zippers."
+          }
+        },
+        {
+          "type": "accordion_item",
+          "settings": {
+            "title": "What's Included",
+            "body": "For every Lumatra Travel Bag ordered, you'll receive:\n• 1x Padded Shoulder Strap\n• 1x Toiletry/Shoe Bag\n• 1x Travel Guide (82 Pages)\n• 100-Day Return Guarantee\n• 24/7 Customer Support\n\nAll for free!"
+          }
+        },
+        {
+          "type": "accordion_item",
+          "settings": {
+            "title": "Shipping | Returns",
+            "body": "All Lumatra orders are fulfilled and shipped anywhere in the United States in 4-6 working days on average.\nWorldwide shipping (other than US) takes 5-10 working days depending on location.\nAll orders come with tracking information once shipped."
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

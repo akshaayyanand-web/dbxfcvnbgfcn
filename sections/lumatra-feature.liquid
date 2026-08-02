@@ -1,0 +1,41 @@
+{{ 'lumatra.css' | asset_url | stylesheet_tag }}
+<div class="lm-page lm-whitebg">
+  <div class="lm-container--md" style="padding:0 20px 28px">
+    {%- if section.settings.badge != blank -%}
+      <span class="lm-feat-badge" style="margin-bottom:10px;display:inline-block">{{ section.settings.badge }}</span>
+    {%- endif -%}
+    {%- if section.settings.image != blank -%}
+      <img src="{{ section.settings.image | image_url: width: 900 }}"
+           width="900" height="{{ 900 | divided_by: section.settings.image.aspect_ratio | round }}"
+           loading="lazy" class="lm-featimg" style="margin-bottom:14px"
+           alt="{{ section.settings.title | escape }}">
+    {%- elsif section.settings.fallback_image != 'none' -%}
+      <img src="{{ section.settings.fallback_image | append: '.png' | asset_url }}"
+           width="900" height="756" loading="lazy" style="object-fit:cover;margin-bottom:14px" class="lm-featimg"
+           alt="{{ section.settings.title | escape }}">
+    {%- endif -%}
+    <div class="lm-h3" style="margin-bottom:8px">{{ section.settings.title }}</div>
+    <p class="lm-bodytxt lm-m0">{{ section.settings.text }}</p>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Lumatra: Feature",
+  "settings": [
+    { "type": "text", "id": "badge", "label": "Badge (optional)" },
+    { "type": "text", "id": "title", "label": "Title", "default": "Feature title" },
+    { "type": "textarea", "id": "text", "label": "Text" },
+    { "type": "image_picker", "id": "image", "label": "Image" },
+    { "type": "select", "id": "fallback_image", "label": "Placeholder image (used until you pick one above)", "options": [
+      { "value": "none", "label": "None" },
+      { "value": "lumatra-feat-wheels", "label": "Wheels" },
+      { "value": "lumatra-feat-clothes", "label": "Clothes" },
+      { "value": "lumatra-feat-dims", "label": "Dimensions" }
+    ], "default": "none" }
+  ],
+  "presets": [
+    { "name": "Lumatra: Feature" }
+  ]
+}
+{% endschema %}

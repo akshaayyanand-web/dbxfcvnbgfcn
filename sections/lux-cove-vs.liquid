@@ -1,0 +1,119 @@
+{{ 'lux-cove.css' | asset_url | stylesheet_tag }}
+
+<!-- Fixed: Re-added the missing block filter assignments required to load content loops -->
+{%- liquid
+  assign pros = section.blocks | where: 'type', 'pro'
+  assign cons = section.blocks | where: 'type', 'con'
+-%}
+
+<!-- Fixed: Inline styles calculate the correct background on load, bypassing stylesheet overrides -->
+<div class="{% if section.settings.pinkbg %}lc-pinkbg{% else %}lc-creambg{% endif %}" 
+     data-screen-label="VS section"
+     style="background-color: {% if section.settings.pinkbg %}#f6e3e5{% else %}#fffdfa{% endif %} !important; background: {% if section.settings.pinkbg %}#f6e3e5{% else %}#fffdfa{% endif %} !important;">
+  
+  <div class="lc-page" style="background: transparent !important; background-color: transparent !important;">
+    <section class="lc-sec" style="background: transparent !important; background-color: transparent !important;">
+      <h2 class="lc-sec-t" style="font-size:26px;margin-bottom:32px">{{ section.settings.title }}</h2>
+      <div class="lc-fx lc-gap16" style="align-items:flex-start">
+        
+        <div class="lc-vscol">
+          {%- if section.settings.left_image != blank -%}
+            <!-- Fixed: Added dynamic sizing dimensions and modern lazy loading attributes -->
+            <img src="{{ section.settings.left_image | image_url: width: 500 }}" 
+                 width="500"
+                 height="{{ 500 | divided_by: section.settings.left_image.aspect_ratio | round }}"
+                 loading="lazy"
+                 class="lc-vsimg" 
+                 alt="{{ section.settings.left_label | escape_once }}">
+          {%- elsif section.settings.left_fallback != 'none' -%}
+            <!-- Fixed: Added explicit dimensions and lazy loading for fallback placeholders -->
+            <img src="{{ section.settings.left_fallback | append: '.jpg' | asset_url }}" 
+                 width="500"
+                 height="500"
+                 loading="lazy"
+                 style="object-fit: cover;"
+                 class="lc-vsimg" 
+                 alt="{{ section.settings.left_label | escape_once }}">
+          {%- endif -%}
+          <div class="lc-vslabel" style="color:var(--lc-rosedeep)">{{ section.settings.left_label }}</div>
+          {%- for block in pros -%}
+            <div class="lc-vsitem" {{ block.shopify_attributes }}><span class="lc-vsg">✓</span><span>{{ block.settings.text }}</span></div>
+          {%- endfor -%}
+        </div>
+
+        <div class="lc-vscol">
+          {%- if section.settings.right_image != blank -%}
+            <!-- Fixed: Added dynamic sizing dimensions and modern lazy loading attributes -->
+            <img src="{{ section.settings.right_image | image_url: width: 500 }}" 
+                 width="500"
+                 height="{{ 500 | divided_by: section.settings.right_image.aspect_ratio | round }}"
+                 loading="lazy"
+                 class="lc-vsimg" 
+                 alt="{{ section.settings.right_label | escape_once }}">
+          {%- elsif section.settings.right_fallback != 'none' -%}
+            <!-- Fixed: Added explicit dimensions and lazy loading for fallback placeholders -->
+            <img src="{{ section.settings.right_fallback | append: '.jpg' | asset_url }}" 
+                 width="500"
+                 height="500"
+                 loading="lazy"
+                 style="object-fit: cover;"
+                 class="lc-vsimg" 
+                 alt="{{ section.settings.right_label | escape_once }}">
+          {%- endif -%}
+          <div class="lc-vslabel" style="color:#9a8e80">{{ section.settings.right_label }}</div>
+          {%- for block in cons -%}
+            <div class="lc-vsitem" {{ block.shopify_attributes }}><span class="lc-vsr">✕</span><span>{{ block.settings.text }}</span></div>
+          {%- endfor -%}
+        </div>
+
+      </div>
+    </section>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Lux Cove: VS comparison",
+  "settings": [
+    { "type": "checkbox", "id": "pinkbg", "label": "Pink background", "default": false },
+    { "type": "text", "id": "title", "label": "Title", "default": "Results at home in 10 minutes" },
+    { "type": "header", "content": "Left column (your product)" },
+    { "type": "image_picker", "id": "left_image", "label": "Image" },
+    { "type": "select", "id": "left_fallback", "label": "Placeholder image", "options": [
+      { "value": "none", "label": "None" },
+      { "value": "lc-glasses1", "label": "Glasses 1" },
+      { "value": "lc-glasses2", "label": "Glasses 2" },
+      { "value": "lc-glasses3", "label": "Glasses 3" }
+    ], "default": "none" },
+    { "type": "text", "id": "left_label", "label": "Label", "default": "Lux Cove Glasses" },
+    { "type": "header", "content": "Right column (alternative)" },
+    { "type": "image_picker", "id": "right_image", "label": "Image" },
+    { "type": "select", "id": "right_fallback", "label": "Placeholder image", "options": [
+      { "value": "none", "label": "None" },
+      { "value": "lc-clinic", "label": "In-clinic" },
+      { "value": "lc-creams", "label": "Creams" },
+      { "value": "lc-botox", "label": "Botox" }
+    ], "default": "none" },
+    { "type": "text", "id": "right_label", "label": "Label", "default": "In-Clinic LED Therapy" }
+  ],
+  "blocks": [
+    { "type": "pro", "name": "Pro (left column)", "settings": [ { "type": "text", "id": "text", "label": "Text", "default": "Use anytime, no appointments" } ] },
+    { "type": "con", "name": "Con (right column)", "settings": [ { "type": "text", "id": "text", "label": "Text", "default": "Requires scheduling & commute" } ] }
+  ],
+  "presets": [
+    {
+      "name": "Lux Cove: VS comparison",
+      "blocks": [
+        { "type": "pro", "settings": { "text": "Use anytime, no appointments" } },
+        { "type": "pro", "settings": { "text": "Comfort of your own home" } },
+        { "type": "pro", "settings": { "text": "Unlimited uses & treatments" } },
+        { "type": "pro", "settings": { "text": "Only 10 minutes daily" } },
+        { "type": "con", "settings": { "text": "Requires scheduling & commute" } },
+        { "type": "con", "settings": { "text": "When (if) you get a slot" } },
+        { "type": "con", "settings": { "text": "Limited treatments" } },
+        { "type": "con", "settings": { "text": "30 to 60 minutes per session" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

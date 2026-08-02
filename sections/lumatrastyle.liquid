@@ -1,0 +1,112 @@
+{%- comment -%}
+  Loads the Lumatra fonts/palette and scopes them to this product's alternate template
+  only (same mechanism as luxcovestyle.liquid). Place this section first in the
+  template. It renders no visible markup of its own — it remaps Horizon's own
+  --color-*/--font-* custom properties so the native product-information section
+  (gallery, variant picker, price, buy buttons, sticky add-to-cart) picks up
+  Lumatra's cream/ink/maroon look automatically, instead of fighting it with
+  hardcoded overrides throughout every lumatra-* section.
+{%- endcomment -%}
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link
+  href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Jost:wght@400;500;600&display=swap"
+  rel="stylesheet"
+>
+{{ 'lumatra.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'lumatra.js' | asset_url }}" defer="defer"></script>
+
+{%- liquid
+  case section.settings.color_theme
+    when 'white'
+      assign c_background = '#ffffff'
+      assign c_foreground = '#1f1f1f'
+      assign c_accent = '#8c2230'
+    when 'custom'
+      assign c_background = section.settings.color_background
+      assign c_foreground = section.settings.color_foreground
+      assign c_accent = section.settings.color_accent
+    else
+      assign c_background = '#faf5ee'
+      assign c_foreground = '#2b2320'
+      assign c_accent = '#8c2230'
+  endcase
+-%}
+
+{% style %}
+  main[data-template="product.{{ section.settings.template_suffix }}"] {
+    --font-body--family: 'Jost', sans-serif;
+    --font-subheading--family: 'Oswald', sans-serif;
+    --font-heading--family: 'Oswald', sans-serif;
+
+    --color-background: {{ c_background }};
+    --color-background-rgb: {{ c_background.red }}, {{ c_background.green }}, {{ c_background.blue }};
+    --color-foreground: {{ c_foreground }};
+    --color-foreground-rgb: {{ c_foreground.red }}, {{ c_foreground.green }}, {{ c_foreground.blue }};
+    --color-foreground-subdued: {{ c_foreground }}99;
+    --color-foreground-muted: {{ c_foreground }}66;
+    --color-border: #e8dfd2;
+    --color-border-rgb: 232, 223, 210;
+
+    --color-primary-button-background: {{ c_foreground }};
+    --color-primary-button-text: {{ c_background }};
+    --color-primary-button-border: {{ c_foreground }};
+    --color-primary-button-hover-background: {{ c_accent }};
+    --color-primary-button-hover-text: #ffffff;
+    --color-primary-button-hover-border: {{ c_accent }};
+    --color-primary-button-focus-outline: {{ c_accent }};
+
+    --color-secondary-button-background: transparent;
+    --color-secondary-button-text: {{ c_foreground }};
+    --color-secondary-button-border: {{ c_foreground }};
+    --color-secondary-button-hover-background: {{ c_foreground }};
+    --color-secondary-button-hover-text: {{ c_background }};
+    --color-secondary-button-hover-border: {{ c_foreground }};
+
+    --color-variant-background: {{ c_background }};
+    --color-variant-border: #e5ded3;
+    --color-variant-text: {{ c_foreground }};
+    --color-variant-hover-background: #f1ede6;
+    --color-variant-hover-border: {{ c_accent }};
+    --color-variant-hover-text: {{ c_foreground }};
+
+    --color-selected-variant-background: {{ c_foreground }};
+    --color-selected-variant-border: {{ c_foreground }};
+    --color-selected-variant-text: {{ c_background }};
+    --color-selected-variant-hover-background: {{ c_accent }};
+    --color-selected-variant-hover-border: {{ c_accent }};
+    --color-selected-variant-hover-text: #ffffff;
+
+    --color-input-background: {{ c_background }};
+    --color-input-border: #e8dfd2;
+    --color-input-text: {{ c_foreground }};
+
+    background: {{ c_background }};
+  }
+{% endstyle %}
+
+{% schema %}
+{
+  "name": "Lumatra: Style override",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Loads the Lumatra fonts/palette and scopes them to this product's alternate template only. Place this section first in the template — before the native Product information section. It renders no visible markup of its own."
+    },
+    { "type": "text", "id": "template_suffix", "label": "Template suffix", "info": "Must match the alternate template filename, e.g. product.lumatra-travel-bag.json → \"lumatra-travel-bag\".", "default": "lumatra-travel-bag" },
+    { "type": "select", "id": "color_theme", "label": "Color theme", "options": [
+      { "value": "cream", "label": "Cream & Maroon (default)" },
+      { "value": "white", "label": "White & Neutral" },
+      { "value": "custom", "label": "Custom (use pickers below)" }
+    ], "default": "cream" },
+    { "type": "header", "content": "Custom colors (only used when theme is \"Custom\")" },
+    { "type": "color", "id": "color_background", "label": "Background", "default": "#faf5ee" },
+    { "type": "color", "id": "color_foreground", "label": "Foreground / buttons", "default": "#2b2320" },
+    { "type": "color", "id": "color_accent", "label": "Accent (hover, stars, price)", "default": "#8c2230" }
+  ],
+  "presets": [
+    { "name": "Lumatra: Style override" }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,59 @@
+{{ 'lumatra.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'lumatra.js' | asset_url }}" defer="defer"></script>
+<div class="lm-page lm-whitebg">
+  <div class="lm-sec">
+    <div class="lm-split">
+      <div class="lm-split-media">
+        {%- if section.settings.image != blank -%}
+          <img src="{{ section.settings.image | image_url: width: 760 }}" width="538" height="{{ 538 | divided_by: section.settings.image.aspect_ratio | round }}" loading="lazy" style="width:100%;border-radius:16px;display:block" alt="{{ section.settings.image_alt | escape }}">
+        {%- else -%}
+          <img src="{{ 'lumatra-faq.png' | asset_url }}" width="538" height="540" loading="lazy" style="width:100%;border-radius:16px;display:block" alt="{{ section.settings.image_alt | escape }}">
+        {%- endif -%}
+      </div>
+      <div class="lm-split-text">
+        <h2 style="font-family:'Oswald',sans-serif;font-size:40px;font-weight:600;margin:0 0 6px">{{ section.settings.heading | default: 'FAQ' }}</h2>
+        <p class="lm-fs14" style="color:var(--lm-muted-2);margin:0 0 20px">{{ section.settings.subheading | default: 'Your questions, our answers.' }}</p>
+        {%- for block in section.blocks -%}
+          <div class="lm-acc" {{ block.shopify_attributes }}>
+            <button type="button" class="lm-acc-h" data-lm-toggle aria-expanded="false">
+              <span>{{ block.settings.question }}</span>
+              <span class="lm-chev" data-lm-chev>⌄</span>
+            </button>
+            <div class="lm-acc-b" data-lm-body hidden>{{ block.settings.answer }}</div>
+          </div>
+        {%- endfor -%}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Lumatra: FAQ",
+  "settings": [
+    { "type": "image_picker", "id": "image", "label": "Image" },
+    { "type": "text", "id": "image_alt", "label": "Image alt text", "default": "Flight attendant carrying the Lumatra Travel Bag" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "FAQ" },
+    { "type": "text", "id": "subheading", "label": "Subheading", "default": "Your questions, our answers." }
+  ],
+  "blocks": [
+    { "type": "faq", "name": "Question", "settings": [
+      { "type": "text", "id": "question", "label": "Question", "default": "Question" },
+      { "type": "textarea", "id": "answer", "label": "Answer" }
+    ]}
+  ],
+  "presets": [
+    {
+      "name": "Lumatra: FAQ",
+      "blocks": [
+        { "type": "faq", "settings": { "question": "Does it Fit as a Carry-On?", "answer": "Yes! We've specifically designed the bag to fit as a carry-on on all airlines, including Spirit, United, Frontier, American, Delta, Southwest, Alaska and Hawaiian. Don't see your airline? Email us at support@lumatra.com and we'll confirm within 24 hours." } },
+        { "type": "faq", "settings": { "question": "How Do Returns Work?", "answer": "We stand behind every Lumatra Travel Bag. If anything's not right, our 100-Day Guarantee has you covered — just reach us and we'll make it right. We respond personally within 24 hours." } },
+        { "type": "faq", "settings": { "question": "How Much Clothing Can I Pack?", "answer": "You can comfortably pack up to 10 days' worth of everyday clothing, along with 2 to 3 wrinkle-free dresses, ensuring you're prepared for extended stays or varied occasions." } },
+        { "type": "faq", "settings": { "question": "Is It Waterproof?", "answer": "Yes, it's crafted with a water-resistant PU leather exterior, ensuring your belongings stay dry and protected against rain or accidental spills." } },
+        { "type": "faq", "settings": { "question": "What Is The Bag Made Of?", "answer": "Our Travel Bags are made out of super high-fiber PU leather. This is a form of vegan leather that is both sustainable and climate friendly." } },
+        { "type": "faq", "settings": { "question": "Can this Bag Really Save me Money?", "answer": "The average cost of a checked bag for a round-trip flight ranges between $85–125. That means using the Lumatra travel bag (which classifies as a carry-on) essentially pays for itself on your first trip — and the bag is built to last 15-20 years." } }
+      ]
+    }
+  ]
+}
+{% endschema %}

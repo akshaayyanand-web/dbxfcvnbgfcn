@@ -1,0 +1,52 @@
+{{ 'lumatra.css' | asset_url | stylesheet_tag }}
+<div class="lm-page lm-whitebg">
+  <div class="lm-sec" style="padding-top:8px">
+    <div class="lm-sec-head">
+      <h2 class="lm-sec-t">{{ section.settings.heading | default: 'Trusted By Top Rated Travel Companies Worldwide' }}</h2>
+      <div class="lm-fx lm-ac lm-gap8">
+        <span class="lm-stars">★★★★★</span>
+        <span class="lm-fs13">{{ section.settings.rating_text | default: 'Rated 4.8/5 based on 1346+' }}</span>
+      </div>
+      <div class="lm-fx lm-ac lm-gap16" style="max-width:520px;width:100%;margin-top:8px">
+        <span class="lm-f1" style="height:1px;background:var(--lm-border-soft-2)"></span>
+        <span class="lm-fs11 lm-fw7" style="letter-spacing:.1em;white-space:nowrap">{{ section.settings.label | default: 'AS SEEN IN' }}</span>
+        <span class="lm-f1" style="height:1px;background:var(--lm-border-soft-2)"></span>
+      </div>
+    </div>
+    <div class="lm-fx lm-wrap lm-gap24 lm-jc">
+      {%- for block in section.blocks -%}
+        <div style="flex:1 1 280px;max-width:320px;text-align:left" {{ block.shopify_attributes }}>
+          <p class="lm-fs13" style="color:var(--lm-muted-3);line-height:1.6;margin:0 0 16px">&ldquo;{{ block.settings.text }}&rdquo;</p>
+          <span style="display:inline-block;background:var(--lm-ink);color:#fff;border-radius:6px;padding:8px 16px;font-size:13px;font-weight:700">{{ block.settings.publication }}</span>
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Lumatra: Press",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Trusted By Top Rated Travel Companies Worldwide" },
+    { "type": "text", "id": "rating_text", "label": "Rating line", "default": "Rated 4.8/5 based on 1346+" },
+    { "type": "text", "id": "label", "label": "Divider label", "default": "AS SEEN IN" }
+  ],
+  "blocks": [
+    { "type": "quote", "name": "Press quote", "settings": [
+      { "type": "textarea", "id": "text", "label": "Quote" },
+      { "type": "text", "id": "publication", "label": "Publication name", "default": "Traveler" }
+    ]}
+  ],
+  "presets": [
+    {
+      "name": "Lumatra: Press",
+      "blocks": [
+        { "type": "quote", "settings": { "publication": "Traveler", "text": "Finally, a bag that gets it! No more picking and choosing or last-minute regrets—Lumatra lets you bring everything you love, effortlessly organized and ready to go." } },
+        { "type": "quote", "settings": { "publication": "INSIDER", "text": "Perfectly designed for women on the move, the Lumatra Bag combines style and functionality. It's a lifesaver for keeping outfits wrinkle-free and packing stress-free." } },
+        { "type": "quote", "settings": { "publication": "TRAVEL+LEISURE", "text": "A chic, carry-on solution that lets you skip the check-in line, save on fees, and pack all your essentials without compromise. Lumatra redefines travel simplicity and style." } }
+      ]
+    }
+  ]
+}
+{% endschema %}

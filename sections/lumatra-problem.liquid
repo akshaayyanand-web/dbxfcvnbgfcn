@@ -1,0 +1,99 @@
+{{ 'lumatra.css' | asset_url | stylesheet_tag }}
+{%- liquid
+  assign cards = section.blocks | where: 'type', 'problem_card'
+  assign icons = section.blocks | where: 'type', 'icon_item'
+-%}
+<div class="lm-page lm-problembg">
+  <div class="lm-sec">
+    <div class="lm-container--md" style="padding:0;text-align:center">
+      <h2 class="lm-sec-t" style="margin:0 0 30px">{{ section.settings.heading | default: "Still Struggling With Overstuffed, Awkward Bags? Let's Talk." }}</h2>
+
+      {%- if cards.size > 0 -%}
+        <div class="lm-problemgrid" style="text-align:left">
+          {%- for block in cards -%}
+            <div class="lm-problemcard" {{ block.shopify_attributes }}>
+              <div class="lm-fs14" style="line-height:1.5">{{ block.settings.pre }}<strong>{{ block.settings.bold }}</strong>{{ block.settings.post }}</div>
+              <span class="lm-problem-x" aria-hidden="true">✕</span>
+            </div>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+
+      <div class="lm-split" style="margin-top:44px;text-align:left">
+        <div class="lm-split-media">
+          <div style="max-width:340px;margin:0 auto;border-radius:16px;overflow:hidden;background:#000">
+            {%- if section.settings.image != blank -%}
+              <img src="{{ section.settings.image | image_url: width: 680 }}" width="340" height="604" loading="lazy" style="width:100%;display:block;aspect-ratio:9/16;object-fit:cover" alt="{{ section.settings.video_alt | escape }}">
+            {%- else -%}
+              <img src="{{ 'lumatra-video-c.png' | asset_url }}" width="340" height="604" loading="lazy" style="width:100%;display:block;aspect-ratio:9/16;object-fit:cover" alt="{{ section.settings.video_alt | escape }}">
+            {%- endif -%}
+          </div>
+        </div>
+        <div class="lm-split-text">
+          <h3 class="lm-h3" style="font-size:clamp(22px,3vw,28px);margin-bottom:16px">{{ section.settings.split_heading | default: 'A Whole New Meaning To Smart Packing—Space, Style, And Wrinkle-Free' }}</h3>
+          <p class="lm-bodytxt">{{ section.settings.split_copy }}</p>
+          {%- if section.settings.cta_label != blank -%}
+            <a href="{{ section.settings.cta_url | default: '#' }}" class="lm-btn">{{ section.settings.cta_label }}</a>
+          {%- endif -%}
+          <div class="lm-trust-row">
+            <span>✓ Fast Shipping</span>
+            <span>✓ 100-Day Guarantee</span>
+          </div>
+
+          {%- if icons.size > 0 -%}
+            <div class="lm-icongrid">
+              {%- for block in icons -%}
+                <div {{ block.shopify_attributes }}>
+                  <div class="lm-icongrid__title">{{ block.settings.title }}</div>
+                  <div class="lm-icongrid__text">{{ block.settings.text }}</div>
+                </div>
+              {%- endfor -%}
+            </div>
+          {%- endif -%}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Lumatra: Problem + smart packing",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Problem section heading", "default": "Still Struggling With Overstuffed, Awkward Bags? Let's Talk." },
+    { "type": "header", "content": "Smart packing feature" },
+    { "type": "image_picker", "id": "image", "label": "Video poster image" },
+    { "type": "text", "id": "video_alt", "label": "Image alt text", "default": "Customer video testimonial" },
+    { "type": "text", "id": "split_heading", "label": "Heading", "default": "A Whole New Meaning To Smart Packing—Space, Style, And Wrinkle-Free" },
+    { "type": "textarea", "id": "split_copy", "label": "Body copy", "default": "Packing for a trip doesn't have to mean sacrificing your style or leaving essentials behind. The Lumatra Bag brings a whole new meaning to packing light, letting you carry everything you love without the bulk." },
+    { "type": "text", "id": "cta_label", "label": "CTA label", "default": "Configure Your Bag" },
+    { "type": "url", "id": "cta_url", "label": "CTA link", "info": "Link to the product page / anchor to the buy box." }
+  ],
+  "blocks": [
+    { "type": "problem_card", "name": "Problem card", "settings": [
+      { "type": "text", "id": "pre", "label": "Text before emphasis" },
+      { "type": "text", "id": "bold", "label": "Emphasized text" },
+      { "type": "text", "id": "post", "label": "Text after emphasis" }
+    ]},
+    { "type": "icon_item", "name": "Icon grid item", "settings": [
+      { "type": "text", "id": "title", "label": "Title", "default": "Fits 10+ Days of Outfits" },
+      { "type": "text", "id": "text", "label": "Text", "default": "Space for every look you need." }
+    ]}
+  ],
+  "presets": [
+    {
+      "name": "Lumatra: Problem + smart packing",
+      "blocks": [
+        { "type": "problem_card", "settings": { "pre": "Dragging around a ", "bold": "heavy suitcase", "post": " through crowds? NOT fun." } },
+        { "type": "problem_card", "settings": { "pre": "Having to leave your ", "bold": "favorite outfits", "post": " at home? Been there." } },
+        { "type": "problem_card", "settings": { "pre": "Nothing says vacation-ready like an ironed dress… except when ", "bold": "you don't have one.", "post": "" } },
+        { "type": "problem_card", "settings": { "pre": "Paying extra for ", "bold": "baggage?", "post": " That money could go towards cocktails!" } },
+        { "type": "icon_item", "settings": { "title": "Fits 10+ Days of Outfits", "text": "Space for every look you need." } },
+        { "type": "icon_item", "settings": { "title": "Multiple Pairs of Shoes", "text": "Pack heels, sneakers, and more." } },
+        { "type": "icon_item", "settings": { "title": "Toiletries & Essentials", "text": "Organized and easy to find." } },
+        { "type": "icon_item", "settings": { "title": "Wrinkle-Free Packing", "text": "Outfits stay fresh and ready." } }
+      ]
+    }
+  ]
+}
+{% endschema %}

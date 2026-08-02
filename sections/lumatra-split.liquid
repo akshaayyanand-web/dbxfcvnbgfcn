@@ -1,0 +1,174 @@
+{{ 'lumatra.css' | asset_url | stylesheet_tag }}
+{%- comment -%}
+  Reusable image/copy split. Covers three different original layouts via optional
+  blocks: plain image + overlay labels (wheels/handle), mini_feature blocks instead
+  of a photo grid (weather/durability), and stat_card + airline_logo blocks with no
+  photo at all (carry-on savings). Add only the settings/blocks a given instance needs.
+{%- endcomment -%}
+{%- liquid
+  assign mini_features = section.blocks | where: 'type', 'mini_feature'
+  assign stat_cards = section.blocks | where: 'type', 'stat_card'
+  assign airline_logos = section.blocks | where: 'type', 'airline_logo'
+-%}
+<div class="lm-page {% if section.settings.background == 'panel' %}lm-panelbg{% elsif section.settings.background == 'cream' %}lm-creambg{% else %}lm-whitebg{% endif %}">
+  <div class="lm-container--md" style="padding-top:36px;padding-bottom:36px">
+    <div class="lm-split">
+      <div class="lm-split-text">
+        {%- if section.settings.heading != blank -%}
+          <h2 class="lm-h3" style="font-size:clamp(22px,3.2vw,28px);margin-bottom:16px">{{ section.settings.heading }}</h2>
+        {%- endif -%}
+        {%- if section.settings.copy != blank -%}
+          <p class="lm-bodytxt">{{ section.settings.copy }}</p>
+        {%- endif -%}
+        {%- if section.settings.cta_label != blank -%}
+          <a href="{{ section.settings.cta_url | default: '#' }}" class="lm-btn">{{ section.settings.cta_label }}</a>
+        {%- endif -%}
+        {%- if section.settings.show_trust_row -%}
+          <div class="lm-trust-row">
+            <span>✓ Fast Shipping</span>
+            <span>✓ 100-Day Guarantee</span>
+          </div>
+        {%- endif -%}
+
+        {%- if mini_features.size > 0 -%}
+          <div class="lm-col lm-gap24" style="margin-top:10px">
+            {%- for block in mini_features -%}
+              <div {{ block.shopify_attributes }}>
+                <h3 class="lm-h3" style="font-size:20px;margin-bottom:8px">{{ block.settings.title }}</h3>
+                <p class="lm-bodytxt lm-m0" style="font-size:13.5px">{{ block.settings.text }}</p>
+              </div>
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+
+        {%- if airline_logos.size > 0 -%}
+          <div class="lm-fx lm-wrap lm-gap16" style="margin-top:24px;max-width:340px">
+            {%- for block in airline_logos -%}
+              <div style="flex:1 1 45%;font-weight:700;font-size:16px;color:{{ block.settings.color | default: '#2b2320' }};font-style:{% if block.settings.italic %}italic{% else %}normal{% endif %}" {{ block.shopify_attributes }}>{{ block.settings.name }}</div>
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+      </div>
+
+      <div class="lm-split-media">
+        {%- liquid
+          assign show_image_1 = false
+          if section.settings.image != blank or section.settings.fallback_image != 'none'
+            assign show_image_1 = true
+          endif
+          assign show_image_2 = false
+          if section.settings.image_2 != blank or section.settings.fallback_image_2 != 'none'
+            assign show_image_2 = true
+          endif
+        -%}
+        {%- if show_image_1 or show_image_2 -%}
+          <div style="position:relative;border-radius:14px;overflow:hidden">
+            <div class="lm-fx lm-gap12">
+              {%- if section.settings.image != blank -%}
+                <img src="{{ section.settings.image | image_url: width: 900 }}" width="900" height="{{ 900 | divided_by: section.settings.image.aspect_ratio | round }}" loading="lazy" class="lm-split-img" alt="{{ section.settings.image_alt | escape }}">
+              {%- elsif section.settings.fallback_image != 'none' -%}
+                <img src="{{ section.settings.fallback_image | append: '.png' | asset_url }}" width="900" height="600" loading="lazy" style="object-fit:cover" class="lm-split-img" alt="{{ section.settings.image_alt | escape }}">
+              {%- endif -%}
+              {%- if section.settings.image_2 != blank -%}
+                <img src="{{ section.settings.image_2 | image_url: width: 500 }}" width="500" height="{{ 500 | divided_by: section.settings.image_2.aspect_ratio | round }}" loading="lazy" class="lm-split-img" style="flex:1" alt="{{ section.settings.image_2_alt | escape }}">
+              {%- elsif section.settings.fallback_image_2 != 'none' -%}
+                <img src="{{ section.settings.fallback_image_2 | append: '.png' | asset_url }}" width="500" height="500" loading="lazy" style="object-fit:cover;flex:1" class="lm-split-img" alt="{{ section.settings.image_2_alt | escape }}">
+              {%- endif -%}
+            </div>
+            {%- if section.settings.overlay_label_1_title != blank or section.settings.overlay_label_2_title != blank -%}
+              <div class="lm-fx lm-jb" style="position:absolute;top:16px;left:16px;right:16px;gap:10px">
+                {%- if section.settings.overlay_label_1_title != blank -%}
+                  <div>
+                    <div class="lm-h3" style="font-size:15px">{{ section.settings.overlay_label_1_title }}</div>
+                    <div class="lm-fs11" style="max-width:140px;color:var(--lm-ink-soft)">{{ section.settings.overlay_label_1_text }}</div>
+                  </div>
+                {%- endif -%}
+                {%- if section.settings.overlay_label_2_title != blank -%}
+                  <div>
+                    <div class="lm-h3" style="font-size:15px">{{ section.settings.overlay_label_2_title }}</div>
+                    <div class="lm-fs11" style="max-width:140px;color:var(--lm-ink-soft)">{{ section.settings.overlay_label_2_text }}</div>
+                  </div>
+                {%- endif -%}
+              </div>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+
+        {%- if section.settings.fee_pill_text != blank -%}
+          <div class="lm-fx lm-ac lm-gap8" style="background:var(--lm-ink);color:#fff;border-radius:20px;padding:8px 16px;font-size:12px;font-weight:600;margin-bottom:14px;display:inline-flex">{{ section.settings.fee_pill_text }}</div>
+        {%- endif -%}
+        {%- if stat_cards.size > 0 -%}
+          <div class="lm-statpair">
+            {%- for block in stat_cards -%}
+              <div class="lm-statcard {% if block.settings.style == 'dark' %}lm-statcard--dark{% else %}lm-statcard--light{% endif %}" {{ block.shopify_attributes }}>
+                <div class="lm-statcard__value">{{ block.settings.value }}</div>
+                <div class="lm-statcard__label">{{ block.settings.label }}</div>
+              </div>
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Lumatra: Feature split",
+  "settings": [
+    { "type": "select", "id": "background", "label": "Background", "options": [
+      { "value": "white", "label": "White" },
+      { "value": "panel", "label": "Panel (soft cream)" },
+      { "value": "cream", "label": "Cream" }
+    ], "default": "white" },
+    { "type": "text", "id": "heading", "label": "Heading" },
+    { "type": "textarea", "id": "copy", "label": "Body copy" },
+    { "type": "text", "id": "cta_label", "label": "CTA label" },
+    { "type": "url", "id": "cta_url", "label": "CTA link" },
+    { "type": "checkbox", "id": "show_trust_row", "label": "Show \"Fast Shipping / 100-Day Guarantee\" row", "default": false },
+    { "type": "header", "content": "Image" },
+    { "type": "image_picker", "id": "image", "label": "Primary image" },
+    { "type": "select", "id": "fallback_image", "label": "Primary placeholder (used until you pick an image above)", "options": [
+      { "value": "none", "label": "None" },
+      { "value": "lumatra-handle", "label": "Telescopic handle" },
+      { "value": "lumatra-weather-a", "label": "Weather A" }
+    ], "default": "none" },
+    { "type": "text", "id": "image_alt", "label": "Primary image alt text" },
+    { "type": "image_picker", "id": "image_2", "label": "Secondary image (shown side-by-side, optional)" },
+    { "type": "select", "id": "fallback_image_2", "label": "Secondary placeholder (used until you pick an image above)", "options": [
+      { "value": "none", "label": "None" },
+      { "value": "lumatra-weather-b", "label": "Weather B" }
+    ], "default": "none" },
+    { "type": "text", "id": "image_2_alt", "label": "Secondary image alt text" },
+    { "type": "header", "content": "Image overlay labels (optional)" },
+    { "type": "text", "id": "overlay_label_1_title", "label": "Label 1 title" },
+    { "type": "text", "id": "overlay_label_1_text", "label": "Label 1 text" },
+    { "type": "text", "id": "overlay_label_2_title", "label": "Label 2 title" },
+    { "type": "text", "id": "overlay_label_2_text", "label": "Label 2 text" },
+    { "type": "header", "content": "Fee pill (optional, shown above stat cards)" },
+    { "type": "text", "id": "fee_pill_text", "label": "Text" }
+  ],
+  "blocks": [
+    { "type": "mini_feature", "name": "Mini feature (text column)", "settings": [
+      { "type": "text", "id": "title", "label": "Title" },
+      { "type": "textarea", "id": "text", "label": "Text" }
+    ]},
+    { "type": "airline_logo", "name": "Airline wordmark (text column)", "settings": [
+      { "type": "text", "id": "name", "label": "Name", "default": "AIRLINE" },
+      { "type": "color", "id": "color", "label": "Color", "default": "#2b2320" },
+      { "type": "checkbox", "id": "italic", "label": "Italic", "default": false }
+    ]},
+    { "type": "stat_card", "name": "Stat card (media column)", "settings": [
+      { "type": "text", "id": "value", "label": "Value", "default": "$0.00" },
+      { "type": "text", "id": "label", "label": "Label", "default": "Skip baggage claim, save time" },
+      { "type": "select", "id": "style", "label": "Style", "options": [
+        { "value": "dark", "label": "Dark" },
+        { "value": "light", "label": "Light" }
+      ], "default": "dark" }
+    ]}
+  ],
+  "presets": [
+    { "name": "Lumatra: Feature split" }
+  ]
+}
+{% endschema %}

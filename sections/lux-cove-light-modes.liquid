@@ -1,0 +1,71 @@
+<style>
+  /* Isolates the background color strictly to this single section */
+  #shopify-section-{{ section.id }},
+  #shopify-section-{{ section.id }} .lc-inkbg,
+  #shopify-section-{{ section.id }} .lc-page,
+  #shopify-section-{{ section.id }} .lc-sec {
+    background: #202020ff !important;
+    background-color: #202020ff !important;
+  }
+</style>
+
+{{ 'lux-cove.css' | asset_url | stylesheet_tag }}
+<div class="lc-inkbg" data-screen-label="Light modes">
+  <div class="lc-page">
+    <section class="lc-sec">
+      <div class="lc-sec-head">
+        <span class="lc-eyebrow" style="color:var(--lc-rose)">{{ section.settings.eyebrow }}</span>
+        <h2 class="lc-sec-t" style="color:#fbf7f3">{{ section.settings.heading }}</h2>
+        <span class="lc-rule"></span>
+      </div>
+      {%- for block in section.blocks -%}
+        <div class="lc-fx" style="align-items:flex-start;gap:14px;padding:16px 0;border-bottom:1px solid rgba(255,255,255,.1)" {{ block.shopify_attributes }}>
+          <span style="width:38px;height:38px;border-radius:50%;flex:none;box-shadow:0 0 16px 2px {{ block.settings.color }};background:{{ block.settings.color }}"></span>
+          <div>
+            <div style="font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:{{ block.settings.label_color }}">{{ block.settings.name }}</div>
+            <div class="lc-fs13" style="color:#c9bdac;margin-top:4px">{{ block.settings.text }}</div>
+          </div>
+        </div>
+      {%- endfor -%}
+    </section>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Lux Cove: Light modes",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "One device, endless care" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Thousands of Dollars of Treatment in One" }
+  ],
+  "blocks": [
+    {
+      "type": "mode",
+      "name": "Light / mode",
+      "settings": [
+        { "type": "color", "id": "color", "label": "Dot color", "default": "#c9788a" },
+        { "type": "color", "id": "label_color", "label": "Label glow color", "default": "#e79fae" },
+        { "type": "text", "id": "name", "label": "Name", "default": "Red Light · 630nm" },
+        { "type": "textarea", "id": "text", "label": "Description", "default": "Stimulates collagen production." }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Lux Cove: Light modes",
+      "blocks": [
+        { "type": "mode", "settings": { "color": "#e2444f", "label_color": "#ff8a91", "name": "Red Light · 630nm", "text": "Stimulates collagen production & prevents fine lines, wrinkles & sagging skin." } },
+        { "type": "mode", "settings": { "color": "#3a6bd6", "label_color": "#8fb0ff", "name": "Blue Light · 415nm", "text": "Kills acne-causing bacteria that cause blemishes and breakouts." } },
+        { "type": "mode", "settings": { "color": "#2fae66", "label_color": "#7fe0a6", "name": "Green Light · 525nm", "text": "Evens out skin tone & improves overall skin texture." } },
+        { "type": "mode", "settings": { "color": "#2fb7c4", "label_color": "#7fe6ef", "name": "Cyan Light · 490nm", "text": "Soothes sensitive skin & reduces redness, inflammation and irritation." } },
+        { "type": "mode", "settings": { "color": "#f2ede2", "label_color": "#f6f1e7", "name": "White Light · Mix", "text": "Promotes skin rejuvenation and targets fine lines & wrinkles." } },
+        { "type": "mode", "settings": { "color": "#9b5fd0", "label_color": "#c79bef", "name": "Purple Light · 380nm", "text": "Combines the benefits of both red and blue light." } },
+        { "type": "mode", "settings": { "color": "#e8c14a", "label_color": "#f5d872", "name": "Yellow Light · 590nm", "text": "Stimulates lymphatic drainage and increases blood circulation." } },
+        { "type": "mode", "settings": { "color": "#c9788a", "label_color": "#e79fae", "name": "EMS Mode", "text": "Strengthens & tones facial muscles, improves definition & reduces fine lines." } },
+        { "type": "mode", "settings": { "color": "#d98a55", "label_color": "#f0ac7d", "name": "Heat Mode", "text": "Opens pores to improve absorption of skincare products & increases collagen production." } },
+        { "type": "mode", "settings": { "color": "#8ab0c9", "label_color": "#b3d3e6", "name": "Clean Mode", "text": "Prevents acne and breakouts by clearing dead skin cells, oil & dirt from pores using vibration." } }
+      ]
+    }
+  ]
+}
+{% endschema %}

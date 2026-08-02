@@ -1,0 +1,99 @@
+<style>
+  /* Forces the main container to layout blocks side-by-side horizontally */
+  #shopify-section-{{ section.id }} .lc-col {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important; /* Forces them to stay on the same line */
+    justify-content: center !important;
+    align-items: flex-start !important;
+    gap: 24px !important; /* Tightens the space between the two items */
+  }
+
+  /* Forces individual blocks to behave as columns side-by-side */
+  #shopify-section-{{ section.id }} .lc-hiw {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    flex: 1 !important;
+    width: 50% !important; /* Splits the space equally */
+    max-width: 340px !important;
+  }
+
+  /* Shrinks the circle images so both columns can fit horizontally */
+  #shopify-section-{{ section.id }} .lc-circimg {
+    max-width: 140px !important; /* Reduced from 180px to safely fit mobile/desktop screens */
+    height: auto !important;
+    border-radius: 50% !important;
+  }
+</style>
+
+{{ 'lux-cove.css' | asset_url | stylesheet_tag }}
+<div class="lc-page">
+  <section class="lc-sec" data-screen-label="How It Works">
+    <div class="lc-sec-head">
+      <span class="lc-eyebrow">{{ section.settings.eyebrow }}</span>
+      <h2 class="lc-sec-t">{{ section.settings.heading }}</h2>
+      <span class="lc-rule"></span>
+    </div>
+    <div class="lc-col lc-gap40">
+      {%- for block in section.blocks -%}
+        <div class="lc-hiw" {{ block.shopify_attributes }}>
+          {%- if block.settings.image != blank -%}
+            <img src="{{ block.settings.image | image_url: width: 400 }}" 
+                 width="400"
+                 height="{{ 400 | divided_by: block.settings.image.aspect_ratio | round }}"
+                 loading="lazy"
+                 class="lc-circimg" 
+                 alt="{{ block.settings.label | escape_once }}">
+          {%- elsif block.settings.fallback_image != 'none' -%}
+            <img src="{{ block.settings.fallback_image | append: '.jpg' | asset_url }}" 
+                 width="400"
+                 height="400"
+                 loading="lazy"
+                 class="lc-circimg" 
+                 style="object-fit: cover;"
+                 alt="{{ block.settings.label | escape_once }}">
+          {%- endif -%}
+          <span class="lc-fs15 lc-fw6 lc-upper" style="letter-spacing:.08em;color:var(--lc-rosedeep); margin-top:12px; display:block;">{{ block.settings.label }}</span>
+          <span class="lc-fs13" style="color:#5a4f45;max-width:320px; margin-top:6px; display:block;">{{ block.settings.text }}</span>
+        </div>
+      {%- endfor -%}
+    </div>
+  </section>
+</div>
+
+{% schema %}
+{
+  "name": "Lux Cove: How it works",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "The technology" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "How It Works" }
+  ],
+  "blocks": [
+    {
+      "type": "tech",
+      "name": "Technology",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Circle image" },
+        { "type": "select", "id": "fallback_image", "label": "Placeholder image (used until you pick one above)", "options": [
+          { "value": "none", "label": "None" },
+          { "value": "lc-redcircle", "label": "Red light" },
+          { "value": "lc-emscircle", "label": "EMS microcurrent" }
+        ], "default": "none" },
+        { "type": "text", "id": "label", "label": "Label", "default": "Red Light · 630nm" },
+        { "type": "textarea", "id": "text", "label": "Description", "default": "Stimulates collagen production to smooth wrinkles." }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Lux Cove: How it works",
+      "blocks": [
+        { "type": "tech", "settings": { "fallback_image": "lc-redcircle", "label": "Red Light · 630nm", "text": "Stimulates collagen production to smooth wrinkles. Minimizes puffiness & dark circles. Enhances skin elasticity for a more youthful glow." } },
+        { "type": "tech", "settings": { "fallback_image": "lc-emscircle", "label": "EMS Microcurrent", "text": "Stimulates facial muscles to lift & firm the under-eye area. Boosts circulation to reduce puffiness. Rejuvenates tired-looking skin." } }
+      ]
+    }
+  ]
+}
+{% endschema %}
