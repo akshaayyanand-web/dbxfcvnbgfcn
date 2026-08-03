@@ -79,11 +79,50 @@ def _add_adverse_media_node(store: EntityStore, name: str, entity_type: str, med
     return node_id
 
 
-def screen_name(name: str, entity_type: str = "any") -> dict:
+def _extra_match_properties(details: dict) -> dict:
+    """Map the expanded identification form onto FollowTheMoney properties
+    OpenSanctions' /match actually understands — every one supplied narrows
+    the match and helps tell a real hit apart from a namesake. Fields with
+    no FTM equivalent (occupation, employer, visa number, known associates,
+    a PEP indicator, a free-text sanctions reference) aren't sent here —
+    they're kept only as context on the returned screening record.
+    """
+    props: dict = {}
+    single = {
+        "alias": "alias", "place_of_birth": "birthPlace", "gender": "gender",
+        "passport_number": "passportNumber", "national_id_number": "idNumber",
+        "email": "email", "phone": "phone", "website": "website",
+        "tax_id": "taxNumber", "position": "position",
+    }
+    for field, prop in single.items():
+        value = (details.get(field) or "").strip()
+        if value:
+            props[prop] = [value]
+    address = (details.get("address") or details.get("company_address") or "").strip()
+    if address:
+        props["address"] = [address]
+    country_of_residence = (details.get("country_of_residence") or "").strip()
+    if country_of_residence:
+        props["country"] = [country_of_residence]
+    return props
+
+
+def screen_name(name: str, entity_type: str = "any", **details) -> dict:
     """A standalone sanctions/PEP screening lookup for the risk-rating tool's
     "Screen this name" button. Separate from the graph search above: no
     network expansion, just the raw match candidates and what each one is
     flagged for, so the screening outcome it suggests is never a black box.
+
+    Accepts an expanded set of identifying details as keyword args (alias,
+    nationality, birth_date, place_of_birth, gender, country_of_residence,
+    address, passport_number, national_id_number, registration_number,
+    country_of_registration, company_address, email, phone, website,
+    tax_id, position — see _extra_match_properties) — the more of these are
+    supplied, the fewer false-positive namesakes a live search returns. Any
+    other keys (occupation, employer, industry, visa_number,
+    known_associates, pep_indicator, sanctions_reference, notes) are carried
+    through onto the returned record for audit purposes but don't affect
+    the search itself.
     """
     name = (name or "").strip()
     if not name:
@@ -91,7 +130,14 @@ def screen_name(name: str, entity_type: str = "any") -> dict:
 
     if opensanctions.available():
         try:
-            results = opensanctions.match(name=name, entity_type=entity_type, limit=5)
+            results = opensanctions.match(
+                name=name, entity_type=entity_type, limit=5,
+                nationality=details.get("nationality"),
+                birth_date=details.get("birth_date"),
+                reg_number=details.get("registration_number"),
+                jurisdiction=details.get("country_of_registration"),
+                extra_properties=_extra_match_properties(details),
+            )
         except opensanctions.OpenSanctionsError as exc:
             return {"error": config.redact(str(exc))}
         matches = []
@@ -124,10 +170,21 @@ def screen_name(name: str, entity_type: str = "any") -> dict:
         demo_mode = True
 
     all_flags = {flag for m in matches for flag in m["flags"]}
+    context_fields = (
+        "alias", "nationality", "birth_date", "place_of_birth", "gender",
+        "country_of_residence", "address", "passport_number", "national_id_number",
+        "visa_number", "occupation", "employer", "position", "industry",
+        "company_name", "registration_number", "country_of_registration",
+        "company_address", "email", "phone", "website", "tax_id",
+        "known_associates", "pep_indicator", "sanctions_reference", "notes",
+    )
     return {
         "outcome": risk_rating.screening_outcome_for(all_flags),
         "matches": matches,
         "demo_mode": demo_mode,
+        # Every identifying detail actually supplied, kept on the record for the
+        # audit trail — not just what was sent to the matching engine.
+        "screening_details": {k: v for k, v in details.items() if k in context_fields and v},
     }
 
 

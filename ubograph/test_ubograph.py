@@ -16,9 +16,11 @@ import reasons
 import risk_rating
 from reference import country_label, fatf_marking, jurisdiction_label
 import report
+import server
 from report import auto_risk_assessment, build_report
 from resolve import EntityStore
 from schema import COMPANY, OWNS, PERSON, POSSIBLY_SAME_AS, Edge, Node, normalise_name
+import search
 from search import batch_screen, run_search, screen_name
 
 failures = []
@@ -444,6 +446,23 @@ def test_client_risk_rating():
     check("a low-risk profile bands low", low["band"] == "low")
 
 
+def test_server_screen_endpoint():
+    print("server.py — /api/screen wiring (also guards against import-time syntax errors)")
+    check("SCREENING_DETAIL_FIELDS covers the expanded identification form's fields",
+          {"alias", "nationality", "passport_number", "company_name", "pep_indicator"}
+          <= set(server.SCREENING_DETAIL_FIELDS))
+    client = server.app.test_client()
+    response = client.post("/api/screen", json={
+        "name": "James Okoro", "nationality": "gb", "occupation": "Trader",
+        "unexpected_field": "must not crash anything",
+    })
+    check("the endpoint responds 200", response.status_code == 200)
+    body = response.get_json()
+    check("the expanded fields reach screen_name() end to end",
+          body["screening_details"].get("nationality") == "gb"
+          and body["screening_details"].get("occupation") == "Trader")
+
+
 def test_screen_name_button():
     print("'Screen this name' lookup for the risk-rating form")
     check("blank name is rejected", "error" in screen_name(""))
@@ -466,6 +485,50 @@ def test_screen_name_button():
           all("country" in m for m in sanctioned.get("matches", [])))
     check("a demo match from a non-FATF-listed country has no marking",
           all(m.get("fatf_marking") is None for m in sanctioned.get("matches", [])))
+
+    with_details = screen_name(
+        "James Okoro", nationality="gb", birth_date="1980-02-09",
+        occupation="Trader", employer="Some Firm", pep_indicator="No",
+        sanctions_reference="REF-1", notes="Screened at onboarding.",
+        unexpected_field="ignored",
+    )
+    check("context-only fields land in screening_details",
+          with_details["screening_details"].get("occupation") == "Trader"
+          and with_details["screening_details"].get("pep_indicator") == "No")
+    check("fields sent to the matcher also appear in screening_details for the audit trail",
+          with_details["screening_details"].get("nationality") == "gb")
+    check("empty/unsupplied fields are not padded into screening_details",
+          "address" not in with_details["screening_details"])
+
+
+def test_extra_match_properties():
+    print("search._extra_match_properties — expanded ID form -> FollowTheMoney properties")
+    props = search._extra_match_properties({
+        "alias": "Jonathan Doe", "place_of_birth": "Lagos", "gender": "Male",
+        "passport_number": "P1234567", "national_id_number": "N9876543",
+        "email": "person@example.com", "phone": "+123456789", "website": "example.com",
+        "tax_id": "TX001", "position": "Managing Director",
+        "country_of_residence": "ae",
+        # no FTM equivalent — must never leak into the match query
+        "occupation": "Trader", "known_associates": "Someone Else",
+    })
+    check("alias maps to FTM 'alias'", props.get("alias") == ["Jonathan Doe"])
+    check("place_of_birth maps to FTM 'birthPlace'", props.get("birthPlace") == ["Lagos"])
+    check("passport/national ID map to passportNumber/idNumber",
+          props.get("passportNumber") == ["P1234567"] and props.get("idNumber") == ["N9876543"])
+    check("email/phone/website/tax id/position all carry through",
+          props.get("email") == ["person@example.com"] and props.get("phone") == ["+123456789"]
+          and props.get("website") == ["example.com"] and props.get("taxNumber") == ["TX001"]
+          and props.get("position") == ["Managing Director"])
+    check("country_of_residence maps to FTM 'country'", props.get("country") == ["ae"])
+    check("fields with no FTM equivalent are not sent to the matcher",
+          "occupation" not in props and "known_associates" not in props)
+
+    company_props = search._extra_match_properties({"company_address": "Some Street, Dubai"})
+    check("company_address falls back onto the same 'address' property as a person's address",
+          company_props.get("address") == ["Some Street, Dubai"])
+
+    check("no details supplied -> no properties, not an error", search._extra_match_properties({}) == {})
 
 
 def test_satellite_view_urls():
@@ -899,7 +962,9 @@ if __name__ == "__main__":
         test_adverse_media_runs_every_search,
         test_adverse_media_becomes_its_own_entity,
         test_client_risk_rating,
+        test_server_screen_endpoint,
         test_screen_name_button,
+        test_extra_match_properties,
         test_satellite_view_urls,
         test_adverse_media_provider_selection,
         test_standalone_risk_rating_pdf,

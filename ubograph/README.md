@@ -242,7 +242,7 @@ downstream knows which API a record came from.
 | `GET /api/risk_rating/options` | Dropdown option lists and weights for the client risk-rating panel |
 | `POST /api/risk_rating` | `{nationality, country_of_birth, country_of_residence, business_work_location, screening_outcome, employment_type, employment_industry, mode_of_payment, source_of_funds, subject_name, screening_reference, compliance_notes, prepared_by, review_status}` → a weighted score plus a risk matrix, reasoning and mitigation recommendations. Standalone — no payload or node_id; every field past `source_of_funds` is optional record-keeping metadata for the PDF. |
 | `POST /api/risk_rating.pdf` | Same input → the worksheet as its own PDF, with a signature block |
-| `POST /api/screen` | `{name, entity_type}` → a suggested screening outcome plus the raw matches found |
+| `POST /api/screen` | `{name, entity_type, ...expanded identification fields}` → a suggested screening outcome plus the raw matches found. See `server.SCREENING_DETAIL_FIELDS` for every optional field accepted. |
 | `POST /api/geocode` | `{address}` → coordinates, a satellite-image URL, and an OpenStreetMap link |
 | `POST /api/edd.pdf` | `{payload, node_id}` → the Enhanced Due Diligence checklist as a PDF |
 | `POST /api/mou.pdf` | `{payload, node_id, role}` → an MOU draft with the entity pre-filled as `"purchaser"` or `"seller"` |
@@ -275,6 +275,23 @@ has ever been searched for. See `risk_rating.py` for the scoring rule and
 "Screen this name" button runs a standalone sanctions/PEP lookup and suggests
 a screening outcome (still editable), and "Download PDF" produces the
 worksheet as its own document — no entity or report required for either.
+
+Behind "More identifying details" is a full identification form — alias,
+nationality, date/place of birth, gender, country of residence, address,
+passport/national ID/visa numbers, employment (occupation, employer,
+position, industry), business details (company name, registration number,
+country of registration, company address), and additional fields (email,
+phone, website, tax ID, known associates, a PEP indicator, a sanctions
+search reference, notes). Every field that OpenSanctions' matching engine
+actually understands (alias, nationality, birth date/place, gender,
+address, passport/national ID, email, phone, website, tax ID, position,
+registration number) is sent straight into the live search and genuinely
+narrows it — the more that's filled in, the less likely a search returns an
+unrelated namesake instead of "not found". Fields with no equivalent there
+(occupation, employer, visa number, known associates, the PEP indicator, a
+free-text reference) are kept on the returned screening record for the
+audit trail rather than discarded. See `search._extra_match_properties` for
+the exact field mapping.
 
 The downloadable PDF is a full compliance record, not just the scoring
 table: subject details (name, an optional screening reference), a risk

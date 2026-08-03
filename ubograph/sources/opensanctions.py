@@ -333,10 +333,16 @@ def _match_schema(
     jurisdiction: Optional[str] = None,
     scope: str = "default",
     limit: int = 5,
+    extra_properties: Optional[Dict[str, List[str]]] = None,
 ) -> List[dict]:
     """POST /match against one concrete FollowTheMoney schema (Person or
     Company) — the optional fields are what kill namesake false positives,
-    and only apply once the schema is concrete enough to carry them."""
+    and only apply once the schema is concrete enough to carry them.
+    extra_properties are additional FollowTheMoney identifying properties
+    (alias, birthPlace, gender, address, passportNumber, idNumber, email,
+    phone, website, taxNumber, position, country, ...) straight from an
+    expanded identification form — every one supplied narrows the match and
+    reduces false positives, on top of the fixed fields above."""
     properties: Dict[str, List[str]] = {"name": [name]}
     if nationality:
         properties["nationality" if schema == "Person" else "country"] = [nationality]
@@ -347,6 +353,9 @@ def _match_schema(
         properties["registrationNumber"] = [reg_number]
     if jurisdiction:
         properties["jurisdiction"] = [jurisdiction]
+    for key, values in (extra_properties or {}).items():
+        if values:
+            properties[key] = values
 
     payload = {"queries": {"q1": {"schema": schema, "properties": properties}}}
     url = f"{OPENSANCTIONS_BASE_URL}/match/{scope}"
@@ -392,6 +401,7 @@ def match(
     jurisdiction: Optional[str] = None,
     scope: str = "default",
     limit: int = 5,
+    extra_properties: Optional[Dict[str, List[str]]] = None,
 ) -> List[dict]:
     """POST /match — the optional fields are what kill namesake false positives.
 
@@ -404,18 +414,22 @@ def match(
     query that returns a same-surname stranger ranked above "not found". So
     "any" instead queries Person and Company as two separate concrete
     schemas and merges the results by best score, at the cost of a second API
-    call.
+    call. See _match_schema for what extra_properties can carry.
     """
     if not available():
         return []
 
     if entity_type == "person":
-        return _match_schema(name, "Person", nationality, birth_date, reg_number, jurisdiction, scope, limit)
+        return _match_schema(name, "Person", nationality, birth_date, reg_number, jurisdiction,
+                              scope, limit, extra_properties)
     if entity_type == "company":
-        return _match_schema(name, "Company", nationality, birth_date, reg_number, jurisdiction, scope, limit)
+        return _match_schema(name, "Company", nationality, birth_date, reg_number, jurisdiction,
+                              scope, limit, extra_properties)
 
-    person_results = _match_schema(name, "Person", nationality, birth_date, reg_number, jurisdiction, scope, limit)
-    company_results = _match_schema(name, "Company", nationality, birth_date, reg_number, jurisdiction, scope, limit)
+    person_results = _match_schema(name, "Person", nationality, birth_date, reg_number, jurisdiction,
+                                    scope, limit, extra_properties)
+    company_results = _match_schema(name, "Company", nationality, birth_date, reg_number, jurisdiction,
+                                     scope, limit, extra_properties)
     return _merge_by_score(person_results, company_results)[:limit]
 
 

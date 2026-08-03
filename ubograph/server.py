@@ -172,14 +172,28 @@ def api_risk_rating_pdf():
     )
 
 
+SCREENING_DETAIL_FIELDS = (
+    "alias", "nationality", "birth_date", "place_of_birth", "gender",
+    "country_of_residence", "address", "passport_number", "national_id_number",
+    "visa_number", "occupation", "employer", "position", "industry",
+    "company_name", "registration_number", "country_of_registration",
+    "company_address", "email", "phone", "website", "tax_id",
+    "known_associates", "pep_indicator", "sanctions_reference", "notes",
+)
+
+
 @app.post("/api/screen")
 def api_screen():
     """"Screen this name" — a quick, standalone sanctions/PEP lookup for the
     Risk Assessment tab. Returns the suggested screening-rubric outcome plus
     the raw matches behind it; the caller still picks the dropdown value.
+    Accepts the full expanded identification form (see
+    SCREENING_DETAIL_FIELDS) — every extra identifying field supplied
+    narrows a live search and reduces false positives.
     """
     body = request.get_json(silent=True) or {}
-    result = screen_name(body.get("name", ""), body.get("entity_type") or "any")
+    details = {field: body[field] for field in SCREENING_DETAIL_FIELDS if body.get(field)}
+    result = screen_name(body.get("name", ""), body.get("entity_type") or "any", **details)
     if result.get("error"):
         return jsonify(result), 400
     return jsonify(result)

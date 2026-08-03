@@ -383,11 +383,82 @@ function renderRiskAssessmentTab() {
       ${countrySelect('rr-residence', 'Country of residence')}
       ${countrySelect('rr-work', 'Business / work location')}
     </div>
-    <label for="rr-screen-name">Name to screen (optional)</label>
+    <label for="rr-screen-name">Full name to screen (optional)</label>
     <div class="screen-row">
       <input id="rr-screen-name" type="text" placeholder="Full name">
       <button class="ghost" id="rr-screen" type="button">Screen this name</button>
     </div>
+    <details class="screen-details">
+      <summary>More identifying details (optional) — the more you enter, the fewer
+        false-positive namesakes a live search returns</summary>
+
+      <p class="hint">Personal information</p>
+      <div class="rating-form">
+        <label for="sf-alias">Alias / other names</label>
+        <input id="sf-alias" type="text" placeholder="Also known as">
+        ${countrySelect('sf-nationality', 'Nationality')}
+        <label for="sf-dob">Date of birth</label>
+        <input id="sf-dob" type="date">
+        <label for="sf-pob">Place of birth</label>
+        <input id="sf-pob" type="text">
+        <label for="sf-gender">Gender</label>
+        <select id="sf-gender"><option value="">Select…</option>
+          <option>Male</option><option>Female</option><option>Other</option></select>
+        ${countrySelect('sf-residence', 'Country of residence')}
+        <label for="sf-address">Current address</label>
+        <input id="sf-address" type="text">
+        <label for="sf-passport">Passport number</label>
+        <input id="sf-passport" type="text">
+        <label for="sf-national-id">National ID number</label>
+        <input id="sf-national-id" type="text">
+        <label for="sf-visa">Visa number (optional)</label>
+        <input id="sf-visa" type="text">
+      </div>
+
+      <p class="hint">Employment information</p>
+      <div class="rating-form">
+        <label for="sf-occupation">Occupation</label>
+        <input id="sf-occupation" type="text">
+        <label for="sf-employer">Employer</label>
+        <input id="sf-employer" type="text">
+        <label for="sf-position">Position / title</label>
+        <input id="sf-position" type="text">
+        <label for="sf-industry">Industry</label>
+        <input id="sf-industry" type="text">
+      </div>
+
+      <p class="hint">Business information (if applicable)</p>
+      <div class="rating-form">
+        <label for="sf-company-name">Company name</label>
+        <input id="sf-company-name" type="text">
+        <label for="sf-reg-number">Registration number</label>
+        <input id="sf-reg-number" type="text">
+        ${countrySelect('sf-reg-country', 'Country of registration')}
+        <label for="sf-company-address">Company address</label>
+        <input id="sf-company-address" type="text">
+      </div>
+
+      <p class="hint">Additional screening fields</p>
+      <div class="rating-form">
+        <label for="sf-email">Email address</label>
+        <input id="sf-email" type="email">
+        <label for="sf-phone">Phone number</label>
+        <input id="sf-phone" type="tel">
+        <label for="sf-website">Website</label>
+        <input id="sf-website" type="text">
+        <label for="sf-tax-id">Tax identification number</label>
+        <input id="sf-tax-id" type="text">
+        <label for="sf-associates">Known associates</label>
+        <input id="sf-associates" type="text">
+        <label for="sf-pep">Politically Exposed Person (PEP) indicator</label>
+        <select id="sf-pep"><option value="">Unknown</option>
+          <option value="Yes">Yes</option><option value="No">No</option></select>
+        <label for="sf-sanctions-ref">Sanctions search reference</label>
+        <input id="sf-sanctions-ref" type="text">
+        <label for="sf-screen-notes">Additional notes</label>
+        <textarea id="sf-screen-notes" rows="2"></textarea>
+      </div>
+    </details>
     <div id="rr-screen-result"></div>
     <div class="rating-form">
       ${optionSelect('rr-screening', 'Screening outcome', o.screening_outcome)}
@@ -425,10 +496,38 @@ function renderRiskAssessmentTab() {
       return;
     }
     $('#rr-screen-result').innerHTML = '<p class="empty">Screening…</p>';
+    const details = {
+      alias: $('#sf-alias').value.trim(),
+      nationality: $('#sf-nationality').value,
+      birth_date: $('#sf-dob').value,
+      place_of_birth: $('#sf-pob').value.trim(),
+      gender: $('#sf-gender').value,
+      country_of_residence: $('#sf-residence').value,
+      address: $('#sf-address').value.trim(),
+      passport_number: $('#sf-passport').value.trim(),
+      national_id_number: $('#sf-national-id').value.trim(),
+      visa_number: $('#sf-visa').value.trim(),
+      occupation: $('#sf-occupation').value.trim(),
+      employer: $('#sf-employer').value.trim(),
+      position: $('#sf-position').value.trim(),
+      industry: $('#sf-industry').value.trim(),
+      company_name: $('#sf-company-name').value.trim(),
+      registration_number: $('#sf-reg-number').value.trim(),
+      country_of_registration: $('#sf-reg-country').value,
+      company_address: $('#sf-company-address').value.trim(),
+      email: $('#sf-email').value.trim(),
+      phone: $('#sf-phone').value.trim(),
+      website: $('#sf-website').value.trim(),
+      tax_id: $('#sf-tax-id').value.trim(),
+      known_associates: $('#sf-associates').value.trim(),
+      pep_indicator: $('#sf-pep').value,
+      sanctions_reference: $('#sf-sanctions-ref').value.trim(),
+      notes: $('#sf-screen-notes').value.trim(),
+    };
     const response = await fetch('/api/screen', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({name}),
+      body: JSON.stringify({name, ...details}),
     });
     const result = await response.json();
     if (result.error) {
@@ -444,12 +543,16 @@ function renderRiskAssessmentTab() {
         ${(m.flags || []).map((f) => `<span class="tag-flag ${f}">${escapeHtml(flagLabel(f))}</span>`).join('')}
         <button class="ghost small" type="button" data-goaml-match="${i}">goAML report</button>
       </li>`).join('');
+    const suppliedDetails = Object.entries(result.screening_details || {});
     $('#rr-screen-result').innerHTML = `
       <p class="note">Set screening outcome to “${escapeHtml(result.outcome)}”
         ${result.demo_mode ? '(demo data — no live sanctions key configured)' : ''}.
         Adjust the dropdown below if you disagree.</p>
       ${matches ? `<ul class="screen-matches">${matches}</ul>`
-                : '<p class="empty">No matches found.</p>'}`;
+                : '<p class="empty">No matches found.</p>'}
+      ${suppliedDetails.length ? `<p class="note">Identifying details on this screening record: ${
+        suppliedDetails.map(([k, v]) => `${escapeHtml(k.replace(/_/g, ' '))}: ${escapeHtml(v)}`).join(' · ')
+      }</p>` : ''}`;
     $$('[data-goaml-match]').forEach((button) => button.addEventListener('click', () => {
       const match = state.lastScreen.matches[Number(button.dataset.goamlMatch)];
       generateMatchReport(button, state.lastScreen.name, match);
