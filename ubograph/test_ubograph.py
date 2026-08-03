@@ -979,6 +979,14 @@ def test_report_and_pdf():
     text = pdf_text(data)
     check("the report PDF carries a Prepared/Reviewed/Approved signature block",
           all(role in text for role in ("Prepared By", "Reviewed By", "Approved By")))
+    check("the PDF opens with a cover page classification marker",
+          "COMPLIANCE REPORT" in text and "Confidential" in text)
+    check("the cover page states the overall rating", "Critical" in text or "High" in text)
+    check("an executive summary section is present", "Executive summary" in text)
+    check("the executive summary states what was screened and the rating",
+          "screened against" in text.lower())
+    check("no real firm name or logo placeholder leaks onto the cover page",
+          "Al Mira" not in text and "AKW" not in text)
 
     rating = risk_rating.rate(
         nationality="af", country_of_birth="kw", country_of_residence="kw",

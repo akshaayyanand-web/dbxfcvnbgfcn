@@ -13,6 +13,7 @@ from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import mm
 from reportlab.platypus import (
     HRFlowable,
+    PageBreak,
     Paragraph,
     SimpleDocTemplate,
     Spacer,
@@ -57,6 +58,10 @@ def _styles():
                                    fontSize=8, leading=10, textColor=MUTED),
         "mono": ParagraphStyle("m", parent=base["Normal"], fontName="Courier",
                                fontSize=8.5, leading=11, textColor=INK),
+        "cover_kicker": ParagraphStyle("ck", parent=base["Normal"], fontName="Helvetica-Bold",
+                                      fontSize=11, leading=14, textColor=MUTED, spaceAfter=18),
+        "cover_title": ParagraphStyle("ct", parent=base["Title"], fontName="Times-Bold",
+                                     fontSize=30, leading=36, textColor=INK, spaceAfter=6),
     }
 
 
@@ -490,9 +495,84 @@ def _dossier_flow(report: dict, styles) -> List:
     return flow
 
 
+def _cover_page(report: dict, assessment: dict, styles) -> List:
+    """A dedicated cover page — classification marker, subject, headline
+    rating, and generation details — so the document reads as a regulator-
+    ready compliance report from the first page, not a printout of a web
+    page. Nothing here is a real firm's letterhead: no logo, no company
+    name, no address — every identifying element is either the subject's
+    own (from the entity searched) or an explicit blank placeholder.
+    """
+    subject = report["subject"]
+    rows = [
+        ("Subject", subject.get("name")),
+        ("Entity type", (subject.get("type") or "").title()),
+        ("Overall risk rating", assessment["overall_rating"]),
+        ("Date generated", report.get("generated_at")),
+        ("Prepared for", "_______________________________"),
+    ]
+    data = [
+        [Paragraph(_clean(label), styles["cellhead"]), Paragraph(_clean(value), styles["cell"])]
+        for label, value in rows if value
+    ]
+    table = Table(data, colWidths=[45 * mm, None])
+    table.setStyle(TableStyle([
+        ("VALIGN", (0, 0), (-1, -1), "TOP"),
+        ("TOPPADDING", (0, 0), (-1, -1), 5), ("BOTTOMPADDING", (0, 0), (-1, -1), 5),
+        ("LEFTPADDING", (0, 0), (0, -1), 0),
+    ]))
+    return [
+        Spacer(1, 40),
+        Paragraph("SANCTIONS &amp; PEP SCREENING — COMPLIANCE REPORT", styles["cover_kicker"]),
+        Paragraph(_clean(subject.get("name")), styles["cover_title"]),
+        _band_chip(subject.get("risk_band", "green"), styles["small"]),
+        Spacer(1, 30),
+        table,
+        Spacer(1, 30),
+        HRFlowable(width="100%", color=LINE, spaceAfter=8),
+        Paragraph(
+            "Classification: Confidential — prepared for internal compliance use. "
+            "Distribute only to those with a legitimate need to review it.",
+            styles["small"],
+        ),
+        PageBreak(),
+    ]
+
+
+def _executive_summary(report: dict, assessment: dict, styles) -> List:
+    """A short, human-readable overview up front — what this is, the
+    headline number, and what to do next — before the detailed sections a
+    reader may or may not need to go through in full."""
+    subject = report["subject"]
+    findings = report.get("findings") or []
+    lead = (
+        f"{_clean(subject.get('name'))} was screened against "
+        f"{_clean(', '.join(report.get('sources_used') or subject.get('sources') or []) or 'no configured source')}. "
+        f"Overall risk rating: <b>{assessment['overall_rating']}</b> "
+        f"(score {_clean(assessment['risk_score'])} / 100)."
+    )
+    findings_line = (
+        f"{len(findings)} finding{'s' if len(findings) != 1 else ''} identified."
+        if findings else "No adverse findings identified in the sources checked."
+    )
+    action_line = (
+        f"Recommended first action: {_clean(assessment['recommended_actions'][0])}"
+        if assessment.get("recommended_actions") else ""
+    )
+    flow = [
+        Paragraph("Executive summary", styles["h2"]),
+        Paragraph(lead, styles["body"]),
+        Paragraph(findings_line, styles["body"]),
+    ]
+    if action_line:
+        flow.append(Paragraph(action_line, styles["body"]))
+    return flow
+
+
 def render(report: dict, risk_rating: dict = None, analyst_comments: Optional[str] = None) -> bytes:
     styles = _styles()
     subject = report["subject"]
+    assessment = auto_risk_assessment(report, analyst_comments)
     buffer = io.BytesIO()
     doc = SimpleDocTemplate(
         buffer, pagesize=A4,
@@ -501,7 +581,10 @@ def render(report: dict, risk_rating: dict = None, analyst_comments: Optional[st
         author="Sanctions+",
     )
 
-    flow = [
+    flow = _cover_page(report, assessment, styles)
+    flow += _executive_summary(report, assessment, styles)
+    flow += [
+        HRFlowable(width="100%", color=LINE, spaceBefore=10, spaceAfter=10),
         Paragraph(_clean(subject.get("name")), styles["title"]),
         Paragraph(
             f"Beneficial ownership &amp; risk report · generated {_clean(report['generated_at'])}"
@@ -533,8 +616,10 @@ def render(report: dict, risk_rating: dict = None, analyst_comments: Optional[st
 
     # Automatic — derived from this entity's own screening result, on every
     # report, not only when a manual client risk-rating workbook was filled
-    # in separately (that one follows right after, when supplied).
-    flow += _auto_risk_assessment_flow(auto_risk_assessment(report, analyst_comments), styles)
+    # in separately (that one follows right after, when supplied). Reuses the
+    # same assessment already computed for the cover page/executive summary
+    # above, so the headline rating can never drift from the detail below it.
+    flow += _auto_risk_assessment_flow(assessment, styles)
 
     flow += _risk_rating_flow(risk_rating, styles)
 

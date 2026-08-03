@@ -494,7 +494,13 @@ its report.
 - Unresolved identity matches, flagged for verification and never silently merged.
 - Open-web research, if enabled, in a separate amber panel with a category filter.
 - **Download PDF** produces a formatted document with the same content, colour bands
-  included, ready to file or attach.
+  included, ready to file or attach — opening with its own cover page
+  (classification marker, subject, overall risk rating, generation date, a
+  "Prepared for" placeholder) and an executive summary (what was screened,
+  the headline rating and score, how many findings, the first recommended
+  action) before the detailed sections, so it reads as a complete
+  regulator-ready compliance report from the first page rather than a
+  printout of the on-screen view.
 
 Every name in the report is clickable, so you can walk the chain from a subsidiary up
 to its beneficial owner one report at a time.
