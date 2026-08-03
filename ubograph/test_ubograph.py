@@ -5,6 +5,7 @@ import pdf as pdf_renderer
 from graph import band_reason, build_graph, find_ubos, risk_band, run_detectors
 import config
 import db
+import tz
 from sources import adverse_media
 from sources import opencorporates
 from sources import opensanctions
@@ -14,7 +15,8 @@ import goaml
 import reasons
 import risk_rating
 from reference import country_label, fatf_marking, jurisdiction_label
-from report import build_report
+import report
+from report import auto_risk_assessment, build_report
 from resolve import EntityStore
 from schema import COMPANY, OWNS, PERSON, POSSIBLY_SAME_AS, Edge, Node, normalise_name
 from search import batch_screen, run_search, screen_name
@@ -26,6 +28,15 @@ def check(label, condition):
     print(("  ok   " if condition else "  FAIL ") + label)
     if not condition:
         failures.append(label)
+
+
+def pdf_text(data: bytes) -> str:
+    """Extract plain text from a rendered PDF for content assertions —
+    reportlab compresses content streams, so a raw byte substring check
+    can't see the actual text; this decompresses and reads it properly."""
+    import io as _io
+    from pypdf import PdfReader
+    return "\n".join(page.extract_text() or "" for page in PdfReader(_io.BytesIO(data)).pages)
 
 
 def test_name_normalisation():
@@ -228,6 +239,22 @@ def test_fatf_black_and_grey_list_markings():
 
     check("a UN-regime-only jurisdiction (no FATF listing) is high severity with no marking",
           un_only and un_only["severity"] == "high" and "marking" not in un_only)
+
+
+def test_uae_dubai_time():
+    print("tz.py — every displayed timestamp reads in UAE/Dubai time (UTC+4)")
+    from datetime import datetime, timezone
+
+    utc_midnight = datetime(2024, 1, 1, 0, 0, 0, tzinfo=timezone.utc)
+    check("UTC 00:00 is 04:00 in Dubai (fixed UTC+4, no DST)",
+          tz.format_dubai(utc_midnight) == "2024-01-01 04:00 GST")
+    check("the GST label is always stated, not left implicit",
+          "GST" in tz.format_dubai())
+    check("format_dubai_from_epoch matches format_dubai on the same instant",
+          tz.format_dubai_from_epoch(utc_midnight.timestamp()) == tz.format_dubai(utc_midnight))
+    check("a naive datetime is treated as UTC before converting, not as already Dubai time",
+          tz.format_dubai(datetime(2024, 1, 1, 0, 0, 0)) == "2024-01-01 04:00 GST")
+    check("now_dubai() carries the +04:00 offset", tz.now_dubai().utcoffset().total_seconds() == 4 * 3600)
 
 
 def test_match_confidence_note():
@@ -530,6 +557,9 @@ def test_edd_checklist():
 
     data = pdf_renderer.render_edd_checklist(report, rows)
     check("EDD checklist renders as its own PDF", data.startswith(b"%PDF") and len(data) > 1500)
+    text = pdf_text(data)
+    check("the EDD PDF carries a Prepared/Reviewed/Approved signature block",
+          all(role in text for role in ("Prepared By", "Reviewed By", "Approved By")))
 
 
 def test_mou_draft():
@@ -555,6 +585,8 @@ def test_goaml_export():
     check("subject name is present", b"Viktor Branko" in xml_bytes)
     check("the reason for the report carries through", b"Sanctions hit found" in xml_bytes)
     check("defaults to STR", b"<report_type>STR</report_type>" in xml_bytes)
+    check("generated_at is stated in UAE/Dubai time (+04:00)", b"+04:00" in xml_bytes)
+    check("the report's own generated_at is UAE/Dubai time too", "GST" in report["generated_at"])
 
     sar_bytes = goaml.build_xml(report, report_type="SAR")
     check("report_type can be switched to SAR", b"<report_type>SAR</report_type>" in sar_bytes)
@@ -702,6 +734,56 @@ def test_report_folds_adverse_media_findings():
           not any(f.get("kind") == "adverse_media" for f in errored_report["findings"]))
 
 
+def test_auto_risk_assessment():
+    print("report.auto_risk_assessment() — automatic, on every downloaded report")
+    payload = run_search("falcon capital", hops=4)
+
+    webb = next(n["id"] for n in payload["nodes"] if n["name"] == "Marcus Webb")
+    clean_ish = build_report(payload, webb)
+    assessment = auto_risk_assessment(clean_ish)
+    check("an orange-band nominee rates Medium, not Low",
+          assessment["overall_rating"] == "Medium")
+    check("risk score carries through from the subject", assessment["risk_score"] == clean_ish["subject"]["risk_score"])
+    check("risk factors are the finding titles", assessment["risk_factors"]
+          and all(isinstance(f, str) for f in assessment["risk_factors"]))
+    check("screening results mention what was actually screened",
+          "Screened against" in assessment["screening_results"])
+    check("recommended actions are non-empty and specific to Medium",
+          assessment["recommended_actions"] == report.RECOMMENDED_ACTIONS["Medium"])
+    check("no analyst comments supplied -> says so explicitly, not blank",
+          assessment["analyst_comments"] == "None recorded.")
+    check("a supplied analyst comment carries through verbatim",
+          auto_risk_assessment(clean_ish, "Reviewed, no concerns.")["analyst_comments"]
+          == "Reviewed, no concerns.")
+    check("assessment carries its own UAE/Dubai generated timestamp",
+          "GST" in assessment["generated_at"])
+
+    branko = next(n["id"] for n in payload["nodes"] if n["name"] == "Viktor Branko")
+    sanctioned = build_report(payload, branko)
+    critical = auto_risk_assessment(sanctioned)
+    check("a red band with a 'sanctioned' flag escalates to Critical, not just High",
+          critical["overall_rating"] == "Critical")
+    check("Critical carries its own STR-filing recommendation",
+          any("STR" in a for a in critical["recommended_actions"]))
+
+    empty_findings_report = dict(clean_ish)
+    empty_findings_report["findings"] = []
+    empty_findings_report["subject"] = dict(clean_ish["subject"])
+    empty_findings_report["subject"]["risk_band"] = "green"
+    empty_findings_report["subject"]["flags"] = []
+    clean = auto_risk_assessment(empty_findings_report)
+    check("a green band with no flags rates Low", clean["overall_rating"] == "Low")
+    check("no findings -> risk factors say so rather than an empty list",
+          clean["risk_factors"] == ["No adverse findings identified in the sources checked."])
+
+    pdf_data = pdf_renderer.render(sanctioned)
+    text = pdf_text(pdf_data)
+    check("the PDF's Risk Assessment section states the overall rating",
+          "CRITICAL RISK" in text.upper())
+    check("recommended actions appear in the rendered PDF",
+          "STR" in text)
+
+
 def test_report_and_pdf():
     print("report and PDF")
     payload = run_search("falcon capital", hops=4)
@@ -721,6 +803,9 @@ def test_report_and_pdf():
 
     data = pdf_renderer.render(sanctioned)
     check("PDF renders", data.startswith(b"%PDF") and len(data) > 2000)
+    text = pdf_text(data)
+    check("the report PDF carries a Prepared/Reviewed/Approved signature block",
+          all(role in text for role in ("Prepared By", "Reviewed By", "Approved By")))
 
     rating = risk_rating.rate(
         nationality="af", country_of_birth="kw", country_of_residence="kw",
@@ -765,6 +850,7 @@ if __name__ == "__main__":
         test_fatf_jurisdiction_detector,
         test_fatf_black_and_grey_list_markings,
         test_fatf_marking_helper,
+        test_uae_dubai_time,
         test_match_confidence_note,
         test_merge_by_score,
         test_weak_match_filtering,
@@ -783,6 +869,7 @@ if __name__ == "__main__":
         test_batch_screen,
         test_db_persistence,
         test_report_folds_adverse_media_findings,
+        test_auto_risk_assessment,
         test_report_and_pdf,
         test_identity_matches_surface_in_report,
     ):

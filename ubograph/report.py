@@ -11,6 +11,7 @@ from sources import demo as demo_source
 from sources import opensanctions
 from reference import country_label, jurisdiction_label
 from schema import COMPANY, DIRECTS, OWNS, PERSON, POSSIBLY_SAME_AS, SHAREHOLDER_OF
+from tz import format_dubai
 
 CONTROL_TYPES = {OWNS, SHAREHOLDER_OF, DIRECTS}
 
@@ -194,7 +195,7 @@ def build_report(payload: dict, node_id: str) -> dict:
     dossier, dossier_error = _load_dossier(subject)
 
     return {
-        "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M"),
+        "generated_at": format_dubai(),
         "dossier": dossier,
         "dossier_error": dossier_error,
         "query": payload.get("query", {}),
@@ -225,8 +226,85 @@ def build_report(payload: dict, node_id: str) -> dict:
         "ownership_paths": ownership_paths,
         "identity_matches": identity_matches,
         "media": payload.get("adverse_media"),
+        "sources_used": payload.get("sources_used") or [],
         "disclaimer": DISCLAIMER,
         "end_date_note": END_DATE_NOTE,
+    }
+
+
+# Every rating below "Critical" already exists as a graph.py risk_band (green/
+# orange/red); "Critical" is an escalation within "red" for the two signals
+# that mean this isn't just elevated risk but an active sanctions match: the
+# "sanctioned" flag itself, or a finding literally on the FATF black list.
+_RATING_FOR_BAND = {"green": "Low", "orange": "Medium", "red": "High"}
+
+RECOMMENDED_ACTIONS = {
+    "Critical": [
+        "Do not onboard, or immediately suspend the relationship, pending senior "
+        "management and MLRO decision.",
+        "File a Suspicious Transaction Report (STR) via goAML without delay.",
+        "If a confirmed sanctions/TFS match, freeze funds and file the required "
+        "Confirmed Name Match Report within the regulatory timeframe.",
+    ],
+    "High": [
+        "Escalate to the MLRO / compliance officer before proceeding further.",
+        "Apply Enhanced Due Diligence, including verified source of funds/wealth.",
+        "Obtain senior management sign-off before onboarding or continuing the "
+        "relationship.",
+    ],
+    "Medium": [
+        "Apply Enhanced Due Diligence commensurate with the risk factors identified.",
+        "Document the rationale for proceeding and obtain the appropriate internal "
+        "sign-off.",
+        "Increase the frequency of ongoing monitoring for this relationship.",
+    ],
+    "Low": [
+        "Standard Customer Due Diligence is sufficient based on the sources checked.",
+        "Maintain periodic ongoing monitoring per the firm's risk-based approach.",
+    ],
+}
+
+
+def _overall_rating(band: str, flags, findings: List[dict]) -> str:
+    flags = set(flags or [])
+    black_listed = any(f.get("marking") == "black_list" for f in findings)
+    if band == "red" and ("sanctioned" in flags or black_listed):
+        return "Critical"
+    return _RATING_FOR_BAND.get(band, "Low")
+
+
+def _screening_results_summary(report: dict) -> str:
+    subject = report["subject"]
+    sources = report.get("sources_used") or subject.get("sources") or []
+    parts = [f"Screened against: {', '.join(sources) if sources else 'no source configured'}."]
+    flags = subject.get("flags") or []
+    parts.append(f"Sanctions/PEP/adverse flags identified: {', '.join(flags) if flags else 'none'}.")
+    if report.get("demo_mode"):
+        parts.append("Demo/sample data — not a real screening result.")
+    return " ".join(parts)
+
+
+def auto_risk_assessment(report: dict, analyst_comments: Optional[str] = None) -> dict:
+    """A risk assessment derived automatically from this entity's own
+    screening result — the overall rating, score, risk factors, screening
+    summary and recommended next step, with no separate form to fill in.
+    Distinct from risk_rating.rate(): that's a manual client-onboarding
+    worksheet the user fills in by hand; this is a summary of what the
+    screening itself already found, generated every time a report is built
+    so a downloaded PDF is never missing this section.
+    """
+    subject = report["subject"]
+    findings = report.get("findings") or []
+    rating = _overall_rating(subject.get("risk_band"), subject.get("flags"), findings)
+    risk_factors = [f["title"] for f in findings]
+    return {
+        "overall_rating": rating,
+        "risk_score": subject.get("risk_score"),
+        "risk_factors": risk_factors or ["No adverse findings identified in the sources checked."],
+        "screening_results": _screening_results_summary(report),
+        "recommended_actions": RECOMMENDED_ACTIONS[rating],
+        "analyst_comments": (analyst_comments or "").strip() or "None recorded.",
+        "generated_at": format_dubai(),
     }
 
 

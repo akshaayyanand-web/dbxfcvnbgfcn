@@ -1,8 +1,10 @@
 """Renders a report dict (from report.build_report) into a PDF."""
 import io
 import re
-from datetime import datetime
-from typing import List
+from typing import List, Optional
+
+from report import auto_risk_assessment
+from tz import format_dubai
 
 from reportlab.lib import colors
 from reportlab.lib.enums import TA_JUSTIFY
@@ -24,6 +26,10 @@ BAND_COLOUR = {
     "green": colors.HexColor("#4F6B44"),
     "black_list": colors.HexColor("#111111"),
     "grey_list": colors.HexColor("#767267"),
+}
+RATING_COLOUR = {
+    "Low": BAND_COLOUR["green"], "Medium": BAND_COLOUR["orange"],
+    "High": BAND_COLOUR["red"], "Critical": colors.HexColor("#111111"),
 }
 INK = colors.HexColor("#1C1A17")
 MUTED = colors.HexColor("#6B645A")
@@ -157,6 +163,85 @@ def _findings_block(findings: List[dict], styles) -> List:
         ]))
         flow += [row, Spacer(1, 5)]
     return flow
+
+
+def _auto_risk_assessment_flow(assessment: dict, styles) -> List:
+    """The automatic risk assessment every downloaded report now carries,
+    derived from this entity's own screening result — see
+    report.auto_risk_assessment(). Distinct from the manual client
+    risk-rating worksheet rendered by _risk_rating_flow() below, which is a
+    separate form the user fills in by hand."""
+    if not assessment:
+        return []
+    rating = assessment["overall_rating"]
+    chip = Table(
+        [[Paragraph(
+            f'<font color="white"><b>{rating.upper()} RISK '
+            f'— {_clean(assessment.get("risk_score"))} / 100</b></font>', styles["small"],
+        )]],
+        colWidths=[62 * mm],
+    )
+    chip.setStyle(TableStyle([
+        ("BACKGROUND", (0, 0), (-1, -1), RATING_COLOUR.get(rating, MUTED)),
+        ("LEFTPADDING", (0, 0), (-1, -1), 8), ("RIGHTPADDING", (0, 0), (-1, -1), 8),
+        ("TOPPADDING", (0, 0), (-1, -1), 5), ("BOTTOMPADDING", (0, 0), (-1, -1), 5),
+    ]))
+    flow = [
+        Paragraph("Risk Assessment", styles["h2"]),
+        Paragraph(
+            "Generated automatically from this entity's own screening result — "
+            "not a separate form.", styles["small"],
+        ),
+        chip, Spacer(1, 8),
+
+        Paragraph("<b>Risk factors identified</b>", styles["body"]),
+    ]
+    for factor in assessment["risk_factors"]:
+        flow.append(Paragraph(f"• {_clean(factor)}", styles["body"]))
+
+    flow.append(Paragraph("<b>Screening results</b>", styles["body"]))
+    flow.append(Paragraph(_clean(assessment["screening_results"]), styles["body"]))
+
+    flow.append(Paragraph("<b>Recommended actions</b>", styles["body"]))
+    for action in assessment["recommended_actions"]:
+        flow.append(Paragraph(f"• {_clean(action)}", styles["body"]))
+
+    flow.append(Paragraph("<b>Analyst comments</b>", styles["body"]))
+    flow.append(Paragraph(_clean(assessment["analyst_comments"]), styles["body"]))
+
+    flow.append(Paragraph(
+        f"<font size='8' color='#6B645A'>Risk assessment generated "
+        f"{_clean(assessment['generated_at'])}</font>", styles["body"]))
+    return flow
+
+
+def _signature_block(styles) -> List:
+    """Prepared By / Reviewed By / Approved By placeholders for every official
+    compliance document this platform generates. Nothing here is pre-filled —
+    each is a blank line for the actual reviewing officer to complete, by hand
+    or through the firm's own sign-off process; this tool has no reviewer
+    identity to put here and must not invent one.
+    """
+    rows = [[
+        Paragraph(f"<b>{role}:</b> _______________________________", styles["cell"]),
+        Paragraph("<b>Date:</b> ________________", styles["cell"]),
+    ] for role in ("Prepared By", "Reviewed By", "Approved By")]
+    table = Table(rows, colWidths=[105 * mm, 55 * mm])
+    table.setStyle(TableStyle([
+        ("TOPPADDING", (0, 0), (-1, -1), 16), ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
+        ("LEFTPADDING", (0, 0), (0, -1), 0),
+    ]))
+    return [
+        Spacer(1, 10),
+        HRFlowable(width="100%", color=LINE, spaceAfter=6),
+        Paragraph("Signatures", styles["h2"]),
+        Paragraph(
+            "This document is a lead for a human reviewer, not a self-certifying "
+            "record — it is not considered complete for a compliance file until "
+            "signed off below.", styles["small"],
+        ),
+        table,
+    ]
 
 
 def _risk_rating_flow(rating: dict, styles) -> List:
@@ -327,7 +412,7 @@ def _dossier_flow(report: dict, styles) -> List:
     return flow
 
 
-def render(report: dict, risk_rating: dict = None) -> bytes:
+def render(report: dict, risk_rating: dict = None, analyst_comments: Optional[str] = None) -> bytes:
     styles = _styles()
     subject = report["subject"]
     buffer = io.BytesIO()
@@ -367,6 +452,11 @@ def render(report: dict, risk_rating: dict = None) -> bytes:
     if report.get("findings"):
         flow.append(Paragraph("Findings", styles["h2"]))
         flow += _findings_block(report["findings"], styles)
+
+    # Automatic — derived from this entity's own screening result, on every
+    # report, not only when a manual client risk-rating workbook was filled
+    # in separately (that one follows right after, when supplied).
+    flow += _auto_risk_assessment_flow(auto_risk_assessment(report, analyst_comments), styles)
 
     flow += _risk_rating_flow(risk_rating, styles)
 
@@ -422,6 +512,7 @@ def render(report: dict, risk_rating: dict = None) -> bytes:
     flow.append(Spacer(1, 10))
     flow.append(HRFlowable(width="100%", color=LINE, spaceAfter=6))
     flow.append(Paragraph(_clean(report.get("disclaimer")), styles["small"]))
+    flow += _signature_block(styles)
 
     def footer(canvas, document):
         canvas.saveState()
@@ -451,7 +542,7 @@ def render_edd_checklist(report: dict, rows: List[dict]) -> bytes:
     flow = [
         Paragraph("Enhanced Due Diligence Checklist", styles["title"]),
         Paragraph(
-            f"{_clean(subject.get('name'))} · generated {datetime.now().strftime('%Y-%m-%d %H:%M')}",
+            f"{_clean(subject.get('name'))} · generated {format_dubai()}",
             styles["sub"],
         ),
         Paragraph(
@@ -491,6 +582,7 @@ def render_edd_checklist(report: dict, rows: List[dict]) -> bytes:
         "business relationship remains a judgement call for the compliance officer.",
         styles["small"],
     ))
+    flow += _signature_block(styles)
 
     def footer(canvas, document):
         canvas.saveState()
@@ -531,7 +623,7 @@ def render_mou_draft(report: dict, role: str = "purchaser") -> bytes:
     flow = [
         Paragraph("Memorandum of Understanding", styles["title"]),
         Paragraph(
-            f"DRAFT — generated {datetime.now().strftime('%Y-%m-%d %H:%M')}. "
+            f"DRAFT — generated {format_dubai()}. "
             f"{_clean(subject.get('name'))} pre-filled as {role}; every other field is a "
             "placeholder for the acting lawyer to complete and review before use.",
             styles["sub"],
@@ -601,7 +693,7 @@ def render_risk_rating(rating: dict) -> bytes:
     flow = [
         Paragraph("Client Risk Rating", styles["title"]),
         Paragraph(
-            f"Generated {datetime.now().strftime('%Y-%m-%d %H:%M')} · "
+            f"Generated {format_dubai()} · "
             "standalone worksheet, not tied to any search or entity",
             styles["sub"],
         ),

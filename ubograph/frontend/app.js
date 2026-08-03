@@ -576,6 +576,8 @@ function renderReport(report) {
     <div class="action-groups">
       <div class="action-group">
         <button class="primary" id="download-pdf" type="button">Download PDF</button>
+        <input id="analyst-comments" type="text" placeholder="Analyst comments (optional)"
+          class="reason-input" title="Included in the PDF's Risk Assessment section">
       </div>
       <div class="action-group">
         <span class="action-label">Documents</span>
@@ -798,6 +800,7 @@ async function downloadPdf() {
         node_id: state.report.subject.id,
         ...(state.riskRatingInputs || {}),
         include_risk_rating: !!state.riskRatingInputs,
+        analyst_comments: $('#analyst-comments').value.trim(),
       }),
     });
     if (!response.ok) throw new Error('The server could not build the PDF.');
@@ -1233,12 +1236,23 @@ canvas.addEventListener('wheel', (event) => {
 /* ------------------------------------------------------------------ *
  * Workspace: cases, watchlist, batch screening, activity log
  * ------------------------------------------------------------------ */
+// Every timestamp this platform displays reads in UAE/Dubai time (UTC+4),
+// regardless of the viewer's own browser timezone — a fixed IANA zone rather
+// than a manual +4 offset so it also gets the "GST" abbreviation right.
+const DUBAI_TZ = 'Asia/Dubai';
+function formatDubai(unixSeconds) {
+  return new Intl.DateTimeFormat('en-GB', {
+    timeZone: DUBAI_TZ, day: '2-digit', month: 'short', year: 'numeric',
+    hour: '2-digit', minute: '2-digit', hour12: false, timeZoneName: 'short',
+  }).format(new Date(unixSeconds * 1000));
+}
+
 function timeAgo(unixSeconds) {
   const diff = Date.now() / 1000 - unixSeconds;
   if (diff < 60) return 'just now';
   if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
   if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
-  return new Date(unixSeconds * 1000).toLocaleDateString();
+  return formatDubai(unixSeconds);
 }
 
 async function loadWorkspace() {

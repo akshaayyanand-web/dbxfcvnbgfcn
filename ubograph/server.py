@@ -200,7 +200,10 @@ def api_report_pdf():
     caller has one in progress — set include_risk_rating and send the same
     fields /api/risk_rating takes (country_of_birth, employment_type, etc.)
     alongside payload/node_id, and the PDF gets a "Client risk rating"
-    section; leave it unset and the PDF is unchanged.
+    section; leave it unset and the PDF is unchanged. The automatic Risk
+    Assessment section (overall rating, risk factors, recommended actions)
+    is always included — pass an optional analyst_comments string to have it
+    carry through into that section.
     """
     body = request.get_json(silent=True) or {}
     payload, node_id = body.get("payload"), body.get("node_id")
@@ -212,7 +215,7 @@ def api_report_pdf():
     rating = _rate_from_request(body) if body.get("include_risk_rating") else None
     name = re.sub(r"[^A-Za-z0-9]+", "_", report["subject"].get("name") or "report").strip("_")
     return app.response_class(
-        pdf_renderer.render(report, risk_rating=rating),
+        pdf_renderer.render(report, risk_rating=rating, analyst_comments=body.get("analyst_comments")),
         mimetype="application/pdf",
         headers={"Content-Disposition": f'attachment; filename="SanctionsPlus_{name}.pdf"'},
     )

@@ -11,10 +11,10 @@ very likely need re-keying into goAML's own web form or import format either
 way.
 """
 import xml.etree.ElementTree as ET
-from datetime import datetime
 from typing import Optional
 
 import reasons as reasons_ref
+from tz import now_dubai
 
 REPORT_TYPES = {
     "STR": "Suspicious Transaction Report",
@@ -41,7 +41,7 @@ def build_xml(report: dict, reason: str = "", reason_code: Optional[str] = None,
 
     header = _sub(root, "report_header")
     _sub(header, "generated_by", "Sanctions+")
-    _sub(header, "generated_at", datetime.now().strftime("%Y-%m-%dT%H:%M:%S"))
+    _sub(header, "generated_at", now_dubai().strftime("%Y-%m-%dT%H:%M:%S+04:00"))
     _sub(header, "report_type", report_type)
     _sub(header, "report_type_label", REPORT_TYPES[report_type])
 
@@ -130,7 +130,7 @@ def build_match_xml(screened_name: str, match: dict, report_type: str = "PNMR") 
 
     header = _sub(root, "report_header")
     _sub(header, "generated_by", "Sanctions+")
-    _sub(header, "generated_at", datetime.now().strftime("%Y-%m-%dT%H:%M:%S"))
+    _sub(header, "generated_at", now_dubai().strftime("%Y-%m-%dT%H:%M:%S+04:00"))
     _sub(header, "report_type", report_type)
     _sub(header, "report_type_label", MATCH_REPORT_TYPES[report_type])
     _sub(header, "filing_note",
