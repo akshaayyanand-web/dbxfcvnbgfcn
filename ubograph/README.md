@@ -210,6 +210,7 @@ risk_rating.py       client risk-rating rubric (client-supplied workbook, digiti
 geocode.py           free, keyless address geocoding + satellite-image URLs
 edd.py               Enhanced Due Diligence checklist, sourced from the graph
 goaml.py             goAML XML draft export (starting point, not schema-validated)
+package.py           "Download All" — bundles every document into one ZIP
 reasons.py           "reason for reporting" reference library (STR/SAR red-flag codes)
 db.py                SQLite: saved cases, the watchlist, the activity log
 pipeline.py          command line entry point
@@ -249,6 +250,7 @@ downstream knows which API a record came from.
 | `GET /api/reasons` | `?q=` → the "reason for reporting" reference library (code + description), optionally filtered |
 | `POST /api/goaml.xml` | `{payload, node_id, reason, reason_code, report_type}` → a starting-point goAML XML draft (`report_type` is `"STR"` or `"SAR"`) |
 | `POST /api/goaml_match.xml` | `{name, match, report_type}` → a goAML draft for one screening hit (`report_type` is `"CNMR"` or `"PNMR"`) |
+| `POST /api/download_all.zip` | `{payload, node_id, analyst_comments}` → one ZIP with the full report, a standalone Risk Assessment PDF, the EDD checklist, an evidence/sources list, and an audit trail extract |
 | `POST /api/batch_screen` | `{names: [...], entity_type}` or a multipart `file` upload → a risk read on every name |
 | `GET /api/batch_screen.csv` | Same, as a downloadable CSV — repeated `?name=` query params |
 | `POST /api/cases` · `GET /api/cases` · `GET /api/cases/<id>` · `POST /api/cases/<id>/notes` · `DELETE /api/cases/<id>` | Save / list / open / annotate / delete a case (a named snapshot of one entity's result set) |
@@ -410,6 +412,25 @@ would otherwise assemble by hand:
   from the full entity STR/SAR above, and carrying the standard reminder
   that a confirmed or partial match should be reported through goAML within
   five days, alongside any funds-freeze action taken.
+
+### Download All — one complete investigation package
+
+"Download All" sits right next to "Download PDF" on a report and produces a
+single ZIP with everything otherwise downloaded one document at a time:
+
+1. The full screening report PDF (with its automatic Risk Assessment
+   section and Prepared By / Reviewed By / Approved By signature block).
+2. A standalone Risk Assessment PDF (the same automatic assessment, broken
+   out as its own file).
+3. The EDD checklist PDF.
+4. A plain-text evidence/source list — every source URL on record plus any
+   open-web research findings, each with its attribution.
+5. An audit trail CSV — every activity-log entry that mentions this
+   subject by name (search, report view, exports, workspace changes).
+
+Everything is generated fresh from the same report structure the on-screen
+view uses, so nothing in the bundle can say something different from what
+was actually screened. See `package.py`.
 
 ### Workspace: cases, watchlist, batch screening, activity log
 

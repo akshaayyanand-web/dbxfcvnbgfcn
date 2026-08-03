@@ -757,6 +757,45 @@ def render_mou_draft(report: dict, role: str = "purchaser") -> bytes:
     return buffer.getvalue()
 
 
+def render_auto_risk_assessment(report: dict, analyst_comments: Optional[str] = None) -> bytes:
+    """The automatic risk assessment (see report.auto_risk_assessment) as its
+    own standalone PDF — the same section already embedded in the full
+    report, broken out separately for the "Download All" investigation
+    package, where it's expected as its own file."""
+    styles = _styles()
+    subject = report["subject"]
+    assessment = auto_risk_assessment(report, analyst_comments)
+    buffer = io.BytesIO()
+    doc = SimpleDocTemplate(
+        buffer, pagesize=A4,
+        leftMargin=20 * mm, rightMargin=20 * mm, topMargin=18 * mm, bottomMargin=18 * mm,
+        title=f"Risk Assessment — {subject.get('name')}",
+        author="Sanctions+",
+    )
+    flow = [
+        Paragraph(_clean(subject.get("name")), styles["title"]),
+        Paragraph(
+            f"Risk Assessment · generated {_clean(assessment['generated_at'])}"
+            + (" · SAMPLE DATA, NOT A REAL RECORD" if report.get("demo_mode") else ""),
+            styles["sub"],
+        ),
+        HRFlowable(width="100%", color=LINE, spaceBefore=4, spaceAfter=2),
+    ]
+    flow += _auto_risk_assessment_flow(assessment, styles)
+    flow += _signature_block(styles)
+
+    def footer(canvas, document):
+        canvas.saveState()
+        canvas.setFont("Helvetica", 7.5)
+        canvas.setFillColor(MUTED)
+        canvas.drawString(20 * mm, 12 * mm, f"Sanctions+ · Risk Assessment · {subject.get('name')}")
+        canvas.drawRightString(A4[0] - 20 * mm, 12 * mm, f"page {document.page}")
+        canvas.restoreState()
+
+    doc.build(flow, onFirstPage=footer, onLaterPages=footer)
+    return buffer.getvalue()
+
+
 def render_risk_rating(rating: dict) -> bytes:
     """A standalone PDF for the Risk Assessment tab's worksheet — independent
     of any entity, search, or report, exactly like the tab itself."""

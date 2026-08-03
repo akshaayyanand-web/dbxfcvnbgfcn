@@ -699,6 +699,7 @@ function renderReport(report) {
     <div class="action-groups">
       <div class="action-group">
         <button class="primary" id="download-pdf" type="button">Download PDF</button>
+        <button class="primary" id="download-all" type="button">Download All (.zip)</button>
         <input id="analyst-comments" type="text" placeholder="Analyst comments (optional)"
           class="reason-input" title="Included in the PDF's Risk Assessment section">
       </div>
@@ -774,6 +775,9 @@ function renderReport(report) {
     <p class="disclaimer">${escapeHtml(report.disclaimer)}</p>`;
 
   $('#download-pdf').addEventListener('click', downloadPdf);
+  $('#download-all').addEventListener('click', (event) => downloadDocument(
+    event.currentTarget, '/api/download_all.zip', subjectFilename('Investigation_Package', 'zip'),
+    {analyst_comments: $('#analyst-comments').value.trim()}, 'Building package…'));
   $('#back-to-table').addEventListener('click', () => showTab('table'));
   $('#download-edd').addEventListener('click', (event) => downloadDocument(
     event.currentTarget, '/api/edd.pdf', subjectFilename('EDD', 'pdf'), {}, 'Building…'));

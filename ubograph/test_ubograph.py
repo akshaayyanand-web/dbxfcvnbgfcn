@@ -12,6 +12,7 @@ from sources import opensanctions
 import edd
 import geocode
 import goaml
+import package
 import reasons
 import risk_rating
 from reference import country_label, fatf_marking, jurisdiction_label
@@ -463,6 +464,27 @@ def test_server_screen_endpoint():
           and body["screening_details"].get("occupation") == "Trader")
 
 
+def test_server_download_all_endpoint():
+    print("server.py — /api/download_all.zip wiring")
+    import zipfile as _zipfile
+    import io as _io
+
+    payload = run_search("falcon capital", hops=4)
+    branko = next(n["id"] for n in payload["nodes"] if n["name"] == "Viktor Branko")
+    client = server.app.test_client()
+
+    missing = client.post("/api/download_all.zip", json={})
+    check("missing payload/node_id is a 400, not a 500", missing.status_code == 400)
+
+    response = client.post("/api/download_all.zip", json={
+        "payload": payload, "node_id": branko, "analyst_comments": "Escalate.",
+    })
+    check("the endpoint responds 200", response.status_code == 200)
+    check("the response is a ZIP file", response.mimetype == "application/zip")
+    zf = _zipfile.ZipFile(_io.BytesIO(response.data))
+    check("the ZIP contains all five documents", len(zf.namelist()) == 5)
+
+
 def test_screen_name_button():
     print("'Screen this name' lookup for the risk-rating form")
     check("blank name is rejected", "error" in screen_name(""))
@@ -889,6 +911,52 @@ def test_auto_risk_assessment():
           "STR" in text)
 
 
+def test_download_all_package():
+    print("package.build_zip — the 'Download All' investigation package")
+    import io as _io
+    import zipfile as _zipfile
+
+    payload = run_search("falcon capital", hops=4)
+    branko = next(n["id"] for n in payload["nodes"] if n["name"] == "Viktor Branko")
+    sanctioned = build_report(payload, branko)
+
+    data = package.build_zip(sanctioned, analyst_comments="Escalated to MLRO.")
+    zf = _zipfile.ZipFile(_io.BytesIO(data))
+    names = zf.namelist()
+    check("the package has exactly the five promised documents", len(names) == 5)
+    check("a screening report PDF is included",
+          any(n.startswith("01_Screening_Report_") and n.endswith(".pdf") for n in names))
+    check("a standalone risk assessment PDF is included",
+          any(n.startswith("02_Risk_Assessment_") and n.endswith(".pdf") for n in names))
+    check("an EDD report PDF is included",
+          any(n.startswith("03_EDD_Report_") and n.endswith(".pdf") for n in names))
+    check("an evidence/sources text file is included",
+          any(n.startswith("04_Evidence_and_Sources_") and n.endswith(".txt") for n in names))
+    check("an audit trail CSV is included",
+          any(n.startswith("05_Audit_Trail_") and n.endswith(".csv") for n in names))
+
+    for name in names:
+        content = zf.read(name)
+        check(f"{name} is non-trivially sized", len(content) > 50)
+        if name.endswith(".pdf"):
+            check(f"{name} is a well-formed PDF", content.startswith(b"%PDF"))
+
+    risk_pdf = zf.read(next(n for n in names if n.startswith("02_Risk_Assessment_")))
+    text = pdf_text(risk_pdf)
+    check("the analyst comment carries through into the standalone risk assessment PDF",
+          "Escalated to MLRO" in text)
+
+    evidence_text = zf.read(next(n for n in names if n.startswith("04_Evidence_and_Sources_"))).decode()
+    check("the evidence file names the subject", "Viktor Branko" in evidence_text)
+
+    # A name with no filesystem-unsafe characters lets us confirm sanitisation
+    # doesn't crash on a name that's already clean — a fuller check lives in
+    # package._safe_filename directly below.
+    check("_safe_filename strips unsafe characters",
+          package._safe_filename('Odd/Name:With*Chars?') == "Odd_Name_With_Chars")
+    check("_safe_filename never returns empty", package._safe_filename("") == "entity")
+
+
 def test_report_and_pdf():
     print("report and PDF")
     payload = run_search("falcon capital", hops=4)
@@ -963,6 +1031,7 @@ if __name__ == "__main__":
         test_adverse_media_becomes_its_own_entity,
         test_client_risk_rating,
         test_server_screen_endpoint,
+        test_server_download_all_endpoint,
         test_screen_name_button,
         test_extra_match_properties,
         test_satellite_view_urls,
@@ -978,6 +1047,7 @@ if __name__ == "__main__":
         test_db_persistence,
         test_report_folds_adverse_media_findings,
         test_auto_risk_assessment,
+        test_download_all_package,
         test_report_and_pdf,
         test_identity_matches_surface_in_report,
     ):

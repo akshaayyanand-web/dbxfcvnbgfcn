@@ -10,6 +10,7 @@ import db
 import edd
 import geocode
 import goaml
+import package
 import pdf as pdf_renderer
 import reasons
 import reference
@@ -237,6 +238,30 @@ def api_report_pdf():
         pdf_renderer.render(report, risk_rating=rating, analyst_comments=body.get("analyst_comments")),
         mimetype="application/pdf",
         headers={"Content-Disposition": f'attachment; filename="SanctionsPlus_{name}.pdf"'},
+    )
+
+
+@app.post("/api/download_all.zip")
+def api_download_all():
+    """One complete investigation package: the screening report (with its
+    automatic Risk Assessment section and signature block), a standalone
+    Risk Assessment PDF, the EDD checklist, an evidence/source list, and an
+    audit trail extract — everything otherwise downloaded one at a time,
+    zipped together. See package.build_zip.
+    """
+    body = request.get_json(silent=True) or {}
+    payload, node_id = body.get("payload"), body.get("node_id")
+    if not payload or not node_id:
+        return jsonify({"error": "payload and node_id are required."}), 400
+    report = build_report(payload, node_id)
+    if report.get("error"):
+        return jsonify(report), 404
+    name = re.sub(r"[^A-Za-z0-9]+", "_", report["subject"].get("name") or "report").strip("_")
+    db.log_activity("download_all", report["subject"].get("name", ""))
+    return app.response_class(
+        package.build_zip(report, analyst_comments=body.get("analyst_comments")),
+        mimetype="application/zip",
+        headers={"Content-Disposition": f'attachment; filename="SanctionsPlus_Investigation_Package_{name}.zip"'},
     )
 
 
