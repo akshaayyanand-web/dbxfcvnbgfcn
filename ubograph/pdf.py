@@ -244,6 +244,33 @@ def _signature_block(styles) -> List:
     ]
 
 
+def _risk_matrix_table(matrix: list, current_band: Optional[str], styles) -> Table:
+    """Where the score actually landed, in the context of the full scale —
+    a reviewer can see at a glance how close a Medium is to High, for
+    example, not just the final label."""
+    header = ["Band", "Score range", ""]
+    data = [[Paragraph(_clean(h), styles["cellhead"]) for h in header]]
+    for entry in matrix:
+        marker = "◄ this result" if entry["band"] == current_band else ""
+        data.append([
+            Paragraph(_clean(entry["label"]), styles["cell"]),
+            Paragraph(_clean(entry["range"]), styles["cell"]),
+            Paragraph(f"<b>{_clean(marker)}</b>", styles["cell"]),
+        ])
+    table = Table(data, colWidths=[35 * mm, 35 * mm, 40 * mm], repeatRows=1)
+    style = [
+        ("VALIGN", (0, 0), (-1, -1), "TOP"),
+        ("LINEBELOW", (0, 0), (-1, 0), 0.6, LINE),
+        ("LINEBELOW", (0, 1), (-1, -1), 0.25, LINE),
+        ("TOPPADDING", (0, 0), (-1, -1), 4), ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
+    ]
+    for index, entry in enumerate(matrix, start=1):
+        style.append(("BACKGROUND", (0, index), (0, index), BAND_COLOUR.get(entry["band"], MUTED)))
+        style.append(("TEXTCOLOR", (0, index), (0, index), colors.white))
+    table.setStyle(TableStyle(style))
+    return table
+
+
 def _risk_rating_flow(rating: dict, styles) -> List:
     """The client risk-rating worksheet, only when the caller supplied one —
     a separate, manual score computed in the browser, not derived from the
@@ -260,6 +287,23 @@ def _risk_rating_flow(rating: dict, styles) -> List:
             styles["small"],
         ),
     ]
+    subject_rows = [
+        ("Subject", rating.get("subject_name")),
+        ("Screening reference", rating.get("screening_reference")),
+    ]
+    subject_rows = [(label, value) for label, value in subject_rows if value]
+    if subject_rows:
+        data = [
+            [Paragraph(_clean(label), styles["cellhead"]), Paragraph(_clean(value), styles["cell"])]
+            for label, value in subject_rows
+        ]
+        table = Table(data, colWidths=[45 * mm, None])
+        table.setStyle(TableStyle([
+            ("VALIGN", (0, 0), (-1, -1), "TOP"),
+            ("TOPPADDING", (0, 0), (-1, -1), 3), ("BOTTOMPADDING", (0, 0), (-1, -1), 3),
+            ("LEFTPADDING", (0, 0), (0, -1), 0),
+        ]))
+        flow += [table, Spacer(1, 6)]
     if rating.get("band"):
         chip = Table(
             [[Paragraph(
@@ -306,6 +350,40 @@ def _risk_rating_flow(rating: dict, styles) -> List:
     if rating.get("missing"):
         flow.append(Paragraph(f"Not yet scored: {_clean(', '.join(rating['missing']))}.", styles["small"]))
     flow.append(Paragraph(f"Source: {_clean(rating.get('source'))}", styles["small"]))
+
+    if rating.get("risk_matrix"):
+        flow.append(Spacer(1, 8))
+        flow.append(Paragraph("<b>Risk matrix</b>", styles["body"]))
+        flow.append(_risk_matrix_table(rating["risk_matrix"], rating.get("band"), styles))
+
+    if rating.get("reasoning"):
+        flow.append(Paragraph("<b>Reasoning</b>", styles["body"]))
+        flow.append(Paragraph(_clean(rating["reasoning"]), styles["body"]))
+
+    if rating.get("mitigation"):
+        flow.append(Paragraph("<b>Mitigation recommendations</b>", styles["body"]))
+        for item in rating["mitigation"]:
+            flow.append(Paragraph(f"• {_clean(item)}", styles["body"]))
+
+    flow.append(Paragraph("<b>Compliance notes</b>", styles["body"]))
+    flow.append(Paragraph(_clean(rating.get("compliance_notes") or "None recorded."), styles["body"]))
+
+    meta_rows = [
+        ("Date generated", format_dubai()),
+        ("Prepared by", rating.get("prepared_by") or "Not recorded"),
+        ("Review status", rating.get("review_status")),
+    ]
+    data = [
+        [Paragraph(_clean(label), styles["cellhead"]), Paragraph(_clean(value), styles["cell"])]
+        for label, value in meta_rows if value
+    ]
+    table = Table(data, colWidths=[45 * mm, None])
+    table.setStyle(TableStyle([
+        ("VALIGN", (0, 0), (-1, -1), "TOP"),
+        ("TOPPADDING", (0, 0), (-1, -1), 3), ("BOTTOMPADDING", (0, 0), (-1, -1), 3),
+        ("LEFTPADDING", (0, 0), (0, -1), 0),
+    ]))
+    flow += [Spacer(1, 8), table]
     return flow
 
 
@@ -700,6 +778,7 @@ def render_risk_rating(rating: dict) -> bytes:
         HRFlowable(width="100%", color=LINE, spaceBefore=4, spaceAfter=2),
     ]
     flow += _risk_rating_flow(rating, styles)
+    flow += _signature_block(styles)
 
     def footer(canvas, document):
         canvas.saveState()

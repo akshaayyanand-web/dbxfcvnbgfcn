@@ -535,6 +535,48 @@ def test_standalone_risk_rating_pdf():
           empty.startswith(b"%PDF"))
 
 
+def test_enhanced_risk_rating_fields():
+    print("risk_rating.rate() — subject details, risk matrix, reasoning, mitigation, sign-off")
+    rating = risk_rating.rate(
+        nationality="af", country_of_birth="kw", country_of_residence="kw",
+        business_work_location="ae",
+        screening_outcome="Screened, PEP not identified, not on relevant lists",
+        employment_type="Salaried", employment_industry="Asset Management",
+        mode_of_payment="Manager's Cheque", source_of_funds="Employment (Salaried)",
+        subject_name="Test Subject", screening_reference="REF-2026-001",
+        compliance_notes="Reviewed against the firm's EWRA.", prepared_by="Analyst A",
+        review_status="Pending senior review",
+    )
+    check("subject_name carries through untouched", rating["subject_name"] == "Test Subject")
+    check("screening_reference carries through untouched", rating["screening_reference"] == "REF-2026-001")
+    check("compliance_notes carries through untouched",
+          rating["compliance_notes"] == "Reviewed against the firm's EWRA.")
+    check("prepared_by carries through untouched", rating["prepared_by"] == "Analyst A")
+    check("review_status carries through untouched", rating["review_status"] == "Pending senior review")
+    check("risk matrix has all three bands", {m["band"] for m in rating["risk_matrix"]} == {"low", "medium", "high"})
+    check("reasoning names the score's actual band", "High" in rating["reasoning"])
+    check("mitigation recommendations are non-empty for a High result", rating["mitigation"])
+
+    default_rating = risk_rating.rate(nationality="af")
+    check("no prepared_by supplied -> None, not an invented name", default_rating["prepared_by"] is None)
+    check("no compliance notes -> None, not an empty string", default_rating["compliance_notes"] is None)
+    check("review_status defaults to a draft state, not blank",
+          default_rating["review_status"] == "Draft — pending review")
+
+    data = pdf_renderer.render_risk_rating(rating)
+    text = pdf_text(data)
+    check("the PDF states the subject name", "Test Subject" in text)
+    check("the PDF states the screening reference", "REF-2026-001" in text)
+    check("the PDF includes the risk matrix", "Risk matrix" in text)
+    check("the PDF includes reasoning", "Reasoning" in text)
+    check("the PDF includes mitigation recommendations", "Mitigation recommendations" in text)
+    check("the PDF states compliance notes", "Reviewed against the firm" in text)
+    check("the PDF states who prepared it and its review status",
+          "Analyst A" in text and "Pending senior review" in text)
+    check("the standalone Risk Assessment PDF also carries the sign-off block",
+          all(role in text for role in ("Prepared By", "Reviewed By", "Approved By")))
+
+
 def test_edd_checklist():
     print("EDD checklist")
     payload = run_search("falcon capital", hops=4)
@@ -861,6 +903,7 @@ if __name__ == "__main__":
         test_satellite_view_urls,
         test_adverse_media_provider_selection,
         test_standalone_risk_rating_pdf,
+        test_enhanced_risk_rating_fields,
         test_edd_checklist,
         test_mou_draft,
         test_goaml_export,

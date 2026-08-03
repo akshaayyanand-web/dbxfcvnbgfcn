@@ -116,6 +116,11 @@ def _rate_from_request(body: dict) -> dict:
         employment_industry=body.get("employment_industry"),
         mode_of_payment=body.get("mode_of_payment"),
         source_of_funds=body.get("source_of_funds"),
+        subject_name=body.get("subject_name"),
+        screening_reference=body.get("screening_reference"),
+        compliance_notes=body.get("compliance_notes"),
+        prepared_by=body.get("prepared_by"),
+        review_status=body.get("review_status"),
     )
 
 

@@ -396,6 +396,21 @@ function renderRiskAssessmentTab() {
       ${optionSelect('rr-payment', 'Mode of payment', o.mode_of_payment)}
       ${optionSelect('rr-funds', 'Source of funds / wealth', o.source_of_funds)}
     </div>
+    <div class="rating-form">
+      <label for="rr-reference">Screening reference (optional)</label>
+      <input id="rr-reference" type="text" placeholder="e.g. case or file number">
+      <label for="rr-prepared-by">Prepared by (optional)</label>
+      <input id="rr-prepared-by" type="text" placeholder="Analyst name">
+      <label for="rr-review-status">Review status</label>
+      <select id="rr-review-status">
+        <option>Draft — pending review</option>
+        <option>Under review</option>
+        <option>Approved</option>
+        <option>Rejected — requires rework</option>
+      </select>
+    </div>
+    <label for="rr-notes">Compliance notes (optional)</label>
+    <textarea id="rr-notes" rows="3" placeholder="Free-text notes for the compliance file"></textarea>
     <div class="actions">
       <button class="ghost" id="rr-calculate" type="button">Calculate rating</button>
       <button class="ghost" id="rr-download" type="button" disabled>Download PDF</button>
@@ -452,6 +467,11 @@ function renderRiskAssessmentTab() {
       employment_industry: $('#rr-employment-industry').value,
       mode_of_payment: $('#rr-payment').value,
       source_of_funds: $('#rr-funds').value,
+      subject_name: $('#rr-screen-name').value.trim(),
+      screening_reference: $('#rr-reference').value.trim(),
+      prepared_by: $('#rr-prepared-by').value.trim(),
+      review_status: $('#rr-review-status').value,
+      compliance_notes: $('#rr-notes').value.trim(),
     };
     const response = await fetch('/api/risk_rating', {
       method: 'POST',

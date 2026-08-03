@@ -82,6 +82,41 @@ def _country_row(criterion: str, code: Optional[str]) -> dict:
     }
 
 
+_MITIGATION = {
+    "low": [
+        "Standard Customer Due Diligence is sufficient at this risk level.",
+        "Review at the standard periodic interval for this risk band.",
+    ],
+    "medium": [
+        "Apply Enhanced Due Diligence measures commensurate with the factors "
+        "driving this score (see Reasoning above).",
+        "Obtain and verify documented source of funds/wealth where not already held.",
+        "Shorten the periodic review interval and document the sign-off rationale.",
+    ],
+    "high": [
+        "Escalate to the MLRO / compliance officer before onboarding or continuing "
+        "the relationship.",
+        "Apply full Enhanced Due Diligence, including senior management approval.",
+        "Consider whether the relationship should proceed at all, and document that "
+        "decision.",
+    ],
+}
+
+
+def _reasoning(rows: list, band: Optional[str]) -> str:
+    """Plain-language explanation of what actually drove the score — which
+    factors carried the most weight, not just the final number."""
+    scored = [r for r in rows if r.get("weighted_score") is not None]
+    if not scored or band is None:
+        return "Not enough fields are complete yet to explain the score."
+    top = sorted(scored, key=lambda r: r["weighted_score"], reverse=True)[:3]
+    drivers = ", ".join(f"{r['criterion']} ({r['selected']})" for r in top if r["weighted_score"] > 0)
+    band_label = {"low": "Low", "medium": "Medium", "high": "High"}.get(band, band)
+    if not drivers:
+        return f"Overall rating {band_label} — no single factor scored above zero."
+    return f"Overall rating {band_label}, driven primarily by: {drivers}."
+
+
 def rate(
     *,
     nationality: Optional[str] = None,
@@ -93,6 +128,11 @@ def rate(
     employment_industry: Optional[str] = None,
     mode_of_payment: Optional[str] = None,
     source_of_funds: Optional[str] = None,
+    subject_name: Optional[str] = None,
+    screening_reference: Optional[str] = None,
+    compliance_notes: Optional[str] = None,
+    prepared_by: Optional[str] = None,
+    review_status: Optional[str] = None,
 ) -> dict:
     """Score one client the way the source workbook does: each factor's raw
     0-10 score times its fixed weight, summed, then multiplied by 10 to land
@@ -100,6 +140,12 @@ def rate(
 
     Country arguments take ISO codes; the rest take the workbook's own labels
     (see options() for the exact strings a dropdown should offer).
+
+    subject_name/screening_reference/compliance_notes/prepared_by/
+    review_status are optional record-keeping fields for the standalone
+    downloadable PDF (subject details, a screening cross-reference, free-text
+    compliance notes, who prepared it, and its review status) — none of them
+    affect the score, and none are ever guessed or defaulted to a real name.
     """
     weights = _rubric().get("weights", {})
     rows = [
@@ -143,4 +189,16 @@ def rate(
         "complete": not missing,
         "missing": missing,
         "source": _rubric().get("source", ""),
+        "risk_matrix": [
+            {"band": "low", "label": "Low", "range": "0 – 25"},
+            {"band": "medium", "label": "Medium", "range": "26 – 50"},
+            {"band": "high", "label": "High", "range": "51 – 100"},
+        ],
+        "reasoning": _reasoning(rows, band),
+        "mitigation": _MITIGATION.get(band, []),
+        "subject_name": subject_name,
+        "screening_reference": screening_reference,
+        "compliance_notes": (compliance_notes or "").strip() or None,
+        "prepared_by": (prepared_by or "").strip() or None,
+        "review_status": review_status or "Draft — pending review",
     }

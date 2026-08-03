@@ -238,10 +238,10 @@ downstream knows which API a record came from.
 | `GET /api/export` | Same payload as a downloadable JSON file |
 | `GET /api/reference` | Country and jurisdiction lists for the dropdowns |
 | `POST /api/report` | `{payload, node_id}` → the report structure for one entity |
-| `POST /api/report.pdf` | Same input → a PDF file |
+| `POST /api/report.pdf` | Same input, plus an optional `analyst_comments` string → a PDF file. Always includes an automatic Risk Assessment section and a signature block. |
 | `GET /api/risk_rating/options` | Dropdown option lists and weights for the client risk-rating panel |
-| `POST /api/risk_rating` | `{nationality, country_of_birth, country_of_residence, business_work_location, screening_outcome, employment_type, employment_industry, mode_of_payment, source_of_funds}` → a weighted score. Standalone — no payload or node_id. |
-| `POST /api/risk_rating.pdf` | Same input → the worksheet as its own PDF |
+| `POST /api/risk_rating` | `{nationality, country_of_birth, country_of_residence, business_work_location, screening_outcome, employment_type, employment_industry, mode_of_payment, source_of_funds, subject_name, screening_reference, compliance_notes, prepared_by, review_status}` → a weighted score plus a risk matrix, reasoning and mitigation recommendations. Standalone — no payload or node_id; every field past `source_of_funds` is optional record-keeping metadata for the PDF. |
+| `POST /api/risk_rating.pdf` | Same input → the worksheet as its own PDF, with a signature block |
 | `POST /api/screen` | `{name, entity_type}` → a suggested screening outcome plus the raw matches found |
 | `POST /api/geocode` | `{address}` → coordinates, a satellite-image URL, and an OpenStreetMap link |
 | `POST /api/edd.pdf` | `{payload, node_id}` → the Enhanced Due Diligence checklist as a PDF |
@@ -275,6 +275,16 @@ has ever been searched for. See `risk_rating.py` for the scoring rule and
 "Screen this name" button runs a standalone sanctions/PEP lookup and suggests
 a screening outcome (still editable), and "Download PDF" produces the
 worksheet as its own document — no entity or report required for either.
+
+The downloadable PDF is a full compliance record, not just the scoring
+table: subject details (name, an optional screening reference), a risk
+matrix showing where the score landed against the full Low/Medium/High
+scale, plain-language reasoning naming what actually drove the score,
+band-appropriate mitigation recommendations, free-text compliance notes,
+who prepared it and its review status (Draft/Under review/Approved/
+Rejected), and a Prepared By / Reviewed By / Approved By sign-off block —
+none of the identity fields are ever pre-filled with a real name; each is
+either what you typed in or left an explicit blank.
 
 ### Adverse media (open-web research)
 
