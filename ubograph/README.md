@@ -184,9 +184,26 @@ FATF's Call for Action and Increased Monitoring lists get their own **black
 list** / **grey list** marking — a literal black or grey badge, distinct
 from the red/orange severity pill used everywhere else — so a reader can
 tell "this jurisdiction is on FATF's black list" apart from "this entity is
-sanctioned" at a glance instead of both looking like the same red flag. The
-UN sanctions-regime and FATF-suspended-cooperation cases stay on the plain
-severity colour, since neither is literally either FATF list.
+sanctioned" at a glance instead of both looking like the same red flag.
+FATF-suspended-cooperation cases stay on the plain severity colour, since
+that's not literally either FATF list.
+
+A UN Security Council targeted financial sanctions regime gets its own
+**UN Sanctions** marking too (`reference.un_sanctioned()`), checked
+independently of FATF status rather than as a fallback — a jurisdiction
+can be on a FATF list *and* under UN sanctions at once (Iran, North Korea
+and several others are both), and both badges show together rather than
+whichever check happens to fire first. This is written up everywhere a
+jurisdiction is shown during risk assessment, not only in the graph:
+
+- The `fatf_jurisdiction` detector raises its own UN Sanctions finding,
+  separate from any FATF black/grey-list finding on the same entity.
+- Every country field in the client risk-rating worksheet (nationality,
+  country of birth/residence, business/work location) carries an
+  independent `un_sanctioned` flag alongside its FATF marking, shown as
+  its own badge in both the on-screen table and the PDF.
+- Every "Screen this name" match carries the same `un_sanctioned` flag
+  next to its FATF marking.
 
 **UBO traversal follows ownership edges only.** A director sits in the control
 graph but is not a beneficial owner, and listing a hired director as the UBO is

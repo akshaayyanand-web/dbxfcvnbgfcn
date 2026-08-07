@@ -6,7 +6,7 @@ from rapidfuzz import fuzz
 import config
 import risk_rating
 from graph import build_graph, run_detectors, subgraph_json
-from reference import country_label, fatf_marking
+from reference import country_label, fatf_marking, un_sanctioned
 from resolve import EntityStore
 from schema import COMPANY, PERSON, Node, normalise_name
 from sources import adverse_media, demo, opencorporates, opensanctions
@@ -150,6 +150,7 @@ def screen_name(name: str, entity_type: str = "any", **details) -> dict:
                 "flags": sorted(opensanctions._risk_flags(r)),
                 "country": country_label(country) if country else None,
                 "fatf_marking": fatf_marking(country) if country else None,
+                "un_sanctioned": un_sanctioned(country) if country else False,
             })
         demo_mode = False
     else:
@@ -164,6 +165,7 @@ def screen_name(name: str, entity_type: str = "any", **details) -> dict:
                 "flags": sorted(store.nodes[r].risk_flags),
                 "country": country_label(store.nodes[r].country) if store.nodes[r].country else None,
                 "fatf_marking": fatf_marking(store.nodes[r].country) if store.nodes[r].country else None,
+                "un_sanctioned": un_sanctioned(store.nodes[r].country) if store.nodes[r].country else False,
             }
             for r in roots
         ]

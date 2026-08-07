@@ -178,14 +178,18 @@ def detect_fatf_jurisdictions(graph: nx.MultiDiGraph) -> List[dict]:
     FATF's own two lists get their own marking so a reader can tell "grey
     list" and "black list" apart at a glance, rather than both just reading as
     a generic red/orange severity pill: Call for Action is informally the
-    "black list", Increased Monitoring is informally the "grey list". The UN
-    sanctions regime and FATF's (rare) suspended-cooperation status are
-    distinct concepts — real and severe, but not literally either FATF list —
-    so they stay on the plain high-severity styling instead of borrowing a
-    label that isn't accurate for them.
+    "black list", Increased Monitoring is informally the "grey list". A UN
+    Security Council sanctions regime is checked independently of FATF status
+    (not as a fallback) and gets its own "un_sanctions" marking and finding —
+    a jurisdiction can be on a FATF list AND under UN sanctions at once (Iran,
+    North Korea and several others are both), and both get written up rather
+    than whichever check happens to fire first. FATF's (rare) suspended-
+    cooperation status has no marking of its own — real and severe, but not
+    literally either FATF list or a UN sanctions regime.
     """
     black_hits: Dict[str, List[str]] = {}
     grey_hits: Dict[str, List[str]] = {}
+    un_hits: Dict[str, List[str]] = {}
     other_high_hits: Dict[str, List[str]] = {}
     for node_id, data in graph.nodes(data=True):
         if data.get("type") != COMPANY:
@@ -200,10 +204,10 @@ def detect_fatf_jurisdictions(graph: nx.MultiDiGraph) -> List[dict]:
             black_hits.setdefault(place, []).append(node_id)
         elif tag == "FATF JUIM":
             grey_hits.setdefault(place, []).append(node_id)
-        elif un_regime:
-            other_high_hits.setdefault(f"{place} (UN Security Council sanctions regime)", []).append(node_id)
         elif tag == "FATF Suspended":
             other_high_hits.setdefault(f"{place} (FATF-suspended cooperation)", []).append(node_id)
+        if un_regime:
+            un_hits.setdefault(place, []).append(node_id)
 
     updated = (risk_data_meta().get("fatf_last_update") or "")[:10]
     updated_note = f" FATF/UN lists as of {updated}." if updated else ""
@@ -218,6 +222,7 @@ def detect_fatf_jurisdictions(graph: nx.MultiDiGraph) -> List[dict]:
     groups = (
         (black_hits, "high", "black_list", "FATF black list (Call for Action)"),
         (grey_hits, "medium", "grey_list", "FATF grey list (Increased Monitoring)"),
+        (un_hits, "high", "un_sanctions", "a UN Security Council targeted financial sanctions regime"),
         (other_high_hits, "high", None, "a live FATF or UN sanctions-regime listing"),
     )
     for hits, severity, marking, list_name in groups:

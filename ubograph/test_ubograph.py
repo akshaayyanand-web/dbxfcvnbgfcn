@@ -15,7 +15,7 @@ import goaml
 import package
 import reasons
 import risk_rating
-from reference import country_label, fatf_marking, jurisdiction_label
+from reference import country_label, fatf_marking, jurisdiction_label, un_sanctioned
 import report
 import server
 from report import auto_risk_assessment, build_report
@@ -214,21 +214,22 @@ def test_fatf_jurisdiction_detector():
 
 
 def test_fatf_black_and_grey_list_markings():
-    print("FATF black list / grey list markings")
+    print("FATF black list / grey list / UN sanctions markings")
     store = EntityStore()
-    # North Korea: FATF Call for Action -> "black list" marking.
+    # North Korea: FATF Call for Action AND a UN Security Council sanctions
+    # regime -> both a black_list finding and a separate un_sanctions finding.
     store.add_node(Node(id="c-black", type=COMPANY, name="Pyongyang Trading Co", jurisdiction="kp"))
-    # Vietnam: FATF Increased Monitoring only -> "grey list" marking.
+    # Vietnam: FATF Increased Monitoring only, no UN regime -> "grey list" marking only.
     store.add_node(Node(id="c-grey", type=COMPANY, name="Mekong Ventures Ltd", jurisdiction="vn"))
-    # Somalia: UN Security Council regime but no FATF listing at all -> high
-    # severity, no black/grey marking (it isn't literally either FATF list).
+    # Somalia: UN Security Council regime but no FATF listing at all -> its
+    # own un_sanctions marking, not folded into generic high severity.
     store.add_node(Node(id="c-un-only", type=COMPANY, name="Mogadishu Traders Ltd", jurisdiction="so"))
     graph = build_graph(store)
     findings = [f for f in run_detectors(graph) if f["kind"] == "fatf_jurisdiction"]
 
     black = next((f for f in findings if f.get("marking") == "black_list"), None)
     grey = next((f for f in findings if f.get("marking") == "grey_list"), None)
-    un_only = next((f for f in findings if "c-un-only" in f["nodes"]), None)
+    un_findings = [f for f in findings if f.get("marking") == "un_sanctions"]
 
     check("FATF Call for Action gets a black_list marking", black is not None)
     check("black_list marking is on the right node and severity high",
@@ -239,9 +240,16 @@ def test_fatf_black_and_grey_list_markings():
     check("grey_list marking is on the right node and severity medium",
           grey and "c-grey" in grey["nodes"] and grey["severity"] == "medium")
     check("'grey list' appears in the title text", grey and "grey list" in grey["title"].lower())
+    check("Vietnam (no UN regime) does not also get a un_sanctions finding",
+          not any("c-grey" in f["nodes"] for f in un_findings))
 
-    check("a UN-regime-only jurisdiction (no FATF listing) is high severity with no marking",
-          un_only and un_only["severity"] == "high" and "marking" not in un_only)
+    check("a UN sanctions regime produces its own un_sanctions finding", len(un_findings) == 1)
+    un_finding = un_findings[0]
+    check("both the UN-only and the FATF-black jurisdiction are flagged under it",
+          "c-un-only" in un_finding["nodes"] and "c-black" in un_finding["nodes"])
+    check("the un_sanctions finding is high severity", un_finding["severity"] == "high")
+    check("'UN Security Council' appears in the title text",
+          "UN Security Council" in un_finding["title"])
 
 
 def test_uae_dubai_time():
@@ -403,6 +411,15 @@ def test_fatf_marking_helper():
     check("no code -> no marking", fatf_marking(None) is None)
 
 
+def test_un_sanctioned_helper():
+    print("reference.un_sanctioned() — UN Security Council sanctions regime, independent of FATF")
+    check("North Korea is both FATF black list AND UN sanctioned", un_sanctioned("kp") is True)
+    check("Somalia is UN sanctioned with no FATF listing at all", un_sanctioned("so") is True)
+    check("Kuwait (FATF grey list only) is not UN sanctioned", un_sanctioned("kw") is False)
+    check("a clean jurisdiction is not UN sanctioned", un_sanctioned("us") is False)
+    check("no code -> not UN sanctioned", un_sanctioned(None) is False)
+
+
 def test_client_risk_rating():
     print("client risk rating (client-supplied workbook rubric)")
     check("screening outcome is one of the workbook's own options",
@@ -426,10 +443,20 @@ def test_client_risk_rating():
     check("all nine criteria scored", result["complete"] and not result["missing"])
     check("Kuwait country-of-birth row carries the grey_list marking",
           result["rows"][1]["marking"] == "grey_list")
+    check("Kuwait is not under a UN sanctions regime", result["rows"][1]["un_sanctioned"] is False)
     check("the UAE work-location row has no marking (not FATF-listed)",
           result["rows"][3]["marking"] is None)
     check("a non-country row (Screening) has no marking key at all",
           "marking" not in result["rows"][4])
+
+    un_sanctioned_result = risk_rating.rate(nationality="kp")
+    check("a UN-sanctioned nationality is flagged independently of its FATF marking",
+          un_sanctioned_result["rows"][0]["un_sanctioned"] is True
+          and un_sanctioned_result["rows"][0]["marking"] == "black_list")
+    somalia_result = risk_rating.rate(nationality="so")
+    check("UN sanctions can apply with no FATF marking at all",
+          somalia_result["rows"][0]["un_sanctioned"] is True
+          and somalia_result["rows"][0]["marking"] is None)
 
     check("missing fields are reported, not silently zeroed",
           risk_rating.rate(nationality="us")["missing"])
@@ -507,6 +534,23 @@ def test_screen_name_button():
           all("country" in m for m in sanctioned.get("matches", [])))
     check("a demo match from a non-FATF-listed country has no marking",
           all(m.get("fatf_marking") is None for m in sanctioned.get("matches", [])))
+    check("each match also carries a un_sanctioned flag (False for Serbia, no UN regime)",
+          all(m.get("un_sanctioned") is False for m in sanctioned.get("matches", [])))
+
+    original_available, original_match = opensanctions.available, opensanctions.match
+    try:
+        opensanctions.available = lambda: True
+        opensanctions.match = lambda **kwargs: [{
+            "score": 0.95,
+            "caption": "Someone From Pyongyang",
+            "properties": {"country": ["kp"], "topics": ["sanction"]},
+        }]
+        live = screen_name("Someone From Pyongyang")
+        check("a live match from a UN-sanctioned, FATF-black-listed country carries both",
+              live["matches"][0]["un_sanctioned"] is True
+              and live["matches"][0]["fatf_marking"] == "black_list")
+    finally:
+        opensanctions.available, opensanctions.match = original_available, original_match
 
     with_details = screen_name(
         "James Okoro", nationality="gb", birth_date="1980-02-09",
@@ -1031,6 +1075,7 @@ if __name__ == "__main__":
         test_fatf_jurisdiction_detector,
         test_fatf_black_and_grey_list_markings,
         test_fatf_marking_helper,
+        test_un_sanctioned_helper,
         test_uae_dubai_time,
         test_match_confidence_note,
         test_merge_by_score,

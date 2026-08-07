@@ -30,7 +30,7 @@ const FLAG_LABEL = {
 };
 const flagLabel = (flag) => FLAG_LABEL[flag] || flag.replace(/_/g, ' ');
 
-const MARKING_LABEL = {black_list: 'Black list', grey_list: 'Grey list'};
+const MARKING_LABEL = {black_list: 'Black list', grey_list: 'Grey list', un_sanctions: 'UN Sanctions'};
 // A FATF black/grey list finding gets its own marking, distinct from the
 // generic high/medium severity pill, so "this jurisdiction is on the FATF
 // black list" doesn't read the same as "this entity is sanctioned".
@@ -540,6 +540,7 @@ function renderRiskAssessmentTab() {
       `<li>${escapeHtml(m.name)}${m.score != null ? ` (${Math.round(m.score * 100)}% match)` : ''}
         ${m.country ? ` — ${escapeHtml(m.country)}` : ''}
         ${m.fatf_marking ? `<span class="sev marking-${m.fatf_marking}">${escapeHtml(MARKING_LABEL[m.fatf_marking])}</span>` : ''}
+        ${m.un_sanctioned ? `<span class="sev marking-un_sanctions">${escapeHtml(MARKING_LABEL.un_sanctions)}</span>` : ''}
         ${(m.flags || []).map((f) => `<span class="tag-flag ${f}">${escapeHtml(flagLabel(f))}</span>`).join('')}
         <button class="ghost small" type="button" data-goaml-match="${i}">goAML report</button>
       </li>`).join('');
@@ -622,7 +623,8 @@ function renderRiskRating(result) {
   const rows = result.rows.map((r) => `<tr>
       <td>${escapeHtml(r.criterion)}</td>
       <td>${escapeHtml(r.selected || '—')}
-        ${r.marking ? `<span class="sev marking-${r.marking}">${escapeHtml(MARKING_LABEL[r.marking])}</span>` : ''}</td>
+        ${r.marking ? `<span class="sev marking-${r.marking}">${escapeHtml(MARKING_LABEL[r.marking])}</span>` : ''}
+        ${r.un_sanctioned ? `<span class="sev marking-un_sanctions">${escapeHtml(MARKING_LABEL.un_sanctions)}</span>` : ''}</td>
       <td class="num">${r.score ?? '—'}</td>
       <td class="num">${r.weight ?? '—'}</td>
       <td class="num">${r.weighted_score ?? '—'}</td>

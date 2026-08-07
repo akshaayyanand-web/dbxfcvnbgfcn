@@ -85,6 +85,20 @@ def fatf_marking(code):
     return None
 
 
+def un_sanctioned(code) -> bool:
+    """Is this jurisdiction currently under a UN Security Council targeted
+    financial sanctions regime, per the UAE Executive Office's own list
+    (`uaeiec` in country_risk.json)?
+
+    Independent of fatf_marking() — a country can be both (Iran, North
+    Korea and several others are on the FATF black list AND a UN sanctions
+    regime), on neither, or UN-sanctioned without any FATF listing at all
+    (Somalia, Libya, Mali...). Both get written up wherever a jurisdiction
+    is shown during risk assessment, not just whichever one fires first.
+    """
+    return bool(country_risk(code).get("uaeiec"))
+
+
 def risk_data_meta() -> dict:
     """Provenance for country_risk(): source description and FATF/UN list update dates."""
     data = _load_risk()
