@@ -99,6 +99,46 @@ def un_sanctioned(code) -> bool:
     return bool(country_risk(code).get("uaeiec"))
 
 
+# Beyond the UN Security Council regime above (sourced from the UAE's own
+# targeted-financial-sanctions list), these jurisdictions are also subject to
+# a broad, country-level sanctions programme from another major body — OFAC
+# (the US Treasury), the EU, or the UK (OFSI). This list is curated by hand,
+# limited deliberately to the handful of comprehensive or near-comprehensive
+# country programmes that are stable and well documented — it is NOT a live
+# feed from any of these bodies' own systems, unlike the FATF/UN data above,
+# and it WILL go stale as sanctions programmes change. Always verify against
+# the primary source (OFAC's Specially Designated Nationals & sanctions
+# programs list, the EU sanctions map, or the UK OFSI consolidated list)
+# before relying on this for a real compliance decision.
+_OTHER_SANCTIONS_PROGRAMMES = {
+    "kp": ("OFAC", "EU", "UK"),   # North Korea
+    "ir": ("OFAC", "EU", "UK"),   # Iran
+    "sy": ("OFAC", "EU", "UK"),   # Syria
+    "cu": ("OFAC",),              # Cuba — comprehensive US embargo only
+    "ru": ("OFAC", "EU", "UK"),   # Russia
+    "by": ("OFAC", "EU", "UK"),   # Belarus
+    "mm": ("OFAC", "EU", "UK"),   # Myanmar
+    "ve": ("OFAC",),              # Venezuela — US sectoral programme
+}
+
+
+def sanctioning_bodies(code) -> list:
+    """Every sanctioning body with a country-level programme against this
+    jurisdiction — "UN" (via un_sanctioned() above) plus whichever of
+    OFAC/EU/UK also run one (see _OTHER_SANCTIONS_PROGRAMMES for the
+    curated-not-live caveat). Empty list if none apply. A country can carry
+    several bodies at once (Iran and North Korea carry all four); each one
+    gets written up rather than collapsing to a single generic "sanctioned".
+    """
+    bodies = []
+    if un_sanctioned(code):
+        bodies.append("UN")
+    if code:
+        key = str(code).strip().lower().split("_")[0]
+        bodies += list(_OTHER_SANCTIONS_PROGRAMMES.get(key, ()))
+    return bodies
+
+
 def risk_data_meta() -> dict:
     """Provenance for country_risk(): source description and FATF/UN list update dates."""
     data = _load_risk()

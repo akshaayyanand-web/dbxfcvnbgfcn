@@ -15,7 +15,7 @@ import goaml
 import package
 import reasons
 import risk_rating
-from reference import country_label, fatf_marking, jurisdiction_label, un_sanctioned
+from reference import country_label, fatf_marking, jurisdiction_label, sanctioning_bodies, un_sanctioned
 import report
 import server
 from report import auto_risk_assessment, build_report
@@ -214,22 +214,23 @@ def test_fatf_jurisdiction_detector():
 
 
 def test_fatf_black_and_grey_list_markings():
-    print("FATF black list / grey list / UN sanctions markings")
+    print("FATF black list / grey list / sanctions-regime markings")
     store = EntityStore()
-    # North Korea: FATF Call for Action AND a UN Security Council sanctions
-    # regime -> both a black_list finding and a separate un_sanctions finding.
+    # North Korea: FATF Call for Action AND multiple sanctions bodies (UN,
+    # OFAC, EU, UK) -> both a black_list finding and a separate
+    # sanctions_regime finding naming all of them.
     store.add_node(Node(id="c-black", type=COMPANY, name="Pyongyang Trading Co", jurisdiction="kp"))
-    # Vietnam: FATF Increased Monitoring only, no UN regime -> "grey list" marking only.
+    # Vietnam: FATF Increased Monitoring only, no sanctions regime -> "grey list" marking only.
     store.add_node(Node(id="c-grey", type=COMPANY, name="Mekong Ventures Ltd", jurisdiction="vn"))
     # Somalia: UN Security Council regime but no FATF listing at all -> its
-    # own un_sanctions marking, not folded into generic high severity.
+    # own sanctions_regime marking, not folded into generic high severity.
     store.add_node(Node(id="c-un-only", type=COMPANY, name="Mogadishu Traders Ltd", jurisdiction="so"))
     graph = build_graph(store)
     findings = [f for f in run_detectors(graph) if f["kind"] == "fatf_jurisdiction"]
 
     black = next((f for f in findings if f.get("marking") == "black_list"), None)
     grey = next((f for f in findings if f.get("marking") == "grey_list"), None)
-    un_findings = [f for f in findings if f.get("marking") == "un_sanctions"]
+    sanctions_findings = [f for f in findings if f.get("marking") == "sanctions_regime"]
 
     check("FATF Call for Action gets a black_list marking", black is not None)
     check("black_list marking is on the right node and severity high",
@@ -240,16 +241,18 @@ def test_fatf_black_and_grey_list_markings():
     check("grey_list marking is on the right node and severity medium",
           grey and "c-grey" in grey["nodes"] and grey["severity"] == "medium")
     check("'grey list' appears in the title text", grey and "grey list" in grey["title"].lower())
-    check("Vietnam (no UN regime) does not also get a un_sanctions finding",
-          not any("c-grey" in f["nodes"] for f in un_findings))
+    check("Vietnam (no sanctions regime) does not also get a sanctions_regime finding",
+          not any("c-grey" in f["nodes"] for f in sanctions_findings))
 
-    check("a UN sanctions regime produces its own un_sanctions finding", len(un_findings) == 1)
-    un_finding = un_findings[0]
+    check("a sanctions regime produces its own sanctions_regime finding", len(sanctions_findings) == 1)
+    sanctions_finding = sanctions_findings[0]
     check("both the UN-only and the FATF-black jurisdiction are flagged under it",
-          "c-un-only" in un_finding["nodes"] and "c-black" in un_finding["nodes"])
-    check("the un_sanctions finding is high severity", un_finding["severity"] == "high")
-    check("'UN Security Council' appears in the title text",
-          "UN Security Council" in un_finding["title"])
+          "c-un-only" in sanctions_finding["nodes"] and "c-black" in sanctions_finding["nodes"])
+    check("the sanctions_regime finding is high severity", sanctions_finding["severity"] == "high")
+    check("North Korea's multiple sanctioning bodies (UN, OFAC, EU, UK) are all named in the detail",
+          all(body in sanctions_finding["detail"] for body in ("UN", "OFAC", "EU", "UK")))
+    check("Somalia's UN-only listing is named too, without claiming OFAC/EU/UK for it",
+          "Somalia (UN sanctions)" in sanctions_finding["detail"])
 
 
 def test_uae_dubai_time():
@@ -420,6 +423,19 @@ def test_un_sanctioned_helper():
     check("no code -> not UN sanctioned", un_sanctioned(None) is False)
 
 
+def test_sanctioning_bodies():
+    print("reference.sanctioning_bodies() — UN plus OFAC/EU/UK country programmes")
+    check("North Korea carries all four bodies", set(sanctioning_bodies("kp")) == {"UN", "OFAC", "EU", "UK"})
+    check("Russia carries OFAC/EU/UK but not UN (no UNSC regime — Russia holds a veto)",
+          set(sanctioning_bodies("ru")) == {"OFAC", "EU", "UK"})
+    check("Cuba carries only OFAC (comprehensive US embargo, no broad EU/UK/UN programme)",
+          sanctioning_bodies("cu") == ["OFAC"])
+    check("Somalia carries only UN (no OFAC/EU/UK broad country programme in the curated table)",
+          sanctioning_bodies("so") == ["UN"])
+    check("a clean jurisdiction carries no bodies", sanctioning_bodies("us") == [])
+    check("no code -> no bodies, not an error", sanctioning_bodies(None) == [])
+
+
 def test_client_risk_rating():
     print("client risk rating (client-supplied workbook rubric)")
     check("screening outcome is one of the workbook's own options",
@@ -443,19 +459,19 @@ def test_client_risk_rating():
     check("all nine criteria scored", result["complete"] and not result["missing"])
     check("Kuwait country-of-birth row carries the grey_list marking",
           result["rows"][1]["marking"] == "grey_list")
-    check("Kuwait is not under a UN sanctions regime", result["rows"][1]["un_sanctioned"] is False)
+    check("Kuwait carries no sanctioning bodies", result["rows"][1]["sanctioning_bodies"] == [])
     check("the UAE work-location row has no marking (not FATF-listed)",
           result["rows"][3]["marking"] is None)
     check("a non-country row (Screening) has no marking key at all",
           "marking" not in result["rows"][4])
 
-    un_sanctioned_result = risk_rating.rate(nationality="kp")
-    check("a UN-sanctioned nationality is flagged independently of its FATF marking",
-          un_sanctioned_result["rows"][0]["un_sanctioned"] is True
-          and un_sanctioned_result["rows"][0]["marking"] == "black_list")
+    kp_result = risk_rating.rate(nationality="kp")
+    check("a heavily-sanctioned nationality lists every body, independently of its FATF marking",
+          set(kp_result["rows"][0]["sanctioning_bodies"]) == {"UN", "OFAC", "EU", "UK"}
+          and kp_result["rows"][0]["marking"] == "black_list")
     somalia_result = risk_rating.rate(nationality="so")
     check("UN sanctions can apply with no FATF marking at all",
-          somalia_result["rows"][0]["un_sanctioned"] is True
+          somalia_result["rows"][0]["sanctioning_bodies"] == ["UN"]
           and somalia_result["rows"][0]["marking"] is None)
 
     check("missing fields are reported, not silently zeroed",
@@ -534,8 +550,8 @@ def test_screen_name_button():
           all("country" in m for m in sanctioned.get("matches", [])))
     check("a demo match from a non-FATF-listed country has no marking",
           all(m.get("fatf_marking") is None for m in sanctioned.get("matches", [])))
-    check("each match also carries a un_sanctioned flag (False for Serbia, no UN regime)",
-          all(m.get("un_sanctioned") is False for m in sanctioned.get("matches", [])))
+    check("each match also carries a sanctioning_bodies list (empty for Serbia)",
+          all(m.get("sanctioning_bodies") == [] for m in sanctioned.get("matches", [])))
 
     original_available, original_match = opensanctions.available, opensanctions.match
     try:
@@ -546,8 +562,8 @@ def test_screen_name_button():
             "properties": {"country": ["kp"], "topics": ["sanction"]},
         }]
         live = screen_name("Someone From Pyongyang")
-        check("a live match from a UN-sanctioned, FATF-black-listed country carries both",
-              live["matches"][0]["un_sanctioned"] is True
+        check("a live match from a heavily-sanctioned, FATF-black-listed country carries all bodies",
+              set(live["matches"][0]["sanctioning_bodies"]) == {"UN", "OFAC", "EU", "UK"}
               and live["matches"][0]["fatf_marking"] == "black_list")
     finally:
         opensanctions.available, opensanctions.match = original_available, original_match
@@ -1076,6 +1092,7 @@ if __name__ == "__main__":
         test_fatf_black_and_grey_list_markings,
         test_fatf_marking_helper,
         test_un_sanctioned_helper,
+        test_sanctioning_bodies,
         test_uae_dubai_time,
         test_match_confidence_note,
         test_merge_by_score,

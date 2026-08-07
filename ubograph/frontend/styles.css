@@ -200,7 +200,7 @@ td.num{font-family:var(--mono); font-size:12.5px; text-align:right; white-space:
 .finding.low,.finding.green{border-color:var(--green)}
 .finding.marking-black_list{border-color:#111}
 .finding.marking-grey_list{border-color:#767267}
-.finding.marking-un_sanctions{border-color:#7a1f2b}
+.finding.marking-sanctions_regime{border-color:#7a1f2b}
 .finding .t{font-weight:600; font-size:14px}
 .finding .d{font-size:13px; color:var(--muted); margin-top:3px}
 .sev{font:10px/1 var(--mono); text-transform:uppercase; letter-spacing:.06em;
@@ -213,10 +213,10 @@ td.num{font-family:var(--mono); font-size:12.5px; text-align:right; white-space:
    "this entity is sanctioned". */
 .sev.marking-black_list{background:#111; color:#fff; border:1px solid #555}
 .sev.marking-grey_list{background:#767267; color:#fff}
-/* UN Security Council targeted financial sanctions — independent of FATF
+/* A country-level sanctions regime (UN, OFAC, EU, UK) — independent of FATF
    status, so it can appear alongside a black/grey list badge, not instead
    of one. A distinct dark red keeps it visually separate from both. */
-.sev.marking-un_sanctions{background:#7a1f2b; color:#fff}
+.sev.marking-sanctions_regime{background:#7a1f2b; color:#fff}
 .report .note{font-size:12.5px; color:var(--muted); margin-top:8px}
 .report .notes{margin:10px 0}
 .report .notes .warn{font-size:12.5px; color:var(--orange); margin:4px 0;

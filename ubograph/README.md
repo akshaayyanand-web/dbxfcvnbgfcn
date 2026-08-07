@@ -188,21 +188,39 @@ sanctioned" at a glance instead of both looking like the same red flag.
 FATF-suspended-cooperation cases stay on the plain severity colour, since
 that's not literally either FATF list.
 
-A UN Security Council targeted financial sanctions regime gets its own
-**UN Sanctions** marking too (`reference.un_sanctioned()`), checked
-independently of FATF status rather than as a fallback — a jurisdiction
-can be on a FATF list *and* under UN sanctions at once (Iran, North Korea
-and several others are both), and both badges show together rather than
-whichever check happens to fire first. This is written up everywhere a
-jurisdiction is shown during risk assessment, not only in the graph:
+Country-level sanctions regimes get their own **Sanctioned** marking too
+(`reference.sanctioning_bodies()`), checked independently of FATF status
+rather than as a fallback — a jurisdiction can be on a FATF list *and*
+sanctioned by several bodies at once (Iran, North Korea and Russia all
+are), and none of it is dropped for whichever check happens to fire first.
+Two tiers of source, both stated wherever the badge appears:
 
-- The `fatf_jurisdiction` detector raises its own UN Sanctions finding,
-  separate from any FATF black/grey-list finding on the same entity.
+- **UN Security Council** — sourced from the UAE Executive Office's own
+  targeted-financial-sanctions list (the same dated, sourced FATF/UN
+  workbook as everything else in `country_risk.json`).
+- **OFAC (US), EU, and UK (OFSI)** — a small, hand-curated table of the
+  handful of comprehensive or near-comprehensive country-level programmes
+  that are stable and well documented (North Korea, Iran, Syria, Cuba,
+  Russia, Belarus, Myanmar, Venezuela). **This is not a live feed** the way
+  the FATF/UN data is — it will go stale as programmes change, and it
+  deliberately does not attempt the full, frequently-changing list of
+  targeted/entity-specific sanctions each body maintains. Always verify
+  against the primary source (OFAC's sanctions programs list, the EU
+  sanctions map, or the UK OFSI consolidated list) before relying on it
+  for a real decision. See `reference._OTHER_SANCTIONS_PROGRAMMES`.
+
+This is written up everywhere a jurisdiction is shown during risk
+assessment, not only in the graph:
+
+- The `fatf_jurisdiction` detector raises its own sanctions-regime finding,
+  separate from any FATF black/grey-list finding on the same entity, and
+  names every applicable body in the finding text (e.g. "North Korea (UN,
+  OFAC, EU, UK sanctions)").
 - Every country field in the client risk-rating worksheet (nationality,
   country of birth/residence, business/work location) carries an
-  independent `un_sanctioned` flag alongside its FATF marking, shown as
-  its own badge in both the on-screen table and the PDF.
-- Every "Screen this name" match carries the same `un_sanctioned` flag
+  independent `sanctioning_bodies` list alongside its FATF marking, shown
+  as its own "SANCTIONED: ..." badge in both the on-screen table and the PDF.
+- Every "Screen this name" match carries the same `sanctioning_bodies` list
   next to its FATF marking.
 
 **UBO traversal follows ownership edges only.** A director sits in the control

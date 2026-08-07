@@ -17,7 +17,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Optional
 
-from reference import country_label, country_risk, fatf_marking, un_sanctioned
+from reference import country_label, country_risk, fatf_marking, sanctioning_bodies
 
 _DATA = Path(__file__).resolve().parent / "frontend" / "data" / "client_risk_rubric.json"
 
@@ -80,8 +80,9 @@ def _country_row(criterion: str, code: Optional[str]) -> dict:
         "score": info.get("band_score"),
         "marking": fatf_marking(code) if code else None,
         # Independent of "marking" above — a country can be both FATF-listed
-        # and under a UN sanctions regime at once, and both get shown.
-        "un_sanctioned": un_sanctioned(code) if code else False,
+        # and sanctioned by one or more other bodies at once, and all of it
+        # gets shown rather than collapsing to a single generic flag.
+        "sanctioning_bodies": sanctioning_bodies(code) if code else [],
     }
 
 

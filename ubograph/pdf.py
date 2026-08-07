@@ -27,7 +27,7 @@ BAND_COLOUR = {
     "green": colors.HexColor("#4F6B44"),
     "black_list": colors.HexColor("#111111"),
     "grey_list": colors.HexColor("#767267"),
-    "un_sanctions": colors.HexColor("#7A1F2B"),
+    "sanctions_regime": colors.HexColor("#7A1F2B"),
 }
 RATING_COLOUR = {
     "Low": BAND_COLOUR["green"], "Medium": BAND_COLOUR["orange"],
@@ -337,8 +337,9 @@ def _risk_rating_flow(rating: dict, styles) -> List:
         if marking:
             selected += (f' <font color="{marking_colour[marking]}">'
                          f'<b>[{marking_label[marking]}]</b></font>')
-        if row.get("un_sanctioned"):
-            selected += ' <font color="#7A1F2B"><b>[UN SANCTIONS]</b></font>'
+        bodies = row.get("sanctioning_bodies") or []
+        if bodies:
+            selected += f' <font color="#7A1F2B"><b>[SANCTIONED: {_clean(", ".join(bodies))}]</b></font>'
         data.append([
             Paragraph(_clean(row["criterion"]), styles["cell"]),
             Paragraph(selected, styles["cell"]),

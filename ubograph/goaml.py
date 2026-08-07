@@ -147,8 +147,8 @@ def build_match_xml(screened_name: str, match: dict, report_type: str = "PNMR") 
     _sub(matched, "country", match.get("country"))
     if match.get("fatf_marking"):
         _sub(matched, "fatf_marking", match["fatf_marking"])
-    if match.get("un_sanctioned"):
-        _sub(matched, "un_sanctions_regime", "true")
+    if match.get("sanctioning_bodies"):
+        _sub(matched, "sanctioning_bodies", ", ".join(match["sanctioning_bodies"]))
 
     flags_el = _sub(root, "flags")
     for flag in match.get("flags") or []:

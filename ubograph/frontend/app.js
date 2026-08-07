@@ -30,7 +30,14 @@ const FLAG_LABEL = {
 };
 const flagLabel = (flag) => FLAG_LABEL[flag] || flag.replace(/_/g, ' ');
 
-const MARKING_LABEL = {black_list: 'Black list', grey_list: 'Grey list', un_sanctions: 'UN Sanctions'};
+const MARKING_LABEL = {black_list: 'Black list', grey_list: 'Grey list', sanctions_regime: 'Sanctioned'};
+// Bodies with a country-level sanctions programme (see
+// reference.sanctioning_bodies) — rendered as one combined badge listing
+// every body that applies, e.g. "SANCTIONED: UN, OFAC, EU".
+function sanctionsBadge(bodies) {
+  return bodies && bodies.length
+    ? `<span class="sev marking-sanctions_regime">SANCTIONED: ${escapeHtml(bodies.join(', '))}</span>` : '';
+}
 // A FATF black/grey list finding gets its own marking, distinct from the
 // generic high/medium severity pill, so "this jurisdiction is on the FATF
 // black list" doesn't read the same as "this entity is sanctioned".
@@ -540,7 +547,7 @@ function renderRiskAssessmentTab() {
       `<li>${escapeHtml(m.name)}${m.score != null ? ` (${Math.round(m.score * 100)}% match)` : ''}
         ${m.country ? ` — ${escapeHtml(m.country)}` : ''}
         ${m.fatf_marking ? `<span class="sev marking-${m.fatf_marking}">${escapeHtml(MARKING_LABEL[m.fatf_marking])}</span>` : ''}
-        ${m.un_sanctioned ? `<span class="sev marking-un_sanctions">${escapeHtml(MARKING_LABEL.un_sanctions)}</span>` : ''}
+        ${sanctionsBadge(m.sanctioning_bodies)}
         ${(m.flags || []).map((f) => `<span class="tag-flag ${f}">${escapeHtml(flagLabel(f))}</span>`).join('')}
         <button class="ghost small" type="button" data-goaml-match="${i}">goAML report</button>
       </li>`).join('');
@@ -624,7 +631,7 @@ function renderRiskRating(result) {
       <td>${escapeHtml(r.criterion)}</td>
       <td>${escapeHtml(r.selected || '—')}
         ${r.marking ? `<span class="sev marking-${r.marking}">${escapeHtml(MARKING_LABEL[r.marking])}</span>` : ''}
-        ${r.un_sanctioned ? `<span class="sev marking-un_sanctions">${escapeHtml(MARKING_LABEL.un_sanctions)}</span>` : ''}</td>
+        ${sanctionsBadge(r.sanctioning_bodies)}</td>
       <td class="num">${r.score ?? '—'}</td>
       <td class="num">${r.weight ?? '—'}</td>
       <td class="num">${r.weighted_score ?? '—'}</td>
