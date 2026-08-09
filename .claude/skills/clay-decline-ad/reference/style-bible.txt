@@ -1,0 +1,113 @@
+CLAY DECLINE AD — STYLE BIBLE & REPEATABLE FORMULA
+Reverse-engineered from the "Down to Ground" inflammation infomercial (scored 9/10).
+Read this fully before writing any script or prompt.
+
+0. WHAT THIS STYLE IS (one line)
+A 3D soft-clay animated infomercial that dramatizes the multi-year decline of a person
+who ignores a common, "minor" problem, then introduces a simple passive product as the
+one thing that stops the decline. It is stylized 3D rendered to read as soft clay —
+matte rounded surfaces, oversized heads, exaggerated expressions, soft subsurface skin.
+
+1. THE VISUAL SYSTEM
+1.1 Render look — soft clay: stylized 3D, oversized rounded head, simple features, big
+    expressive brows + mouth, matte waxy clay-like surfaces, soft subsurface scattering.
+    Chunky simple hands (lots of hand close-ups).
+1.2 The character — ONE protagonist carries the whole ad, the viewer's stand-in.
+    She/he AGES across the runtime as the proof of decline:
+      Hair: full + colored -> greying -> thin, grey, unkempt.
+      Face: smooth -> bags + lines -> deep wrinkles, hollow, gaunt.
+      Posture: upright -> guarded -> hunched, collapsed.
+      Clothing: clean fresh -> duller -> dingy/stained.
+      Expression: dismissive -> worried -> defeated/scared.
+    A GHOST of the younger self appears late, watching the decayed self in horror.
+1.3 Color language (strict):
+    Environment: muted desaturated home tones (beige, warm grey, sage), calm, lived-in.
+    RED = problem: (a) hand-drawn 2D red squiggle pain lines doodled OVER the 3D scene;
+      (b) soft red/pink glowing heat on the affected joints/areas.
+    GREEN = solution/healing: clean neon/emerald glow; appears when the product enters.
+    Keep red and green off the same frame except at the turn.
+1.4 2D overlays on 3D: red squiggles, floating year labels, crude flat infographic
+    graphics at the science beat (lends fake-documentary credibility).
+1.5 Camera & motion: constant gentle motion, NO locked shots. Push-ins on faces,
+    pull-backs to reveal worse, pans to the aching part, dolly down stairs, zoom on the
+    ghost. The reversal beat literally plays the decline backwards (de-aging).
+1.6 The product reveal: show the product clearly. (Original cut to real footage; the
+    all-clay variant renders the product as sculpted clay so it blends with the film —
+    either works; match the look you want.)
+
+2. THE CAPTION / TEXT SYSTEM (optional — omit for a clean cut)
+Karaoke captions, 1-3 words at a time, hard-synced to the VO. Heavy rounded geometric
+sans, ALL CAPS, white fill + thick black outline; ONE keyword per phrase in YELLOW.
+Year-marker cards (YEAR ONE / 3 / 5 / 10). CTA frame: a rounded "Click Now" button over
+a 4-up grid of the decline stages.
+
+3. THE NARRATIVE FORMULA — "THE PASSIVE DECLINE TIMELINE" (7 beats)
+BEAT 1 — THREAT HOOK (~5%): "This is what happens to your [X] when [PROBLEM] goes
+  untreated for [N] years. And most people are already at year three." Blunt-truth hook.
+BEAT 2 — YEAR ONE "nothing major" + THE PASSIVE REFRAME: earliest ignorable symptom,
+  shrugged off; narrator reframes that the damage compounds during [sleep/sitting/etc].
+BEAT 3 — YEAR 3: symptoms harden; coping crutch becomes permanent; failed alternatives.
+BEAT 4 — YEAR 5: visible decline; gave up a loved activity; the mirror moment.
+BEAT 5 — YEAR 10: rock bottom + ghost of younger self + thesis line
+  ("every year was [PROBLEM] compounding while you [slept]").
+BEAT 6 — REVERSAL + MECHANISM: "You can't undo the last [N] years, but you can stop the
+  next [N]." Credibility stack + one hard number; animation de-ages, green glow; product
+  reveal with 3 dumb-simple steps; "no pills, no routine"; trust adders.
+BEAT 7 — URGENCY CTA: "The earlier you start, the less damage to undo." Offer + risk
+  reversal + interactive "check what year you're at, then tap the link below."
+  Also bake in: "Click below to [ACTION] before [URGENCY] and finally [EMOTIONAL PAYOFF]."
+
+4. PACING & RATIO
+~75% problem agitation, ~25% solution. Escalate via TIME JUMPS (Year 1 -> 3 -> 5 -> 10) —
+built-in open loops. Each year worse and shorter -> accelerating dread. Long-form runs
+~100-150s; a 30s cutdown keeps Hook, one mid-year, the ghost, the reveal, and the CTA.
+
+5. AUDIO
+Single calm, serious, slightly ominous narrator (documentary tone, not hype). Low tense
+ambient bed under the problem; warms at the green reversal. Subtle grounding SFX.
+
+6. THE VIRALITY LEVERS (keep intact)
+1. Extreme problem agitation — a future problem made immediate + terrifying.
+2. Visceral visual storytelling — animation shows internal/long-term decay live-action
+   can't, and dodges the "is this a real sick person?" credibility problem.
+3. Perfect problem/solution fit — problem reframed to worsen during the EXACT activity
+   the product addresses, so the product is the only logical answer.
+4. Time-jump open loops keep watch-time high.
+5. Color binary (red problem / green fix) understood pre-verbally.
+
+7. FAILURE MODES (kill these)
+1. Realistic render — keep it soft-clay, not photoreal. Stylization is what earns the
+   visual and dramatic license (exaggerated aging, the ghost, a harsher decline arc) —
+   it is never license to exaggerate or fabricate the product's actual claims.
+2. Jargon mechanism — ALWAYS pair the mechanism with a dumb tactile analogy.
+3. Veering CTA — use the locked formula + the interactive "what year" hook together.
+4. Problem that isn't passive/compounding — the format dies on acute/one-time problems.
+5. Too many characters / scenes — ONE protagonist, ONE home; continuity = the aging.
+6. Red and green sharing frames before the turn.
+7. Caption walls — max 3 words; one yellow keyword; never cover the action.
+8. Skipping the ghost — it's the emotional peak.
+9. Unsubstantiated claims anywhere in the ad — a claim has to be true whether it is
+   spoken over a real human face, a clay character, or a diagram. Never use the animated
+   or "documentary infographic" layer as a place to say something you couldn't say
+   plainly and stand behind.
+
+8. IMAGE-GEN PROMPT SCAFFOLD (per keyframe)
+"3D soft-clay animation style, stylized claymation character with an oversized rounded
+head and simple expressive features, matte waxy clay-like skin with soft subsurface
+light, [CHARACTER: age/hair/outfit/expression], in a [SETTING] with muted desaturated
+home colors (beige, warm grey, sage), soft diffused lighting, shallow depth of field,
+[ACTION/POSE], [if pain: hand-drawn 2D red squiggle pain lines and soft red glowing heat
+on the (joint)], vertical 9:16, cinematic soft render, Pixar-adjacent but softer, grain."
+REVERSAL/HEAL: swap red for a clean emerald-green healing glow, character de-aged + calm.
+PRODUCT: render the product clearly (clay version for the blended look, or real footage).
+
+9. VIDEO-GEN PER-SCENE PROMPT RULES
+Animate the keyframe with the camera move named for that beat (push-in on faces, pan to
+joint, dolly down stairs, zoom on ghost, reverse/de-age for the turn). Constant gentle
+motion; no locked shots. Normal speed; micro-cuts on hook + CTA, slower on mechanism +
+payoff. Keep the character/setting identical across scenes (continuity = the aging only).
+
+---
+Content-filter note (from the build guide): avoid prompts that imply nudity or bathing
+(e.g. "in the shower"). Video models will reject them. Use "fully clothed at the bathroom
+sink" and show hair on a brush instead of a shower drain, etc.
