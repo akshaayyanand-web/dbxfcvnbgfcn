@@ -1,0 +1,78 @@
+{{ 'lux-cove.css' | asset_url | stylesheet_tag }}
+{%- assign p = section.settings.product -%}
+<div class="{% if section.settings.pinkbg %}lc-pinkbg{% else %}lc-creambg{% endif %}"
+     data-screen-label="Product offer"
+     style="background-color: {% if section.settings.pinkbg %}#f6e3e5{% else %}#fffdfa{% endif %} !important; background: {% if section.settings.pinkbg %}#f6e3e5{% else %}#fffdfa{% endif %} !important;">
+  <div class="lc-page" style="background:transparent !important">
+    <div class="lc-sec lc-tc" id="shop" style="background:transparent !important">
+      {%- if p != blank -%}
+        <span class="lc-newsbadge" style="background:#2a2320;color:#fff">{{ section.settings.eyebrow }}</span>
+
+        {%- if p.featured_image != blank -%}
+          <img src="{{ p.featured_image | image_url: width: 700 }}" width="500" height="{{ 500 | divided_by: p.featured_image.aspect_ratio | round }}" loading="lazy" class="lc-featimg" style="max-width:500px;margin-top:18px" alt="{{ p.title | escape_once }}">
+        {%- endif -%}
+
+        <h2 class="lc-h3" style="margin:22px 0 6px;font-size:26px">{{ p.title }}</h2>
+
+        {%- if section.settings.rating_text != blank -%}
+          <div class="lc-fx lc-jc lc-ac lc-gap8 lc-fs13" style="margin-bottom:14px">
+            <span class="lc-ystars">★★★★★</span>
+            <span style="color:#6a5f54">{{ section.settings.rating_text }}</span>
+          </div>
+        {%- endif -%}
+
+        <div class="lc-fx lc-jc lc-ac lc-gap10" style="margin-bottom:22px">
+          {%- if p.compare_at_price > p.price -%}
+            <span class="lc-fs16" style="text-decoration:line-through;color:#a89d90">{{ p.compare_at_price | money }}</span>
+          {%- endif -%}
+          <span class="lc-h3" style="margin:0">{{ p.price | money }}</span>
+        </div>
+
+        {%- if section.blocks.size > 0 -%}
+          <div class="lc-col lc-gap12" style="text-align:left;max-width:380px;margin:0 auto 26px">
+            {%- for block in section.blocks -%}
+              <div class="lc-usprow" {{ block.shopify_attributes }}><span class="lc-usptick">✓</span>{{ block.settings.text }}</div>
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+
+        <a href="{{ p.url }}" class="button">{{ section.settings.button_label }}</a>
+      {%- else -%}
+        <p class="lc-bodytxt">{{ 'Select a product in the theme editor to show the offer here.' }}</p>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Lux Cove: Product offer",
+  "settings": [
+    { "type": "checkbox", "id": "pinkbg", "label": "Pink background", "default": false },
+    { "type": "product", "id": "product", "label": "Product" },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow badge", "default": "Limited Time Sale" },
+    { "type": "text", "id": "rating_text", "label": "Rating text", "default": "4.5 · 677+ Reviews" },
+    { "type": "text", "id": "button_label", "label": "Button label", "default": "Shop Lumatra Travel Bag" }
+  ],
+  "blocks": [
+    {
+      "type": "point",
+      "name": "Checklist point",
+      "settings": [
+        { "type": "text", "id": "text", "label": "Text", "default": "Switch Between Shoulder & Rolling In Seconds" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Lux Cove: Product offer",
+      "blocks": [
+        { "type": "point", "settings": { "text": "Switch Between Shoulder & Rolling In Seconds" } },
+        { "type": "point", "settings": { "text": "Wrinkle-Free Packing For Any Outfit" } },
+        { "type": "point", "settings": { "text": "90-Day Money-Back Guarantee" } },
+        { "type": "point", "settings": { "text": "Ships Free Today" } }
+      ]
+    }
+  ]
+}
+{% endschema %}
