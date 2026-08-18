@@ -1,0 +1,93 @@
+{{ 'lux-cove.css' | asset_url | stylesheet_tag }}
+{%- liquid
+  assign usps = section.blocks | where: 'type', 'usp'
+  assign rows = section.blocks | where: 'type', 'row'
+-%}
+<div class="lc-page">
+  <!-- Fixed: Added dynamic background color toggle logic directly to the container style -->
+  <section class="lc-sec {% if section.settings.pinkbg %}lc-pinkbg{% else %}lc-creambg{% endif %}" 
+           data-screen-label="Comparison"
+           style="background-color: {% if section.settings.pinkbg %}#f6e3e5{% else %}#fffdfa{% endif %} !important; background: {% if section.settings.pinkbg %}#f6e3e5{% else %}#fffdfa{% endif %} !important;">
+    
+    <div class="lc-sec-head">
+      <span class="lc-eyebrow">{{ section.settings.eyebrow }}</span>
+      <h2 class="lc-sec-t">{{ section.settings.heading }}</h2>
+      <span class="lc-rule"></span>
+    </div>
+
+    {%- if usps.size > 0 -%}
+      <div class="lc-col lc-gap12" style="margin-bottom:28px">
+        {%- for block in usps -%}
+          <div class="lc-usprow" {{ block.shopify_attributes }}><span class="lc-usptick">✓</span>{{ block.settings.text }}</div>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+
+    {%- if rows.size > 0 -%}
+      <table class="lc-cmp">
+        <thead>
+          <tr>
+            <!-- Fixed: Set background to transparent so it adapts beautifully when the parent changes color -->
+            <th style="text-align:left; background: transparent !important; background-color: transparent !important;"></th>
+            <th class="lc-luxcol">{{ section.settings.brand_name }}</th>
+            <th class="lc-othcol">Others</th>
+          </tr>
+        </thead>
+        <tbody>
+          {%- for block in rows -%}
+            <tr {{ block.shopify_attributes }}>
+              <td style="font-size:12.5px">{{ block.settings.text }}</td>
+              <td class="lc-luxcol"><span class="lc-gcheck">✓</span></td>
+              <td class="lc-othcol"><span class="lc-rx">✕</span></td>
+            </tr>
+          {%- endfor -%}
+        </tbody>
+      </table>
+    {%- endif -%}
+  </section>
+</div>
+
+{% schema %}
+{
+  "name": "Lux Cove: Comparison",
+  "settings": [
+    { "type": "checkbox", "id": "pinkbg", "label": "Pink background", "default": false },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "The difference" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Lux Cove vs Other Brands" },
+    { "type": "text", "id": "brand_name", "label": "Your brand column label", "default": "Lux Cove" }
+  ],
+  "blocks": [
+    {
+      "type": "usp",
+      "name": "Highlight",
+      "settings": [
+        { "type": "text", "id": "text", "label": "Text", "default": "The original Red Light Under-Eye glasses." }
+      ]
+    },
+    {
+      "type": "row",
+      "name": "Comparison row",
+      "settings": [
+        { "type": "text", "id": "text", "label": "Text", "default": "Developed by skincare experts" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Lux Cove: Comparison",
+      "blocks": [
+        { "type": "usp", "settings": { "text": "The original Red Light Under-Eye glasses." } },
+        { "type": "usp", "settings": { "text": "Clinically tested, rated 5 stars." } },
+        { "type": "usp", "settings": { "text": "Improve your complexion without breaking the bank." } },
+        { "type": "row", "settings": { "text": "Developed by skincare experts" } },
+        { "type": "row", "settings": { "text": "Professional-grade results" } },
+        { "type": "row", "settings": { "text": "Non-invasive & pain-free" } },
+        { "type": "row", "settings": { "text": "Visible results under 30 days" } },
+        { "type": "row", "settings": { "text": "Fits any head shape" } },
+        { "type": "row", "settings": { "text": "Long battery life" } },
+        { "type": "row", "settings": { "text": "90-Day Money-Back Guarantee" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

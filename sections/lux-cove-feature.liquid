@@ -1,0 +1,64 @@
+{{ 'lux-cove.css' | asset_url | stylesheet_tag }}
+
+<!-- Fixed: Inline styles directly calculate the color on load, bypassing stylesheet bugs -->
+<div class="{% if section.settings.pinkbg %}lc-pinkbg{% else %}lc-creambg{% endif %}" 
+     data-screen-label="Feature" 
+     style="background-color: {% if section.settings.pinkbg %}#f6e3e5{% else %}#fffdfa{% endif %} !important; background: {% if section.settings.pinkbg %}#f6e3e5{% else %}#fffdfa{% endif %} !important;">
+  
+  <div class="lc-page" style="background: transparent !important; background-color: transparent !important;">
+    <div class="lc-sec" style="background: transparent !important; background-color: transparent !important;">
+      <span class="lc-eyebrow">{{ section.settings.tag }}</span>
+      <h3 class="lc-h3" style="margin:10px 0 14px">{{ section.settings.title }}</h3>
+      <p class="lc-bodytxt" style="margin-bottom:24px">{{ section.settings.text }}</p>
+      
+      {%- if section.settings.image != blank -%}
+        <img src="{{ section.settings.image | image_url: width: 900 }}" 
+             width="900"
+             height="{{ 900 | divided_by: section.settings.image.aspect_ratio | round }}"
+             loading="lazy"
+             class="lc-featimg" 
+             alt="{{ section.settings.title | escape_once }}">
+      {%- elsif section.settings.external_image_url != blank -%}
+        <img src="{{ section.settings.external_image_url }}" 
+             width="900"
+             height="900"
+             loading="lazy"
+             class="lc-featimg" 
+             style="object-fit: cover;"
+             alt="{{ section.settings.title | escape_once }}">
+      {%- elsif section.settings.fallback_image != 'none' -%}
+        <img src="{{ section.settings.fallback_image | append: '.jpg' | asset_url }}" 
+             width="900"
+             height="900"
+             loading="lazy"
+             class="lc-featimg" 
+             style="object-fit: cover;"
+             alt="{{ section.settings.title | escape_once }}">
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Lux Cove: Feature",
+  "settings": [
+    { "type": "checkbox", "id": "pinkbg", "label": "Pink background", "default": false },
+    { "type": "text", "id": "tag", "label": "Eyebrow tag", "default": "Red Light Therapy" },
+    { "type": "text", "id": "title", "label": "Title", "default": "Smooth Under-Eye Wrinkles" },
+    { "type": "textarea", "id": "text", "label": "Body text", "default": "Our Red Light Therapy boosts collagen production, smoothing out wrinkles and improving skin elasticity." },
+    { "type": "image_picker", "id": "image", "label": "Image" },
+    { "type": "url", "id": "external_image_url", "label": "External image URL (used until you pick one above)" },
+    { "type": "select", "id": "fallback_image", "label": "Placeholder image (used until neither of the above is set)", "options": [
+      { "value": "none", "label": "None" },
+      { "value": "lc-smooth", "label": "Smooth wrinkles" },
+      { "value": "lc-brighten", "label": "Brighten dark circles" },
+      { "value": "lc-depuff", "label": "De-puff" },
+      { "value": "lc-crows", "label": "Crow's feet" }
+    ], "default": "none" }
+  ],
+  "presets": [
+    { "name": "Lux Cove: Feature" }
+  ]
+}
+{% endschema %}

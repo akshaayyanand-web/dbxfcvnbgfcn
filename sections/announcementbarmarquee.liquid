@@ -1,0 +1,165 @@
+<style>
+  /* Base structural styles for the announcement marquee container */
+  #shopify-section-{{ section.id }} .lc-announcement-bar {
+    background-color: {{ section.settings.bg_color }};
+    color: {{ section.settings.text_color }};
+    overflow: hidden;
+    user-select: none;
+    padding: 10px 0;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    width: 100%;
+  }
+
+  #shopify-section-{{ section.id }} .lc-announcement-bar a {
+    color: inherit;
+    text-decoration: none;
+    display: block;
+    width: 100%;
+  }
+
+  /* Structural wrapper that handles the infinite horizontal flex flow */
+  #shopify-section-{{ section.id }} .lc-marquee-wrapper {
+    display: flex;
+    overflow: hidden;
+    white-space: nowrap;
+    width: 100%;
+  }
+
+  /* Fixed: Removed justify-content space matching to prevent overlapping text nodes */
+  #shopify-section-{{ section.id }} .lc-marquee-track {
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    width: max-content; /* Forces track to stretch dynamically without capping size */
+    animation: lcMarqueeScroll linear infinite;
+  }
+
+  /* Individual text node fragments */
+  #shopify-section-{{ section.id }} .lc-marquee-item {
+    font-size: {{ section.settings.font_size }}px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0 30px; /* Controls internal item padding bounds */
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0; /* Fixed: Hard-stops the browser from squeezing or overlapping words */
+  }
+
+  /* Separator custom dot design mimicking original layout aesthetics */
+  #shopify-section-{{ section.id }} .lc-marquee-item::after {
+    content: "•";
+    margin-left: 60px; /* Fixed: Sets an explicit minimum gap size after the text block */
+    opacity: 0.4;
+  }
+
+  /* Pure CSS keyframe mapping to seamlessly shift text without jerking */
+  @keyframes lcMarqueeScroll {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%); /* Fixed: -50% accounts for the dual-track duplicate pattern cleanly */
+    }
+  }
+
+  /* Allows standard speed matching configurations inside customization panel */
+  #shopify-section-{{ section.id }} .lc-marquee-track {
+    animation-duration: {{ section.settings.speed }}s;
+  }
+</style>
+
+{%- if section.blocks.size > 0 -%}
+  <div class="lc-announcement-bar" data-screen-label="Announcement Bar">
+    {%- if section.settings.link != blank -%}
+      <a href="{{ section.settings.link }}">
+    {%- endif -%}
+      
+      <div class="lc-marquee-wrapper">
+        <!-- Dual tracks are output nested inside a container map to allow seamless infinite stitching loops -->
+        <div class="lc-marquee-track">
+          {%- for i in (1..2) -%}
+            {%- for block in section.blocks -%}
+              <span class="lc-marquee-item" {{ block.shopify_attributes }}>
+                {{ block.settings.text | escape }}
+              </span>
+            {%- endfor -%}
+          {%- endfor -%}
+        </div>
+      </div>
+
+    {%- if section.settings.link != blank -%}
+      </a>
+    {%- endif -%}
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Lux Cove: Marquee Bar",
+  "settings": [
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background Color",
+      "default": "#f6e3e5"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "font_size",
+      "label": "Font Size (px)",
+      "min": 10,
+      "max": 20,
+      "step": 1,
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "speed",
+      "label": "Scroll Speed (Seconds)",
+      "min": 5,
+      "max": 60,
+      "step": 1,
+      "default": 20
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "Marquee Link (Optional)"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "announcement",
+      "name": "Marquee Item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Notice Text",
+          "default": "SUMMER SALE"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Lux Cove: Marquee Bar",
+      "blocks": [
+        { "type": "announcement", "settings": { "text": "SUMMER SALE" } },
+        { "type": "announcement", "settings": { "text": "UP TO 40% OFF SITEWIDE" } },
+        { "type": "announcement", "settings": { "text": "FREE SHIPPING" } },
+        { "type": "announcement", "settings": { "text": "150,000+ HAPPY CUSTOMERS" } }
+      ]
+    }
+  ]
+}
+{% endschema %}
