@@ -186,6 +186,9 @@
 .lc-trustcol svg{color:var(--lc-rosedeep)}
 .lc-trusttxt{font-size:12.5px;font-weight:500;line-height:1.4;max-width:140px}
 
+/* ---- CTA buttons (news hero / photo banner / product offer) ---- */
+.lc-page .button{color:#fff}
+
 /* ---- Checklist + reviews ---- */
 .lc-revwidget{margin-top:24px;background:#fff;border:1px solid #efe6da;border-radius:16px;padding:20px;text-align:center;box-shadow:0 10px 26px rgba(120,90,60,.08)}
 .lc-revwidget .lc-ystars{display:block;margin-bottom:6px}
