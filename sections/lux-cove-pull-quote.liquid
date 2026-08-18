@@ -1,0 +1,27 @@
+{{ 'lux-cove.css' | asset_url | stylesheet_tag }}
+<div class="{% if section.settings.pinkbg %}lc-pinkbg{% else %}lc-creambg{% endif %}"
+     data-screen-label="Pull quote"
+     style="background-color: {% if section.settings.pinkbg %}#f6e3e5{% else %}#fffdfa{% endif %} !important; background: {% if section.settings.pinkbg %}#f6e3e5{% else %}#fffdfa{% endif %} !important;">
+  <div class="lc-page" style="background:transparent !important">
+    <div class="lc-sec lc-tc" style="background:transparent !important;padding:44px 22px">
+      <p class="lc-quote" style="font-size:24px">"{{ section.settings.quote }}"</p>
+      {%- if section.settings.attribution != blank -%}
+        <p class="lc-fs12" style="margin-top:12px;color:#8a7d6f;font-style:normal">{{ section.settings.attribution }}</p>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Lux Cove: Pull quote",
+  "settings": [
+    { "type": "checkbox", "id": "pinkbg", "label": "Pink background", "default": false },
+    { "type": "text", "id": "quote", "label": "Quote", "default": "I Wish I'd Tried This Sooner" },
+    { "type": "text", "id": "attribution", "label": "Attribution (optional)", "default": "Verified Buyer" }
+  ],
+  "presets": [
+    { "name": "Lux Cove: Pull quote" }
+  ]
+}
+{% endschema %}

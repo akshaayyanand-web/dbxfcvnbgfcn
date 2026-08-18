@@ -1,0 +1,50 @@
+{{ 'lux-cove.css' | asset_url | stylesheet_tag }}
+<div class="lc-page">
+  <div class="lc-sec" data-screen-label="Trust row" style="padding:36px 22px">
+    {%- if section.blocks.size > 0 -%}
+      <div class="lc-trustrow">
+        {%- for block in section.blocks -%}
+          <div class="lc-trustcol" {{ block.shopify_attributes }}>
+            {%- render 'icon-or-image', icon: block.settings.icon, image_upload: block.settings.image_upload, width: 30, class_name: 'lc-trusticon' -%}
+            <span class="lc-trusttxt">{{ block.settings.text }}</span>
+          </div>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Lux Cove: Trust row",
+  "settings": [],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Trust item",
+      "settings": [
+        { "type": "select", "id": "icon", "label": "Icon", "options": [
+          { "value": "chat_bubble", "label": "Chat bubble" },
+          { "value": "return", "label": "Return" },
+          { "value": "truck", "label": "Truck" },
+          { "value": "lock", "label": "Lock" },
+          { "value": "stopwatch", "label": "Stopwatch" },
+          { "value": "check_box", "label": "Check" }
+        ], "default": "check_box" },
+        { "type": "image_picker", "id": "image_upload", "label": "Custom icon image (used instead of the icon above, if set)" },
+        { "type": "text", "id": "text", "label": "Text", "default": "24/7 Live-Chat Support" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Lux Cove: Trust row",
+      "blocks": [
+        { "type": "item", "settings": { "icon": "chat_bubble", "text": "24/7 Live-Chat Support" } },
+        { "type": "item", "settings": { "icon": "return", "text": "90-Day Money-Back Guarantee" } },
+        { "type": "item", "settings": { "icon": "truck", "text": "Fast And Free Shipping" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

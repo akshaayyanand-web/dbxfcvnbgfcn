@@ -1,0 +1,43 @@
+{{ 'lux-cove.css' | asset_url | stylesheet_tag }}
+<div class="lc-page">
+  <div class="lc-pressbar" data-screen-label="Press bar">
+    {%- if section.settings.label != blank -%}
+      <div class="lc-presslabel">{{ section.settings.label }}</div>
+    {%- endif -%}
+    {%- if section.blocks.size > 0 -%}
+      <div class="lc-pressgrid">
+        {%- for block in section.blocks -%}
+          <span {{ block.shopify_attributes }}>
+            {%- if block.settings.logo_image != blank -%}
+              <img class="lc-presslogoimg" src="{{ block.settings.logo_image | image_url: width: 200 }}" width="120" height="{{ 120 | divided_by: block.settings.logo_image.aspect_ratio | round }}" loading="lazy" alt="{{ block.settings.name | escape_once }}">
+            {%- else -%}
+              <span class="lc-presslogo">{{ block.settings.name }}</span>
+            {%- endif -%}
+          </span>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Lux Cove: Press bar",
+  "settings": [
+    { "type": "text", "id": "label", "label": "Label", "default": "As Seen In" }
+  ],
+  "blocks": [
+    {
+      "type": "logo",
+      "name": "Publication",
+      "settings": [
+        { "type": "text", "id": "name", "label": "Publication name (shown until a logo image is set)", "default": "Publication" },
+        { "type": "image_picker", "id": "logo_image", "label": "Logo image", "info": "Only use a publication's logo if you have the right to use it, e.g. a genuine feature or licensed placement." }
+      ]
+    }
+  ],
+  "presets": [
+    { "name": "Lux Cove: Press bar" }
+  ]
+}
+{% endschema %}

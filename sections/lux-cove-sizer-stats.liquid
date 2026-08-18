@@ -1,0 +1,53 @@
+{{ 'lux-cove.css' | asset_url | stylesheet_tag }}
+<div class="lc-navybg" data-screen-label="Sizer stats">
+  <div class="lc-page" style="background:transparent !important">
+    <div class="lc-sec" style="background:transparent !important">
+      <div class="lc-tc">
+        <span class="lc-eyebrow">{{ section.settings.eyebrow }}</span>
+        <h2 class="lc-navyhead">{{ section.settings.heading }}</h2>
+        <p class="lc-navytxt">{{ section.settings.text }}</p>
+      </div>
+
+      {%- if section.blocks.size > 0 -%}
+        <div class="lc-statrow">
+          {%- for block in section.blocks -%}
+            <div class="lc-statbox" {{ block.shopify_attributes }}>
+              <span class="lc-statnum">{{ block.settings.number }}</span>
+              <span class="lc-statlabel">{{ block.settings.label }}</span>
+            </div>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Lux Cove: Sizer stats",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "The rules" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Why Lumatra Beats The Sizer" },
+    { "type": "textarea", "id": "text", "label": "Body text", "default": "Most airlines allow one personal-size item on board free of charge, on top of your carry-on. Lumatra is built to the exact edge of that allowance, so you use every inch they already give you — and they can't charge you for it." }
+  ],
+  "blocks": [
+    {
+      "type": "stat",
+      "name": "Stat",
+      "settings": [
+        { "type": "text", "id": "number", "label": "Number", "default": "10+ Days" },
+        { "type": "text", "id": "label", "label": "Label", "default": "Of Clothes" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Lux Cove: Sizer stats",
+      "blocks": [
+        { "type": "stat", "settings": { "number": "10+ Days", "label": "Of Clothes" } },
+        { "type": "stat", "settings": { "number": "$0", "label": "Bag Fees Paid" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

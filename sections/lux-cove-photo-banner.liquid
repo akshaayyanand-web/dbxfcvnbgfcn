@@ -1,0 +1,44 @@
+{{ 'lux-cove.css' | asset_url | stylesheet_tag }}
+<div class="lc-photobanner" data-screen-label="Photo banner">
+  {%- if section.settings.image != blank -%}
+    <img src="{{ section.settings.image | image_url: width: 1200 }}" width="1200" height="{{ 1200 | divided_by: section.settings.image.aspect_ratio | round }}" loading="lazy" alt="{{ section.settings.heading | escape_once }}">
+  {%- elsif section.settings.external_image_url != blank -%}
+    <img src="{{ section.settings.external_image_url }}" width="1200" height="800" loading="lazy" alt="{{ section.settings.heading | escape_once }}">
+  {%- endif -%}
+  <div class="lc-page" style="background:transparent !important">
+    <div class="lc-photobanner-content">
+      <span class="lc-eyebrow">{{ section.settings.eyebrow }}</span>
+      <h2 class="lc-navyhead" style="color:#fff">{{ section.settings.heading }}</h2>
+      {%- if section.settings.quote != blank -%}
+        <p class="lc-quote">"{{ section.settings.quote }}"</p>
+      {%- endif -%}
+      {%- if section.settings.attribution != blank -%}
+        <p class="lc-fs12" style="margin-top:8px;color:#e8e0d8">{{ section.settings.attribution }}</p>
+      {%- endif -%}
+      {%- if section.settings.button_label != blank -%}
+        <div class="lc-newscta">
+          <a href="{{ section.settings.button_link | default: '#shopify-section-main' }}" class="button">{{ section.settings.button_label }}</a>
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Lux Cove: Photo banner",
+  "settings": [
+    { "type": "image_picker", "id": "image", "label": "Background image" },
+    { "type": "url", "id": "external_image_url", "label": "External image URL (used until you pick one above)" },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Built for real travel" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Approved For The Way You Actually Travel" },
+    { "type": "textarea", "id": "quote", "label": "Quote (optional)", "info": "Only use a real quote from a real customer or reviewer, with their permission." },
+    { "type": "text", "id": "attribution", "label": "Attribution (optional)", "default": "" },
+    { "type": "text", "id": "button_label", "label": "Button label", "default": "Configure Your Lumatra" },
+    { "type": "url", "id": "button_link", "label": "Button link" }
+  ],
+  "presets": [
+    { "name": "Lux Cove: Photo banner" }
+  ]
+}
+{% endschema %}

@@ -147,3 +147,46 @@
 @media (min-width:600px){
   .lc-page{box-shadow:0 0 60px rgba(0,0,0,.12)}
 }
+
+/* ---- News hero ---- */
+.lc-newsbg{background:#7a1620}
+.lc-newsbadge{display:inline-flex;align-items:center;gap:7px;background:#fff;color:#7a1620;font-size:10.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;padding:6px 12px;border-radius:20px}
+.lc-newshead{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:700;line-height:1.16;color:#fff;margin:16px 0 12px}
+.lc-newstxt{font-size:14px;line-height:1.8;color:#f3d9dc}
+.lc-newscta{margin-top:22px}
+
+/* ---- Press bar ---- */
+.lc-pressbar{padding:26px 22px;border-top:1px solid #ece2d6;border-bottom:1px solid #ece2d6}
+.lc-presslabel{text-align:center;font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:#a89d90;margin-bottom:16px}
+.lc-pressgrid{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:28px 36px}
+.lc-presslogo{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:600;letter-spacing:.03em;color:#8a7d6f;opacity:.75}
+.lc-presslogoimg{max-height:26px;width:auto;opacity:.8;filter:grayscale(100%)}
+
+/* ---- Sizer stats (navy) ---- */
+.lc-navybg{background:#16233f}
+.lc-navybg .lc-eyebrow{color:#9fb0d6}
+.lc-navyhead{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:600;line-height:1.16;color:#fff;text-align:center;margin:12px 0 16px}
+.lc-navytxt{font-size:14px;line-height:1.85;color:#c7d0e6;text-align:center;max-width:400px;margin:0 auto}
+.lc-statrow{display:flex;gap:14px;margin-top:32px}
+.lc-statbox{flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:22px 14px;text-align:center}
+.lc-statnum{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:700;color:#fff;line-height:1}
+.lc-statlabel{display:block;margin-top:8px;font-size:11.5px;color:#c7d0e6;line-height:1.4}
+
+/* ---- Photo banner ---- */
+.lc-photobanner{position:relative;z-index:0;overflow:hidden;min-height:360px;display:flex;align-items:flex-end}
+.lc-photobanner img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
+.lc-photobanner::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,16,14,0) 30%,rgba(20,16,14,.82) 100%);z-index:1}
+.lc-photobanner-content{position:relative;z-index:2;padding:32px 22px;color:#fff;text-align:center;width:100%}
+.lc-photobanner-content .lc-eyebrow{color:#f0d9c8}
+.lc-photobanner-content .lc-quote{color:#fff}
+
+/* ---- Trust row ---- */
+.lc-trustrow{display:flex;gap:10px}
+.lc-trustcol{flex:1;display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px}
+.lc-trustcol svg{color:var(--lc-rosedeep)}
+.lc-trusttxt{font-size:12.5px;font-weight:500;line-height:1.4;max-width:140px}
+
+/* ---- Checklist + reviews ---- */
+.lc-revwidget{margin-top:24px;background:#fff;border:1px solid #efe6da;border-radius:16px;padding:20px;text-align:center;box-shadow:0 10px 26px rgba(120,90,60,.08)}
+.lc-revwidget .lc-ystars{display:block;margin-bottom:6px}
+.lc-revcount{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700}
