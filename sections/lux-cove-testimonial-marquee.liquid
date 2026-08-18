@@ -1,0 +1,141 @@
+<style>
+  /* Isolates the pink background strictly to this specific section wrapper and its main internal blocks */
+  #shopify-section-{{ section.id }},
+  #shopify-section-{{ section.id }} .lc-page,
+  #shopify-section-{{ section.id }} section[data-screen-label="Testimonials marquee"] {
+    background: #f6e3e5 !important;
+    background-color: #f6e3e5 !important;
+  }
+</style>
+
+{{ 'lux-cove.css' | asset_url | stylesheet_tag }}
+{%- liquid
+  assign row1 = section.blocks | where: 'type', 'testimonial_row1'
+  assign row2 = section.blocks | where: 'type', 'testimonial_row2'
+-%}
+<div class="lc-page">
+  <section style="padding:48px 0" data-screen-label="Testimonials marquee">
+    <div class="lc-sec-head" style="padding:0 22px">
+      <span class="lc-eyebrow">{{ section.settings.eyebrow }}</span>
+      <h2 class="lc-sec-t">{{ section.settings.heading }}</h2>
+      <span class="lc-rule"></span>
+    </div>
+
+    {%- if row1.size > 0 -%}
+      <div style="overflow:hidden">
+        <div class="lc-anntrack" style="animation-duration:70s">
+          {%- for i in (1..2) -%}
+            {%- for block in row1 -%}
+              <div class="lc-pill" {{ block.shopify_attributes }}>
+                <div class="lc-fx lc-ac lc-gap10">
+                  {%- if block.settings.image != blank -%}
+                    <img src="{{ block.settings.image | image_url: width: 88 }}" width="44" height="44" loading="lazy" class="lc-pillav" alt="{{ block.settings.name | escape }}">
+                  {%- elsif block.settings.external_image_url != blank -%}
+                    <img src="{{ block.settings.external_image_url }}" width="44" height="44" loading="lazy" class="lc-pillav" alt="{{ block.settings.name | escape }}">
+                  {%- elsif block.settings.fallback_image != 'none' -%}
+                    <img src="{{ block.settings.fallback_image | append: '.jpg' | asset_url }}" width="44" height="44" loading="lazy" class="lc-pillav" alt="{{ block.settings.name | escape }}">
+                  {%- endif -%}
+                  <div><div class="lc-fw6 lc-fs13">{{ block.settings.name }}</div><div class="lc-stars lc-fs12">★★★★★</div></div>
+                </div>
+                <div style="font-style:italic">"{{ block.settings.quote }}"</div>
+              </div>
+            {%- endfor -%}
+          {%- endfor -%}
+        </div>
+      </div>
+    {%- endif -%}
+
+    {%- if row2.size > 0 -%}
+      <div style="overflow:hidden;margin-top:14px">
+        <div class="lc-anntrack" style="animation-duration:70s;animation-direction:reverse">
+          {%- for i in (1..2) -%}
+            {%- for block in row2 -%}
+              <div class="lc-pill" {{ block.shopify_attributes }}>
+                <div class="lc-fx lc-ac lc-gap10">
+                  {%- if block.settings.image != blank -%}
+                    <img src="{{ block.settings.image | image_url: width: 88 }}" width="44" height="44" loading="lazy" class="lc-pillav" alt="{{ block.settings.name | escape }}">
+                  {%- elsif block.settings.external_image_url != blank -%}
+                    <img src="{{ block.settings.external_image_url }}" width="44" height="44" loading="lazy" class="lc-pillav" alt="{{ block.settings.name | escape }}">
+                  {%- elsif block.settings.fallback_image != 'none' -%}
+                    <img src="{{ block.settings.fallback_image | append: '.jpg' | asset_url }}" width="44" height="44" loading="lazy" class="lc-pillav" alt="{{ block.settings.name | escape }}">
+                  {%- endif -%}
+                  <div><div class="lc-fw6 lc-fs13">{{ block.settings.name }}</div><div class="lc-stars lc-fs12">★★★★★</div></div>
+                </div>
+                <div style="font-style:italic">"{{ block.settings.quote }}"</div>
+              </div>
+            {%- endfor -%}
+          {%- endfor -%}
+        </div>
+      </div>
+    {%- endif -%}
+  </section>
+</div>
+
+{% schema %}
+{
+  "name": "Lux Cove: Testimonials",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Loved worldwide" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Customers Love Their Red Light Glasses" }
+  ],
+  "blocks": [
+    {
+      "type": "testimonial_row1",
+      "name": "Testimonial (row 1)",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Photo" },
+        { "type": "url", "id": "external_image_url", "label": "External photo URL (used until you pick one above)" },
+        { "type": "select", "id": "fallback_image", "label": "Placeholder photo (used until neither of the above is set)", "options": [
+          { "value": "none", "label": "None" },
+          { "value": "lc-av1", "label": "Avatar 1" },
+          { "value": "lc-av2", "label": "Avatar 2" },
+          { "value": "lc-av3", "label": "Avatar 3" },
+          { "value": "lc-av4", "label": "Avatar 4" },
+          { "value": "lc-av5", "label": "Avatar 5" },
+          { "value": "lc-av6", "label": "Avatar 6" },
+          { "value": "lc-av7", "label": "Avatar 7" },
+          { "value": "lc-av8", "label": "Avatar 8" }
+        ], "default": "none" },
+        { "type": "text", "id": "name", "label": "Name", "default": "Violet M." },
+        { "type": "textarea", "id": "quote", "label": "Quote", "default": "After two weeks, my dark circles are much brighter!" }
+      ]
+    },
+    {
+      "type": "testimonial_row2",
+      "name": "Testimonial (row 2)",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Photo" },
+        { "type": "url", "id": "external_image_url", "label": "External photo URL (used until you pick one above)" },
+        { "type": "select", "id": "fallback_image", "label": "Placeholder photo (used until neither of the above is set)", "options": [
+          { "value": "none", "label": "None" },
+          { "value": "lc-av1", "label": "Avatar 1" },
+          { "value": "lc-av2", "label": "Avatar 2" },
+          { "value": "lc-av3", "label": "Avatar 3" },
+          { "value": "lc-av4", "label": "Avatar 4" },
+          { "value": "lc-av5", "label": "Avatar 5" },
+          { "value": "lc-av6", "label": "Avatar 6" },
+          { "value": "lc-av7", "label": "Avatar 7" },
+          { "value": "lc-av8", "label": "Avatar 8" }
+        ], "default": "none" },
+        { "type": "text", "id": "name", "label": "Name", "default": "Lucy G." },
+        { "type": "textarea", "id": "quote", "label": "Quote", "default": "I saw a difference in just a week!" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Lux Cove: Testimonials",
+      "blocks": [
+        { "type": "testimonial_row1", "settings": { "fallback_image": "lc-av1", "name": "Violet M.", "quote": "After two weeks, my dark circles are much brighter! I feel more awake without heavy concealer." } },
+        { "type": "testimonial_row1", "settings": { "fallback_image": "lc-av2", "name": "Valerie O.", "quote": "My fine lines have softened and my under-eyes feel firmer. I look younger without expensive treatments!" } },
+        { "type": "testimonial_row1", "settings": { "fallback_image": "lc-av3", "name": "Sarah B.", "quote": "So easy to use! I can relax or multitask while the glasses work their magic in 10 minutes a day." } },
+        { "type": "testimonial_row1", "settings": { "fallback_image": "lc-av4", "name": "Jenna W.", "quote": "Finally, an affordable solution that works! Reduced my dark circles without breaking the bank." } },
+        { "type": "testimonial_row2", "settings": { "fallback_image": "lc-av5", "name": "Lucy G.", "quote": "I saw a difference in just a week! My dark circles are lighter and my skin looks refreshed." } },
+        { "type": "testimonial_row2", "settings": { "fallback_image": "lc-av6", "name": "Megan D.", "quote": "Feels like a spa treatment! The red light is so relaxing and I love that I can unwind." } },
+        { "type": "testimonial_row2", "settings": { "fallback_image": "lc-av7", "name": "Nina L.", "quote": "Perfect for my daily routine. I use them while reading and my skin feels rejuvenated." } },
+        { "type": "testimonial_row2", "settings": { "fallback_image": "lc-av8", "name": "Sammy O.", "quote": "In two weeks, my under-eye bags and fine lines have improved. I feel so much more confident!" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,63 @@
+{{ 'lux-cove.css' | asset_url | stylesheet_tag }}
+<div class="lc-page">
+  <!-- Fixed: Switches background instantly based on your selection using your exact hex codes -->
+  <section class="lc-sec" 
+           style="background-color: {% if section.settings.bg_color == 'pink' %}#f6e3e5{% else %}#fbf7f3{% endif %} !important; background: {% if section.settings.bg_color == 'pink' %}#f6e3e5{% else %}#fbf7f3{% endif %} !important;"
+           data-screen-label="How to Use">
+    
+    <div class="lc-sec-head">
+      <span class="lc-eyebrow">{{ section.settings.eyebrow }}</span>
+      <h2 class="lc-sec-t">{{ section.settings.heading }}</h2>
+      <span class="lc-rule"></span>
+    </div>
+    {%- for block in section.blocks -%}
+      <div class="lc-step" {{ block.shopify_attributes }}>
+        <span class="lc-stepnum">{{ forloop.index }}</span>
+        <div>
+          <div class="lc-fs16 lc-fw6" style="margin-bottom:4px">{{ block.settings.title }}</div>
+          <div class="lc-fs13" style="color:#5a4f45;line-height:1.7">{{ block.settings.text }}</div>
+        </div>
+      </div>
+    {%- endfor -%}
+  </section>
+</div>
+
+{% schema %}
+{
+  "name": "Lux Cove: How to use",
+  "settings": [
+    { 
+      "type": "select", 
+      "id": "bg_color", 
+      "label": "Choose Background Color", 
+      "options": [
+        { "value": "cream", "label": "Cream (#fbf7f3)" },
+        { "value": "pink", "label": "Pink (#f6e3e5)" }
+      ],
+      "default": "cream" 
+    },
+    { "type": "text", "id": "eyebrow", "label": "Effortless routine" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "How to Use It" }
+  ],
+  "blocks": [
+    {
+      "type": "step",
+      "name": "Step",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Title", "default": "Prep Your Skin" },
+        { "type": "textarea", "id": "text", "label": "Text", "default": "Start with a clean face." }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Lux Cove: How to use",
+      "blocks": [
+        { "type": "step", "settings": { "title": "Prep Your Skin", "text": "Start with a clean face. Gently cleanse your under-eye area to remove makeup, oil, or dirt for the best results." } },
+        { "type": "step", "settings": { "title": "Dampen Skin", "text": "Apply a water-based serum, conductive gel, or simply dampen the skin with water to improve microcurrent conductivity." } },
+        { "type": "step", "settings": { "title": "Turn It On & Relax", "text": "Turn on the device, select your mode, and wear it for 10 minutes daily while you unwind. Recharge via USB to keep it ready for daily use." } }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,140 @@
+{{ 'lux-cove.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign bars = section.blocks | where: 'type', 'rating_bar'
+  assign reviews = section.blocks | where: 'type', 'customer_review'
+-%}
+
+<!-- Fixed: Injected custom inline styles to dynamically change stars, bars, and typography text elements to black when pink mode is active -->
+<style>
+  {% if section.settings.bg_color == 'pink' %}
+    #shopify-section-{{ section.id }} .lc-stars,
+    #shopify-section-{{ section.id }} .lc-fw6,
+    #shopify-section-{{ section.id }} .lc-serif {
+      color: #000000 !important;
+    }
+    #shopify-section-{{ section.id }} .lc-barfill {
+      background-color: #000000 !important;
+      background: #000000 !important;
+    }
+  {% endif %}
+</style>
+
+<div class="lc-page">
+  <section class="lc-sec {% if section.settings.bg_color == 'pink' %}lc-pinkbg{% else %}lc-creambg{% endif %}" 
+           style="background-color: {% if section.settings.bg_color == 'pink' %}#f6e3e5{% else %}#fbf7f3{% endif %} !important; background: {% if section.settings.bg_color == 'pink' %}#f6e3e5{% else %}#fbf7f3{% endif %} !important;"
+           data-screen-label="Customer Reviews">
+    
+    <div class="lc-sec-head">
+      <span class="lc-eyebrow">{{ section.settings.eyebrow }}</span>
+      <h2 class="lc-sec-t">{{ section.settings.heading }}</h2>
+      <span class="lc-rule"></span>
+    </div>
+
+    <div class="lc-fx lc-ac lc-jc lc-gap10" style="margin-bottom:8px">
+      <span class="lc-serif" style="font-size:38px;font-weight:700">{{ section.settings.average }}</span>
+      <div>
+        <div class="lc-stars">{{ section.settings.stars_display }}</div>
+        <div class="lc-fs12" style="color:#6a5f54">Based on {{ section.settings.review_count }} reviews <span style="color:#2f9c56">✓</span></div>
+      </div>
+    </div>
+
+    {%- if bars.size > 0 -%}
+      <div class="lc-col lc-gap8" style="margin:18px 0 8px">
+        {%- for block in bars -%}
+          <div class="lc-histrow" {{ block.shopify_attributes }}>
+            <span class="lc-stars lc-fs12" style="width:64px">{{ block.settings.stars }}</span>
+            <div class="lc-bar"><div class="lc-barfill" style="width:{{ block.settings.percent }}%"></div></div>
+            <span style="width:34px;text-align:right">{{ block.settings.count }}</span>
+          </div>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+
+    {%- if reviews.size > 0 -%}
+      <div style="margin-top:22px">
+        {%- for block in reviews -%}
+          <div class="lc-rev" {{ block.shopify_attributes }}>
+            <div class="lc-fx lc-ac lc-jb">
+              <span class="lc-stars">{{ block.settings.stars }}</span>
+              {%- if block.settings.date != blank -%}
+                <span class="lc-fs12" style="color:#a89d90">{{ block.settings.date }}</span>
+              {%- endif -%}
+            </div>
+            <div class="lc-fx lc-ac lc-gap8 lc-mt8">
+              <span class="lc-vinit">{{ block.settings.name | slice: 0 | upcase }}</span>
+              <span class="lc-fw6" style="color:var(--lc-rosedeep)">{{ block.settings.name }}</span>
+              <span class="lc-vbadge">Verified</span>
+            </div>
+            {%- if block.settings.title != blank -%}
+              <div class="lc-fw6 lc-mt8">{{ block.settings.title }}</div>
+            {%- endif -%}
+            <p class="lc-mt8 lc-m0" style="line-height:1.7">{{ block.settings.text }}</p>
+          </div>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+  </section>
+</div>
+
+{% schema %}
+{
+  "name": "Lux Cove: Reviews",
+  "settings": [
+    { 
+      "type": "select", 
+      "id": "bg_color", 
+      "label": "Choose Background Color", 
+      "options": [
+        { "value": "cream", "label": "Cream (#fbf7f3)" },
+        { "value": "pink", "label": "Pink (#f6e3e5)" }
+      ],
+      "default": "cream" 
+    },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Verified buyers" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Customer Reviews" },
+    { "type": "text", "id": "average", "label": "Average rating", "default": "4.5" },
+    { "type": "text", "id": "stars_display", "label": "Star display", "default": "★★★★½" },
+    { "type": "text", "id": "review_count", "label": "Review count", "default": "677" }
+  ],
+  "blocks": [
+    {
+      "type": "rating_bar",
+      "name": "Rating bar",
+      "settings": [
+        { "type": "text", "id": "stars", "label": "Stars", "default": "★★★★★" },
+        { "type": "range", "id": "percent", "label": "Percent filled", "min": 0, "max": 100, "step": 1, "default": 62 },
+        { "type": "text", "id": "count", "label": "Count", "default": "418" }
+      ]
+    },
+    {
+      "type": "customer_review",
+      "name": "Review",
+      "settings": [
+        { "type": "text", "id": "name", "label": "Name", "default": "Sarah" },
+        { "type": "text", "id": "stars", "label": "Stars", "default": "★★★★★" },
+        { "type": "text", "id": "date", "label": "Date (optional)" },
+        { "type": "text", "id": "title", "label": "Title (optional)" },
+        { "type": "textarea", "id": "text", "label": "Text", "default": "Amazing. Noticed a difference after a couple of uses." }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Lux Cove: Reviews",
+      "blocks": [
+        { "type": "rating_bar", "settings": { "stars": "★★★★★", "percent": 62, "count": "418" } },
+        { "type": "rating_bar", "settings": { "stars": "★★★★☆", "percent": 32, "count": "220" } },
+        { "type": "rating_bar", "settings": { "stars": "★★★☆☆", "percent": 2, "count": "13" } },
+        { "type": "rating_bar", "settings": { "stars": "★★☆☆☆", "percent": 2, "count": "11" } },
+        { "type": "rating_bar", "settings": { "stars": "★☆☆☆☆", "percent": 2, "count": "15" } },
+        { "type": "customer_review", "settings": { "name": "Anne-Marie", "date": "22/01/2026", "text": "Too early to see result as it takes a while, but is easy to use and I definitely feel it doing something." } },
+        { "type": "customer_review", "settings": { "name": "Sarah", "date": "09/10/2025", "text": "Amazing. Noticed a difference after a couple of uses." } },
+        { "type": "customer_review", "settings": { "name": "Pat Omeara", "date": "28/09/2025", "title": "Love these!!", "text": "So easy and comfortable to use. Just 10 minutes a day and already I can see a difference. Would definitely recommend." } },
+        { "type": "customer_review", "settings": { "name": "Karly Brierley", "date": "14/09/2025", "title": "Review", "text": "Really see a difference using the glasses, love them." } },
+        { "type": "customer_review", "settings": { "name": "Elise", "date": "02/09/2025", "title": "Spa Treatment at Home!", "text": "Such a great investment. No more spending on expensive eye creams that do nothing!" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

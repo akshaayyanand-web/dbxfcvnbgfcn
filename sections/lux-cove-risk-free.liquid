@@ -1,0 +1,65 @@
+{{ 'lux-cove.css' | asset_url | stylesheet_tag }}
+<div class="lc-page">
+  <!-- Fixed: Uses your precise cream hex (#fbf7f3) or your pink hex (#f6e3e5) depending on selection -->
+  <section class="lc-sec" 
+           style="background-color: {% if section.settings.bg_color == 'pink' %}#f6e3e5{% else %}#fbf7f3{% endif %} !important; background: {% if section.settings.bg_color == 'pink' %}#f6e3e5{% else %}#fbf7f3{% endif %} !important;"
+           data-screen-label="Risk Free">
+    
+    {%- if section.settings.image != blank -%}
+      <img src="{{ section.settings.image | image_url: width: 900 }}" 
+           width="900"
+           height="{{ 900 | divided_by: section.settings.image.aspect_ratio | round }}"
+           loading="lazy"
+           class="lc-featimg" 
+           alt="{{ section.settings.heading | escape_once }}">
+    {%- elsif section.settings.external_image_url != blank -%}
+      <img src="{{ section.settings.external_image_url }}" 
+           width="900"
+           height="900"
+           loading="lazy"
+           style="object-fit: cover;"
+           class="lc-featimg" 
+           alt="{{ section.settings.heading | escape_once }}">
+    {%- else -%}
+      <img src="{{ 'lc-closeup.jpg' | asset_url }}" 
+           width="900"
+           height="900"
+           loading="lazy"
+           style="object-fit: cover;"
+           class="lc-featimg" 
+           alt="{{ section.settings.heading | escape_once }}">
+    {%- endif -%}
+    
+    <div class="lc-tc" style="margin-top:28px">
+      <span class="lc-eyebrow">{{ section.settings.eyebrow }}</span>
+      <h2 class="lc-sec-t" style="margin:10px 0 14px">{{ section.settings.heading }}</h2>
+      <p class="lc-fs14" style="color:#6a5147;line-height:1.85;max-width:360px;margin:0 auto">{{ section.settings.text }}</p>
+    </div>
+  </section>
+</div>
+
+{% schema %}
+{
+  "name": "Lux Cove: Risk free",
+  "settings": [
+    { 
+      "type": "select", 
+      "id": "bg_color", 
+      "label": "Choose Background Color", 
+      "options": [
+        { "value": "cream", "label": "Cream (#fbf7f3)" },
+        { "value": "pink", "label": "Pink (#f6e3e5)" }
+      ],
+      "default": "cream" 
+    },
+    { "type": "image_picker", "id": "image", "label": "Image" },
+    { "type": "url", "id": "external_image_url", "label": "External image URL (used until you pick one above)" },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Our promise" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Try It Risk-Free" },
+    { "type": "textarea", "id": "text", "label": "Text", "default": "We're confident you'll love it, but if it's not for you, no worries. Try it for 30 days, and if you're not completely satisfied, return it for a full refund — no questions asked." }
+  ],
+  "presets": [
+    { "name": "Lux Cove: Risk free" }
+  ]
+}
+{% endschema %}

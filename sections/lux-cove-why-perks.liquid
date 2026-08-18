@@ -1,0 +1,52 @@
+{{ 'lux-cove.css' | asset_url | stylesheet_tag }}
+<div class="lc-page">
+  <section class="lc-sec lc-pinkbg" data-screen-label="Why Lux Cove">
+    <div class="lc-sec-head">
+      <span class="lc-eyebrow">{{ section.settings.eyebrow }}</span>
+      <h2 class="lc-sec-t">{{ section.settings.heading }}</h2>
+      <span class="lc-rule"></span>
+    </div>
+    <div class="lc-perkgrid">
+      {%- for block in section.blocks -%}
+        <div class="lc-perkcard" {{ block.shopify_attributes }}>
+          <span class="lc-perknum">{{ block.settings.number }}</span>
+          <span class="lc-perkline"></span>
+          <span class="lc-perkt">{{ block.settings.title }}</span>
+          <span class="lc-fs13" style="color:#6a5147;line-height:1.6">{{ block.settings.text }}</span>
+        </div>
+      {%- endfor -%}
+    </div>
+  </section>
+</div>
+
+{% schema %}
+{
+  "name": "Lux Cove: Why perks",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Why Lux Cove" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "A Salon Result, At Home" }
+  ],
+  "blocks": [
+    {
+      "type": "perk",
+      "name": "Perk",
+      "settings": [
+        { "type": "text", "id": "number", "label": "Number", "default": "01" },
+        { "type": "text", "id": "title", "label": "Title", "default": "Professional-Level Treatment" },
+        { "type": "textarea", "id": "text", "label": "Text", "default": "Enjoy professional-grade skincare in the comfort of your own home." }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Lux Cove: Why perks",
+      "blocks": [
+        { "type": "perk", "settings": { "number": "01", "title": "Professional-Level Treatment", "text": "Enjoy professional-grade skincare in the comfort of your own home." } },
+        { "type": "perk", "settings": { "number": "02", "title": "Long-Term Results", "text": "Promotes collagen production, reduces inflammation and encourages cellular renewal." } },
+        { "type": "perk", "settings": { "number": "03", "title": "Save Energy & Time", "text": "Maximum results in minimal time — healthy skin without hours on your routine." } },
+        { "type": "perk", "settings": { "number": "04", "title": "Risk-Free for 90 Days", "text": "Try it risk-free with our 90-Day Money-Back Guarantee." } }
+      ]
+    }
+  ]
+}
+{% endschema %}
