@@ -1,0 +1,640 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Manrope:wght@400;500;600;700;800&display=swap">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: #FBF7F2;
+      color: #2B2420;
+      font-family: 'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    h1, h2, h3 { font-family: 'Newsreader', Georgia, 'Times New Roman', serif; margin: 0; }
+    p { margin: 0; }
+    a { color: #B85C38; text-decoration: none; }
+    a:hover { color: #8E4527; }
+    button { font-family: inherit; cursor: pointer; border: none; background: none; }
+    .wrap { max-width: 1120px; margin: 0 auto; padding-left: clamp(20px, 5vw, 80px); padding-right: clamp(20px, 5vw, 80px); }
+    .btn-primary { transition: filter 0.15s ease, transform 0.15s ease; }
+    .btn-primary:hover { filter: brightness(0.92); }
+    .btn-primary:active { transform: scale(0.99); }
+    .ghost-btn { transition: background 0.15s ease, border-color 0.15s ease; }
+    .thumb-btn, .color-swatch, .faq-row, .nav-link { transition: border-color 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease; }
+    .nav-link:hover { opacity: 0.6; }
+    .card-hover { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+    .card-hover:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(43,36,32,0.08); }
+    @media (max-width: 920px) {
+      .hero-grid { grid-template-columns: 1fr !important; }
+      .grid-3 { grid-template-columns: 1fr !important; }
+      .grid-4 { grid-template-columns: 1fr 1fr !important; }
+      .compare-table { font-size: 13px !important; }
+      .section-pad { padding-top: 56px !important; padding-bottom: 56px !important; }
+      .h1-size { font-size: 2.1rem !important; }
+      .h2-size { font-size: 1.65rem !important; }
+      .steps-grid { grid-template-columns: 1fr !important; }
+      .use-grid { grid-template-columns: 1fr 1fr !important; }
+    }
+    @media (max-width: 560px) {
+      .grid-4 { grid-template-columns: 1fr !important; }
+      .use-grid { grid-template-columns: 1fr !important; }
+      .footer-grid { grid-template-columns: 1fr 1fr !important; }
+    }
+  </style>
+</helmet>
+
+<svg style="display:none" aria-hidden="true">
+  <defs>
+    <symbol id="icon-check" viewBox="0 0 24 24"><polyline points="4 12.5 9.5 18 20 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="icon-x" viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="icon-flame" viewBox="0 0 24 24"><path d="M12 2c1 3-3 4-3 8a3 3 0 0 0 6 0c0-1.5-1-2-1-3.5 2 1 3 3.5 3 5.5a5 5 0 0 1-10 0c0-4 3-6 5-10z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/></symbol>
+    <symbol id="icon-pulse" viewBox="0 0 24 24"><polyline points="2 12 7 12 9.5 6 14.5 18 17 12 22 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="icon-remote" viewBox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.6"/><line x1="10" y1="7" x2="14" y2="7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="9.5" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="14.5" cy="12" r="1" fill="currentColor" stroke="none"/><line x1="9" y1="16.5" x2="15" y2="16.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+    <symbol id="icon-shield" viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V6l7-3z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><polyline points="9 12 11.2 14.2 15.5 9.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="icon-box" viewBox="0 0 24 24"><path d="M3 8l9-5 9 5-9 5-9-5z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M3 8v9l9 5 9-5V8" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><line x1="12" y1="13" x2="12" y2="22" stroke="currentColor" stroke-width="1.5"/></symbol>
+    <symbol id="icon-image" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="8.5" cy="9.5" r="1.4" fill="currentColor" stroke="none"/><path d="M21 16l-5.5-5.5L9 17" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/></symbol>
+    <symbol id="icon-play" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.5"/><polygon points="10 8.3 16.5 12 10 15.7" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="icon-plus" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="icon-minus" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="icon-cart" viewBox="0 0 24 24"><circle cx="9" cy="21" r="1.2" fill="currentColor" stroke="none"/><circle cx="18" cy="21" r="1.2" fill="currentColor" stroke="none"/><path d="M2.5 3h2l2.6 12.2a2 2 0 0 0 2 1.6h8a2 2 0 0 0 2-1.6L21 7H6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/></symbol>
+    <symbol id="icon-truck" viewBox="0 0 24 24"><rect x="1.5" y="7" width="13" height="9" rx="1" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M14.5 10h4l3 3v3h-7z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><circle cx="6" cy="18" r="1.6" fill="none" stroke="currentColor" stroke-width="1.4"/><circle cx="17.5" cy="18" r="1.6" fill="none" stroke="currentColor" stroke-width="1.4"/></symbol>
+    <symbol id="icon-lock" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="9.5" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5" fill="none" stroke="currentColor" stroke-width="1.5"/></symbol>
+    <symbol id="icon-diagram" viewBox="0 0 24 24"><circle cx="12" cy="5" r="2.2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 20c0-4.5 1.8-7 4-7s4 2.5 4 7" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><line x1="12" y1="8.5" x2="12" y2="13" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><line x1="5" y1="13.5" x2="9" y2="12" stroke="currentColor" stroke-width="1.2" stroke-dasharray="1.5 2" stroke-linecap="round"/><line x1="19" y1="13.5" x2="15" y2="12" stroke="currentColor" stroke-width="1.2" stroke-dasharray="1.5 2" stroke-linecap="round"/></symbol>
+  </defs>
+</svg>
+
+<!-- Trust bar -->
+<div style="background:#221A16; color:#EDE2D6; font-size:12.5px; letter-spacing:0.02em;">
+  <div class="wrap" style="display:flex; justify-content:center; align-items:center; gap:28px; padding:9px 20px; flex-wrap:wrap; text-align:center;">
+    <span>Free shipping over $[50]</span>
+    <span style="opacity:0.35;">·</span>
+    <span>[30]-Day Relief Guarantee</span>
+    <span style="opacity:0.35;">·</span>
+    <span>CE, FCC &amp; RoHS Certified</span>
+  </div>
+</div>
+
+<!-- Header -->
+<header style="border-bottom:1px solid #EAE0D3;">
+  <div class="wrap" style="display:flex; align-items:center; justify-content:space-between; padding:20px;">
+    <div style="font-family:'Newsreader',serif; font-size:20px; letter-spacing:0.04em; font-weight:600; color:#2B2420;">[YOUR BRAND]</div>
+    <nav style="display:flex; align-items:center; gap:32px;">
+      <a class="nav-link" href="#" style="font-size:14px; color:#4A4038; font-weight:500;">Shop</a>
+      <a class="nav-link" href="#how-it-works" style="font-size:14px; color:#4A4038; font-weight:500;">How It Works</a>
+      <a class="nav-link" href="#reviews" style="font-size:14px; color:#4A4038; font-weight:500;">Reviews</a>
+      <a class="nav-link" href="#faq" style="font-size:14px; color:#4A4038; font-weight:500;">FAQ</a>
+    </nav>
+    <div style="display:flex; align-items:center;">
+      <svg width="21" height="21" style="display:block; color:#2B2420;"><use href="#icon-cart"></use></svg>
+    </div>
+  </div>
+</header>
+
+<!-- Hero -->
+<section class="section-pad" style="padding-top:64px; padding-bottom:72px;">
+  <div class="wrap hero-grid" style="display:grid; grid-template-columns:1.05fr 1fr; gap:64px; align-items:start;">
+
+    <!-- Gallery -->
+    <div>
+      <div style="aspect-ratio:4/5; width:100%; border:1.5px dashed #D8C7B4; border-radius:4px; background:#F3EAE1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; position:relative; padding:32px; text-align:center;">
+        <span style="position:absolute; top:16px; left:16px; font-size:10.5px; letter-spacing:0.1em; font-weight:700; color:#9C6B4A; text-transform:uppercase; background:#FBF7F2; padding:4px 9px; border-radius:3px;">{{activeKind}}</span>
+        <svg width="34" height="34" style="display:block; color:#B99A7C;"><use href="#icon-image"></use></svg>
+        <p style="font-size:14px; color:#8A7D72; max-width:320px; line-height:1.5;">{{activeLabel}}</p>
+      </div>
+      <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:10px; margin-top:12px;">
+        <button class="thumb-btn" onClick="{{selectImg0}}" style="aspect-ratio:1; border:2px solid {{img0Border}}; border-radius:4px; background:#F3EAE1; display:flex; align-items:center; justify-content:center;">
+          <svg width="16" height="16" style="display:block; color:{{img0Label}};"><use href="#icon-image"></use></svg>
+        </button>
+        <button class="thumb-btn" onClick="{{selectImg1}}" style="aspect-ratio:1; border:2px solid {{img1Border}}; border-radius:4px; background:#F3EAE1; display:flex; align-items:center; justify-content:center;">
+          <svg width="16" height="16" style="display:block; color:{{img1Label}};"><use href="#icon-image"></use></svg>
+        </button>
+        <button class="thumb-btn" onClick="{{selectImg2}}" style="aspect-ratio:1; border:2px solid {{img2Border}}; border-radius:4px; background:#F3EAE1; display:flex; align-items:center; justify-content:center;">
+          <svg width="16" height="16" style="display:block; color:{{img2Label}};"><use href="#icon-play"></use></svg>
+        </button>
+        <button class="thumb-btn" onClick="{{selectImg3}}" style="aspect-ratio:1; border:2px solid {{img3Border}}; border-radius:4px; background:#F3EAE1; display:flex; align-items:center; justify-content:center;">
+          <svg width="16" height="16" style="display:block; color:{{img3Label}};"><use href="#icon-remote"></use></svg>
+        </button>
+        <button class="thumb-btn" onClick="{{selectImg4}}" style="aspect-ratio:1; border:2px solid {{img4Border}}; border-radius:4px; background:#F3EAE1; display:flex; align-items:center; justify-content:center;">
+          <svg width="16" height="16" style="display:block; color:{{img4Label}};"><use href="#icon-image"></use></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Buy box -->
+    <div>
+      <p style="font-size:12.5px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:{{accent}}; margin-bottom:14px;">Heat + Vibration Therapy</p>
+      <h1 class="h1-size" style="font-size:2.75rem; font-weight:600; color:#211A16; line-height:1.08; margin-bottom:14px;">Relief Wrap</h1>
+      <p style="font-size:16.5px; color:#5B5049; line-height:1.6; max-width:440px; margin-bottom:22px;">Heat and vibration relief for the neck, shoulder and upper-back tension that comes with carrying more up front. Worn like a fitted vest, run from a wireless remote &mdash; no reaching, no cords.</p>
+
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:24px;">
+        <svg width="16" height="16" style="display:block; color:#7C8B6F;"><use href="#icon-shield"></use></svg>
+        <span style="font-size:13px; color:#6B6058; letter-spacing:0.01em;">CE &middot; FCC &middot; RoHS certified and compliance-tested</span>
+      </div>
+
+      <div style="display:flex; align-items:baseline; gap:12px; margin-bottom:6px;">
+        <span style="font-size:32px; font-weight:700; color:#211A16; font-family:'Newsreader',serif;">$44.99</span>
+      </div>
+      <p style="font-size:13px; color:#8A7D72; margin-bottom:26px;">or 4 interest-free payments of $11.25 with Shop Pay</p>
+
+      <div style="display:flex; flex-direction:column; gap:11px; margin-bottom:28px;">
+        <div style="display:flex; gap:10px; align-items:flex-start;">
+          <svg width="17" height="17" style="display:block; color:{{accent}}; flex-shrink:0; margin-top:2px;"><use href="#icon-remote"></use></svg>
+          <span style="font-size:14.5px; color:#3A322C; line-height:1.5;">Wireless remote control &mdash; change settings without reaching around</span>
+        </div>
+        <div style="display:flex; gap:10px; align-items:flex-start;">
+          <svg width="17" height="17" style="display:block; color:{{accent}}; flex-shrink:0; margin-top:2px;"><use href="#icon-flame"></use></svg>
+          <span style="font-size:14.5px; color:#3A322C; line-height:1.5;">Multiple heat levels and vibration modes, worn hands-free</span>
+        </div>
+        <div style="display:flex; gap:10px; align-items:flex-start;">
+          <svg width="17" height="17" style="display:block; color:{{accent}}; flex-shrink:0; margin-top:2px;"><use href="#icon-check"></use></svg>
+          <span style="font-size:14.5px; color:#3A322C; line-height:1.5;">Strap sits under the arm, not across the shoulder &mdash; no digging in</span>
+        </div>
+      </div>
+
+      <!-- Color -->
+      <div style="margin-bottom:24px;">
+        <p style="font-size:13px; color:#5B5049; margin-bottom:10px;">Color &mdash; <span style="color:#211A16; font-weight:600;">{{colorLabel}}</span></p>
+        <div style="display:flex; gap:10px;">
+          <button onClick="{{pickSand}}" class="color-swatch" style="width:34px; height:34px; border-radius:50%; background:#2B3A52; box-shadow:0 0 0 2px #FBF7F2, 0 0 0 3.5px {{sandRing}}; border:1px solid rgba(0,0,0,0.1);" aria-label="Midnight Navy"></button>
+          <button onClick="{{pickCharcoal}}" class="color-swatch" style="width:34px; height:34px; border-radius:50%; background:#3B3532; box-shadow:0 0 0 2px #FBF7F2, 0 0 0 3.5px {{charcoalRing}}; border:1px solid rgba(0,0,0,0.1);" aria-label="Charcoal Grey"></button>
+        </div>
+      </div>
+
+      <!-- Qty + CTA -->
+      <div style="display:flex; gap:12px; margin-bottom:18px;">
+        <div style="display:flex; align-items:center; border:1.5px solid #E4D9CC; border-radius:4px; padding:0 4px;">
+          <button onClick="{{dec}}" style="width:36px; height:48px; display:flex; align-items:center; justify-content:center; color:#5B5049;"><svg width="14" height="14"><use href="#icon-minus"></use></svg></button>
+          <span style="width:28px; text-align:center; font-size:15px; font-weight:600;">{{qty}}</span>
+          <button onClick="{{inc}}" style="width:36px; height:48px; display:flex; align-items:center; justify-content:center; color:#5B5049;"><svg width="14" height="14"><use href="#icon-plus"></use></svg></button>
+        </div>
+        <button class="btn-primary" style="flex:1; height:48px; background:{{accent}}; color:#FBF4EC; border-radius:4px; font-size:15px; font-weight:700; letter-spacing:0.01em;">Add to Cart</button>
+      </div>
+
+      <div style="display:flex; gap:22px; flex-wrap:wrap;">
+        <div style="display:flex; align-items:center; gap:7px;"><svg width="15" height="15" style="color:#8A7D72;"><use href="#icon-box"></use></svg><span style="font-size:12.5px; color:#8A7D72;">Free returns</span></div>
+        <div style="display:flex; align-items:center; gap:7px;"><svg width="15" height="15" style="color:#8A7D72;"><use href="#icon-truck"></use></svg><span style="font-size:12.5px; color:#8A7D72;">Ships in [1&ndash;2] days</span></div>
+        <div style="display:flex; align-items:center; gap:7px;"><svg width="15" height="15" style="color:#8A7D72;"><use href="#icon-lock"></use></svg><span style="font-size:12.5px; color:#8A7D72;">Secure checkout</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Pain point validation -->
+<section class="section-pad" style="padding-top:88px; padding-bottom:88px;">
+  <div class="wrap" style="max-width:760px; text-align:center; margin:0 auto 48px;">
+    <h2 class="h2-size" style="font-size:2.1rem; font-weight:600; color:#211A16; margin-bottom:20px;">This isn&rsquo;t just poor posture.</h2>
+    <p style="font-size:16.5px; color:#5B5049; line-height:1.7;">If you deal with constant tightness across your upper back, a dull ache that creeps into your neck by afternoon, or shoulders that never quite relax &mdash; you&rsquo;re not imagining it. Carrying more weight up front shifts your center of gravity forward, pulling your thoracic spine down and keeping your upper trapezius and neck muscles in a near-constant state of tension. It&rsquo;s one of the most common complaints among women with a fuller bust, and it rarely gets better on its own.</p>
+  </div>
+
+  <div class="wrap" style="margin-bottom:48px;">
+    <div style="border:1.5px dashed #D8C7B4; border-radius:4px; background:#F3EAE1; padding:40px; display:flex; flex-direction:column; align-items:center; gap:10px; text-align:center;">
+      <svg width="30" height="30" style="display:block; color:#B99A7C;"><use href="#icon-diagram"></use></svg>
+      <p style="font-size:13.5px; color:#8A7D72; max-width:480px; line-height:1.5;">[Diagram &mdash; how a fuller bust shifts posture forward, and where the strain lands: neck, upper trapezius, shoulders, upper back]</p>
+    </div>
+  </div>
+
+  <div class="wrap grid-3" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:24px;">
+    <div style="padding:28px 24px; background:#FBF7F2; border:1px solid #EAE0D3; border-radius:4px;">
+      <h3 style="font-size:16.5px; font-weight:600; color:#211A16; margin-bottom:10px; font-family:'Manrope',sans-serif;">All-day upper back tension</h3>
+      <p style="font-size:14px; color:#6B6058; line-height:1.6;">A dull, constant tightness across your shoulder blades that never fully lets go.</p>
+    </div>
+    <div style="padding:28px 24px; background:#FBF7F2; border:1px solid #EAE0D3; border-radius:4px;">
+      <h3 style="font-size:16.5px; font-weight:600; color:#211A16; margin-bottom:10px; font-family:'Manrope',sans-serif;">Tension headaches by evening</h3>
+      <p style="font-size:14px; color:#6B6058; line-height:1.6;">Tight upper traps and neck muscles that build into a headache by the end of the day.</p>
+    </div>
+    <div style="padding:28px 24px; background:#FBF7F2; border:1px solid #EAE0D3; border-radius:4px;">
+      <h3 style="font-size:16.5px; font-weight:600; color:#211A16; margin-bottom:10px; font-family:'Manrope',sans-serif;">Shoulders that never relax</h3>
+      <p style="font-size:14px; color:#6B6058; line-height:1.6;">That hunched, guarded feeling &mdash; even when you&rsquo;re trying to sit up straight.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Why cheap fixes fail -->
+<section class="section-pad" style="padding-top:88px; padding-bottom:88px; background:#F3EAE1;">
+  <div class="wrap" style="max-width:680px; text-align:center; margin:0 auto 48px;">
+    <h2 class="h2-size" style="font-size:2.1rem; font-weight:600; color:#211A16;">You&rsquo;ve probably already tried the easy fixes.</h2>
+  </div>
+  <div class="wrap grid-3" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:24px; margin-bottom:40px;">
+    <div style="padding:28px 24px; background:#FBF7F2; border-radius:4px;">
+      <h3 style="font-size:15.5px; font-weight:700; color:#211A16; margin-bottom:10px; font-family:'Manrope',sans-serif;">Posture Braces <span style="color:#8A7D72; font-weight:500;">($15&ndash;30)</span></h3>
+      <p style="font-size:14px; color:#6B6058; line-height:1.6;">Figure-8 straps pull tight across the shoulders and dig into the armpits &mdash; adding pressure to muscles that are already overworked.</p>
+    </div>
+    <div style="padding:28px 24px; background:#FBF7F2; border-radius:4px;">
+      <h3 style="font-size:15.5px; font-weight:700; color:#211A16; margin-bottom:10px; font-family:'Manrope',sans-serif;">&ldquo;Just Exercise More&rdquo;</h3>
+      <p style="font-size:14px; color:#6B6058; line-height:1.6;">The real long-term fix, if you can find 30 uninterrupted minutes most days. Most of us can&rsquo;t &mdash; not consistently, anyway.</p>
+    </div>
+    <div style="padding:28px 24px; background:#FBF7F2; border-radius:4px;">
+      <h3 style="font-size:15.5px; font-weight:700; color:#211A16; margin-bottom:10px; font-family:'Manrope',sans-serif;">Premium Recovery Tech <span style="color:#8A7D72; font-weight:500;">($100&ndash;180+)</span></h3>
+      <p style="font-size:14px; color:#6B6058; line-height:1.6;">Massage guns and high-support bras genuinely help. They also cost more than most people spend on relief in a year.</p>
+    </div>
+  </div>
+  <div class="wrap" style="max-width:680px; margin:0 auto; text-align:center; border-top:1px solid #E4D5C3; padding-top:36px;">
+    <p style="font-size:18px; font-family:'Newsreader',serif; font-style:italic; color:#3A322C; line-height:1.6;">&ldquo;The Relief Wrap won&rsquo;t replace a well-fitted bra or physical therapy. But it gives you real, hands-free relief in the time it takes to check your email &mdash; for less than $50.&rdquo;</p>
+  </div>
+</section>
+
+<!-- How it works -->
+<section id="how-it-works" class="section-pad" style="padding-top:88px; padding-bottom:88px;">
+  <div class="wrap" style="max-width:680px; text-align:center; margin:0 auto 56px;">
+    <h2 class="h2-size" style="font-size:2.1rem; font-weight:600; color:#211A16;">Two therapies, one wrap.</h2>
+  </div>
+
+  <div class="wrap grid-3" style="display:grid; grid-template-columns:1fr 1fr; gap:48px; margin-bottom:96px;">
+    <div>
+      <div style="aspect-ratio:16/11; border:1.5px dashed #D8C7B4; border-radius:4px; background:#F3EAE1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; padding:24px; text-align:center; margin-bottom:20px;">
+        <span style="font-size:10.5px; letter-spacing:0.1em; font-weight:700; color:#9C6B4A; text-transform:uppercase;">GIF</span>
+        <svg width="26" height="26" style="display:block; color:#B99A7C;"><use href="#icon-play"></use></svg>
+        <p style="font-size:13px; color:#8A7D72; max-width:280px; line-height:1.5;">Heat glowing across the shoulder &amp; back panels, worn at a desk</p>
+      </div>
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+        <svg width="20" height="20" style="display:block; color:{{accent}};"><use href="#icon-flame"></use></svg>
+        <h3 style="font-size:18px; font-weight:600; color:#211A16;">Warmth that reaches the muscle</h3>
+      </div>
+      <p style="font-size:14.5px; color:#6B6058; line-height:1.65;">Multiple heat levels [confirm exact °F/°C range] of soothing warmth increase blood flow and loosen the muscle fibers across your neck, shoulders and upper back &mdash; the same principle behind a warm compress, without holding it in place yourself.</p>
+    </div>
+    <div>
+      <div style="aspect-ratio:16/11; border:1.5px dashed #D8C7B4; border-radius:4px; background:#F3EAE1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; padding:24px; text-align:center; margin-bottom:20px;">
+        <span style="font-size:10.5px; letter-spacing:0.1em; font-weight:700; color:#9C6B4A; text-transform:uppercase;">GIF</span>
+        <svg width="26" height="26" style="display:block; color:#B99A7C;"><use href="#icon-play"></use></svg>
+        <p style="font-size:13px; color:#8A7D72; max-width:280px; line-height:1.5;">Vibration/pulse massage in use across the upper back</p>
+      </div>
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+        <svg width="20" height="20" style="display:block; color:{{accent}};"><use href="#icon-pulse"></use></svg>
+        <h3 style="font-size:18px; font-weight:600; color:#211A16;">Pulses that work into the knot</h3>
+      </div>
+      <p style="font-size:14.5px; color:#6B6058; line-height:1.65;">Multiple vibration modes [confirm exact patterns] deliver rhythmic, targeted pulses into the upper trapezius &mdash; the exact muscle that carries the most strain when a fuller bust pulls your shoulders forward.</p>
+    </div>
+  </div>
+
+  <div class="wrap" style="max-width:560px; text-align:center; margin:0 auto 48px;">
+    <h2 style="font-size:1.75rem; font-weight:600; color:#211A16;">Three steps to relief.</h2>
+  </div>
+  <div class="wrap steps-grid" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:32px;">
+    <div style="text-align:center;">
+      <div style="aspect-ratio:1; border:1.5px dashed #D8C7B4; border-radius:4px; background:#F3EAE1; display:flex; align-items:center; justify-content:center; margin-bottom:16px;">
+        <svg width="24" height="24" style="color:#B99A7C;"><use href="#icon-image"></use></svg>
+      </div>
+      <p style="font-size:12px; letter-spacing:0.08em; text-transform:uppercase; color:{{accent}}; font-weight:700; margin-bottom:6px;">Step 1</p>
+      <h3 style="font-size:16px; font-weight:600; color:#211A16; margin-bottom:8px;">Put it on</h3>
+      <p style="font-size:13.5px; color:#6B6058; line-height:1.6;">Slip it on like a vest and secure the adjustable underarm strap &mdash; one size, no fitting required.</p>
+    </div>
+    <div style="text-align:center;">
+      <div style="aspect-ratio:1; border:1.5px dashed #D8C7B4; border-radius:4px; background:#F3EAE1; display:flex; align-items:center; justify-content:center; margin-bottom:16px;">
+        <svg width="24" height="24" style="color:#B99A7C;"><use href="#icon-remote"></use></svg>
+      </div>
+      <p style="font-size:12px; letter-spacing:0.08em; text-transform:uppercase; color:{{accent}}; font-weight:700; margin-bottom:6px;">Step 2</p>
+      <h3 style="font-size:16px; font-weight:600; color:#211A16; margin-bottom:8px;">Set it from the remote</h3>
+      <p style="font-size:13.5px; color:#6B6058; line-height:1.6;">Choose your heat level and massage mode from the included wireless remote &mdash; no reaching around to your own back.</p>
+    </div>
+    <div style="text-align:center;">
+      <div style="aspect-ratio:1; border:1.5px dashed #D8C7B4; border-radius:4px; background:#F3EAE1; display:flex; align-items:center; justify-content:center; margin-bottom:16px;">
+        <svg width="24" height="24" style="color:#B99A7C;"><use href="#icon-image"></use></svg>
+      </div>
+      <p style="font-size:12px; letter-spacing:0.08em; text-transform:uppercase; color:{{accent}}; font-weight:700; margin-bottom:6px;">Step 3</p>
+      <h3 style="font-size:16px; font-weight:600; color:#211A16; margin-bottom:8px;">Let it work</h3>
+      <p style="font-size:13.5px; color:#6B6058; line-height:1.6;">Relax for [15&ndash;20] minutes. It shuts off on its own, so you don&rsquo;t have to think about it.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Built around you -->
+<section class="section-pad" style="padding-top:88px; padding-bottom:88px; background:#F3EAE1;">
+  <div class="wrap" style="max-width:680px; text-align:center; margin:0 auto 16px;">
+    <h2 class="h2-size" style="font-size:2.1rem; font-weight:600; color:#211A16;">Designed for the body that&rsquo;s carrying more.</h2>
+  </div>
+  <div class="wrap" style="max-width:620px; text-align:center; margin:0 auto 48px;">
+    <p style="font-size:15.5px; color:#5B5049; line-height:1.7;">The adjustable strap sits under your arm, not across your shoulders, and fits comfortably over or under clothing &mdash; so it works with your day, not against it.</p>
+  </div>
+  <div class="wrap use-grid" style="display:grid; grid-template-columns:repeat(4, 1fr); gap:20px;">
+    <div style="text-align:center;">
+      <div style="aspect-ratio:1; border:1.5px dashed #D8C7B4; border-radius:4px; background:#FBF7F2; display:flex; align-items:center; justify-content:center; margin-bottom:14px;">
+        <svg width="22" height="22" style="color:#B99A7C;"><use href="#icon-image"></use></svg>
+      </div>
+      <h3 style="font-size:14.5px; font-weight:600; color:#211A16; margin-bottom:6px;">At your desk</h3>
+      <p style="font-size:13px; color:#6B6058; line-height:1.55;">Between meetings &mdash; no cords, no setup.</p>
+    </div>
+    <div style="text-align:center;">
+      <div style="aspect-ratio:1; border:1.5px dashed #D8C7B4; border-radius:4px; background:#FBF7F2; display:flex; align-items:center; justify-content:center; margin-bottom:14px;">
+        <svg width="22" height="22" style="color:#B99A7C;"><use href="#icon-image"></use></svg>
+      </div>
+      <h3 style="font-size:14.5px; font-weight:600; color:#211A16; margin-bottom:6px;">On your commute</h3>
+      <p style="font-size:13px; color:#6B6058; line-height:1.55;">Warm relief on the ride home, hands free.</p>
+    </div>
+    <div style="text-align:center;">
+      <div style="aspect-ratio:1; border:1.5px dashed #D8C7B4; border-radius:4px; background:#FBF7F2; display:flex; align-items:center; justify-content:center; margin-bottom:14px;">
+        <svg width="22" height="22" style="color:#B99A7C;"><use href="#icon-image"></use></svg>
+      </div>
+      <h3 style="font-size:14.5px; font-weight:600; color:#211A16; margin-bottom:6px;">While you cook</h3>
+      <p style="font-size:13px; color:#6B6058; line-height:1.55;">Loosen up while dinner&rsquo;s on the stove.</p>
+    </div>
+    <div style="text-align:center;">
+      <div style="aspect-ratio:1; border:1.5px dashed #D8C7B4; border-radius:4px; background:#FBF7F2; display:flex; align-items:center; justify-content:center; margin-bottom:14px;">
+        <svg width="22" height="22" style="color:#B99A7C;"><use href="#icon-image"></use></svg>
+      </div>
+      <h3 style="font-size:14.5px; font-weight:600; color:#211A16; margin-bottom:6px;">Winding down</h3>
+      <p style="font-size:13px; color:#6B6058; line-height:1.55;">Ten quiet minutes before bed, heat and all.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Comparison -->
+<section class="section-pad" style="padding-top:88px; padding-bottom:88px; background:#221A16;">
+  <div class="wrap" style="max-width:680px; text-align:center; margin:0 auto 48px;">
+    <h2 class="h2-size" style="font-size:2.1rem; font-weight:600; color:#F6EFE7;">Relief that doesn&rsquo;t cost $100+.</h2>
+  </div>
+  <div class="wrap" style="overflow-x:auto;">
+    <table class="compare-table" style="width:100%; min-width:560px; border-collapse:collapse; font-size:14.5px;">
+      <thead>
+        <tr>
+          <td style="padding:14px 12px; color:#B99A7C; font-size:12px; letter-spacing:0.05em; text-transform:uppercase;"></td>
+          <td style="padding:14px 12px; text-align:center; color:{{accent}}; font-weight:700; border-bottom:2px solid {{accent}};">Relief Wrap</td>
+          <td style="padding:14px 12px; text-align:center; color:#C9BDAF; font-weight:600; border-bottom:1px solid #3A322C;">Massage Gun</td>
+          <td style="padding:14px 12px; text-align:center; color:#C9BDAF; font-weight:600; border-bottom:1px solid #3A322C;">Support Bra</td>
+          <td style="padding:14px 12px; text-align:center; color:#C9BDAF; font-weight:600; border-bottom:1px solid #3A322C;">Posture Brace</td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="padding:16px 12px; color:#C9BDAF; border-bottom:1px solid #3A322C;">Price</td>
+          <td style="padding:16px 12px; text-align:center; color:#F6EFE7; font-weight:700; border-bottom:1px solid #3A322C;">$44.99</td>
+          <td style="padding:16px 12px; text-align:center; color:#8F8378; border-bottom:1px solid #3A322C;">$100&ndash;$250</td>
+          <td style="padding:16px 12px; text-align:center; color:#8F8378; border-bottom:1px solid #3A322C;">$70&ndash;$120</td>
+          <td style="padding:16px 12px; text-align:center; color:#8F8378; border-bottom:1px solid #3A322C;">$15&ndash;$30</td>
+        </tr>
+        <tr>
+          <td style="padding:16px 12px; color:#C9BDAF; border-bottom:1px solid #3A322C;">Wireless remote control</td>
+          <td style="padding:16px 12px; text-align:center; border-bottom:1px solid #3A322C;"><svg width="17" height="17" style="color:#7C8B6F;"><use href="#icon-check"></use></svg></td>
+          <td style="padding:16px 12px; text-align:center; color:#5A5049; border-bottom:1px solid #3A322C;">&mdash;</td>
+          <td style="padding:16px 12px; text-align:center; color:#5A5049; border-bottom:1px solid #3A322C;">&mdash;</td>
+          <td style="padding:16px 12px; text-align:center; color:#5A5049; border-bottom:1px solid #3A322C;">&mdash;</td>
+        </tr>
+        <tr>
+          <td style="padding:16px 12px; color:#C9BDAF; border-bottom:1px solid #3A322C;">Hands-free while you work</td>
+          <td style="padding:16px 12px; text-align:center; border-bottom:1px solid #3A322C;"><svg width="17" height="17" style="color:#7C8B6F;"><use href="#icon-check"></use></svg></td>
+          <td style="padding:16px 12px; text-align:center; border-bottom:1px solid #3A322C;"><svg width="17" height="17" style="color:#8B5A4A;"><use href="#icon-x"></use></svg></td>
+          <td style="padding:16px 12px; text-align:center; border-bottom:1px solid #3A322C;"><svg width="17" height="17" style="color:#7C8B6F;"><use href="#icon-check"></use></svg></td>
+          <td style="padding:16px 12px; text-align:center; border-bottom:1px solid #3A322C;"><svg width="17" height="17" style="color:#7C8B6F;"><use href="#icon-check"></use></svg></td>
+        </tr>
+        <tr>
+          <td style="padding:16px 12px; color:#C9BDAF;">Strap sits under the arm, not across shoulders</td>
+          <td style="padding:16px 12px; text-align:center;"><svg width="17" height="17" style="color:#7C8B6F;"><use href="#icon-check"></use></svg></td>
+          <td style="padding:16px 12px; text-align:center; color:#5A5049;">&mdash;</td>
+          <td style="padding:16px 12px; text-align:center;"><svg width="17" height="17" style="color:#7C8B6F;"><use href="#icon-check"></use></svg></td>
+          <td style="padding:16px 12px; text-align:center;"><svg width="17" height="17" style="color:#8B5A4A;"><use href="#icon-x"></use></svg></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- Testimonials -->
+<section id="reviews" class="section-pad" style="padding-top:88px; padding-bottom:88px;">
+  <div class="wrap" style="max-width:680px; text-align:center; margin:0 auto 48px;">
+    <h2 class="h2-size" style="font-size:2.1rem; font-weight:600; color:#211A16;">Real relief, real routines.</h2>
+  </div>
+  <div class="wrap grid-3" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:24px;">
+    <div class="card-hover" style="padding:28px 24px; background:#FBF7F2; border:1px solid #EAE0D3; border-radius:4px;">
+      <p style="font-size:10px; letter-spacing:0.07em; text-transform:uppercase; color:#B0937A; font-weight:700; margin-bottom:14px;">Sample review &mdash; replace with real feedback</p>
+      <div style="display:flex; gap:2px; margin-bottom:14px;">
+        <svg width="14" height="14" style="color:{{accent}};"><use href="#icon-check"></use></svg>
+      </div>
+      <p style="font-size:14.5px; color:#3A322C; line-height:1.65; margin-bottom:16px; font-style:italic;">&ldquo;I didn&rsquo;t realize how much tension I was carrying until I took this off after the first use. My shoulders actually feel loose.&rdquo;</p>
+      <p style="font-size:13px; color:#8A7D72;">[Customer name] &mdash; verified buyer</p>
+    </div>
+    <div class="card-hover" style="padding:28px 24px; background:#FBF7F2; border:1px solid #EAE0D3; border-radius:4px;">
+      <p style="font-size:10px; letter-spacing:0.07em; text-transform:uppercase; color:#B0937A; font-weight:700; margin-bottom:14px;">Sample review &mdash; replace with real feedback</p>
+      <div style="display:flex; gap:2px; margin-bottom:14px;">
+        <svg width="14" height="14" style="color:{{accent}};"><use href="#icon-check"></use></svg>
+      </div>
+      <p style="font-size:14.5px; color:#3A322C; line-height:1.65; margin-bottom:16px; font-style:italic;">&ldquo;It doesn&rsquo;t dig into my shoulders like my old posture brace did. I actually reach for it every day.&rdquo;</p>
+      <p style="font-size:13px; color:#8A7D72;">[Customer name] &mdash; verified buyer</p>
+    </div>
+    <div class="card-hover" style="padding:28px 24px; background:#FBF7F2; border:1px solid #EAE0D3; border-radius:4px;">
+      <p style="font-size:10px; letter-spacing:0.07em; text-transform:uppercase; color:#B0937A; font-weight:700; margin-bottom:14px;">Sample review &mdash; replace with real feedback</p>
+      <div style="display:flex; gap:2px; margin-bottom:14px;">
+        <svg width="14" height="14" style="color:{{accent}};"><use href="#icon-check"></use></svg>
+      </div>
+      <p style="font-size:14.5px; color:#3A322C; line-height:1.65; margin-bottom:16px; font-style:italic;">&ldquo;I keep it by my desk. Fifteen minutes with the heat on and I can feel my neck let go.&rdquo;</p>
+      <p style="font-size:13px; color:#8A7D72;">[Customer name] &mdash; verified buyer</p>
+    </div>
+  </div>
+  <p style="text-align:center; font-size:12.5px; color:#B0937A; margin-top:28px;">This product hasn&rsquo;t launched yet &mdash; swap these in for real customer reviews once you have them.</p>
+</section>
+
+<!-- Specs -->
+<section class="section-pad" style="padding-top:88px; padding-bottom:88px; background:#F3EAE1;">
+  <div class="wrap" style="max-width:680px; margin:0 auto 44px;">
+    <h2 class="h2-size" style="font-size:2.1rem; font-weight:600; color:#211A16; text-align:center;">The details.</h2>
+  </div>
+  <div class="wrap" style="max-width:720px; margin:0 auto; background:#FBF7F2; border-radius:4px; overflow:hidden;">
+    <div style="display:flex; justify-content:space-between; padding:16px 24px; border-bottom:1px solid #EAE0D3;"><span style="font-size:14px; color:#6B6058;">Heat levels</span><span style="font-size:14px; color:#211A16; font-weight:600; text-align:right;">Multiple settings [confirm exact range]</span></div>
+    <div style="display:flex; justify-content:space-between; padding:16px 24px; border-bottom:1px solid #EAE0D3;"><span style="font-size:14px; color:#6B6058;">Vibration modes</span><span style="font-size:14px; color:#211A16; font-weight:600; text-align:right;">Multiple modes [confirm patterns]</span></div>
+    <div style="display:flex; justify-content:space-between; padding:16px 24px; border-bottom:1px solid #EAE0D3;"><span style="font-size:14px; color:#6B6058;">Control</span><span style="font-size:14px; color:#211A16; font-weight:600; text-align:right;">Wireless remote control (included)</span></div>
+    <div style="display:flex; justify-content:space-between; padding:16px 24px; border-bottom:1px solid #EAE0D3;"><span style="font-size:14px; color:#6B6058;">Battery</span><span style="font-size:14px; color:#211A16; font-weight:600; text-align:right;">[Confirm capacity &amp; runtime]</span></div>
+    <div style="display:flex; justify-content:space-between; padding:16px 24px; border-bottom:1px solid #EAE0D3;"><span style="font-size:14px; color:#6B6058;">Charging</span><span style="font-size:14px; color:#211A16; font-weight:600; text-align:right;">[Confirm cable type &amp; charge time]</span></div>
+    <div style="display:flex; justify-content:space-between; padding:16px 24px; border-bottom:1px solid #EAE0D3;"><span style="font-size:14px; color:#6B6058;">Coverage</span><span style="font-size:14px; color:#211A16; font-weight:600; text-align:right;">Neck, both shoulders &amp; upper back</span></div>
+    <div style="display:flex; justify-content:space-between; padding:16px 24px; border-bottom:1px solid #EAE0D3;"><span style="font-size:14px; color:#6B6058;">Fit</span><span style="font-size:14px; color:#211A16; font-weight:600; text-align:right;">One size, adjustable underarm strap</span></div>
+    <div style="display:flex; justify-content:space-between; padding:16px 24px; border-bottom:1px solid #EAE0D3;"><span style="font-size:14px; color:#6B6058;">Materials</span><span style="font-size:14px; color:#211A16; font-weight:600; text-align:right;">[Confirm outer fabric &amp; fill]</span></div>
+    <div style="display:flex; justify-content:space-between; padding:16px 24px; border-bottom:1px solid #EAE0D3;"><span style="font-size:14px; color:#6B6058;">Auto shut-off</span><span style="font-size:14px; color:#211A16; font-weight:600; text-align:right;">[Confirm minutes]</span></div>
+    <div style="display:flex; justify-content:space-between; padding:16px 24px; border-bottom:1px solid #EAE0D3;"><span style="font-size:14px; color:#6B6058;">Certifications</span><span style="font-size:14px; color:#211A16; font-weight:600; text-align:right;">CE, FCC, RoHS, EMC, RED, MSDS</span></div>
+    <div style="display:flex; justify-content:space-between; padding:16px 24px;"><span style="font-size:14px; color:#6B6058;">In the box</span><span style="font-size:14px; color:#211A16; font-weight:600; text-align:right;">Relief Wrap, wireless remote, charging cable, quick-start guide</span></div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" class="section-pad" style="padding-top:88px; padding-bottom:88px;">
+  <div class="wrap" style="max-width:680px; margin:0 auto 44px;">
+    <h2 class="h2-size" style="font-size:2.1rem; font-weight:600; color:#211A16; text-align:center;">Questions, answered.</h2>
+  </div>
+  <div class="wrap" style="max-width:720px; margin:0 auto;">
+
+    <div class="faq-row" style="border-bottom:1px solid #EAE0D3;">
+      <button onClick="{{toggleFaq0}}" style="width:100%; display:flex; justify-content:space-between; align-items:center; padding:20px 4px; text-align:left;">
+        <span style="font-size:15.5px; font-weight:600; color:#211A16;">Will this fix my posture for good?</span>
+        <svg width="16" height="16" style="color:#8A7D72; flex-shrink:0; margin-left:16px; transform:rotate({{faq0Rotate}});"><use href="#icon-plus"></use></svg>
+      </button>
+      <p style="font-size:14.5px; color:#6B6058; line-height:1.65; padding:0 4px 20px; display:{{faq0Display}};">The Relief Wrap is built for fast, temporary muscle relief &mdash; not a permanent posture correction. For lasting change, we recommend pairing it with a well-fitted supportive bra and regular stretching. Think of it as daily relief you can lean on, not a replacement for the root fix.</p>
+    </div>
+
+    <div class="faq-row" style="border-bottom:1px solid #EAE0D3;">
+      <button onClick="{{toggleFaq1}}" style="width:100%; display:flex; justify-content:space-between; align-items:center; padding:20px 4px; text-align:left;">
+        <span style="font-size:15.5px; font-weight:600; color:#211A16;">Do I need to reach around to change settings?</span>
+        <svg width="16" height="16" style="color:#8A7D72; flex-shrink:0; margin-left:16px; transform:rotate({{faq1Rotate}});"><use href="#icon-plus"></use></svg>
+      </button>
+      <p style="font-size:14.5px; color:#6B6058; line-height:1.65; padding:0 4px 20px; display:{{faq1Display}};">No &mdash; everything is controlled from the included wireless remote, so you can adjust heat and massage intensity without touching the wrap itself.</p>
+    </div>
+
+    <div class="faq-row" style="border-bottom:1px solid #EAE0D3;">
+      <button onClick="{{toggleFaq2}}" style="width:100%; display:flex; justify-content:space-between; align-items:center; padding:20px 4px; text-align:left;">
+        <span style="font-size:15.5px; font-weight:600; color:#211A16;">How long does the battery last?</span>
+        <svg width="16" height="16" style="color:#8A7D72; flex-shrink:0; margin-left:16px; transform:rotate({{faq2Rotate}});"><use href="#icon-plus"></use></svg>
+      </button>
+      <p style="font-size:14.5px; color:#6B6058; line-height:1.65; padding:0 4px 20px; display:{{faq2Display}};">[Add runtime per charge] depending on which heat and vibration settings you use. A full charge takes about [confirm hours] over [confirm cable type].</p>
+    </div>
+
+    <div class="faq-row" style="border-bottom:1px solid #EAE0D3;">
+      <button onClick="{{toggleFaq3}}" style="width:100%; display:flex; justify-content:space-between; align-items:center; padding:20px 4px; text-align:left;">
+        <span style="font-size:15.5px; font-weight:600; color:#211A16;">Can I wear it under my clothes?</span>
+        <svg width="16" height="16" style="color:#8A7D72; flex-shrink:0; margin-left:16px; transform:rotate({{faq3Rotate}});"><use href="#icon-plus"></use></svg>
+      </button>
+      <p style="font-size:14.5px; color:#6B6058; line-height:1.65; padding:0 4px 20px; display:{{faq3Display}};">Yes &mdash; the wrap sits close to the body and can be worn under a shirt or sweater at your desk, or over clothing at home.</p>
+    </div>
+
+    <div class="faq-row" style="border-bottom:1px solid #EAE0D3;">
+      <button onClick="{{toggleFaq4}}" style="width:100%; display:flex; justify-content:space-between; align-items:center; padding:20px 4px; text-align:left;">
+        <span style="font-size:15.5px; font-weight:600; color:#211A16;">Is it safe to use every day?</span>
+        <svg width="16" height="16" style="color:#8A7D72; flex-shrink:0; margin-left:16px; transform:rotate({{faq4Rotate}});"><use href="#icon-plus"></use></svg>
+      </button>
+      <p style="font-size:14.5px; color:#6B6058; line-height:1.65; padding:0 4px 20px; display:{{faq4Display}};">Yes &mdash; it&rsquo;s designed for daily use, with an automatic shut-off after [confirm minutes] for peace of mind.</p>
+    </div>
+
+    <div class="faq-row">
+      <button onClick="{{toggleFaq5}}" style="width:100%; display:flex; justify-content:space-between; align-items:center; padding:20px 4px; text-align:left;">
+        <span style="font-size:15.5px; font-weight:600; color:#211A16;">What&rsquo;s your return policy?</span>
+        <svg width="16" height="16" style="color:#8A7D72; flex-shrink:0; margin-left:16px; transform:rotate({{faq5Rotate}});"><use href="#icon-plus"></use></svg>
+      </button>
+      <p style="font-size:14.5px; color:#6B6058; line-height:1.65; padding:0 4px 20px; display:{{faq5Display}};">Try it for [30] days. If it hasn&rsquo;t earned a place in your routine, send it back for a full refund &mdash; no questions asked.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- Guarantee -->
+<section style="padding:72px 20px; background:{{accent}};">
+  <div class="wrap" style="max-width:520px; text-align:center; margin:0 auto;">
+    <svg width="30" height="30" style="display:block; color:#FBF4EC; margin:0 auto 18px;"><use href="#icon-shield"></use></svg>
+    <h2 style="font-size:1.9rem; font-weight:600; color:#FBF4EC; margin-bottom:14px;">[30]-Day Relief Guarantee</h2>
+    <p style="font-size:15px; color:#FBF4EC; opacity:0.92; line-height:1.65;">Try the Relief Wrap for [30] days. If it hasn&rsquo;t earned a permanent spot in your routine, send it back for a full refund &mdash; no questions asked.</p>
+  </div>
+</section>
+
+<!-- Final CTA -->
+<section class="section-pad" style="padding-top:88px; padding-bottom:88px; background:#F3EAE1;">
+  <div class="wrap" style="max-width:520px; text-align:center; margin:0 auto;">
+    <h2 class="h2-size" style="font-size:2.1rem; font-weight:600; color:#211A16; margin-bottom:14px;">Ready to give your shoulders a break?</h2>
+    <p style="font-size:15.5px; color:#6B6058; margin-bottom:28px;">Relief Wrap &mdash; $44.99</p>
+    <button class="btn-primary" style="height:50px; padding:0 44px; background:{{accent}}; color:#FBF4EC; border-radius:4px; font-size:15px; font-weight:700;">Add to Cart</button>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer style="background:#1B1512; padding:64px 20px 32px;">
+  <div class="wrap footer-grid" style="display:grid; grid-template-columns:1.4fr 1fr 1fr 1fr; gap:32px; margin-bottom:48px;">
+    <div>
+      <div style="font-family:'Newsreader',serif; font-size:19px; font-weight:600; color:#F6EFE7; letter-spacing:0.03em; margin-bottom:12px;">[YOUR BRAND]</div>
+      <p style="font-size:13.5px; color:#8F8378; line-height:1.6; max-width:260px;">Everyday relief for the body that carries more.</p>
+    </div>
+    <div>
+      <p style="font-size:12px; letter-spacing:0.06em; text-transform:uppercase; color:#6B6058; margin-bottom:14px;">Shop</p>
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <a href="#" style="font-size:13.5px; color:#C9BDAF;">Relief Wrap</a>
+        <a href="#" style="font-size:13.5px; color:#C9BDAF;">[All Products]</a>
+      </div>
+    </div>
+    <div>
+      <p style="font-size:12px; letter-spacing:0.06em; text-transform:uppercase; color:#6B6058; margin-bottom:14px;">Support</p>
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <a href="#" style="font-size:13.5px; color:#C9BDAF;">Shipping &amp; Returns</a>
+        <a href="#faq" style="font-size:13.5px; color:#C9BDAF;">FAQ</a>
+        <a href="#" style="font-size:13.5px; color:#C9BDAF;">Contact Us</a>
+      </div>
+    </div>
+    <div>
+      <p style="font-size:12px; letter-spacing:0.06em; text-transform:uppercase; color:#6B6058; margin-bottom:14px;">Legal</p>
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <a href="#" style="font-size:13.5px; color:#C9BDAF;">Privacy Policy</a>
+        <a href="#" style="font-size:13.5px; color:#C9BDAF;">Terms of Service</a>
+      </div>
+    </div>
+  </div>
+  <div class="wrap" style="border-top:1px solid #332A24; padding-top:24px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+    <p style="font-size:12.5px; color:#6B6058;">&copy; 2026 [YOUR BRAND]. All rights reserved.</p>
+    <div style="display:flex; gap:8px;">
+      <div style="width:38px; height:24px; border-radius:3px; background:#2A221D; border:1px solid #3A322C;"></div>
+      <div style="width:38px; height:24px; border-radius:3px; background:#2A221D; border:1px solid #3A322C;"></div>
+      <div style="width:38px; height:24px; border-radius:3px; background:#2A221D; border:1px solid #3A322C;"></div>
+      <div style="width:38px; height:24px; border-radius:3px; background:#2A221D; border:1px solid #3A322C;"></div>
+    </div>
+  </div>
+</footer>
+
+</x-dc>
+<script data-dc-script data-props='{"accent":{"editor":"color","default":"#B85C38","options":["#B85C38","#9C6B4A","#7C8B6F","#8B5A6B"]}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { activeImg: 0, color: 'sand', qty: 1, openFaq: 0 };
+  }
+
+  renderVals() {
+    const accent = this.props.accent ?? '#B85C38';
+    const NEUTRAL_BORDER = '#E4D9CC';
+    const NEUTRAL_LABEL = '#8A7D72';
+
+    const gallery = [
+      { kind: 'Photo', label: 'Flat-lay — front view on a warm neutral background' },
+      { kind: 'Photo', label: 'Worn from behind — heat zones glowing across shoulders & upper back' },
+      { kind: 'GIF', label: 'Heat + vibration demo — glowing pulse animation' },
+      { kind: 'Photo', label: 'Close-up — included wireless remote control' },
+      { kind: 'Photo', label: 'Lifestyle — worn at a desk, hands completely free' },
+    ];
+    const activeIdx = this.state.activeImg;
+    const active = gallery[activeIdx] || gallery[0];
+    const mkBorder = (i) => (i === activeIdx ? accent : NEUTRAL_BORDER);
+    const mkLabel = (i) => (i === activeIdx ? accent : NEUTRAL_LABEL);
+
+    const sandSelected = this.state.color === 'sand';
+    const faqOpen = this.state.openFaq;
+    const faqField = (i, key) => {
+      const isOpen = faqOpen === i;
+      if (key === 'display') return isOpen ? 'block' : 'none';
+      return isOpen ? '45deg' : '0deg';
+    };
+
+    return {
+      accent,
+      activeKind: active.kind,
+      activeLabel: active.label,
+      img0Border: mkBorder(0), img1Border: mkBorder(1), img2Border: mkBorder(2), img3Border: mkBorder(3), img4Border: mkBorder(4),
+      img0Label: mkLabel(0), img1Label: mkLabel(1), img2Label: mkLabel(2), img3Label: mkLabel(3), img4Label: mkLabel(4),
+      selectImg0: () => this.setState({ activeImg: 0 }),
+      selectImg1: () => this.setState({ activeImg: 1 }),
+      selectImg2: () => this.setState({ activeImg: 2 }),
+      selectImg3: () => this.setState({ activeImg: 3 }),
+      selectImg4: () => this.setState({ activeImg: 4 }),
+
+      sandRing: sandSelected ? accent : 'transparent',
+      charcoalRing: !sandSelected ? accent : 'transparent',
+      colorLabel: sandSelected ? 'Midnight Navy' : 'Charcoal Grey',
+      pickSand: () => this.setState({ color: 'sand' }),
+      pickCharcoal: () => this.setState({ color: 'charcoal' }),
+
+      qty: this.state.qty,
+      inc: () => this.setState({ qty: Math.min(10, this.state.qty + 1) }),
+      dec: () => this.setState({ qty: Math.max(1, this.state.qty - 1) }),
+
+      faq0Display: faqField(0, 'display'), faq0Rotate: faqField(0, 'rotate'),
+      faq1Display: faqField(1, 'display'), faq1Rotate: faqField(1, 'rotate'),
+      faq2Display: faqField(2, 'display'), faq2Rotate: faqField(2, 'rotate'),
+      faq3Display: faqField(3, 'display'), faq3Rotate: faqField(3, 'rotate'),
+      faq4Display: faqField(4, 'display'), faq4Rotate: faqField(4, 'rotate'),
+      faq5Display: faqField(5, 'display'), faq5Rotate: faqField(5, 'rotate'),
+      toggleFaq0: () => this.setState({ openFaq: faqOpen === 0 ? -1 : 0 }),
+      toggleFaq1: () => this.setState({ openFaq: faqOpen === 1 ? -1 : 1 }),
+      toggleFaq2: () => this.setState({ openFaq: faqOpen === 2 ? -1 : 2 }),
+      toggleFaq3: () => this.setState({ openFaq: faqOpen === 3 ? -1 : 3 }),
+      toggleFaq4: () => this.setState({ openFaq: faqOpen === 4 ? -1 : 4 }),
+      toggleFaq5: () => this.setState({ openFaq: faqOpen === 5 ? -1 : 5 }),
+    };
+  }
+}
+</script>
+</body>
+</html>
