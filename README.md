@@ -9,7 +9,7 @@ A chatbot that helps someone describe a suspicious UPI call, message, payment re
 | Deliverable | Where |
 |---|---|
 | **Filled team worksheet** (all 10 questions: research, interviews template, chatbot flow design, message scripts, testing plan, pitch) | [`worksheet/UPI_Fraud_Awareness_Assistant_Team_Worksheet_FILLED.pptx`](worksheet/UPI_Fraud_Awareness_Assistant_Team_Worksheet_FILLED.pptx) |
-| **Working chatbot prototype** — covers all 5 fraud scenarios from the worksheet | [`chatbot/index.html`](chatbot/index.html) · [live demo](https://claude.ai/code/artifact/044b420b-77c5-4a71-a300-e1faa83fdfbc) *(owner: enable link sharing before sending to anyone else)* |
+| **Working chatbot prototype** — covers all 5 fraud scenarios from the worksheet | [`chatbot/index.html`](chatbot/index.html) · **live: [upi-suraksha-mitra.onrender.com](https://upi-suraksha-mitra.onrender.com)** |
 | **WhatsApp safety poster** | [`poster/upi-safety-poster.png`](poster/upi-safety-poster.png) (source: [`poster/poster-source.html`](poster/poster-source.html)) |
 
 ## The 5 fraud scenarios covered
@@ -32,3 +32,7 @@ Two questions in the worksheet need real people, not research — that's the poi
 ## Running the chatbot locally
 
 It's a single static HTML file with no build step and no external services — open `chatbot/index.html` in any browser, or use the live link.
+
+## Hosting
+
+The live link is a Render static site, auto-deploying `chatbot/` from this branch on every push — no separate deploy step needed.
