@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    width: 1080px;
+    height: 1080px;
+    background: linear-gradient(160deg, #0B1F3A 0%, #0E2A4A 55%, #0B1F3A 100%);
+    font-family: 'Inter', Arial, sans-serif;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .glow {
+    position: absolute;
+    width: 700px;
+    height: 700px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(37,211,102,0.16) 0%, rgba(37,211,102,0) 70%);
+    top: -220px;
+    right: -220px;
+  }
+
+  .wrap {
+    position: relative;
+    height: 100%;
+    padding: 56px 64px 44px 64px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(37,211,102,0.14);
+    border: 1px solid rgba(37,211,102,0.5);
+    color: #4ADE80;
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 20px;
+    letter-spacing: 1.5px;
+    padding: 9px 20px;
+    border-radius: 100px;
+    width: fit-content;
+  }
+
+  .badge .dot {
+    width: 9px; height: 9px; border-radius: 50%;
+    background: #4ADE80;
+  }
+
+  h1 {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 800;
+    color: #FFFFFF;
+    font-size: 62px;
+    line-height: 1.08;
+    margin-top: 22px;
+    letter-spacing: -0.5px;
+  }
+
+  h1 .hot { color: #FF6B57; }
+
+  .sub {
+    color: #A9B9D1;
+    font-size: 24px;
+    font-weight: 500;
+    margin-top: 14px;
+    line-height: 1.4;
+  }
+
+  .rules {
+    margin-top: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 13px;
+    flex: 1;
+  }
+
+  .rule {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.09);
+    border-radius: 18px;
+    padding: 16px 22px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+  }
+
+  .rule .icon {
+    flex-shrink: 0;
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    background: rgba(37,211,102,0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 27px;
+  }
+
+  .rule .txt {
+    color: #EAF0FA;
+    font-size: 22.5px;
+    font-weight: 600;
+    line-height: 1.32;
+  }
+
+  .rule .txt b {
+    color: #4ADE80;
+    font-weight: 700;
+  }
+
+  .footer {
+    margin-top: 26px;
+    display: flex;
+    gap: 16px;
+  }
+
+  .fcard {
+    flex: 1;
+    border-radius: 18px;
+    padding: 18px 22px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .fcard.help {
+    background: rgba(255,107,87,0.14);
+    border: 1px solid rgba(255,107,87,0.4);
+  }
+
+  .fcard.ask {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+  }
+
+  .fcard .ficon {
+    font-size: 26px;
+    flex-shrink: 0;
+  }
+
+  .fcard .ftxt {
+    color: #EAF0FA;
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.35;
+  }
+
+  .fcard.help .ftxt b { color: #FF9B8A; }
+  .fcard.ask .ftxt b { color: #4ADE80; }
+
+  .credit {
+    text-align: center;
+    color: #5B6E8C;
+    font-size: 14.5px;
+    margin-top: 22px;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+  }
+</style>
+</head>
+<body>
+  <div class="glow"></div>
+  <div class="wrap">
+    <div class="badge"><span class="dot"></span>UPI SAFETY CHECK</div>
+    <h1>Wait — before you<br>tap “Accept” or<br>enter your <span class="hot">PIN</span>.</h1>
+    <div class="sub">5 rules that take 10 seconds to learn and can save your money.</div>
+
+    <div class="rules">
+      <div class="rule">
+        <div class="icon">🔒</div>
+        <div class="txt">Entering your PIN <b>always sends</b> money — never to “receive” it.</div>
+      </div>
+      <div class="rule">
+        <div class="icon">📵</div>
+        <div class="txt"><b>No real bank</b> ever asks you to install AnyDesk or TeamViewer.</div>
+      </div>
+      <div class="rule">
+        <div class="icon">🚫</div>
+        <div class="txt">Scanning a QR code to “get” money is <b>always a scam.</b></div>
+      </div>
+      <div class="rule">
+        <div class="icon">⏳</div>
+        <div class="txt">“Account blocked in 2 hours” + a link = <b>fake, every time.</b></div>
+      </div>
+      <div class="rule">
+        <div class="icon">☎️</div>
+        <div class="txt">Only call the number <b>on your card</b> — never one from Google.</div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div class="fcard ask">
+        <div class="ficon">🛡️</div>
+        <div class="ftxt">Not sure? Ask <b>UPI Suraksha Mitra</b>, our free scam-check chatbot.</div>
+      </div>
+      <div class="fcard help">
+        <div class="ficon">🚨</div>
+        <div class="ftxt">Already scammed? Call <b>1930</b> or visit <b>cybercrime.gov.in</b> within 60 minutes.</div>
+      </div>
+    </div>
+    <div class="credit">HCL JIGSAW · Edition 7 · Grade 9 AI Revolution &amp; Digital Futures · UPI Fraud Awareness Assistant</div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,737 @@
+<title>UPI Suraksha Mitra</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+  :root {
+    --bg: #EEF0F7;
+    --page-edge: #DCE0EE;
+    --surface: #FFFFFF;
+    --surface-2: #F3F4FA;
+    --ink: #171A21;
+    --ink-dim: #5B6070;
+    --border: #E1E4ED;
+    --brand: #16213E;
+    --brand-ink: #FFFFFF;
+    --accent: #C97A1F;
+    --accent-ink: #FFFFFF;
+    --safe: #1E8E5A;
+    --safe-bg: #E7F5EE;
+    --safe-border: #BFE4D2;
+    --danger: #C6394A;
+    --danger-bg: #FBEAEC;
+    --danger-border: #F1C3CA;
+    --caution: #9C6B08;
+    --caution-bg: #FBF1DE;
+    --caution-border: #EFDBAC;
+    --user-bubble: #16213E;
+    --user-bubble-ink: #FFFFFF;
+    --bot-bubble: #FFFFFF;
+    --bot-bubble-ink: #171A21;
+    --chip-bg: #FFFFFF;
+    --chip-border: #CBD0E0;
+    --chip-ink: #16213E;
+    --shadow: 0 1px 2px rgba(20,22,30,0.05), 0 8px 24px -14px rgba(20,22,30,0.35);
+    --focus: #6C86D6;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0C0E14;
+      --page-edge: #05060A;
+      --surface: #171B26;
+      --surface-2: #1F2430;
+      --ink: #E7E9F0;
+      --ink-dim: #9AA0B4;
+      --border: #2A3040;
+      --brand: #A9BAF2;
+      --brand-ink: #101422;
+      --accent: #E3A24C;
+      --accent-ink: #171205;
+      --safe: #59C793;
+      --safe-bg: #10281F;
+      --safe-border: #1E4535;
+      --danger: #E68894;
+      --danger-bg: #2E141A;
+      --danger-border: #4A2028;
+      --caution: #E5BD6E;
+      --caution-bg: #2C230E;
+      --caution-border: #4A3A16;
+      --user-bubble: #A9BAF2;
+      --user-bubble-ink: #101422;
+      --bot-bubble: #1F2430;
+      --bot-bubble-ink: #E7E9F0;
+      --chip-bg: #1B2130;
+      --chip-border: #333B4E;
+      --chip-ink: #C7D0F2;
+      --shadow: 0 1px 2px rgba(0,0,0,0.4), 0 8px 24px -14px rgba(0,0,0,0.7);
+      --focus: #A9BAF2;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0C0E14;
+    --page-edge: #05060A;
+    --surface: #171B26;
+    --surface-2: #1F2430;
+    --ink: #E7E9F0;
+    --ink-dim: #9AA0B4;
+    --border: #2A3040;
+    --brand: #A9BAF2;
+    --brand-ink: #101422;
+    --accent: #E3A24C;
+    --accent-ink: #171205;
+    --safe: #59C793;
+    --safe-bg: #10281F;
+    --safe-border: #1E4535;
+    --danger: #E68894;
+    --danger-bg: #2E141A;
+    --danger-border: #4A2028;
+    --caution: #E5BD6E;
+    --caution-bg: #2C230E;
+    --caution-border: #4A3A16;
+    --user-bubble: #A9BAF2;
+    --user-bubble-ink: #101422;
+    --bot-bubble: #1F2430;
+    --bot-bubble-ink: #E7E9F0;
+    --chip-bg: #1B2130;
+    --chip-border: #333B4E;
+    --chip-ink: #C7D0F2;
+    --shadow: 0 1px 2px rgba(0,0,0,0.4), 0 8px 24px -14px rgba(0,0,0,0.7);
+    --focus: #A9BAF2;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    height: 100%;
+  }
+
+  body {
+    margin: 0;
+    background: var(--page-edge);
+    color: var(--ink);
+    font-family: 'IBM Plex Sans', Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+  }
+
+  .app {
+    width: 100%;
+    max-width: 560px;
+    min-height: 100dvh;
+    background: var(--bg);
+    display: flex;
+    flex-direction: column;
+    box-shadow: var(--shadow);
+  }
+
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background: var(--brand);
+    color: var(--brand-ink);
+    padding: 16px 18px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.14);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 21px;
+    flex-shrink: 0;
+  }
+
+  header h1 {
+    font-family: 'Sora', sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: 0.1px;
+  }
+
+  header p {
+    margin: 2px 0 0;
+    font-size: 12.5px;
+    color: rgba(255,255,255,0.72);
+  }
+
+  .rules-btn {
+    margin-left: auto;
+    background: rgba(255,255,255,0.12);
+    color: var(--brand-ink);
+    border: 1px solid rgba(255,255,255,0.22);
+    border-radius: 100px;
+    padding: 8px 13px;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .rules-btn:hover { background: rgba(255,255,255,0.2); }
+  .rules-btn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+  .rules-panel {
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 18px 18px;
+  }
+  .rules-panel h2 {
+    font-family: 'Sora', sans-serif;
+    font-size: 13.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--ink-dim);
+    margin: 0 0 10px;
+  }
+  .rules-panel ol {
+    margin: 0;
+    padding-left: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .rules-panel li {
+    font-size: 14px;
+    line-height: 1.45;
+  }
+  .rules-panel li b { color: var(--brand); }
+
+  main {
+    flex: 1;
+    overflow-y: auto;
+    padding: 18px 16px 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .row { display: flex; flex-direction: column; gap: 8px; max-width: 92%; }
+  .row.user { align-self: flex-end; align-items: flex-end; }
+  .row.bot { align-self: flex-start; align-items: flex-start; }
+
+  .bubble {
+    padding: 11px 14px;
+    border-radius: 16px;
+    font-size: 15px;
+    line-height: 1.48;
+  }
+  .row.bot .bubble {
+    background: var(--bot-bubble);
+    color: var(--bot-bubble-ink);
+    border: 1px solid var(--border);
+    border-top-left-radius: 4px;
+    box-shadow: var(--shadow);
+  }
+  .row.user .bubble {
+    background: var(--user-bubble);
+    color: var(--user-bubble-ink);
+    border-top-right-radius: 4px;
+  }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .chip {
+    background: var(--chip-bg);
+    color: var(--chip-ink);
+    border: 1px solid var(--chip-border);
+    border-radius: 100px;
+    padding: 9px 14px;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: var(--shadow);
+  }
+  .chip:hover { border-color: var(--brand); }
+  .chip:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+  .chip:disabled { opacity: 0.45; cursor: default; }
+
+  .verdict {
+    width: 100%;
+    max-width: 100%;
+    border-radius: 18px;
+    padding: 16px 17px 17px;
+    border: 1px solid;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .verdict.danger { background: var(--danger-bg); border-color: var(--danger-border); }
+  .verdict.caution { background: var(--caution-bg); border-color: var(--caution-border); }
+  .verdict.safe { background: var(--safe-bg); border-color: var(--safe-border); }
+
+  .verdict-head { display: flex; align-items: center; gap: 10px; }
+  .verdict-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Sora', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    padding: 5px 10px;
+    border-radius: 100px;
+  }
+  .verdict.danger .verdict-badge { background: var(--danger); color: #fff; }
+  .verdict.caution .verdict-badge { background: var(--caution); color: #241a02; }
+  .verdict.safe .verdict-badge { background: var(--safe); color: #fff; }
+
+  .verdict h3 {
+    margin: 0;
+    font-family: 'Sora', sans-serif;
+    font-size: 16.5px;
+    font-weight: 700;
+  }
+  .verdict p { margin: 0; font-size: 14.5px; line-height: 1.5; }
+  .verdict ol, .verdict ul { margin: 2px 0 0; padding-left: 19px; display: flex; flex-direction: column; gap: 6px; }
+  .verdict li { font-size: 14px; line-height: 1.45; }
+
+  .flagline {
+    font-size: 13px;
+    font-weight: 600;
+    padding: 8px 10px;
+    border-radius: 10px;
+    background: rgba(0,0,0,0.04);
+  }
+  :root:not([data-theme="light"]) .flagline { background: rgba(255,255,255,0.06); }
+  :root[data-theme="dark"] .flagline { background: rgba(255,255,255,0.06); }
+
+  .typing { display: flex; gap: 4px; padding: 13px 14px; }
+  .typing span {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--ink-dim);
+    animation: bounce 1.1s infinite ease-in-out;
+  }
+  .typing span:nth-child(2) { animation-delay: 0.15s; }
+  .typing span:nth-child(3) { animation-delay: 0.3s; }
+  @keyframes bounce { 0%, 60%, 100% { transform: translateY(0); opacity: 0.5; } 30% { transform: translateY(-4px); opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) {
+    .typing span { animation: none; opacity: 0.8; }
+  }
+
+  form.composer {
+    position: sticky;
+    bottom: 0;
+    display: flex;
+    gap: 8px;
+    padding: 12px 14px calc(12px + env(safe-area-inset-bottom));
+    background: var(--bg);
+    border-top: 1px solid var(--border);
+  }
+  form.composer input {
+    flex: 1;
+    border-radius: 100px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--ink);
+    padding: 12px 16px;
+    font-size: 15px;
+    font-family: inherit;
+    min-width: 0;
+  }
+  form.composer input:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
+  form.composer input::placeholder { color: var(--ink-dim); }
+  form.composer button {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    border: none;
+    background: var(--accent);
+    color: var(--accent-ink);
+    font-size: 18px;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  form.composer button:hover { filter: brightness(1.06); }
+  form.composer button:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+  form.composer button:disabled { opacity: 0.5; cursor: default; }
+
+  .disclaimer {
+    text-align: center;
+    font-size: 11px;
+    color: var(--ink-dim);
+    padding: 0 20px 10px;
+  }
+</style>
+
+<div class="app">
+  <header>
+    <div class="avatar">🛡️</div>
+    <div>
+      <h1>UPI Suraksha Mitra</h1>
+      <p>Your UPI safety coach</p>
+    </div>
+    <button class="rules-btn" id="rulesToggle" type="button" aria-expanded="false" aria-controls="rulesPanel">5 Golden Rules</button>
+  </header>
+
+  <section class="rules-panel" id="rulesPanel" hidden>
+    <h2>Remember these, always</h2>
+    <ol>
+      <li><b>Entering your PIN always sends money</b> — never to receive it.</li>
+      <li><b>No real bank</b> ever asks you to install AnyDesk or TeamViewer.</li>
+      <li>Scanning a QR code to <b>"get" money is always a scam.</b></li>
+      <li>"Account blocked in 2 hours" + a link = <b>fake, every time.</b></li>
+      <li>Only call the number <b>on your card</b> — never one from Google.</li>
+    </ol>
+  </section>
+
+  <main id="thread" aria-live="polite"></main>
+
+  <p class="disclaimer">Rule-based safety helper, built for a school project. For a real incident, always also contact your bank and 1930.</p>
+
+  <form class="composer" id="composer">
+    <input id="textInput" type="text" autocomplete="off" placeholder="Describe what happened…" aria-label="Describe your situation">
+    <button type="submit" aria-label="Send">➤</button>
+  </form>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var SCENARIOS = [
+    {
+      id: 'collect',
+      chip: '💸 A "collect request" or payment request',
+      match: ['collect request', 'accept the request', 'accept it to receive', 'sent me money', 'sent money and asked', 'olx', 'marketplace', 'buyer said', 'accept to receive', 'requested money'],
+      clarify: 'Quick check — does it ask you to enter your UPI PIN to "accept" or "receive" the money?',
+      flagName: 'Fake Collect Request scam',
+      why: 'A payment request only ever asks for your PIN when someone wants to pull money OUT of your account, not when you’re receiving it.',
+      flagline: '🚩 Red flag matched: "enter PIN to receive" — receiving money never needs a PIN.',
+      steps: [
+        'Don’t enter any PIN on that request — decline or ignore it.',
+        'Block the sender.',
+        'Already entered it? Call your bank’s helpline now and report at 1930 or cybercrime.gov.in.'
+      ],
+      safeNote: 'Since it didn’t ask for your PIN, this looks fine. Just remember: receiving money never needs a PIN or OTP, ever.'
+    },
+    {
+      id: 'screenshare',
+      chip: '📲 Asked to install an app / share my screen',
+      match: ['anydesk', 'teamviewer', 'quicksupport', 'screen share', 'screen-share', 'remote access', 'install an app', 'share my screen', 'access code', 'install anydesk'],
+      clarify: 'Did they ask you to install AnyDesk, TeamViewer (or similar), or share a screen-access code?',
+      flagName: 'Screen-sharing / remote-access scam',
+      why: 'No genuine bank or UPI support line ever needs to see or control your screen to "fix" something.',
+      flagline: '🚩 Red flag matched: request to install a remote-access app or share a screen code.',
+      steps: [
+        'Uninstall that app right now.',
+        'Don’t share any code, OTP, or PIN.',
+        'Call your bank using the number on your card, not the one they gave you.',
+        'Already shared access? Report at 1930 or cybercrime.gov.in immediately.'
+      ],
+      safeNote: 'Good — genuine support almost never needs this. Just never install a remote-access app because a caller asked.'
+    },
+    {
+      id: 'qr',
+      chip: '🔳 Told to scan a QR code',
+      match: ['qr code', 'scan this qr', 'scan to receive', 'scan the code', 'qr to get', 'scan a qr'],
+      clarify: 'Were you told that scanning it would get YOU money — a refund, prize, or payment?',
+      flagName: 'QR code scam',
+      why: 'Scanning a QR code and entering your PIN always sends money out. QR codes are never used to receive money.',
+      flagline: '🚩 Red flag matched: "scan to receive" — scanning + PIN always pays, never gets paid.',
+      steps: [
+        'Don’t scan it — or if you did, don’t enter your PIN.',
+        'Close the payment screen.',
+        'Already paid? Report at 1930 or cybercrime.gov.in right away.'
+      ],
+      safeNote: 'That’s fine — scanning a QR code to PAY a shop is completely normal. Just never scan one to try to "receive" money.'
+    },
+    {
+      id: 'kyc',
+      chip: '⚠️ "Your account will be blocked" message',
+      match: ['kyc', 'account will be blocked', 'account blocked', 'update your kyc', 'verify your account', 'suspended', 'blocked in', 'click here to update', 'account expire'],
+      clarify: 'Does the message create urgency (like a countdown) and ask you to click a link or call a number to "verify"?',
+      flagName: 'Fake KYC / account-block phishing',
+      why: 'Real banks and NPCI never threaten to block your account through an SMS or WhatsApp link with a countdown.',
+      flagline: '🚩 Red flag matched: urgency + a link — the classic phishing combo.',
+      steps: [
+        'Don’t click the link or share any details.',
+        'Delete the message.',
+        'Unsure about your KYC? Check only via your bank’s official app or a branch visit.'
+      ],
+      safeNote: 'Okay — with no countdown or link this is less likely a scam, but always verify KYC only through your bank’s official app.'
+    },
+    {
+      id: 'customercare',
+      chip: '☎️ Called a "customer care" number',
+      match: ['customer care number', 'googled the number', 'called the number', 'helpline number', 'bank employee called', 'customer support called', 'found the number online'],
+      clarify: 'Did you find that number through a Google search, social media, or a comment, rather than your card, passbook, or the official app?',
+      flagName: 'Fake customer-care number scam',
+      why: 'Scammers plant fake "customer care" numbers in search results and social comments.',
+      flagline: '🚩 Red flag matched: support number sourced from search/social media, not your bank.',
+      steps: [
+        'Hang up. Don’t share any OTP, PIN, or install anything they suggest.',
+        'Find the real number on your card, passbook, or the official app instead.',
+        'Already shared something? Report at 1930 or cybercrime.gov.in immediately.'
+      ],
+      safeNote: 'Good — if it came from your card or the official app, that’s the right way to reach support.'
+    }
+  ];
+
+  var URGENT_PATTERNS = [
+    /\b(shared|gave|told|sent|entered)\b[^.!?]{0,25}\b(otp|pin|cvv|password)\b/i,
+    /\b(otp|pin|cvv)\b[^.!?]{0,25}\b(shared|gave|entered|told)\b/i
+  ];
+
+  var YES_WORDS = ['yes', 'yeah', 'yep', 'yup', 'haan', 'ha', 'y', 'correct', 'right', 'true'];
+  var NO_WORDS = ['no', 'nope', 'nah', 'nahi', 'n', 'not really', 'false'];
+
+  var thread = document.getElementById('thread');
+  var composer = document.getElementById('composer');
+  var input = document.getElementById('textInput');
+  var rulesBtn = document.getElementById('rulesToggle');
+  var rulesPanel = document.getElementById('rulesPanel');
+
+  var state = { stage: 'idle', scenario: null };
+
+  rulesBtn.addEventListener('click', function () {
+    var open = rulesPanel.hidden;
+    rulesPanel.hidden = !open;
+    rulesBtn.setAttribute('aria-expanded', String(open));
+  });
+
+  function scrollDown() {
+    requestAnimationFrame(function () { thread.scrollTop = thread.scrollHeight; });
+  }
+
+  function addRow(side, node) {
+    var row = document.createElement('div');
+    row.className = 'row ' + side;
+    row.appendChild(node);
+    thread.appendChild(row);
+    scrollDown();
+    return row;
+  }
+
+  function bubble(text) {
+    var b = document.createElement('div');
+    b.className = 'bubble';
+    b.textContent = text;
+    return b;
+  }
+
+  function addUserMessage(text) {
+    addRow('user', bubble(text));
+  }
+
+  function addChips(labelsWithHandlers) {
+    var wrap = document.createElement('div');
+    wrap.className = 'chips';
+    labelsWithHandlers.forEach(function (item) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'chip';
+      b.textContent = item.label;
+      b.addEventListener('click', function () {
+        Array.prototype.forEach.call(wrap.querySelectorAll('.chip'), function (c) { c.disabled = true; });
+        item.onClick();
+      });
+      wrap.appendChild(b);
+    });
+    addRow('bot', wrap);
+  }
+
+  function addBotText(text) {
+    addRow('bot', bubble(text));
+  }
+
+  function addBotTyping(then, delay) {
+    var t = document.createElement('div');
+    t.className = 'bubble typing';
+    t.innerHTML = '<span></span><span></span><span></span>';
+    var row = addRow('bot', t);
+    setTimeout(function () {
+      row.remove();
+      then();
+    }, delay || 550);
+  }
+
+  function addVerdict(kind, badgeText, title, whyText, flaglineText, list, listType) {
+    var card = document.createElement('div');
+    card.className = 'verdict ' + kind;
+
+    var head = document.createElement('div');
+    head.className = 'verdict-head';
+    var badge = document.createElement('span');
+    badge.className = 'verdict-badge';
+    badge.textContent = badgeText;
+    head.appendChild(badge);
+    card.appendChild(head);
+
+    var h3 = document.createElement('h3');
+    h3.textContent = title;
+    card.appendChild(h3);
+
+    if (flaglineText) {
+      var fl = document.createElement('div');
+      fl.className = 'flagline';
+      fl.textContent = flaglineText;
+      card.appendChild(fl);
+    }
+
+    var p = document.createElement('p');
+    p.textContent = whyText;
+    card.appendChild(p);
+
+    if (list && list.length) {
+      var listEl = document.createElement(listType === 'ol' ? 'ol' : 'ul');
+      list.forEach(function (item) {
+        var li = document.createElement('li');
+        li.textContent = item;
+        listEl.appendChild(li);
+      });
+      card.appendChild(listEl);
+    }
+
+    addRow('bot', card);
+  }
+
+  function normalize(s) {
+    return s.toLowerCase().trim();
+  }
+
+  function findScenario(text) {
+    var norm = normalize(text);
+    var best = null, bestScore = 0;
+    SCENARIOS.forEach(function (sc) {
+      var score = 0;
+      sc.match.forEach(function (kw) { if (norm.indexOf(kw) !== -1) score++; });
+      if (score > bestScore) { bestScore = score; best = sc; }
+    });
+    return bestScore > 0 ? best : null;
+  }
+
+  function isYes(text) {
+    var norm = normalize(text);
+    return YES_WORDS.some(function (w) { return norm === w || norm.indexOf(w) !== -1; });
+  }
+  function isNo(text) {
+    var norm = normalize(text);
+    return NO_WORDS.some(function (w) { return norm === w || norm.indexOf(w) !== -1; });
+  }
+
+  function checkUrgent(text) {
+    return URGENT_PATTERNS.some(function (re) { return re.test(text); });
+  }
+
+  function askClarify(sc) {
+    state.stage = 'clarifying';
+    state.scenario = sc;
+    addBotTyping(function () {
+      addBotText(sc.clarify);
+      addChips([
+        { label: 'Yes', onClick: function () { addUserMessage('Yes'); resolveClarify(sc, true); } },
+        { label: 'No', onClick: function () { addUserMessage('No'); resolveClarify(sc, false); } },
+        { label: 'Not sure', onClick: function () { addUserMessage('Not sure'); resolveClarify(sc, null); } }
+      ]);
+    });
+  }
+
+  function resolveClarify(sc, answerYes) {
+    state.stage = 'done';
+    addBotTyping(function () {
+      if (answerYes === false) {
+        addVerdict('safe', 'Looks OK', 'No major red flag here', sc.safeNote, null, null);
+      } else {
+        addVerdict('danger', 'High risk', sc.flagName, sc.why, sc.flagline, sc.steps, 'ol');
+      }
+      offerRestart();
+    }, 700);
+  }
+
+  function offerRestart() {
+    addChips([
+      { label: '🔄 Check another situation', onClick: startOver },
+      { label: '📖 See the 5 golden rules', onClick: function () { rulesPanel.hidden = false; rulesBtn.setAttribute('aria-expanded', 'true'); rulesPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } }
+    ]);
+  }
+
+  function startOver() {
+    state = { stage: 'idle', scenario: null };
+    addBotTyping(function () {
+      addBotText('Sure — tell me what happened, or pick what’s closest:');
+      addScenarioChips();
+    }, 400);
+  }
+
+  function addScenarioChips() {
+    addChips(SCENARIOS.map(function (sc) {
+      return { label: sc.chip, onClick: function () { addUserMessage(sc.chip.replace(/^\S+\s/, '')); askClarify(sc); } };
+    }));
+  }
+
+  function handleUrgent() {
+    state.stage = 'done';
+    addBotTyping(function () {
+      addVerdict('danger', 'Act now', 'Stop — secure your account first', 'You mentioned already sharing a PIN, OTP, CVV or password. That’s the single biggest red flag there is, regardless of how it happened — act immediately, then come back and we’ll figure out exactly what type of scam this was.', null, [
+        'Call your bank’s official helpline right now and ask them to block/freeze UPI.',
+        'Call 1930 (India’s cybercrime helpline) — acting within 60 minutes gives the best chance of recovery.',
+        'File a complaint at cybercrime.gov.in.'
+      ], 'ol');
+      offerRestart();
+    }, 500);
+  }
+
+  function handleFreeText(text) {
+    if (checkUrgent(text)) { handleUrgent(); return; }
+    var sc = findScenario(text);
+    if (sc) {
+      askClarify(sc);
+    } else {
+      addBotTyping(function () {
+        addBotText('Hmm, tell me a little more — or pick whichever is closest to what happened:');
+        addScenarioChips();
+      });
+    }
+  }
+
+  composer.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var text = input.value.trim();
+    if (!text) return;
+    addUserMessage(text);
+    input.value = '';
+
+    if (checkUrgent(text)) { handleUrgent(); return; }
+
+    if (state.stage === 'clarifying' && state.scenario) {
+      if (isYes(text)) { resolveClarify(state.scenario, true); return; }
+      if (isNo(text)) { resolveClarify(state.scenario, false); return; }
+      addBotTyping(function () {
+        addBotText('Just so I get this right —');
+        addBotText(state.scenario.clarify);
+        addChips([
+          { label: 'Yes', onClick: function () { addUserMessage('Yes'); resolveClarify(state.scenario, true); } },
+          { label: 'No', onClick: function () { addUserMessage('No'); resolveClarify(state.scenario, false); } }
+        ]);
+      }, 400);
+      return;
+    }
+
+    handleFreeText(text);
+  });
+
+  function boot() {
+    addBotText('Hi, I’m UPI Suraksha Mitra 🛡️. Tell me what happened — a call, message, payment request, or QR code that felt a bit off — and I’ll help you figure out if it’s a scam, in under a minute. I won’t judge, and nothing you type leaves this chat.');
+    addBotTyping(function () {
+      addBotText('Not sure where to start? Pick what’s closest:');
+      addScenarioChips();
+    }, 500);
+  }
+
+  boot();
+})();
+</script>
