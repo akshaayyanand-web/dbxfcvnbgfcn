@@ -17,6 +17,7 @@ import re
 from typing import Optional
 
 import config
+import keywords
 from config import ANTHROPIC_API_KEY, GEMINI_API_KEY
 
 ANTHROPIC_MODEL = "claude-opus-5"
@@ -71,6 +72,14 @@ def provider() -> Optional[str]:
     return _provider()
 
 
+def unavailable() -> dict:
+    """The shape callers can rely on when no AI provider is configured at
+    all — still a valid media dict, just with no AI findings in it. Used so
+    the manual/structured keyword search can attach to a result even when
+    research() was never called."""
+    return _empty(available())
+
+
 def _extract_json(text: str) -> Optional[dict]:
     match = re.search(r"\{.*\}", text, re.DOTALL)
     if not match:
@@ -94,12 +103,19 @@ def _context_block(context_bits: Optional[dict]) -> str:
 
 
 def _empty(available_: bool, **extra) -> dict:
-    return {"available": available_, "summary": "", "findings": [], "related_entities": [], **extra}
+    return {"available": available_, "summary": "", "findings": [], "related_entities": [],
+            "overall_decision": "no_match", **extra}
 
 
 def _shape_result(provider: str, model: str, text: str) -> dict:
     parsed = _extract_json(text) or {}
     findings = [f for f in (parsed.get("findings") or []) if isinstance(f, dict)]
+    # Every AI-surfaced claim starts unreviewed: a language model's guess at
+    # "this looks like litigation" is not the same as a human confirming the
+    # claim actually belongs to the subject screened. classify_finding() below
+    # is how a screener turns this into a real compliance decision.
+    for f in findings:
+        f.setdefault("classification", "unreviewed")
     return {
         "available": True,
         "unverified": True,
@@ -108,7 +124,44 @@ def _shape_result(provider: str, model: str, text: str) -> dict:
         "summary": parsed.get("summary") or text.strip()[:600],
         "findings": findings,
         "related_entities": parsed.get("related_entities") or [],
+        "overall_decision": keywords.overall_decision(
+            f["classification"] for f in findings
+        ) if findings else "no_match",
     }
+
+
+def manual_search(name: str, context_bits: Optional[dict] = None,
+                   aka: Optional[str] = None, associated_company: Optional[str] = None,
+                   selected_keywords: Optional[list] = None) -> dict:
+    """The structured keyword search a screener can run in their own browser
+    — needs no API key, no configuration, and works identically whether or
+    not an AI provider is set up. Always attached to a search result so the
+    AI findings above (when present) can be hand-verified against the exact
+    same reproducible query."""
+    context_bits = context_bits or {}
+    return keywords.manual_search(
+        name,
+        aka=aka,
+        nationality=context_bits.get("nationality"),
+        associated_company=associated_company,
+        keywords=selected_keywords,
+    )
+
+
+def classify_finding(media: dict, index: int, classification: str) -> dict:
+    """Record a screener's decision on one AI-surfaced finding. Returns the
+    same media dict, mutated in place, with its overall_decision recomputed —
+    call db.save_adverse_media_review() afterward to persist it."""
+    if classification not in keywords.CLASSIFICATIONS:
+        raise ValueError(f"unknown classification: {classification}")
+    findings = media.get("findings") or []
+    if not 0 <= index < len(findings):
+        raise IndexError(f"no finding at index {index}")
+    findings[index]["classification"] = classification
+    media["overall_decision"] = keywords.overall_decision(
+        f.get("classification", "unreviewed") for f in findings
+    )
+    return media
 
 
 def _research_anthropic(name: str, context: str) -> dict:

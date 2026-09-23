@@ -3,6 +3,7 @@ import io
 import re
 from typing import List, Optional
 
+import keywords
 from report import auto_risk_assessment
 from tz import format_dubai
 
@@ -658,18 +659,52 @@ def render(report: dict, risk_rating: dict = None, analyst_comments: Optional[st
             flow.append(Paragraph(_clean(" → ".join(path.get("path") or [])), styles["body"]))
 
     media = report.get("media")
-    if media and media.get("available") and (media.get("summary") or media.get("findings")):
-        flow.append(Paragraph("Open-web research (unverified)", styles["h2"]))
-        flow.append(Paragraph(
-            "Retrieved by web search, not from a registry. Every claim must be "
-            "checked against its source before use.", styles["small"]))
-        if media.get("summary"):
-            flow.append(Paragraph(_clean(media["summary"]), styles["body"]))
-        for item in media.get("findings") or []:
+    if media and (media.get("available") or media.get("manual_search")):
+        flow.append(Paragraph("Adverse media screening", styles["h2"]))
+
+        manual = media.get("manual_search")
+        if manual:
             flow.append(Paragraph(
-                f"• {_clean(item.get('claim'))} "
-                f"<font size='8' color='#6B645A'>{_clean(item.get('source_title'))} "
-                f"{_clean(item.get('date') or '')}</font>", styles["body"]))
+                f"Structured keyword search — {manual.get('keyword_count', 0)} AML/CFT "
+                f"terms across money laundering, terrorist financing, proliferation "
+                f"financing, corruption and regulatory-proceedings categories, joined "
+                f"with the subject's name into one reproducible query:", styles["small"]))
+            flow.append(Paragraph(_clean(manual.get("query", "")), styles["mono"]))
+
+        if media.get("available") and (media.get("summary") or media.get("findings")):
+            flow.append(Paragraph(
+                "AI-assisted open-web research (unverified) — retrieved by web search, "
+                "not from a registry. Every claim below was checked against its source "
+                "and classified by a screener before it factored into the decision.",
+                styles["small"]))
+            if media.get("summary"):
+                flow.append(Paragraph(_clean(media["summary"]), styles["body"]))
+            for item in media.get("findings") or []:
+                label = keywords.CLASSIFICATION_LABELS.get(
+                    item.get("classification", "unreviewed"), "Unreviewed")
+                flow.append(Paragraph(
+                    f"• [{_clean(label)}] {_clean(item.get('claim'))} "
+                    f"<font size='8' color='#6B645A'>{_clean(item.get('source_title'))} "
+                    f"{_clean(item.get('date') or '')}</font>", styles["body"]))
+
+        overall = media.get("overall_decision")
+        if overall:
+            flow.append(Spacer(1, 4))
+            flow.append(Paragraph(
+                f"<b>Overall adverse-media decision: "
+                f"{_clean(keywords.CLASSIFICATION_LABELS.get(overall, overall))}</b>",
+                styles["body"]))
+        review = media.get("review")
+        if review:
+            details = []
+            if review.get("screened_by"):
+                details.append(f"Screened by {_clean(review['screened_by'])}")
+            if review.get("case_ref"):
+                details.append(f"Case {_clean(review['case_ref'])}")
+            if details:
+                flow.append(Paragraph(" · ".join(details), styles["small"]))
+            if review.get("rationale"):
+                flow.append(Paragraph(_clean(review["rationale"]), styles["body"]))
 
     if subject.get("source_urls"):
         flow.append(Paragraph("Sources", styles["h2"]))

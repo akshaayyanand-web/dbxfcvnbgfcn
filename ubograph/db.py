@@ -55,6 +55,17 @@ def init() -> None:
             action TEXT NOT NULL,
             detail TEXT NOT NULL DEFAULT ''
         );
+        CREATE TABLE IF NOT EXISTS adverse_media_reviews (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            query TEXT NOT NULL DEFAULT '',
+            classifications TEXT NOT NULL DEFAULT '[]',
+            overall_decision TEXT NOT NULL DEFAULT 'unreviewed',
+            rationale TEXT NOT NULL DEFAULT '',
+            screened_by TEXT NOT NULL DEFAULT '',
+            case_ref TEXT NOT NULL DEFAULT '',
+            created_at REAL NOT NULL
+        );
     """)
     conn.commit()
     conn.close()
@@ -187,6 +198,57 @@ def update_watch_result(watch_id: int, flags: list, band: Optional[str]) -> None
     )
     conn.commit()
     conn.close()
+
+
+# --- adverse media reviews ----------------------------------------------
+
+def save_adverse_media_review(name: str, query: str, classifications: list,
+                               overall_decision: str, rationale: str = "",
+                               screened_by: str = "", case_ref: str = "") -> int:
+    """One timestamped record per save — a screener revising their decision
+    creates a new row rather than overwriting the old one, so the audit
+    trail shows what changed and when, not just the latest state."""
+    conn = _connect()
+    cur = conn.execute(
+        "INSERT INTO adverse_media_reviews "
+        "(name, query, classifications, overall_decision, rationale, screened_by, case_ref, created_at) "
+        "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+        (name, query, json.dumps(classifications), overall_decision, rationale,
+         screened_by, case_ref, time.time()),
+    )
+    conn.commit()
+    review_id = cur.lastrowid
+    conn.close()
+    log_activity("adverse_media_reviewed", f"{name} — {overall_decision}")
+    return review_id
+
+
+def latest_adverse_media_review(name: str) -> Optional[dict]:
+    conn = _connect()
+    row = conn.execute(
+        "SELECT * FROM adverse_media_reviews WHERE name = ? ORDER BY created_at DESC LIMIT 1",
+        (name,),
+    ).fetchone()
+    conn.close()
+    if not row:
+        return None
+    d = dict(row)
+    d["classifications"] = json.loads(d["classifications"] or "[]")
+    return d
+
+
+def list_adverse_media_reviews(name: str) -> list:
+    conn = _connect()
+    rows = conn.execute(
+        "SELECT * FROM adverse_media_reviews WHERE name = ? ORDER BY created_at DESC", (name,)
+    ).fetchall()
+    conn.close()
+    out = []
+    for r in rows:
+        d = dict(r)
+        d["classifications"] = json.loads(d["classifications"] or "[]")
+        out.append(d)
+    return out
 
 
 def delete_watch(watch_id: int) -> bool:

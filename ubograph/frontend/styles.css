@@ -287,6 +287,9 @@ h4{font:600 12px/1 var(--sans); letter-spacing:.08em; text-transform:uppercase;
 .amber h4{color:var(--orange)}
 .amber .warn{font-size:12px; color:var(--orange); margin-bottom:8px}
 .amber li{font-size:13px; margin-bottom:8px}
+.amber .classify-select{width:auto; display:inline-block; margin:0 8px 0 0; padding:2px 6px; font-size:11.5px}
+.amber label{display:inline-block; margin-right:10px; margin-top:8px}
+.amber label input{display:inline-block; width:auto; min-width:160px}
 .err{border-left:3px solid var(--red); padding-left:10px; font-size:13px;
      color:var(--red); margin-bottom:10px}
 .empty{color:var(--muted); font-size:13.5px}

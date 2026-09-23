@@ -4,6 +4,7 @@ from typing import List, Optional
 from rapidfuzz import fuzz
 
 import config
+import db
 import risk_rating
 from graph import build_graph, run_detectors, subgraph_json
 from reference import country_label, fatf_marking, sanctioning_bodies
@@ -309,6 +310,28 @@ def run_search(
     if not roots and not demo_mode and _media_has_content(media):
         roots = [_add_adverse_media_node(store, name, entity_type, media)]
         sources_used.append("adverse_media")
+
+    # The reproducible keyword search is attached to every search, AI provider
+    # configured or not — it costs nothing to compute and is what makes any AI
+    # finding above hand-verifiable, and it's the only adverse-media check at
+    # all when no ANTHROPIC_API_KEY/GEMINI_API_KEY is set.
+    if include_adverse_media:
+        if media is None:
+            media = adverse_media.unavailable()
+        media["manual_search"] = adverse_media.manual_search(name, query)
+        saved = db.latest_adverse_media_review(name)
+        if saved:
+            findings_list = media.get("findings") or []
+            for i, classification in enumerate(saved["classifications"]):
+                if i < len(findings_list):
+                    findings_list[i]["classification"] = classification
+            media["overall_decision"] = saved["overall_decision"]
+            media["review"] = {
+                "rationale": saved["rationale"],
+                "screened_by": saved["screened_by"],
+                "case_ref": saved["case_ref"],
+                "reviewed_at": saved["created_at"],
+            }
 
     graph = build_graph(store)
     findings = run_detectors(graph, roots)

@@ -10,6 +10,7 @@ import db
 import edd
 import geocode
 import goaml
+import keywords
 import package
 import pdf as pdf_renderer
 import reasons
@@ -17,6 +18,7 @@ import reference
 import risk_rating
 from report import build_report
 from search import batch_screen, run_search, screen_name
+from sources import adverse_media
 
 app = Flask(__name__, static_folder="frontend", static_url_path="")
 db.init()
@@ -157,6 +159,72 @@ def api_geocode():
         "satellite_url": geocode.satellite_image_url(hit["lat"], hit["lon"]),
         "osm_url": geocode.osm_url(hit["lat"], hit["lon"]),
     })
+
+
+@app.get("/api/adverse_media/keywords")
+def api_adverse_media_keywords():
+    """The default structured keyword taxonomy, grouped by category, so the
+    UI can show it and let a screener edit it for one session."""
+    return jsonify({
+        "categories": keywords.CATEGORIES,
+        "keywords": keywords.DEFAULT_KEYWORDS,
+        "classifications": keywords.CLASSIFICATION_LABELS,
+    })
+
+
+@app.post("/api/adverse_media/manual_search")
+def api_adverse_media_manual_search():
+    """Build the reproducible Google query for a subject — needs no API key,
+    works with or without an AI provider configured."""
+    body = request.get_json(silent=True) or {}
+    name = (body.get("name") or "").strip()
+    if not name:
+        return jsonify({"error": "name is required"}), 400
+    result = adverse_media.manual_search(
+        name,
+        context_bits={"nationality": body.get("nationality")},
+        aka=body.get("aka"),
+        associated_company=body.get("associated_company"),
+        selected_keywords=body.get("keywords"),
+    )
+    return jsonify(result)
+
+
+@app.post("/api/adverse_media/review")
+def api_adverse_media_review():
+    """Save a screener's classification of each AI-surfaced finding plus the
+    overall decision — the audit trail a regulator expects behind an adverse-
+    media clearance. One new timestamped row per save, never an overwrite."""
+    body = request.get_json(silent=True) or {}
+    name = (body.get("name") or "").strip()
+    if not name:
+        return jsonify({"error": "name is required"}), 400
+    classifications = body.get("classifications") or []
+    for c in classifications:
+        if c not in keywords.CLASSIFICATIONS:
+            return jsonify({"error": f"unknown classification: {c}"}), 400
+    overall = body.get("overall_decision") or keywords.overall_decision(classifications)
+    review_id = db.save_adverse_media_review(
+        name=name,
+        query=body.get("query", ""),
+        classifications=classifications,
+        overall_decision=overall,
+        rationale=body.get("rationale", ""),
+        screened_by=body.get("screened_by", ""),
+        case_ref=body.get("case_ref", ""),
+    )
+    return jsonify({"id": review_id, "overall_decision": overall})
+
+
+@app.get("/api/adverse_media/review")
+def api_adverse_media_review_get():
+    """The latest saved review for a subject, so the UI can show what was
+    already decided rather than presenting every finding as unreviewed again."""
+    name = (request.args.get("name") or "").strip()
+    if not name:
+        return jsonify({"error": "name is required"}), 400
+    review = db.latest_adverse_media_review(name)
+    return jsonify(review or {})
 
 
 @app.post("/api/risk_rating.pdf")
