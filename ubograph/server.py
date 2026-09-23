@@ -3,7 +3,7 @@ import json
 import re
 import secrets
 
-from flask import Flask, Response, jsonify, request, send_from_directory
+from flask import Flask, Response, jsonify, redirect, request, send_from_directory
 
 import config
 import db
@@ -62,6 +62,13 @@ def landing():
 
 
 @app.get("/app")
+def app_redirect():
+    # index.html's asset tags are relative ("app.js", "styles.css"); without
+    # the trailing slash the browser resolves those against "/", not "/app/",
+    # and every asset 404s. Redirect once so the browser's base URL is right.
+    return redirect("/app/")
+
+
 @app.get("/app/")
 def app_shell():
     return send_from_directory(app.static_folder, "app/index.html")
