@@ -18,7 +18,6 @@ import reference
 import risk_rating
 from report import build_report
 from search import batch_screen, run_search, screen_name
-from sources import adverse_media
 
 app = Flask(__name__, static_folder="frontend", static_url_path="")
 db.init()
@@ -193,27 +192,27 @@ def api_adverse_media_keywords():
 
 @app.post("/api/adverse_media/manual_search")
 def api_adverse_media_manual_search():
-    """Build the reproducible Google query for a subject — needs no API key,
-    works with or without an AI provider configured."""
+    """Build the reproducible Google query for a subject — needs no API key
+    and no configuration at all."""
     body = request.get_json(silent=True) or {}
     name = (body.get("name") or "").strip()
     if not name:
         return jsonify({"error": "name is required"}), 400
-    result = adverse_media.manual_search(
+    result = keywords.manual_search(
         name,
-        context_bits={"nationality": body.get("nationality")},
         aka=body.get("aka"),
+        nationality=body.get("nationality"),
         associated_company=body.get("associated_company"),
-        selected_keywords=body.get("keywords"),
+        keywords=body.get("keywords"),
     )
     return jsonify(result)
 
 
 @app.post("/api/adverse_media/review")
 def api_adverse_media_review():
-    """Save a screener's classification of each AI-surfaced finding plus the
-    overall decision — the audit trail a regulator expects behind an adverse-
-    media clearance. One new timestamped row per save, never an overwrite."""
+    """Save a screener's classification of their manual adverse-media
+    search plus the overall decision — the audit trail a regulator expects
+    behind a clearance. One new timestamped row per save, never an overwrite."""
     body = request.get_json(silent=True) or {}
     name = (body.get("name") or "").strip()
     if not name:
@@ -647,7 +646,7 @@ if __name__ == "__main__":
     print("Sanctions+")
     print(f"  OpenSanctions : {'live' if status['opensanctions'] else 'off'}")
     print(f"  OpenCorporates: {'live' if status['opencorporates'] else 'off'}")
-    print(f"  Adverse media : {'live' if status['adverse_media'] else 'off'}")
+    print("  Adverse media : structured keyword search (always on, no key needed)")
     if status["demo_mode"]:
         print("  No keys found — serving synthetic demo data.")
     print(f"\n  http://localhost:{config.PORT}\n")

@@ -110,13 +110,24 @@ def search_url(query: str) -> str:
     return "https://www.google.com/search?" + urlencode({"q": query})
 
 
+def general_search_url(name: str) -> str:
+    """A plain, unfiltered search on just the subject's name — for general
+    background research alongside the keyword-filtered adverse-media query,
+    not a replacement for it."""
+    return search_url(f'"{name.strip()}"') if name and name.strip() else ""
+
+
 def manual_search(name: str, aka: Optional[str] = None, nationality: Optional[str] = None,
                    associated_company: Optional[str] = None,
                    keywords: Optional[Iterable[str]] = None) -> dict:
     """Everything the UI needs to offer a "run this in your browser" link —
-    available with no configuration at all, for a screener who has no AI
-    provider set up, or who wants to hand-verify what one returned."""
+    available with no configuration and no API key at all."""
     terms = list(keywords) if keywords is not None else DEFAULT_KEYWORDS
     query = build_query(name, aka=aka, nationality=nationality,
                          associated_company=associated_company, keywords=terms)
-    return {"query": query, "url": search_url(query), "keyword_count": len(terms)}
+    return {
+        "query": query,
+        "url": search_url(query),
+        "keyword_count": len(terms),
+        "general_url": general_search_url(name),
+    }

@@ -659,33 +659,18 @@ def render(report: dict, risk_rating: dict = None, analyst_comments: Optional[st
             flow.append(Paragraph(_clean(" → ".join(path.get("path") or [])), styles["body"]))
 
     media = report.get("media")
-    if media and (media.get("available") or media.get("manual_search")):
+    if media and media.get("manual_search"):
         flow.append(Paragraph("Adverse media screening", styles["h2"]))
 
-        manual = media.get("manual_search")
-        if manual:
-            flow.append(Paragraph(
-                f"Structured keyword search — {manual.get('keyword_count', 0)} AML/CFT "
-                f"terms across money laundering, terrorist financing, proliferation "
-                f"financing, corruption and regulatory-proceedings categories, joined "
-                f"with the subject's name into one reproducible query:", styles["small"]))
-            flow.append(Paragraph(_clean(manual.get("query", "")), styles["mono"]))
-
-        if media.get("available") and (media.get("summary") or media.get("findings")):
-            flow.append(Paragraph(
-                "AI-assisted open-web research (unverified) — retrieved by web search, "
-                "not from a registry. Every claim below was checked against its source "
-                "and classified by a screener before it factored into the decision.",
-                styles["small"]))
-            if media.get("summary"):
-                flow.append(Paragraph(_clean(media["summary"]), styles["body"]))
-            for item in media.get("findings") or []:
-                label = keywords.CLASSIFICATION_LABELS.get(
-                    item.get("classification", "unreviewed"), "Unreviewed")
-                flow.append(Paragraph(
-                    f"• [{_clean(label)}] {_clean(item.get('claim'))} "
-                    f"<font size='8' color='#6B645A'>{_clean(item.get('source_title'))} "
-                    f"{_clean(item.get('date') or '')}</font>", styles["body"]))
+        manual = media["manual_search"]
+        flow.append(Paragraph(
+            f"Structured keyword search — {manual.get('keyword_count', 0)} AML/CFT "
+            f"terms across money laundering, terrorist financing, proliferation "
+            f"financing, corruption and regulatory-proceedings categories, joined "
+            f"with the subject's name into one reproducible query. Run by hand and "
+            f"classified by a screener; no AI or third-party data source is called.",
+            styles["small"]))
+        flow.append(Paragraph(_clean(manual.get("query", "")), styles["mono"]))
 
         overall = media.get("overall_decision")
         if overall:

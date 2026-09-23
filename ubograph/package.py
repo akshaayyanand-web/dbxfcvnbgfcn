@@ -40,16 +40,23 @@ def _evidence_and_sources_txt(report: dict) -> str:
         lines.append("")
 
     media = report.get("media")
-    if media and media.get("available") and media.get("findings"):
-        lines.append("Open-web research findings (unverified — not a registry source):")
-        for item in media["findings"]:
-            lines.append(f"  - {item.get('claim')}")
-            attribution = " / ".join(x for x in [item.get("source_title"), item.get("source_url")] if x)
-            if attribution:
-                lines.append(f"      {attribution}")
+    manual = media.get("manual_search") if media else None
+    if manual:
+        lines.append("Structured adverse-media search (run by hand, not an automated source):")
+        lines.append(f"  Query: {manual.get('query', '')}")
+        lines.append(f"  URL: {manual.get('url', '')}")
+        review = media.get("review")
+        if review:
+            lines.append(f"  Decision: {media.get('overall_decision', 'unreviewed')}")
+            if review.get("screened_by"):
+                lines.append(f"  Screened by: {review['screened_by']}")
+            if review.get("case_ref"):
+                lines.append(f"  Case: {review['case_ref']}")
+            if review.get("rationale"):
+                lines.append(f"  Rationale: {review['rationale']}")
         lines.append("")
 
-    if not subject.get("source_urls") and not (media and media.get("findings")):
+    if not subject.get("source_urls") and not manual:
         lines.append("No individually attributable source URLs on record for this subject.")
     return "\n".join(lines)
 

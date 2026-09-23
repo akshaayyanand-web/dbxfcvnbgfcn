@@ -6,7 +6,6 @@ from graph import band_reason, build_graph, find_ubos, risk_band, run_detectors
 import config
 import db
 import tz
-from sources import adverse_media
 from sources import opencorporates
 from sources import opensanctions
 import edd
@@ -327,83 +326,28 @@ def test_weak_match_filtering():
           opensanctions._filter_weak_matches([{"score": 0.1, "match": {"id": "x"}}], min_score=0.5) == [])
 
 
-def test_adverse_media_runs_every_search():
-    print("adverse media runs on every search now, not only when nothing structured is found")
-    calls = []
+def test_adverse_media_is_manual_search_only():
+    print("adverse media is a structured keyword search — no AI call, no API key, always attached")
+    payload = run_search("Viktor Branko")  # matches in demo mode
+    media = payload["adverse_media"]
+    check("manual_search is attached", bool(media.get("manual_search")))
+    check("the query includes the subject's name", '"Viktor Branko"' in media["manual_search"]["query"])
+    check("a general 'know more' link is included too", "general_url" in media["manual_search"]
+          and media["manual_search"]["general_url"])
+    check("no AI-derived fields are present", "findings" not in media and "summary" not in media)
+    check("with no saved review, the decision is unreviewed by default", "overall_decision" not in media)
 
-    def fake_available():
-        return True
-
-    def fake_research(name, context_bits=None):
-        calls.append(name)
-        return {"available": True, "summary": "", "findings": [], "related_entities": []}
-
-    original_available, original_research = adverse_media.available, adverse_media.research
-    try:
-        adverse_media.available = fake_available
-        adverse_media.research = fake_research
-
-        run_search("Viktor Branko")  # a name that DOES match in demo mode (roots non-empty)
-        check("adverse media still runs even when a structured match was found",
-              "Viktor Branko" in calls)
-
-        calls.clear()
-        batch_screen(["Viktor Branko"])
-        check("batch screening opts out — one API key shouldn't fan out per row",
-              calls == [])
-    finally:
-        adverse_media.available, adverse_media.research = original_available, original_research
-
-
-def test_adverse_media_becomes_its_own_entity():
-    print("an ordinary person/business with web coverage but no structured hit gets a real entry")
-    original = (
-        opensanctions.available, opensanctions.search_and_expand,
-        opencorporates.available, adverse_media.available, adverse_media.research,
+    review_id = db.save_adverse_media_review(
+        name="Viktor Branko", query=media["manual_search"]["query"],
+        classifications=["confirmed"], overall_decision="confirmed",
+        rationale="Matches a known case.", screened_by="tester", case_ref="CASE-1",
     )
-    try:
-        opensanctions.available = lambda: True
-        opensanctions.search_and_expand = lambda store, query, expand=2: []
-        opencorporates.available = lambda: False
-
-        adverse_media.available = lambda: True
-        adverse_media.research = lambda name, context_bits=None: {
-            "available": True,
-            "summary": "A prominent retail and hospitality businessman, covered in regional business press.",
-            "findings": [{"claim": "Named in a regional business magazine profile.",
-                          "source_title": "Example Business Weekly", "source_url": "https://example.com/profile",
-                          "date": "2023-05-01", "category": "corporate"}],
-            "related_entities": [],
-        }
-        payload = run_search(name="Some Business Person", entity_type="any")
-        check("the search now counts as matched, not 'no match'", payload["matched"] is True)
-        check("a node was actually created for them", len(payload["nodes"]) == 1)
-        node = payload["nodes"][0]
-        check("it's the searched entity, not demo data", node["name"] == "Some Business Person"
-              and payload["demo_mode"] is False)
-        check("it's flagged as the root", node.get("is_root") is True)
-        check("no risk flags are fabricated from unverified web text", node["risk_flags"] == [])
-        check("it bands green — no adverse findings, not 'unscored'", node["risk_band"] == "green")
-
-        root_report = build_report(payload, node["id"])
-        check("the report carries the open-web summary as a note", any(
-            "regional business press" in n for n in root_report["subject"]["notes"]))
-        check("the report is explicit that this is unverified, not a registry hit", any(
-            "unverified" in n.lower() for n in root_report["subject"]["notes"]))
-        check("the media claim still shows up in Findings", any(
-            f.get("kind") == "adverse_media" for f in root_report["findings"]))
-
-        # Nothing credible found at all -> still correctly "no match", not a junk entity.
-        adverse_media.research = lambda name, context_bits=None: {
-            "available": True, "summary": "No reliable open-source information found.",
-            "findings": [], "related_entities": [],
-        }
-        empty_payload = run_search(name="Nobody At All", entity_type="any")
-        check("no web content -> still reported as not found, no entity invented",
-              empty_payload["matched"] is False and not empty_payload["nodes"])
-    finally:
-        (opensanctions.available, opensanctions.search_and_expand,
-         opencorporates.available, adverse_media.available, adverse_media.research) = original
+    check("the review saves", review_id > 0)
+    again = run_search("Viktor Branko")
+    check("a saved review is merged back into the next search",
+          again["adverse_media"]["overall_decision"] == "confirmed")
+    check("the review details come along with it",
+          again["adverse_media"]["review"]["screened_by"] == "tester")
 
 
 def test_fatf_marking_helper():
@@ -631,37 +575,6 @@ def test_satellite_view_urls():
     # network call isn't exercised here.
 
 
-def test_adverse_media_provider_selection():
-    print("adverse media — Anthropic/Gemini provider selection (no network needed)")
-    original = (adverse_media.ANTHROPIC_API_KEY, adverse_media.GEMINI_API_KEY,
-                config.ADVERSE_MEDIA_PROVIDER)
-    try:
-        adverse_media.ANTHROPIC_API_KEY = ""
-        adverse_media.GEMINI_API_KEY = ""
-        config.ADVERSE_MEDIA_PROVIDER = "auto"
-        check("neither key configured -> not available", not adverse_media.available())
-        check("no provider chosen when nothing is configured", adverse_media.provider() is None)
-
-        adverse_media.GEMINI_API_KEY = "gm-test-key"
-        check("Gemini alone is enough to be available", adverse_media.available())
-        check("Gemini alone is selected as the provider", adverse_media.provider() == "gemini")
-
-        adverse_media.ANTHROPIC_API_KEY = "an-test-key"
-        check("with both keys set, auto prefers Anthropic (backward compatible)",
-              adverse_media.provider() == "anthropic")
-
-        config.ADVERSE_MEDIA_PROVIDER = "gemini"
-        check("ADVERSE_MEDIA_PROVIDER can force Gemini even with both keys set",
-              adverse_media.provider() == "gemini")
-
-        config.ADVERSE_MEDIA_PROVIDER = "anthropic"
-        adverse_media.GEMINI_API_KEY = ""
-        check("forcing a provider whose key is missing falls back to whichever is configured",
-              adverse_media.provider() == "anthropic")
-    finally:
-        adverse_media.ANTHROPIC_API_KEY, adverse_media.GEMINI_API_KEY, config.ADVERSE_MEDIA_PROVIDER = original
-
-
 def test_standalone_risk_rating_pdf():
     print("client risk rating as its own PDF")
     rating = risk_rating.rate(
@@ -883,42 +796,14 @@ def test_db_persistence(tmp_path_str="/tmp/claude-0/-home-user-dbxfcvnbgfcn/c1a8
     check("activity log records the action", recent[0]["action"] == "test_action")
 
 
-def test_report_folds_adverse_media_findings():
-    print("report.py folds adverse-media claims into the same Findings list")
+def test_report_carries_adverse_media_manual_search():
+    print("report.py passes the structured adverse-media search through untouched")
     payload = run_search("falcon capital", hops=4)
     root_id = next(n["id"] for n in payload["nodes"] if n.get("is_root"))
-    webb = next(n["id"] for n in payload["nodes"] if n["name"] == "Marcus Webb")
-    payload["adverse_media"] = {
-        "available": True,
-        "summary": "Press coverage of a regulatory inquiry.",
-        "findings": [
-            {"claim": "Named in a regulatory inquiry into offshore structuring.",
-             "source_title": "Example Gazette", "source_url": "https://example.com/a",
-             "date": "2024-01-01", "category": "regulatory"},
-            {"claim": "", "source_title": "ignored — blank claim", "category": "other"},
-        ],
-        "related_entities": [],
-    }
-
     root_report = build_report(payload, root_id)
-    media_findings = [f for f in root_report["findings"] if f.get("kind") == "adverse_media"]
-    check("the root entity's report picks up the adverse-media claim", len(media_findings) == 1)
-    check("severity is capped sensibly by category (regulatory -> medium)",
-          media_findings[0]["severity"] == "medium")
-    check("the finding is unmistakably labelled unverified",
-          "unverified" in media_findings[0]["title"].lower())
-    check("a blank claim is skipped, not turned into an empty finding",
-          not any("ignored" in f["detail"] for f in media_findings))
-
-    other_report = build_report(payload, webb)
-    check("a non-searched entity in the same graph does NOT inherit the search subject's media",
-          not any(f.get("kind") == "adverse_media" for f in other_report["findings"]))
-
-    payload["adverse_media"] = {"available": True, "error": "The model declined this request.",
-                                 "summary": "", "findings": [], "related_entities": []}
-    errored_report = build_report(payload, root_id)
-    check("an errored adverse-media result contributes no findings",
-          not any(f.get("kind") == "adverse_media" for f in errored_report["findings"]))
+    check("the manual search is on the report", bool(root_report["media"]["manual_search"]))
+    check("it never invents a Findings entry",
+          not any(f.get("kind") == "adverse_media" for f in root_report["findings"]))
 
 
 def test_auto_risk_assessment():
@@ -1097,15 +982,13 @@ if __name__ == "__main__":
         test_match_confidence_note,
         test_merge_by_score,
         test_weak_match_filtering,
-        test_adverse_media_runs_every_search,
-        test_adverse_media_becomes_its_own_entity,
+        test_adverse_media_is_manual_search_only,
         test_client_risk_rating,
         test_server_screen_endpoint,
         test_server_download_all_endpoint,
         test_screen_name_button,
         test_extra_match_properties,
         test_satellite_view_urls,
-        test_adverse_media_provider_selection,
         test_standalone_risk_rating_pdf,
         test_enhanced_risk_rating_fields,
         test_edd_checklist,
@@ -1115,7 +998,7 @@ if __name__ == "__main__":
         test_goaml_match_report,
         test_batch_screen,
         test_db_persistence,
-        test_report_folds_adverse_media_findings,
+        test_report_carries_adverse_media_manual_search,
         test_auto_risk_assessment,
         test_download_all_package,
         test_report_and_pdf,

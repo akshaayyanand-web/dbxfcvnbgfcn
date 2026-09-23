@@ -42,9 +42,9 @@ Open `.env` and paste your keys after the `=` signs:
 ```
 OPENSANCTIONS_API_KEY=your-key-here
 OPENCORPORATES_API_TOKEN=your-token-here
-ANTHROPIC_API_KEY=your-key-here     # optional — adverse media (see below)
-GEMINI_API_KEY=your-key-here        # optional — adverse media, alternative to Anthropic
 ```
+
+Adverse media (see below) is a structured keyword search — no key needed, always on.
 
 Then restart the server. The header chips tell you which sources are actually live,
 and `pipeline.py --check-keys` probes each one and prints the exact API error if a
@@ -93,8 +93,8 @@ and without a password anyone who finds the URL spends your quota.
    ones that merely look similar.
 4. **Detectors** run over the merged graph, each node gets a 0–100 risk score, and
    the subgraph around the match is returned to the browser.
-5. If nothing matched at all and an Anthropic key is set, an **open-web research
-   call** runs and renders in a separate amber panel labelled unverified.
+5. Every search also attaches a **structured adverse-media keyword search** (see
+   below) — a reproducible link a screener opens and classifies by hand.
 
 ### The optional identifier fields
 
@@ -253,9 +253,9 @@ test_ubograph.py     smoke tests
 sources/
   opensanctions.py   /match + nested /entities, FollowTheMoney relationship walker
   opencorporates.py  company search, company detail, officer search
-  adverse_media.py   open-web fallback via Claude or Gemini (whichever key is set)
   dossier.py         raw OpenSanctions entity -> structured dossier, and merging
   demo.py            synthetic network + sample dossier for keyless demos
+keywords.py          structured adverse-media keyword taxonomy + query builder
 frontend/index.html  markup: form, tabs, table, report
 frontend/app.js      search, graph rendering, table filtering, report + PDF
 frontend/styles.css  the whole visual layer
@@ -340,13 +340,20 @@ Rejected), and a Prepared By / Reviewed By / Approved By sign-off block —
 none of the identity fields are ever pre-filled with a real name; each is
 either what you typed in or left an explicit blank.
 
-### Adverse media (open-web research)
+### Adverse media (structured keyword search)
 
-Runs on every search now, not only when the structured sources find nothing —
-a weak or wrong structured match shouldn't silently suppress the one check
-that could catch it. See `sources/adverse_media.py` for the Anthropic/Gemini
-provider split. Two things work together to keep the searched name and the
-open-web findings from talking past each other:
+A reproducible keyword search, not an AI call — no API key, no third-party
+model, no configuration. See `keywords.py` for the taxonomy (money
+laundering, terrorist financing, proliferation financing, corruption,
+legal/regulatory proceedings) and the query builder. Every search attaches
+a Google query joining the subject's name with every keyword, plus a plain
+"know more about this person" link with no keyword filter. A screener opens
+either, reviews the results by hand, and records one classification
+(Confirmed / Partial / False / No match) with a rationale, screener name and
+case reference via `/api/adverse_media/review` — saved as a new timestamped
+row every time, never overwritten, so the trail shows what changed and when.
+
+Two more things sharpen the structured screening this sits alongside:
 
 - **Searching with "Any" entity type no longer falls back to a vague schema.**
   OpenSanctions' `/match` used to query the abstract `LegalEntity` schema
@@ -375,30 +382,6 @@ open-web findings from talking past each other:
   Add a birth year, nationality or jurisdiction to the search — the
   single most effective way to push a true match's score up and a
   namesake's down.
-- **The open-web findings are folded into the same report**, not left in a
-  separate box nobody reads — a report's Findings section carries both the
-  structured detector hits and the adverse-media claims together, each
-  claim still clearly labelled "Open-web (unverified)" and capped at
-  "medium" severity so scraped narrative can never outrank a verified
-  finding. Only the entity actually searched for gets this treatment
-  (`is_root`) — findings never leak onto an unrelated owner or director
-  pulled into the same graph.
-- **An ordinary person or business with no sanctions/PEP/registry hit but
-  real web coverage gets its own entry**, not just a paragraph on a "no
-  match" screen. When the structured sources (live, not demo) find nothing
-  and the open-web search actually turned something up, that becomes a
-  proper node — a Table row, a Graph node, a full report and PDF — sourced
-  entirely from the open web and clearly labelled as such: no risk flags or
-  score are fabricated from unverified narrative (it always bands green),
-  and every note and finding says outright that this isn't a registry hit.
-  Search "Definitely No Web Coverage Of This" and it still correctly comes
-  back "no match" — this only fires when the web search found something
-  real. See `search._add_adverse_media_node`.
-
-Batch screening (`batch_screen`) opts out of this — screening a whole
-portfolio would otherwise turn one API key into hundreds of web-search calls
-per run. Run a name individually from the Table tab to get the open-web
-check.
 
 ### Satellite view
 
@@ -458,8 +441,8 @@ single ZIP with everything otherwise downloaded one document at a time:
 2. A standalone Risk Assessment PDF (the same automatic assessment, broken
    out as its own file).
 3. The EDD checklist PDF.
-4. A plain-text evidence/source list — every source URL on record plus any
-   open-web research findings, each with its attribution.
+4. A plain-text evidence/source list — every source URL on record plus the
+   structured adverse-media query and, once recorded, the screener's decision.
 5. An audit trail CSV — every activity-log entry that mentions this
    subject by name (search, report view, exports, workspace changes).
 
@@ -527,7 +510,8 @@ its report.
 - **Recorded relationships** — family, associates, directorships and ownership
   as the source states them, with roles and dates.
 - Unresolved identity matches, flagged for verification and never silently merged.
-- Open-web research, if enabled, in a separate amber panel with a category filter.
+- Adverse media screening — the structured keyword search link, plus your
+  saved classification once you record one.
 - **Download PDF** produces a formatted document with the same content, colour bands
   included, ready to file or attach — opening with its own cover page
   (classification marker, subject, overall risk rating, generation date, a

@@ -7,7 +7,6 @@ const state = {
   report: null,
   filters: {bands: new Set(['red', 'orange', 'green']), type: '', flag: '', q: ''},
   sort: {key: 'risk_score', dir: -1},
-  mediaFilter: '',
   countries: [],
   riskRatingOptions: null,
 };
@@ -95,10 +94,9 @@ function birthDateValue() {
  * Status chips + search
  * ------------------------------------------------------------------ */
 fetch('/api/status').then((r) => r.json()).then((s) => {
-  const chips = [['OpenSanctions', s.opensanctions], ['OpenCorporates', s.opencorporates],
-                 ['Adverse media', s.adverse_media]]
+  const chips = [['OpenSanctions', s.opensanctions], ['OpenCorporates', s.opencorporates]]
     .map(([label, on]) => `<span class="chip ${on ? 'on' : ''}">${label} ${on ? 'live' : 'off'}</span>`)
-    .join('');
+    .join('') + '<span class="chip on">Adverse media search</span>';
   $('#chips').innerHTML = chips + (s.demo_mode ? '<span class="chip demo">demo data</span>' : '');
 });
 
@@ -191,21 +189,11 @@ function renderEmptyState(payload) {
       <div class="amber">
         <p>Structured keyword search — ${media.manual_search.keyword_count} AML/CFT terms
           joined with this name into one reproducible query.</p>
-        <p><a href="${escapeHtml(media.manual_search.url)}" target="_blank" rel="noopener">Open manual search →</a></p>
-      </div>`;
-  }
-  if (media && media.available) {
-    banner.innerHTML += `<h3>AI-assisted open-web research (unverified)</h3>
-      <div class="amber">
-        <p class="warn">Retrieved by web search, not from a registry. Check every claim
-          against its source before use — classify each finding from the Table or
-          Report view once this name resolves to an entry.</p>
-        ${media.error ? `<p>${escapeHtml(media.error)}</p>` : ''}
-        <p>${escapeHtml(media.summary || '')}</p>
-        <ul>${(media.findings || []).map((f) => `<li>${escapeHtml(f.claim || '')}
-          ${f.source_url ? ` <a href="${escapeHtml(f.source_url)}" target="_blank" rel="noopener">${escapeHtml(f.source_title || 'source')}</a>` : ''}
-          ${f.date ? ` <span class="empty">${escapeHtml(f.date)}</span>` : ''}</li>`).join('')
-          || '<li class="empty">Nothing credible surfaced.</li>'}</ul>
+        <p>
+          <a href="${escapeHtml(media.manual_search.url)}" target="_blank" rel="noopener">Open manual search →</a>
+          &nbsp;·&nbsp;
+          <a href="${escapeHtml(media.manual_search.general_url)}" target="_blank" rel="noopener">Know more about ${escapeHtml(payload.query.name || '')} →</a>
+        </p>
       </div>`;
   }
 }
@@ -777,7 +765,7 @@ function renderReport(report) {
       ${report.ownership_paths.map((p) =>
         `<p>${escapeHtml((p.path || []).join(' → '))}</p>`).join('')}` : ''}
 
-    ${media && (media.available || media.manual_search) ? adverseMediaPanel(media) : ''}
+    ${media && media.manual_search ? adverseMediaPanel(s.name, media) : ''}
 
     <p class="disclaimer">${escapeHtml(report.disclaimer)}</p>`;
 
@@ -843,33 +831,15 @@ function renderReport(report) {
     button.addEventListener('click', () => openReport(button.dataset.node));
   });
   if (s.type === 'address') loadSatelliteView(s.name);
-  const mediaFilter = $('#media-filter');
-  if (mediaFilter) {
-    mediaFilter.addEventListener('change', (event) => {
-      state.mediaFilter = event.target.value;
-      $('#media-list').innerHTML = mediaItems(report.media);
-      bindClassifySelects(report.media);
-    });
-  }
-  bindClassifySelects(report.media);
   const saveReviewButton = $('#am-save-review');
   if (saveReviewButton) {
     saveReviewButton.addEventListener('click', () => saveAdverseMediaReview(s.name, report.media));
   }
 }
 
-function bindClassifySelects(media) {
-  $$('.classify-select').forEach((select) => {
-    select.addEventListener('change', (event) => {
-      const i = Number(event.target.dataset.index);
-      media.findings[i].classification = event.target.value;
-    });
-  });
-}
-
 async function saveAdverseMediaReview(name, media) {
   const button = $('#am-save-review');
-  const classifications = (media.findings || []).map((f) => f.classification || 'unreviewed');
+  const classification = $('#am-classification').value;
   button.disabled = true;
   button.textContent = 'Saving…';
   try {
@@ -879,7 +849,7 @@ async function saveAdverseMediaReview(name, media) {
       body: JSON.stringify({
         name,
         query: media.manual_search ? media.manual_search.query : '',
-        classifications,
+        classifications: [classification],
         screened_by: $('#am-screened-by').value.trim(),
         case_ref: $('#am-case-ref').value.trim(),
         rationale: $('#am-rationale').value.trim(),
@@ -888,7 +858,6 @@ async function saveAdverseMediaReview(name, media) {
     if (!response.ok) throw new Error('Could not save the decision.');
     const saved = await response.json();
     media.overall_decision = saved.overall_decision;
-    $('#overall-decision').textContent = CLASSIFICATION_LABEL[saved.overall_decision] || saved.overall_decision;
     button.textContent = 'Saved';
     setTimeout(() => { button.textContent = 'Save decision'; button.disabled = false; }, 1500);
   } catch (error) {
@@ -958,57 +927,34 @@ function dossierHtml(report) {
       <tbody>${relationships}</tbody></table>` : ''}`;
 }
 
-function mediaItems(media) {
-  const all = media.findings || [];
-  return all
-    .map((f, i) => [f, i])
-    .filter(([f]) => !state.mediaFilter || f.category === state.mediaFilter)
-    .map(([f, i]) => `<li>
-      <select class="classify-select" data-index="${i}" title="Your classification of this finding">
-        ${Object.entries(CLASSIFICATION_LABEL).map(([value, label]) =>
-          `<option value="${value}" ${f.classification === value ? 'selected' : ''}>${escapeHtml(label)}</option>`
-        ).join('')}
-      </select>
-      ${escapeHtml(f.claim || '')}
-      ${f.source_url ? ` <a href="${escapeHtml(f.source_url)}" target="_blank" rel="noopener">${escapeHtml(f.source_title || 'source')}</a>` : ''}
-      ${f.date ? ` <span class="empty">${escapeHtml(f.date)}</span>` : ''}</li>`).join('')
-    || '<li class="empty">Nothing in this category.</li>';
-}
-
-function adverseMediaPanel(media) {
+function adverseMediaPanel(name, media) {
   const manual = media.manual_search;
-  const mediaCategories = media.findings
-    ? [...new Set(media.findings.map((f) => f.category).filter(Boolean))] : [];
   const review = media.review || {};
+  const current = review.classification || 'unreviewed';
   return `<h3>Adverse media screening</h3>
     <div class="amber">
-      ${manual ? `<p>Structured keyword search — ${manual.keyword_count} AML/CFT terms
+      <p>Structured keyword search — ${manual.keyword_count} AML/CFT terms
         (money laundering, terrorist financing, proliferation financing, corruption,
         legal/regulatory proceedings) joined with the subject's name into one
-        reproducible query.</p>
-        <p><a href="${escapeHtml(manual.url)}" target="_blank" rel="noopener">Open manual search →</a></p>` : ''}
+        reproducible query. No AI or third-party service is called — you run the
+        search yourself and record what you find.</p>
+      <p>
+        <a href="${escapeHtml(manual.url)}" target="_blank" rel="noopener">Open manual search →</a>
+        &nbsp;·&nbsp;
+        <a href="${escapeHtml(manual.general_url)}" target="_blank" rel="noopener">Know more about ${escapeHtml(name)} →</a>
+      </p>
 
-      ${media.available ? `
-        <p class="warn">AI-assisted open-web research (unverified). Retrieved by web
-          search, not from a registry — check every claim against its source, then
-          classify it below.</p>
-        ${media.error ? `<p>${escapeHtml(media.error)}</p>` : ''}
-        <p>${escapeHtml(media.summary || '')}</p>
-        ${mediaCategories.length ? `<label for="media-filter">Filter by category</label>
-          <select id="media-filter">
-            <option value="">All categories</option>
-            ${mediaCategories.map((c) =>
-              `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('')}
-          </select>` : ''}
-        <ul id="media-list">${mediaItems(media)}</ul>
-
-        <p><b>Overall decision: <span id="overall-decision">${escapeHtml(CLASSIFICATION_LABEL[media.overall_decision] || media.overall_decision || 'Unreviewed')}</span></b></p>
-        <label>Screened by <input id="am-screened-by" type="text" value="${escapeHtml(review.screened_by || '')}" placeholder="Name or employee ID"></label>
-        <label>Case / reference no. <input id="am-case-ref" type="text" value="${escapeHtml(review.case_ref || '')}" placeholder="Internal reference"></label>
-        <label>Rationale <input id="am-rationale" type="text" value="${escapeHtml(review.rationale || '')}" placeholder="Compliance notes"></label>
-        <button class="ghost small" id="am-save-review" type="button">Save decision</button>
-        ${review.reviewed_at ? `<p class="empty">Last saved ${escapeHtml(formatDubai(review.reviewed_at))}</p>` : ''}
-      ` : ''}
+      <label for="am-classification">Your classification</label>
+      <select id="am-classification">
+        ${Object.entries(CLASSIFICATION_LABEL).map(([value, label]) =>
+          `<option value="${value}" ${current === value ? 'selected' : ''}>${escapeHtml(label)}</option>`
+        ).join('')}
+      </select>
+      <label>Screened by <input id="am-screened-by" type="text" value="${escapeHtml(review.screened_by || '')}" placeholder="Name or employee ID"></label>
+      <label>Case / reference no. <input id="am-case-ref" type="text" value="${escapeHtml(review.case_ref || '')}" placeholder="Internal reference"></label>
+      <label>Rationale <input id="am-rationale" type="text" value="${escapeHtml(review.rationale || '')}" placeholder="Compliance notes"></label>
+      <button class="ghost small" id="am-save-review" type="button">Save decision</button>
+      ${review.reviewed_at ? `<p class="empty">Last saved ${escapeHtml(formatDubai(review.reviewed_at))}</p>` : ''}
     </div>`;
 }
 
