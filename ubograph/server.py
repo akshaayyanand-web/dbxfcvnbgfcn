@@ -24,9 +24,18 @@ app = Flask(__name__, static_folder="frontend", static_url_path="")
 db.init()
 
 
+# The public marketing site — landing.html plus its own fonts/CSS/JS — needs
+# no login. Everything that can actually spend API quota or see case data
+# (the /app workspace and every /api/* route) stays behind the gate below.
+_PUBLIC_PATHS = {"/", "/healthz", "/landing.css", "/landing.js"}
+_PUBLIC_PREFIXES = ("/fonts/",)
+
+
 @app.before_request
 def _require_password():
-    """Gate the whole app behind a password when APP_PASSWORD is set.
+    """Gate the app workspace and API behind a password when APP_PASSWORD is
+    set. The public landing page is exempt — it carries no data and calls no
+    API, so it costs nothing to leave open; showing it is the point.
 
     A deployed instance searches on your API keys. Without this, anyone who
     finds the URL spends your OpenSanctions and OpenCorporates quota, and the
@@ -35,10 +44,7 @@ def _require_password():
     """
     if not config.APP_PASSWORD:
         return None
-    # The platform's health probe cannot send credentials. Gating it makes the
-    # deploy fail as "unhealthy" while the app itself is perfectly fine, so the
-    # probe is exempt — it exposes nothing but the word "ok".
-    if request.path == "/healthz":
+    if request.path in _PUBLIC_PATHS or request.path.startswith(_PUBLIC_PREFIXES):
         return None
     auth = request.authorization
     if auth and auth.username == config.APP_USERNAME and \
@@ -51,8 +57,14 @@ def _require_password():
 
 
 @app.get("/")
-def index():
-    return send_from_directory(app.static_folder, "index.html")
+def landing():
+    return send_from_directory(app.static_folder, "landing.html")
+
+
+@app.get("/app")
+@app.get("/app/")
+def app_shell():
+    return send_from_directory(app.static_folder, "app/index.html")
 
 
 @app.get("/api/status")
