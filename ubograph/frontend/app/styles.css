@@ -116,6 +116,7 @@ button.ghost{
 }
 button.ghost:hover:not(:disabled){background:var(--bg); transform:none}
 button.ghost.small{padding:0 12px; height:30px; font-size:12.5px; margin:0 3px 0 0}
+.example-btn.selected{background:var(--accent-strong); color:#ffffff; border-color:var(--accent-strong)}
 .optional{border-top:1px solid var(--line); margin-top:20px; padding-top:4px}
 .optional h3{font-size:13px; margin:14px 0 2px; font-weight:600}
 

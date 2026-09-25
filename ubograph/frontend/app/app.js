@@ -113,16 +113,80 @@ $('#entity_type').addEventListener('change', syncOptional);
  * Loads a baked-in, always-available result set (no live OpenSanctions/
  * OpenCorporates call) so a demo in front of an audience never depends on
  * a third-party API being up, fast, or unrate-limited at that moment.
+ * Three examples, switchable with one click, no page reload:
+ *   - Falcon Capital: a company with a full ownership network, a sanctioned
+ *     shareholder, a nominee director and a shared registered address.
+ *   - Rishi Sunak: a real public figure, shown only for the true, public,
+ *     non-defamatory fact that a former head of government is a Politically
+ *     Exposed Person — no adverse finding is invented for him.
+ *   - Sanjay Ajay: an illustrative individual with a clean screening result
+ *     and a filled-in client risk-rating worksheet example.
  * ------------------------------------------------------------------ */
-async function loadPresentationDemo() {
-  $('#name').value = 'Falcon Capital';
-  $('#entity_type').value = 'any';
-  $('#status').textContent = 'loading demo…';
-  const response = await fetch('demo_payload.json');
+const PRESETS = {
+  falcon: {file: 'demo_payload_falcon.json', name: 'Falcon Capital', entityType: 'any', label: 'Falcon Capital — company network'},
+  sunak: {file: 'demo_payload_sunak.json', name: 'Rishi Sunak', entityType: 'person', label: 'Rishi Sunak — PEP example'},
+  sanjay: {file: 'demo_payload_sanjay.json', name: 'Sanjay Ajay', entityType: 'person', label: 'Sanjay Ajay — individual example'},
+};
+
+async function loadPresentationDemo(presetKey) {
+  const preset = PRESETS[presetKey] || PRESETS.falcon;
+  $$('.example-btn').forEach((b) => b.classList.toggle('selected', b.dataset.preset === presetKey));
+  $('#name').value = preset.name;
+  $('#entity_type').value = preset.entityType;
+  $('#status').textContent = 'loading example…';
+  const response = await fetch(preset.file);
   const payload = await response.json();
   render(payload);
   const root = (payload.nodes || []).find((n) => n.is_root);
   if (root) await openReport(root.id);
+  if (presetKey === 'sanjay') fillRiskAssessmentExample();
+}
+
+function renderExamplesPicker() {
+  const nav = $('.nav-modules');
+  if (!nav || $('#examples-picker')) return;
+  const panel = document.createElement('div');
+  panel.id = 'examples-picker';
+  panel.className = 'sidebar-sources';
+  panel.innerHTML = '<span class="sidebar-label">Presentation examples</span>' +
+    Object.entries(PRESETS).map(([key, p]) =>
+      `<button type="button" class="ghost small example-btn" data-preset="${key}" style="width:100%;margin:0 0 4px;text-align:left">${escapeHtml(p.label)}</button>`
+    ).join('');
+  nav.insertAdjacentElement('afterend', panel);
+  $$('.example-btn').forEach((btn) => {
+    btn.addEventListener('click', () => loadPresentationDemo(btn.dataset.preset));
+  });
+}
+
+// Fills the standalone client risk-rating worksheet with a plausible,
+// clean example (salaried, local bank transfer, no PEP/sanctions hit) and
+// calculates it — this worksheet is always a manual, standalone entry, so
+// pre-filling it here is just example data, same as any other demo field.
+async function fillRiskAssessmentExample() {
+  // renderRiskAssessmentTab() runs off a separate, unawaited fetch inside
+  // loadReference() — wait for the worksheet fields to actually exist
+  // rather than guessing a fixed delay, so a slow connection doesn't
+  // silently produce an unfilled form during a live presentation.
+  for (let i = 0; i < 100 && !$('#rr-nationality'); i++) {
+    await new Promise((resolve) => setTimeout(resolve, 50));
+  }
+  showTab('risk');
+  const setIfPresent = (id, value) => { const el = $('#' + id); if (el) el.value = value; };
+  setIfPresent('rr-nationality', 'in');
+  setIfPresent('rr-birth', 'in');
+  setIfPresent('rr-residence', 'in');
+  setIfPresent('rr-work', 'in');
+  setIfPresent('rr-screen-name', 'Sanjay Ajay');
+  setIfPresent('rr-screening', 'Screened, PEP not identified, not on relevant lists');
+  setIfPresent('rr-employment-type', 'Salaried');
+  setIfPresent('rr-employment-industry', 'Technology software and services');
+  setIfPresent('rr-payment', 'Local Bank Transfer');
+  setIfPresent('rr-funds', 'Employment (Salaried)');
+  setIfPresent('rr-notes', 'Standard onboarding. Client is a salaried software professional; '
+    + 'employment and source of funds verified via payslips and bank statements. No PEP or '
+    + 'adverse-media screening hits. Rating and review interval follow the score above.');
+  const calc = $('#rr-calculate');
+  if (calc) calc.click();
 }
 $('#form').addEventListener('submit', async (event) => {
   event.preventDefault();
@@ -1606,8 +1670,10 @@ resize();
 loadReference()
   .catch(() => { /* dropdowns stay empty; the search still works */ })
   .finally(() => {
-    if (new URLSearchParams(location.search).has('demo')) {
-      loadPresentationDemo();
+    const demoParam = new URLSearchParams(location.search).get('demo');
+    if (demoParam !== null) {
+      renderExamplesPicker();
+      loadPresentationDemo(PRESETS[demoParam] ? demoParam : 'falcon');
     } else {
       $('#form').dispatchEvent(new Event('submit'));
     }
