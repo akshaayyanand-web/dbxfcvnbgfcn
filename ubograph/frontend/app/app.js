@@ -108,6 +108,22 @@ function syncOptional() {
 }
 $('#entity_type').addEventListener('change', syncOptional);
 
+/* ------------------------------------------------------------------ *
+ * Presentation link — /app/?demo=1
+ * Loads a baked-in, always-available result set (no live OpenSanctions/
+ * OpenCorporates call) so a demo in front of an audience never depends on
+ * a third-party API being up, fast, or unrate-limited at that moment.
+ * ------------------------------------------------------------------ */
+async function loadPresentationDemo() {
+  $('#name').value = 'Falcon Capital';
+  $('#entity_type').value = 'any';
+  $('#status').textContent = 'loading demo…';
+  const response = await fetch('demo_payload.json');
+  const payload = await response.json();
+  render(payload);
+  const root = (payload.nodes || []).find((n) => n.is_root);
+  if (root) await openReport(root.id);
+}
 $('#form').addEventListener('submit', async (event) => {
   event.preventDefault();
   const params = new URLSearchParams();
@@ -1589,4 +1605,10 @@ syncOptional();
 resize();
 loadReference()
   .catch(() => { /* dropdowns stay empty; the search still works */ })
-  .finally(() => $('#form').dispatchEvent(new Event('submit')));
+  .finally(() => {
+    if (new URLSearchParams(location.search).has('demo')) {
+      loadPresentationDemo();
+    } else {
+      $('#form').dispatchEvent(new Event('submit'));
+    }
+  });
