@@ -174,8 +174,8 @@ async function fillRiskAssessmentExample() {
   const setIfPresent = (id, value) => { const el = $('#' + id); if (el) el.value = value; };
   setIfPresent('rr-nationality', 'in');
   setIfPresent('rr-birth', 'in');
-  setIfPresent('rr-residence', 'in');
-  setIfPresent('rr-work', 'in');
+  setIfPresent('rr-residence', 'ae');
+  setIfPresent('rr-work', 'ae');
   setIfPresent('rr-screen-name', 'Sanjay Ajay');
   setIfPresent('rr-screening', 'Screened, PEP not identified, not on relevant lists');
   setIfPresent('rr-employment-type', 'Salaried');
