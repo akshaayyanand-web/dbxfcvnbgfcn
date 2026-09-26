@@ -147,7 +147,7 @@ $('#entity_type').addEventListener('change', syncOptional);
  * ------------------------------------------------------------------ */
 const PRESETS = {
   falcon: {file: 'demo_payload_falcon.json', name: 'Falcon Capital', entityType: 'any', label: 'Falcon Capital — company network'},
-  sunak: {file: 'demo_payload_sunak.json', name: 'Rishi Sunak', entityType: 'person', label: 'Rishi Sunak — PEP example'},
+  sunak: {file: 'demo_payload_sunak.json', name: 'Rishi Sunak', entityType: 'any', label: 'Rishi Sunak — PEP example'},
   sanjay: {file: 'demo_payload_sanjay.json', name: 'Sanjay Ajay', entityType: 'person', label: 'Sanjay Ajay — individual example', nationality: 'in', dobYear: '1980', jurisdiction: 'ae'},
 };
 
@@ -157,9 +157,9 @@ async function loadPresentationDemo(presetKey) {
   $('#name').value = preset.name;
   $('#entity_type').value = preset.entityType;
   syncOptional();
-  if (preset.nationality) $('#nationality').value = preset.nationality;
-  if (preset.dobYear) $('#dob_year').value = preset.dobYear;
-  if (preset.jurisdiction) $('#jurisdiction').value = preset.jurisdiction;
+  $('#nationality').value = preset.nationality || '';
+  $('#dob_year').value = preset.dobYear || '';
+  $('#jurisdiction').value = preset.jurisdiction || '';
   $('#status').textContent = 'loading example…';
   const response = await fetch(preset.file);
   const payload = await response.json();
