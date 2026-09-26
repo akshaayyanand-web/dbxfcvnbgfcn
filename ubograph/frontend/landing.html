@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sanctions+ — sanctions, PEP and beneficial ownership screening</title>
+<link rel="stylesheet" href="landing.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 2 L28 7 V16 C28 23 23 28 16 30 C9 28 4 23 4 16 V7 Z' fill='%232c2745'/%3E%3Cpath d='M16 10 V22 M10 16 H22' stroke='%23eef7ff' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
+</head>
+<body>
+
+<header class="site-header">
+  <nav class="main-nav" aria-label="Main">
+    <a href="#top" class="brand">
+      <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M12 0C12.9 5.9 16.6 10.3 24 12C16.6 13.7 12.9 18.1 12 24C11.1 18.1 7.4 13.7 0 12C7.4 10.3 11.1 5.9 12 0Z"></path></svg>
+      <span>Sanctions+</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#how">How it works</a></li>
+      <li><a href="#screening">Screening</a></li>
+      <li><a href="#ownership">Ownership</a></li>
+      <li><a href="#documents">Documents</a></li>
+      <li><a href="#security">Security</a></li>
+    </ul>
+    <div class="nav-actions">
+      <a href="/app" class="login">Log in</a>
+      <a href="/app" class="btn btn-primary">Try Sanctions+</a>
+    </div>
+  </nav>
+</header>
+
+<main id="top">
+  <!-- HERO -->
+  <section class="hero-band wrap-wide" style="padding-left:0;padding-right:0">
+    <div class="hero-panel">
+      <div class="hero-content">
+        <svg class="mark" viewBox="0 0 24 24" width="36" height="36" aria-hidden="true"><path d="M12 0C12.9 5.9 16.6 10.3 24 12C16.6 13.7 12.9 18.1 12 24C11.1 18.1 7.4 13.7 0 12C7.4 10.3 11.1 5.9 12 0Z"></path></svg>
+        <span class="eyebrow">Sanctions · PEP · Adverse media · Beneficial ownership</span>
+        <h1 class="display-xl">Every AML check, one workspace</h1>
+        <p class="lead">Screen sanctions and PEPs, trace beneficial ownership, review adverse media and assemble the investigation file without leaving Sanctions+.</p>
+        <div class="hero-ctas">
+          <a href="/app" class="btn btn-primary btn-lg">Try Sanctions+</a>
+          <a href="#how" class="btn btn-ghost btn-lg">
+            <span>See how it works</span>
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" aria-hidden="true" style="stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+          </a>
+        </div>
+      </div>
+
+      <svg class="hero-facets" viewBox="0 0 100 100" width="620" height="620" aria-hidden="true">
+        <defs>
+          <linearGradient id="hf0" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6ba5fa"></stop><stop offset="1" stop-color="#dcebfe"></stop></linearGradient>
+          <linearGradient id="hf2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2277f7"></stop><stop offset="1" stop-color="#dcebfe"></stop></linearGradient>
+        </defs>
+        <polygon points="94.35,68.37 68.37,94.35 31.63,94.35 5.65,68.37 5.65,31.63 31.63,5.65 68.37,5.65 94.35,31.63" fill="url(#hf0)"></polygon>
+        <polygon points="83.70,70.96 63.96,90.70 36.04,90.70 16.30,70.96 16.30,43.04 36.04,23.30 63.96,23.30 83.70,43.04" fill="url(#hf0)"></polygon>
+        <polygon points="73.06,73.55 59.55,87.06 40.45,87.06 26.94,73.55 26.94,54.45 40.45,40.94 59.55,40.94 73.06,54.45" fill="url(#hf2)"></polygon>
+      </svg>
+
+      <div class="preview-card" role="img" aria-label="Sanctions+ screening result for Falcon Capital from the demo network">
+        <div class="preview-toolbar">
+          <div class="preview-search">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#50575f" aria-hidden="true" style="stroke-width:1.75;stroke-linecap:round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+            <span>Falcon Capital</span>
+            <span class="meta">Company · 3 hops</span>
+          </div>
+          <span class="btn btn-cobalt" style="pointer-events:none">Map network</span>
+        </div>
+        <div class="preview-grid">
+          <div class="preview-list">
+            <div class="preview-list-head"><span>18 entities in the network</span><span>Sorted by risk</span></div>
+            <div class="preview-row">
+              <div><div class="name">Falcon Capital Holdings FZE</div><div class="id">DMCC-114872 · Searched entity</div></div>
+              <span class="badge badge-high">High risk</span>
+            </div>
+            <div class="preview-row">
+              <div><div class="name">Viktor Branko</div><div class="id">Person · 40% of Orient Star</div></div>
+              <span class="badge badge-high">Sanctioned match</span>
+            </div>
+            <div class="preview-row">
+              <div><div class="name">Elena Kovacs</div><div class="id">Person · Candidate UBO, 4 tiers</div></div>
+              <span class="badge badge-review">PEP · Needs review</span>
+            </div>
+            <div class="preview-row">
+              <div><div class="name">Pearl Desert General Trading LLC</div><div class="id">DED-660412 · Shareholder, 9%</div></div>
+              <span class="badge badge-clear">No flags</span>
+            </div>
+          </div>
+          <div class="preview-findings">
+            <div class="demo-tag" style="color:var(--ink-muted);font-family:var(--font-sans);font-size:12px;font-weight:500">Findings for Falcon Capital Holdings FZE</div>
+            <div class="finding-card">
+              <div class="row"><span>Circular ownership loop</span><span style="color:var(--risk-high)">High</span></div>
+              <span class="detail">Falcon Capital → Crescent Trade → Orient Star → Falcon Capital</span>
+            </div>
+            <div class="finding-card">
+              <div class="row"><span>4-tier ownership chain</span><span style="color:var(--risk-review)">Medium</span></div>
+              <span class="detail">Control passes through Cyprus, Cayman and BVI holding layers</span>
+            </div>
+            <div class="finding-card">
+              <div class="row"><span>Shared registered address</span><span style="color:var(--risk-review)">Medium</span></div>
+              <span class="detail">5 entities at one Jumeirah Lakes Towers office</span>
+            </div>
+            <span class="demo-tag">DEMO NETWORK · SYNTHETIC DATA</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SOURCES -->
+  <section class="sources wrap" aria-label="Sources">
+    <span class="eyebrow">Screening against</span>
+    <div class="sources-list">
+      <span>OpenSanctions</span><span>OpenCorporates</span><span>FATF country lists</span><span>UN Security Council regimes</span><span>Structured adverse media search</span>
+    </div>
+  </section>
+
+  <!-- PROBLEM -->
+  <section class="section wrap">
+    <div class="section-head">
+      <div class="kicker"><span class="eyebrow">The problem</span><h2>One name, five different tools</h2></div>
+      <p class="desc">A single customer check usually means a sanctions portal, a registry search, a spreadsheet, a search engine and a Word template. Each copy and paste is a gap in the audit trail.</p>
+    </div>
+    <div class="grid-3" style="grid-template-columns:1fr">
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:20px">
+          <span style="font-size:22px;font-weight:500">Today</span>
+          <span class="eyebrow">Every arrow is a manual copy</span>
+        </div>
+        <div class="flow-today">
+          <div class="flow-step"><span class="t">Sanctions portal</span><span class="d">Screenshot the result</span></div>
+          <span class="flow-arrow" aria-hidden="true">→</span>
+          <div class="flow-step"><span class="t">Company registry</span><span class="d">One jurisdiction at a time</span></div>
+          <span class="flow-arrow" aria-hidden="true">→</span>
+          <div class="flow-step"><span class="t">Spreadsheet</span><span class="d">Track owners by hand</span></div>
+          <span class="flow-arrow" aria-hidden="true">→</span>
+          <div class="flow-step"><span class="t">Search engine</span><span class="d">Keywords typed differently each time</span></div>
+          <span class="flow-arrow" aria-hidden="true">→</span>
+          <div class="flow-step"><span class="t">Word risk template</span><span class="d">Retype the facts</span></div>
+          <span class="flow-arrow" aria-hidden="true">→</span>
+          <div class="flow-step"><span class="t">Compliance report</span><span class="d">Assemble the PDF yourself</span></div>
+        </div>
+      </div>
+      <div class="card-cobalt" style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:24px">
+        <div style="display:flex;flex-direction:column;gap:4px">
+          <span style="font-size:22px;font-weight:500">With Sanctions+</span>
+          <span style="font-size:14px">One search feeds every step, and every step is logged.</span>
+        </div>
+        <ol class="flow-pills">
+          <li>Screen</li><li aria-hidden="true">→</li>
+          <li>Investigate</li><li aria-hidden="true">→</li>
+          <li>Assess</li><li aria-hidden="true">→</li>
+          <li>Document</li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- WORKFLOW -->
+  <section id="how" class="section wrap" style="scroll-margin-top:72px">
+    <div class="section-head">
+      <div class="kicker"><span class="eyebrow">How it works</span><h2>From a name to a case file</h2></div>
+      <p class="desc">Five steps, one record. Each screen picks up where the last one left off, so nothing is retyped.</p>
+    </div>
+    <ol class="steps">
+      <li class="step">
+        <div><div class="num">01</div><div class="name">Search</div>
+        <p>Enter a person or company, plus a birth year, nationality or registration number to cut out namesakes.</p></div>
+        <div class="footer-chip">Falcon Capital<span class="mono" style="margin-left:auto;font-size:11px;color:var(--ink-muted)">AE</span></div>
+      </li>
+      <li class="step">
+        <div><div class="num">02</div><div class="name">Screen</div>
+        <p>Review sanctions, PEP, debarment and criminal flags across the whole ownership network, not just the name.</p></div>
+        <div style="margin-top:auto;display:flex;flex-wrap:wrap;gap:6px">
+          <span class="badge badge-high">Sanctioned</span>
+          <span class="badge badge-review">PEP</span>
+        </div>
+      </li>
+      <li class="step">
+        <div><div class="num">03</div><div class="name">Investigate</div>
+        <p>Follow ownership tiers, shared addresses and nominee directors, then check open-web media against a fixed keyword set.</p></div>
+        <div class="footer-mono">Kovacs → Azure → Marina Bay<br>→ Falcon Nominees → Falcon</div>
+      </li>
+      <li class="step">
+        <div><div class="num">04</div><div class="name">Assess</div>
+        <p>Get a rating derived from the findings, then complete the client risk-rating worksheet with your own inputs.</p></div>
+        <div class="footer-rating"><span class="big">High</span><span style="font-size:12px;color:var(--ink-muted)">overall rating</span></div>
+      </li>
+      <li class="step">
+        <div><div class="num">05</div><div class="name">Document</div>
+        <p>Download the report, EDD checklist, evidence list and audit extract together as one investigation package.</p></div>
+        <div class="footer-mono">Investigation_Package.zip</div>
+      </li>
+    </ol>
+  </section>
+
+  <!-- SCREENING -->
+  <section id="screening" class="section band" style="scroll-margin-top:72px">
+    <div class="wrap" style="padding:0">
+      <p style="margin:0 auto;max-width:900px;text-align:center;font-size:clamp(40px,5.4vw,64px);line-height:1.06;font-weight:800;letter-spacing:-.035em">Not every name match is a <span style="color:var(--cobalt)">true hit</span></p>
+      <p style="margin:24px auto 0;max-width:620px;text-align:center;font-size:20px;line-height:30px;color:var(--ink-muted)">A name alone returns every namesake. Add a birth year or nationality and a real match scores far higher, so you review the right record first.</p>
+      <div class="grid-3" style="grid-template-columns:1fr">
+        <div class="table-card">
+          <div class="table-head">
+            <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px">
+              <span style="font-size:16px;font-weight:600">Ali Hassan</span>
+              <span class="badge badge-cobalt" style="padding:0 12px">Person</span>
+              <span class="badge badge-cobalt" style="padding:0 12px">Born 1974</span>
+            </div>
+            <span class="eyebrow">Illustrative result, not real persons</span>
+          </div>
+          <table class="match-table">
+            <thead><tr><th>Candidate</th><th>Country</th><th>Born</th><th>Source</th><th>Match score</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr>
+                <td>Ali Hassan Al-Example</td><td>Example country</td><td class="mono">1974-03-02</td><td class="mono" style="letter-spacing:.04em;color:var(--ink-muted)">SANCTIONS LIST</td>
+                <td><div class="score-bar"><div class="score-track"><div class="score-fill" style="width:92%"></div></div><span class="mono">0.92</span></div></td>
+                <td><span class="badge badge-high">Potential match</span></td>
+              </tr>
+              <tr>
+                <td>Ali Hasan</td><td>Example country</td><td class="mono">1961</td><td class="mono" style="letter-spacing:.04em;color:var(--ink-muted)">PEP REGISTER</td>
+                <td><div class="score-bar"><div class="score-track"><div class="score-fill" style="width:61%;background:var(--sky-mid)"></div></div><span class="mono">0.61</span></div></td>
+                <td><span class="badge badge-review">Needs review</span></td>
+              </tr>
+              <tr>
+                <td>Ali Hassan Trading LLC</td><td>Example country</td><td>—</td><td class="mono" style="letter-spacing:.04em;color:var(--ink-muted)">COMPANY REGISTRY</td>
+                <td><div class="score-bar"><div class="score-track"><div class="score-fill" style="width:38%;background:var(--sky-mid)"></div></div><span class="mono">0.38</span></div></td>
+                <td><span class="badge badge-clear">Wrong entity type</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="grid-cards" style="margin-top:0;grid-column:1/-1">
+          <div class="mini-card"><div class="title">Scored, not guessed</div><p>Candidates below the match threshold are dropped as noise, so a similar-sounding stranger never stands in for a hit.</p></div>
+          <div class="mini-card"><div class="title">Linked is not listed</div><p>A company connected to a sanctioned party is flagged as linked, never as sanctioned itself.</p></div>
+          <div class="mini-card"><div class="title">Possible twins stay separate</div><p>Two records that might be one person are linked for you to verify, not merged behind your back.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- OWNERSHIP -->
+  <section id="ownership" class="section wrap" style="scroll-margin-top:72px">
+    <div class="section-head">
+      <div class="kicker"><span class="eyebrow">Beneficial ownership</span><h2>See the people behind the company</h2></div>
+      <p class="desc">Sanctions+ follows ownership edges up to four hops and names the people at the top. Directors are shown as control, never as owners.</p>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:16px;margin-top:48px">
+      <div class="ownership-board">
+        <div class="ownership-head">
+          <span style="font-size:22px;font-weight:500">Ownership of Falcon Capital Holdings FZE</span>
+          <span class="eyebrow">Select an entity</span>
+        </div>
+        <div class="ownership-cols">
+          <div class="node-chain" id="ownership-chain"></div>
+          <div class="node-side" id="ownership-side"></div>
+        </div>
+        <svg class="ownership-facets" viewBox="0 0 100 100" width="300" height="300" aria-hidden="true">
+          <defs>
+            <linearGradient id="of0" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6ba5fa"></stop><stop offset="1" stop-color="#dcebfe"></stop></linearGradient>
+            <linearGradient id="of2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2277f7"></stop><stop offset="1" stop-color="#dcebfe"></stop></linearGradient>
+          </defs>
+          <polygon points="94.35,68.37 68.37,94.35 31.63,94.35 5.65,68.37 5.65,31.63 31.63,5.65 68.37,5.65 94.35,31.63" fill="url(#of0)"></polygon>
+          <polygon points="83.70,70.96 63.96,90.70 36.04,90.70 16.30,70.96 16.30,43.04 36.04,23.30 63.96,23.30 83.70,43.04" fill="url(#of0)"></polygon>
+          <polygon points="73.06,73.55 59.55,87.06 40.45,87.06 26.94,73.55 26.94,54.45 40.45,40.94 59.55,40.94 73.06,54.45" fill="url(#of2)"></polygon>
+        </svg>
+      </div>
+      <div class="ownership-side">
+        <div class="card-dark owner-highlight">
+          <span class="label">Candidate beneficial owner</span>
+          <span class="name">Elena Kovacs</span>
+          <span style="font-size:14px">4 tiers up, through Cyprus, Cayman and BVI holding companies. Recorded as politically exposed.</span>
+        </div>
+        <div class="card structural-findings">
+          <span class="eyebrow">Structural findings</span>
+          <div class="row"><span>Circular ownership loop</span><span style="font-weight:600;color:var(--risk-high)">High</span></div>
+          <div class="row"><span>Possible nominee director, 8 entities</span><span style="font-weight:600;color:var(--risk-review)">Medium</span></div>
+          <div class="row"><span>Limited-disclosure jurisdictions</span><span style="font-weight:600;color:var(--ink-muted)">Low</span></div>
+          <span class="eyebrow" style="font-weight:500">Each pattern is a prompt to check substance, not proof on its own.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ADVERSE MEDIA -->
+  <section class="section band">
+    <div class="wrap" style="padding:0">
+      <div class="section-head">
+        <div class="kicker"><span class="eyebrow">Adverse media</span><h2>Research beyond the databases</h2></div>
+        <p class="desc">One fixed keyword string, the same for every subject, so any finding can be re-run by hand. Every result starts unreviewed until you classify it.</p>
+      </div>
+      <div class="grid-cards">
+        <div class="card">
+          <span style="font-size:22px;font-weight:500">Structured query</span>
+          <code class="query-box" style="margin-top:16px;margin-bottom:16px">"Falcon Capital" (launder OR "money laundering" OR fraud OR embezzle OR "terrorist financing" OR "sanctions evasion" OR bribe …)</code>
+          <div class="category-tally">
+            <div class="row"><span>Money laundering &amp; financial crime</span><span class="mono" style="color:var(--ink-muted)">22</span></div>
+            <div class="row"><span>Terrorist financing</span><span class="mono" style="color:var(--ink-muted)">8</span></div>
+            <div class="row"><span>Proliferation financing</span><span class="mono" style="color:var(--ink-muted)">10</span></div>
+            <div class="row"><span>Corruption, bribery &amp; organised crime</span><span class="mono" style="color:var(--ink-muted)">20</span></div>
+            <div class="row"><span>Legal, criminal &amp; regulatory</span><span class="mono" style="color:var(--ink-muted)">21</span></div>
+          </div>
+          <span class="eyebrow" style="display:block;margin-top:16px">81 keywords across 5 categories. No AI, no third-party service — you run the search and record what you find.</span>
+        </div>
+        <div class="card media-card">
+          <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;align-items:center">
+            <span style="font-size:22px;font-weight:500">Findings to classify</span>
+            <span style="display:inline-flex;align-items:center;gap:8px;font-size:14px"><span style="color:var(--ink-muted)">Overall decision</span><span class="badge" id="overall-badge"></span></span>
+          </div>
+          <div id="media-findings"></div>
+          <span class="eyebrow" style="display:block;margin-top:16px">Appearing in the media does not make a subject high-risk. Each save is kept as a new timestamped review, never overwritten.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RISK -->
+  <section class="section wrap">
+    <div class="section-head">
+      <div class="kicker"><span class="eyebrow">Risk assessment</span><h2>A rating you can explain</h2></div>
+      <p class="desc">The rating comes from the findings, in plain language. The decision stays with your compliance officer.</p>
+    </div>
+    <div class="grid-3">
+      <div class="card-dark">
+        <span class="chip-outline" style="background:var(--surface);color:var(--violet-ink);align-self:flex-start">System-generated</span>
+        <div style="margin-top:16px"><div style="font-size:12px;font-weight:500">Overall rating</div><div class="rating-value">High</div></div>
+        <div class="rating-scale" aria-label="Rating scale: Low, Medium, High, Critical" style="margin-top:16px">
+          <span class="on"></span><span class="on"></span><span class="on"></span><span></span>
+        </div>
+        <div class="rating-labels" style="margin-top:8px"><span>Low</span><span>Medium</span><span>High</span><span>Critical</span></div>
+        <p style="margin:16px 0 0;font-size:14px">Critical is reserved for a sanctions flag or a FATF black-list registration.</p>
+      </div>
+      <div class="card" style="display:flex;flex-direction:column;gap:12px">
+        <span style="font-size:22px;font-weight:500">Risk factors</span>
+        <div style="display:flex;justify-content:space-between;gap:12px;font-size:14px;padding:8px 0;border-bottom:1px solid var(--rule)"><span>Circular ownership loop</span><span style="font-weight:600;color:var(--risk-high)">High</span></div>
+        <div style="display:flex;justify-content:space-between;gap:12px;font-size:14px;padding:8px 0;border-bottom:1px solid var(--rule)"><span>4-tier ownership chain</span><span style="font-weight:600;color:var(--risk-review)">Medium</span></div>
+        <div style="display:flex;justify-content:space-between;gap:12px;font-size:14px;padding:8px 0;border-bottom:1px solid var(--rule)"><span>Shared registered address</span><span style="font-weight:600;color:var(--risk-review)">Medium</span></div>
+        <div style="display:flex;justify-content:space-between;gap:12px;font-size:14px;padding:8px 0"><span>Limited-disclosure jurisdictions</span><span style="font-weight:600;color:var(--ink-muted)">Low</span></div>
+      </div>
+      <div class="card" style="display:flex;flex-direction:column;gap:12px">
+        <span style="font-size:22px;font-weight:500">Recommended action</span>
+        <ul style="margin:0;padding-left:18px;display:flex;flex-direction:column;gap:8px;font-size:14px">
+          <li>Escalate to the MLRO or compliance officer before proceeding.</li>
+          <li>Apply enhanced due diligence, including verified source of funds.</li>
+          <li>Obtain senior management sign-off.</li>
+        </ul>
+        <div class="review-box">
+          <span class="badge badge-cobalt" style="align-self:flex-start;padding:0 10px">Your review</span>
+          <span style="font-size:14px;color:var(--ink-muted)">Analyst comments carry into the PDF and package.</span>
+        </div>
+      </div>
+      <div style="grid-column:1/-1;background:var(--lavender-wash);border-radius:var(--radius-lg);padding:24px;display:flex;flex-wrap:wrap;gap:16px 32px;align-items:center;justify-content:space-between">
+        <div style="display:flex;flex-direction:column;gap:4px;max-width:520px">
+          <span style="font-size:16px;font-weight:600">Client risk-rating worksheet</span>
+          <span style="font-size:14px;color:var(--ink-muted)">A separate onboarding form you fill in yourself, scored against a weighted rubric and exported as its own PDF.</span>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px">
+          <span class="chip-outline">Nationality</span><span class="chip-outline">Residence</span><span class="chip-outline">Employment</span>
+          <span class="chip-outline">Mode of payment</span><span class="chip-outline">Source of funds</span><span class="chip-outline">Screening outcome</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DOCUMENTS -->
+  <section id="documents" class="section band" style="scroll-margin-top:72px">
+    <div class="wrap" style="padding:0">
+      <div class="section-head">
+        <div class="kicker">
+          <span class="eyebrow">Documentation</span>
+          <h2>Your work, filed and organised</h2>
+          <a href="/app" class="btn btn-cobalt" style="align-self:flex-start">
+            <span>Download investigation package</span>
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" aria-hidden="true" style="stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round"><path d="M12 5v12M6 11l6 6 6-6"></path></svg>
+          </a>
+        </div>
+        <p class="desc">The screen and the PDF are built from one structure, so the document on file can never say something different from what you reviewed.</p>
+      </div>
+      <div class="grid-cards">
+        <div class="card">
+          <span style="font-size:22px;font-weight:500;display:block;margin-bottom:12px">Investigation package</span>
+          <div class="doc-row"><span>Screening report with risk assessment</span><span class="fmt">PDF</span></div>
+          <div class="doc-row"><span>Standalone risk assessment</span><span class="fmt">PDF</span></div>
+          <div class="doc-row"><span>Enhanced due diligence checklist</span><span class="fmt">PDF</span></div>
+          <div class="doc-row"><span>Evidence and source list</span><span class="fmt">PDF</span></div>
+          <div class="doc-row"><span>Audit trail extract</span><span class="fmt">PDF</span></div>
+        </div>
+        <div class="card-lavender" style="display:flex;flex-direction:column;gap:12px">
+          <span style="font-size:22px;font-weight:500">goAML drafts</span>
+          <p style="margin:0;font-size:14px">Start an STR or SAR for an entity, or a confirmed or partial name match report for a single hit, with a reason picked from a red-flag library.</p>
+          <p style="margin:auto 0 0;font-size:12px;color:var(--ink-muted)">A starting-point XML draft. It is not validated against the goAML schema and is not filed for you.</p>
+        </div>
+        <div class="card">
+          <span style="font-size:22px;font-weight:500;display:block;margin-bottom:12px">Other exports</span>
+          <div class="doc-row"><span>Resale MOU draft, pre-filled</span><span class="fmt">PDF</span></div>
+          <div class="doc-row"><span>Batch screening results</span><span class="fmt">CSV</span></div>
+          <div class="doc-row"><span>Full search result set</span><span class="fmt">JSON</span></div>
+          <div class="doc-row"><span>Client risk-rating worksheet</span><span class="fmt">PDF</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BEFORE / AFTER -->
+  <section class="section wrap">
+    <div class="section-head">
+      <h2>Before and after</h2>
+      <p class="desc">The same checks, without the gaps between them.</p>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <span class="eyebrow">Without Sanctions+</span>
+        <ul class="ba-list">
+          <li style="color:var(--ink-muted)">Separate screening portals</li>
+          <li style="color:var(--ink-muted)">Owners tracked in spreadsheets</li>
+          <li style="color:var(--ink-muted)">Ad hoc search-engine research</li>
+          <li style="color:var(--ink-muted)">Word risk templates</li>
+          <li style="color:var(--ink-muted)">Evidence gathered by hand</li>
+        </ul>
+      </div>
+      <div class="card-cobalt">
+        <span style="font-size:12px;font-weight:500">With Sanctions+</span>
+        <ul class="ba-list on-cobalt">
+          <li>Sanctions, PEP and registry in one search</li>
+          <li>Ownership traced and visualised</li>
+          <li>Reproducible adverse-media query</li>
+          <li>Rating derived from the findings</li>
+          <li>One downloadable investigation package</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHO -->
+  <section class="section wrap">
+    <div class="section-head">
+      <div class="kicker"><span class="eyebrow">Who it's for</span><h2>Built for regulated businesses</h2></div>
+      <p class="desc">For MLROs and compliance teams at DNFBPs and smaller firms who need the full check without an enterprise stack.</p>
+    </div>
+    <div class="grid-3">
+      <div class="who-card accent"><span class="title">Real estate</span><span class="desc">Screen buyer and seller, trace the company behind a purchase, and draft the resale MOU with the checked party pre-filled.</span></div>
+      <div class="who-card plain"><span class="title">Precious metals &amp; stones</span><span class="desc">Check trading counterparties and the free-zone structures behind them before a high-value sale.</span></div>
+      <div class="who-card plain"><span class="title">Corporate service providers</span><span class="desc">Spot nominee directors and shared addresses across a client book, and re-screen it in one batch.</span></div>
+      <div class="who-card plain"><span class="title">Accountants</span><span class="desc">Run onboarding and annual refresh checks and keep the EDD checklist with the file.</span></div>
+      <div class="who-card plain"><span class="title">Legal &amp; compliance</span><span class="desc">Produce a due-diligence report with sources, disclaimer and signature block ready for review.</span></div>
+      <div class="who-card plain"><span class="title">Other DNFBPs</span><span class="desc">Keep a watchlist of existing clients and see which ones picked up a new flag since the last check.</span></div>
+    </div>
+  </section>
+
+  <!-- SECURITY -->
+  <section id="security" class="section band" style="scroll-margin-top:72px">
+    <div class="wrap" style="padding:0">
+      <div class="section-head">
+        <div class="kicker"><span class="eyebrow">Security and audit</span><h2>A record of what was checked</h2></div>
+        <p class="desc">What the platform does today, stated plainly.</p>
+      </div>
+      <div class="grid-small">
+        <div class="mini-card"><div class="title">Password-protected access</div><p>A deployed workspace sits behind a login, so your data-source quota is not open to anyone with the URL.</p></div>
+        <div class="mini-card"><div class="title">Keys stay on the server</div><p>API keys are read from the environment and scrubbed from any error message before it reaches the screen.</p></div>
+        <div class="mini-card"><div class="title">Activity log</div><p>Every search, report view, saved case and export is recorded with a timestamp.</p></div>
+        <div class="mini-card"><div class="title">Review history</div><p>A revised adverse-media decision is saved as a new row, so the trail shows what changed and when.</p></div>
+      </div>
+      <p style="margin:24px 0 0;font-size:12px;color:var(--ink-muted);max-width:720px">Cases and logs are stored in the instance's local database. Connect persistent storage before relying on it as a system of record.</p>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="section wrap-wide" style="padding-top:96px;padding-bottom:96px">
+    <div class="cta-panel">
+      <svg viewBox="0 0 24 24" width="32" height="32" aria-hidden="true"><path d="M12 0C12.9 5.9 16.6 10.3 24 12C16.6 13.7 12.9 18.1 12 24C11.1 18.1 7.4 13.7 0 12C7.4 10.3 11.1 5.9 12 0Z"></path></svg>
+      <h2>One investigation, one workspace</h2>
+      <p>Screening, ownership, adverse media, risk and documentation, together. Your judgement stays in charge.</p>
+      <div class="cta-ctas">
+        <a href="/app" class="btn btn-white btn-lg">Try Sanctions+</a>
+        <a href="#how" class="btn btn-ghost-invert btn-lg">View the workflow</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <span class="footer-brand"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M12 0C12.9 5.9 16.6 10.3 24 12C16.6 13.7 12.9 18.1 12 24C11.1 18.1 7.4 13.7 0 12C7.4 10.3 11.1 5.9 12 0Z"></path></svg>Sanctions+</span>
+    <span class="footer-note">Findings are leads for a human reviewer, not conclusions. Sanctions+ supports compliance decisions and does not replace your MLRO or legal advice.</span>
+  </div>
+</footer>
+
+<script src="landing.js"></script>
+</body>
+</html>

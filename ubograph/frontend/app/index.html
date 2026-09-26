@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sanctions+ — sanctions, PEP &amp; beneficial ownership screening</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 2 L28 7 V16 C28 23 23 28 16 30 C9 28 4 23 4 16 V7 Z' fill='%232c2745'/%3E%3Cpath d='M16 10 V22 M10 16 H22' stroke='%23eef7ff' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="styles.css">
+<script>
+(function(){
+  try{
+    var saved = localStorage.getItem('sanctionsplus-theme');
+    if(saved === 'light' || saved === 'dark'){
+      document.documentElement.setAttribute('data-theme', saved);
+    }
+  }catch(e){}
+})();
+</script>
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar" aria-label="Workspace">
+    <a href="/" class="brand">
+      <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M12 0C12.9 5.9 16.6 10.3 24 12C16.6 13.7 12.9 18.1 12 24C11.1 18.1 7.4 13.7 0 12C7.4 10.3 11.1 5.9 12 0Z"></path></svg>
+      <span>Sanctions<span class="brand-plus">+</span></span>
+    </a>
+    <nav aria-label="Modules" class="nav-modules">
+      <button class="navtab" id="tab-graph" role="tab" aria-selected="true" type="button">Network map</button>
+      <button class="navtab" id="tab-table" role="tab" aria-selected="false" type="button">Table</button>
+      <button class="navtab" id="tab-report" role="tab" aria-selected="false" type="button">Report</button>
+      <button class="navtab" id="tab-risk" role="tab" aria-selected="false" type="button">Risk Assessment</button>
+      <button class="navtab" id="tab-workspace" role="tab" aria-selected="false" type="button">Investigations</button>
+    </nav>
+    <div class="sidebar-sources">
+      <span class="sidebar-label">Sources</span>
+      <div class="chips" id="chips"></div>
+    </div>
+    <button type="button" id="theme-toggle" class="theme-toggle" aria-label="Switch to dark mode" title="Switch to dark mode">
+      <span class="theme-toggle-icon" aria-hidden="true">🌙</span>
+      <span class="theme-toggle-label">Dark mode</span>
+    </button>
+    <a href="/" class="back-link">← Back to website</a>
+  </aside>
+
+  <div class="content-area">
+    <header class="topbar">
+      <span class="topbar-title">Sanctions, PEP &amp; beneficial ownership screening</span>
+      <span class="spacer" id="status">ready</span>
+    </header>
+
+    <main>
+      <!-- ---------------- search form ---------------- -->
+      <section class="col left">
+        <form id="form">
+          <label for="name">Name</label>
+          <input id="name" name="name" placeholder="Person or company" value="Falcon Capital" required>
+
+          <label for="entity_type">Entity type</label>
+          <select id="entity_type" name="entity_type">
+            <option value="any">Any</option>
+            <option value="person">Person</option>
+            <option value="company">Company</option>
+          </select>
+
+          <div class="optional">
+            <h3>Optional identifiers</h3>
+            <p class="hint">The most valuable part of the search. A name alone returns every
+              namesake; a birth year or nationality scores a true match far higher and is the
+              single most effective way to kill false positives.</p>
+
+            <div data-for="person">
+              <label for="nationality">Nationality</label>
+              <select id="nationality" name="nationality">
+                <option value="">Any nationality</option>
+              </select>
+
+              <label for="dob_year">Year of birth</label>
+              <select id="dob_year" aria-label="Year of birth"><option value="">Any year</option></select>
+              <p class="hint">Year alone is enough, and is often all a registry publishes.</p>
+            </div>
+
+            <div data-for="company">
+              <label for="reg_number">Registration number</label>
+              <input id="reg_number" name="reg_number" placeholder="e.g. DMCC-114872">
+            </div>
+
+            <label for="jurisdiction">Jurisdiction</label>
+            <select id="jurisdiction" name="jurisdiction">
+              <option value="">Any jurisdiction</option>
+            </select>
+
+            <label for="hops">Network depth</label>
+            <select id="hops" name="hops">
+              <option value="2">2 hops — direct links only</option>
+              <option value="3" selected>3 hops — recommended</option>
+              <option value="4">4 hops — deep layering</option>
+            </select>
+          </div>
+
+          <button type="submit" id="go">Screen</button>
+        </form>
+        <div class="section" id="errors" style="margin-top:22px"></div>
+      </section>
+
+      <!-- ---------------- graph / table / report ---------------- -->
+      <section class="centre">
+        <div class="pane active" id="pane-graph">
+          <div id="empty-state" class="empty-state" style="display:none"></div>
+          <div class="graph-wrap">
+            <canvas id="canvas"></canvas>
+            <div class="graph-toolbar">
+              <button type="button" id="zoom-in" title="Zoom in" aria-label="Zoom in">+</button>
+              <button type="button" id="zoom-out" title="Zoom out" aria-label="Zoom out">−</button>
+              <button type="button" id="zoom-fit" title="Fit to view" aria-label="Fit to view">⤢</button>
+            </div>
+            <div id="graph-tooltip" class="graph-tooltip" hidden></div>
+          </div>
+          <div class="legend">
+            <span><i></i>asserted relationship</span>
+            <span><i class="dashed"></i>possible same entity — verify</span>
+            <span><span class="dot red"></span> high <span class="dot orange"></span> elevated
+              <span class="dot green"></span> no flags</span>
+            <span>click a node for its report</span>
+          </div>
+        </div>
+
+        <div class="pane" id="pane-table">
+          <div class="filters">
+            <button class="pill red" type="button" data-band="red" aria-pressed="true">
+              <span class="dot red"></span> High</button>
+            <button class="pill orange" type="button" data-band="orange" aria-pressed="true">
+              <span class="dot orange"></span> Elevated</button>
+            <button class="pill green" type="button" data-band="green" aria-pressed="true">
+              <span class="dot green"></span> No flags</button>
+            <select id="filter-type" aria-label="Entity type filter">
+              <option value="">All types</option>
+              <option value="person">People</option>
+              <option value="company">Companies</option>
+              <option value="address">Addresses</option>
+            </select>
+            <select id="filter-flag" aria-label="Risk flag filter">
+              <option value="">Any flag</option>
+              <option value="sanctioned">Sanctioned</option>
+              <option value="sanction_linked">Linked to sanctioned party</option>
+              <option value="pep">PEP</option>
+              <option value="pep_associate">PEP associate</option>
+              <option value="crime">Crime</option>
+              <option value="debarred">Debarred</option>
+              <option value="wanted">Wanted</option>
+              <option value="leak">Leak</option>
+              <option value="none">No flags</option>
+            </select>
+            <input type="search" id="filter-q" placeholder="Filter by name…" aria-label="Filter by name">
+            <span class="spacer" id="table-count" style="margin-left:auto; font-size:12px; color:var(--muted)"></span>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th class="band" aria-label="Risk band"></th>
+                <th data-sort="name">Name</th>
+                <th data-sort="type">Type</th>
+                <th data-sort="role">Relationship</th>
+                <th data-sort="jurisdiction">Jurisdiction</th>
+                <th data-sort="flags">Flags</th>
+                <th data-sort="risk_score" aria-sort="descending" class="num">Risk</th>
+              </tr>
+            </thead>
+            <tbody id="table-body"></tbody>
+          </table>
+        </div>
+
+        <div class="pane" id="pane-report">
+          <div class="report" id="report">
+            <p class="empty">Pick a name from the Table tab, or click a node on the graph.</p>
+          </div>
+        </div>
+
+        <div class="pane" id="pane-risk">
+          <div class="report" id="risk-assessment">
+            <p class="empty">Loading…</p>
+          </div>
+        </div>
+
+        <div class="pane" id="pane-workspace">
+          <div class="workspace" id="workspace">
+            <section class="ws-section">
+              <h3>Saved cases</h3>
+              <p class="note">A case is a snapshot of one entity's result set, saved so you can
+                come back to it without re-running the search. Open a report and use
+                "Save as case" there to add one.</p>
+              <div id="cases-list"><p class="empty">Loading…</p></div>
+            </section>
+
+            <section class="ws-section">
+              <h3>Watchlist — ongoing monitoring</h3>
+              <p class="note">Names checked here get re-screened on demand (there's no
+                built-in scheduler on the free tier — point an external cron at
+                <code>/api/watchlist/check_all</code> for real automatic monitoring; see
+                DEPLOY.md). A new flag since the last check is called out.</p>
+              <div class="ws-form">
+                <input id="watch-name" type="text" placeholder="Full name to monitor">
+                <button class="ghost" id="watch-add" type="button">Add</button>
+                <button class="ghost" id="watch-check-all" type="button">Check all now</button>
+              </div>
+              <div id="watchlist-list"><p class="empty">Loading…</p></div>
+            </section>
+
+            <section class="ws-section">
+              <h3>Batch screening</h3>
+              <p class="note">Upload a CSV or text file (one name per line, or the first column
+                of a CSV) to screen a whole list in one pass — onboarding a portfolio, an
+                annual refresh, etc. Runs a shallow 1-hop search per name; open a name
+                individually from the Table tab for the full network.</p>
+              <div class="ws-form">
+                <input id="batch-file" type="file" accept=".csv,.txt">
+                <button class="ghost" id="batch-run" type="button">Screen file</button>
+              </div>
+              <div id="batch-result"></div>
+            </section>
+
+            <section class="ws-section">
+              <h3>Activity log</h3>
+              <p class="note">Every search, report view, saved case and export, with a
+                timestamp — a record of what was checked and when.</p>
+              <div id="activity-list"><p class="empty">Loading…</p></div>
+            </section>
+          </div>
+        </div>
+      </section>
+
+      <!-- ---------------- findings + UBOs ---------------- -->
+      <section class="col right" id="right"></section>
+    </main>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
