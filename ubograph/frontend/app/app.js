@@ -11,6 +11,29 @@ const state = {
   riskRatingOptions: null,
 };
 
+/* ---------------- theme toggle ---------------- */
+function applyTheme(theme) {
+  const root = document.documentElement;
+  if (theme === 'light' || theme === 'dark') root.setAttribute('data-theme', theme);
+  else root.removeAttribute('data-theme');
+  const btn = $('#theme-toggle');
+  if (!btn) return;
+  const effective = theme || (matchMedia('(prefers-color-scheme:dark)').matches ? 'dark' : 'light');
+  const next = effective === 'dark' ? 'light' : 'dark';
+  btn.querySelector('.theme-toggle-icon').textContent = effective === 'dark' ? '☀️' : '🌙';
+  btn.querySelector('.theme-toggle-label').textContent = next === 'dark' ? 'Dark mode' : 'Light mode';
+  btn.setAttribute('aria-label', `Switch to ${next} mode`);
+  btn.title = `Switch to ${next} mode`;
+}
+applyTheme(document.documentElement.getAttribute('data-theme'));
+$('#theme-toggle').addEventListener('click', () => {
+  const current = document.documentElement.getAttribute('data-theme')
+    || (matchMedia('(prefers-color-scheme:dark)').matches ? 'dark' : 'light');
+  const next = current === 'dark' ? 'light' : 'dark';
+  applyTheme(next);
+  try { localStorage.setItem('sanctionsplus-theme', next); } catch (e) { /* ignore */ }
+});
+
 const canvas = $('#canvas'), ctx = canvas.getContext('2d');
 let sim = {nodes: [], edges: []}, view = {x: 0, y: 0, k: 1};
 let selected = null, highlight = new Set(), dragNode = null, panning = null, raf = null;

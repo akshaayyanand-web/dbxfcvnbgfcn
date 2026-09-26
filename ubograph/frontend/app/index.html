@@ -6,6 +6,16 @@
 <title>Sanctions+ — sanctions, PEP &amp; beneficial ownership screening</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 2 L28 7 V16 C28 23 23 28 16 30 C9 28 4 23 4 16 V7 Z' fill='%232c2745'/%3E%3Cpath d='M16 10 V22 M10 16 H22' stroke='%23eef7ff' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
 <link rel="stylesheet" href="styles.css">
+<script>
+(function(){
+  try{
+    var saved = localStorage.getItem('sanctionsplus-theme');
+    if(saved === 'light' || saved === 'dark'){
+      document.documentElement.setAttribute('data-theme', saved);
+    }
+  }catch(e){}
+})();
+</script>
 </head>
 <body>
 <div class="shell">
@@ -25,6 +35,10 @@
       <span class="sidebar-label">Sources</span>
       <div class="chips" id="chips"></div>
     </div>
+    <button type="button" id="theme-toggle" class="theme-toggle" aria-label="Switch to dark mode" title="Switch to dark mode">
+      <span class="theme-toggle-icon" aria-hidden="true">🌙</span>
+      <span class="theme-toggle-label">Dark mode</span>
+    </button>
     <a href="/" class="back-link">← Back to website</a>
   </aside>
 

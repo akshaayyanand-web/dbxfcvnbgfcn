@@ -26,13 +26,20 @@
   --shadow-lg:0 8px 24px #0e151a14, 0 24px 48px -12px #2277f729;
 }
 @media (prefers-color-scheme:dark){
-  :root{
+  :root:not([data-theme="light"]){
     --bg:#0c1220; --panel:#151d30; --ink:#eef3fb; --muted:#93a0ab;
     --line:#26324b; --edge:#6b7a94; --accent:#8d95ff; --accent-strong:#3d3670;
     --accent-soft:#1f2552;
     --red:#e56b6b; --orange:#e3a23c; --green:#3fcb84; --link:#8d95ff;
     --red-soft:#3b1714; --orange-soft:#33250c; --green-soft:#0b2419;
   }
+}
+:root[data-theme="dark"]{
+  --bg:#0c1220; --panel:#151d30; --ink:#eef3fb; --muted:#93a0ab;
+  --line:#26324b; --edge:#6b7a94; --accent:#8d95ff; --accent-strong:#3d3670;
+  --accent-soft:#1f2552;
+  --red:#e56b6b; --orange:#e3a23c; --green:#3fcb84; --link:#8d95ff;
+  --red-soft:#3b1714; --orange-soft:#33250c; --green-soft:#0b2419;
 }
 *{box-sizing:border-box}
 body{
@@ -74,6 +81,14 @@ body{
 .chip.demo{border-color:var(--orange); color:var(--orange)}
 .back-link{font-size:13px; font-weight:500; color:var(--muted); text-decoration:none; padding:0 6px}
 .back-link:hover{color:var(--accent)}
+.theme-toggle{
+  display:flex; align-items:center; gap:8px; width:100%; padding:8px 6px;
+  border:1px solid var(--line); border-radius:var(--radius-sm); background:var(--panel);
+  color:var(--muted); font:500 13px/1 var(--sans); cursor:pointer;
+  transition:background-color .15s ease, color .15s ease;
+}
+.theme-toggle:hover{background:var(--bg); color:var(--ink)}
+.theme-toggle-icon{font-size:15px; line-height:1}
 
 .content-area{flex:1; min-width:0; display:flex; flex-direction:column}
 .topbar{
