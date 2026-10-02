@@ -1,0 +1,1012 @@
+"""Smoke tests. Run with: python test_ubograph.py  (no pytest needed)."""
+import sys
+
+import pdf as pdf_renderer
+from graph import band_reason, build_graph, find_ubos, risk_band, run_detectors
+import config
+import db
+import tz
+from sources import opencorporates
+from sources import opensanctions
+import edd
+import geocode
+import goaml
+import package
+import reasons
+import risk_rating
+from reference import country_label, fatf_marking, jurisdiction_label, sanctioning_bodies, un_sanctioned
+import report
+import server
+from report import auto_risk_assessment, build_report
+from resolve import EntityStore
+from schema import COMPANY, OWNS, PERSON, POSSIBLY_SAME_AS, Edge, Node, normalise_name
+import search
+from search import batch_screen, run_search, screen_name
+
+failures = []
+
+
+def check(label, condition):
+    print(("  ok   " if condition else "  FAIL ") + label)
+    if not condition:
+        failures.append(label)
+
+
+def pdf_text(data: bytes) -> str:
+    """Extract plain text from a rendered PDF for content assertions —
+    reportlab compresses content streams, so a raw byte substring check
+    can't see the actual text; this decompresses and reads it properly."""
+    import io as _io
+    from pypdf import PdfReader
+    return "\n".join(page.extract_text() or "" for page in PdfReader(_io.BytesIO(data)).pages)
+
+
+def test_name_normalisation():
+    print("name normalisation")
+    check("legal suffixes stripped",
+          normalise_name("Falcon Capital Holdings FZE", COMPANY) == "falcon capital")
+    check("punctuation and case folded",
+          normalise_name("A.C.M.E. Ltd.", COMPANY) == normalise_name("acme limited", COMPANY))
+    check("honorifics stripped from people",
+          normalise_name("Mr. Rashid Al Mansoori", PERSON) == "rashid al mansoori")
+
+
+def test_merge_on_registration_number():
+    print("merge on exact identifier")
+    store = EntityStore()
+    a = Node(id="oc:ae_du/DMCC-1", type=COMPANY, name="Falcon Capital Holdings FZE",
+             reg_number="DMCC-1", jurisdiction="ae_du")
+    b = Node(id="os:xyz", type=COMPANY, name="FALCON CAPITAL HLDGS",
+             reg_number="dmcc-1", jurisdiction="ae")
+    first = store.add_node(a)
+    second = store.add_node(b)
+    check("same registration number merges", first == second)
+    check("alias preserved on merge", "FALCON CAPITAL HLDGS" in store.nodes[first].aliases)
+
+
+def test_weak_match_links_rather_than_merges():
+    print("weak match links, never merges")
+    store = EntityStore()
+    first = store.add_node(Node(id="a", type=PERSON, name="Rashid Al Mansoori",
+                                country="ae", birth_date="1971-04-18"))
+    second = store.add_node(Node(id="b", type=PERSON, name="Rashid Almansoori", country="ae"))
+    check("kept as two separate entities", first != second)
+    links = [e for e in store.edges if e.type == POSSIBLY_SAME_AS]
+    check("a possible-match edge was created", len(links) == 1)
+    check("possible-match edge is not asserted", links[0].to_dict()["asserted"] is False)
+
+
+def test_conflicting_birth_years_do_not_merge():
+    print("namesakes with different birth years stay separate")
+    store = EntityStore()
+    first = store.add_node(Node(id="a", type=PERSON, name="John Smith",
+                                country="gb", birth_date="1970-01-01"))
+    second = store.add_node(Node(id="b", type=PERSON, name="John Smith",
+                                 country="gb", birth_date="1985-06-02"))
+    check("different birth years are different people", first != second)
+
+
+def test_detectors_and_ubos():
+    print("detectors on the demo network")
+    payload = run_search("falcon capital")
+    kinds = {f["kind"] for f in payload["findings"]}
+    check("circular ownership detected", "circular_ownership" in kinds)
+    check("nominee hub detected", "nominee_hub" in kinds)
+    check("shared address detected", "shared_address" in kinds)
+    check("sanctions hit detected", "sanctioned" in kinds)
+    check("deep layering detected", "deep_layering" in kinds)
+    names = {u["name"] for u in payload["ubos"]}
+    check("PEP surfaced as a UBO four tiers up", "Elena Kovacs" in names)
+    check("nominee director is NOT listed as a UBO", "Marcus Webb" not in names)
+    check("graph is non-trivial", payload["stats"]["node_count"] > 10)
+
+
+def test_ubo_traversal_ignores_directorships():
+    print("UBO traversal follows ownership only")
+    store = EntityStore()
+    store.add_node(Node(id="c", type=COMPANY, name="Target Ltd"))
+    store.add_node(Node(id="owner", type=PERSON, name="Real Owner"))
+    store.add_node(Node(id="dir", type=PERSON, name="Hired Director"))
+    store.add_edge(Edge(source="owner", target="c", type=OWNS, share_pct=100.0))
+    store.add_edge(Edge(source="dir", target="c", type="directs"))
+    graph = build_graph(store)
+    names = {u["name"] for u in find_ubos(graph, "c")}
+    check("owner found", names == {"Real Owner"})
+    run_detectors(graph, ["c"])
+
+
+def test_flags_distinguish_sanctions_from_office():
+    print("a politician is not a sanctioned party")
+    from sources.opensanctions import _risk_flags
+
+    def entity(topics, target=True, datasets=("in_peps",)):
+        return {"target": target, "datasets": list(datasets),
+                "properties": {"topics": list(topics)}}
+
+    pep = _risk_flags(entity(["role.pep"]))
+    check("PEP is flagged as a PEP", pep == {"pep"})
+    check("PEP is NOT flagged sanctioned", "sanctioned" not in pep)
+    check("PEP bands orange, not red", risk_band(0, pep) == "orange")
+
+    check("dataset target flag alone means nothing",
+          _risk_flags(entity([], target=True)) == set())
+    check("PEP sub-topics still map to pep",
+          _risk_flags(entity(["role.pep.gov"])) == {"pep"})
+    check("PEP relatives are flagged separately",
+          _risk_flags(entity(["role.rca"])) == {"pep_associate"})
+    check("a sanctioned party is flagged sanctioned",
+          _risk_flags(entity(["sanction"])) == {"sanctioned"})
+    check("sanction.linked is NOT sanctioned",
+          _risk_flags(entity(["sanction.linked"])) == {"sanction_linked"})
+    check("sanction-linked bands orange",
+          risk_band(0, {"sanction_linked"}) == "orange")
+    check("counter-sanctions still count as a listing",
+          _risk_flags(entity(["sanction.counter"])) == {"sanctioned"})
+    check("band reason states PEP, not sanctions",
+          "sanction" not in band_reason(0, {"pep"}).lower())
+
+
+def test_risk_bands():
+    print("risk bands")
+    check("sanctions forces red at any score", risk_band(0, ["sanctioned"]) == "red")
+    check("crime forces red", risk_band(5, ["crime"]) == "red")
+    check("pep forces at least orange", risk_band(0, ["pep"]) == "orange")
+    check("score 50 is red", risk_band(50, []) == "red")
+    check("score 25 is orange", risk_band(25, []) == "orange")
+    check("score 24 is green", risk_band(24, []) == "green")
+    check("band reason explains itself", "sanctioned" in band_reason(0, ["sanctioned"]))
+
+
+def test_bands_never_contradict_findings():
+    print("bands agree with findings")
+    payload = run_search("falcon capital", hops=4)
+    bad = []
+    for node in payload["nodes"]:
+        severities = {
+            f["severity"]
+            for f in payload["findings"]
+            if node["id"] in (f.get("principals") or f.get("nodes") or [])
+        }
+        if "high" in severities and node["risk_band"] != "red":
+            bad.append(node["name"])
+        if "medium" in severities and node["risk_band"] == "green":
+            bad.append(node["name"])
+    check("no entity is greener than its own findings", not bad)
+
+
+def test_place_labels():
+    print("country and jurisdiction labels")
+    check("country code resolves", country_label("ae") == "United Arab Emirates")
+    check("subdivision resolves", jurisdiction_label("ae_du").endswith("Dubai"))
+    check("delaware resolves", "Delaware" in jurisdiction_label("us_de"))
+    check("unknown code passes through", country_label("zz9") == "zz9")
+
+
+def test_fatf_jurisdiction_detector():
+    print("FATF / UN sanctions-regime jurisdictions (from the client risk workbook)")
+    from reference import country_risk
+
+    check("data file loaded — North Korea is UN-sanctioned-regime + FATF blacklist",
+          country_risk("kp").get("fatf") == "FATF HRC" and country_risk("kp").get("uaeiec"))
+    check("Kenya is FATF grey list only, no UN regime",
+          country_risk("ke").get("fatf") == "FATF JUIM" and not country_risk("ke").get("uaeiec"))
+    check("USA carries neither flag", not country_risk("us").get("fatf"))
+
+    store = EntityStore()
+    store.add_node(Node(id="c-un", type=COMPANY, name="Pyongyang Trading Co", jurisdiction="kp"))
+    store.add_node(Node(id="c-grey", type=COMPANY, name="Mekong Ventures Ltd", jurisdiction="vn"))
+    store.add_node(Node(id="c-clean", type=COMPANY, name="Ordinary Holdings Ltd", jurisdiction="us"))
+    graph = build_graph(store)
+    all_findings = run_detectors(graph)
+    findings = [f for f in all_findings if f["kind"] == "fatf_jurisdiction"]
+    high = [f for f in findings if f["severity"] == "high"]
+    medium = [f for f in findings if f["severity"] == "medium"]
+    check("UN-sanctioned-regime jurisdiction produces a high finding",
+          high and "c-un" in high[0]["nodes"])
+    check("FATF grey-list-only jurisdiction produces a medium finding, not high",
+          medium and "c-grey" in medium[0]["nodes"]
+          and not any("c-grey" in f["nodes"] for f in high))
+    check("an unflagged jurisdiction produces no finding",
+          not any("c-clean" in f["nodes"] for f in findings))
+    check("independent of the curated secrecy-jurisdiction detector, which stays silent here",
+          not any(f["kind"] == "high_risk_jurisdiction" for f in all_findings))
+
+
+def test_fatf_black_and_grey_list_markings():
+    print("FATF black list / grey list / sanctions-regime markings")
+    store = EntityStore()
+    # North Korea: FATF Call for Action AND multiple sanctions bodies (UN,
+    # OFAC, EU, UK) -> both a black_list finding and a separate
+    # sanctions_regime finding naming all of them.
+    store.add_node(Node(id="c-black", type=COMPANY, name="Pyongyang Trading Co", jurisdiction="kp"))
+    # Vietnam: FATF Increased Monitoring only, no sanctions regime -> "grey list" marking only.
+    store.add_node(Node(id="c-grey", type=COMPANY, name="Mekong Ventures Ltd", jurisdiction="vn"))
+    # Somalia: UN Security Council regime but no FATF listing at all -> its
+    # own sanctions_regime marking, not folded into generic high severity.
+    store.add_node(Node(id="c-un-only", type=COMPANY, name="Mogadishu Traders Ltd", jurisdiction="so"))
+    graph = build_graph(store)
+    findings = [f for f in run_detectors(graph) if f["kind"] == "fatf_jurisdiction"]
+
+    black = next((f for f in findings if f.get("marking") == "black_list"), None)
+    grey = next((f for f in findings if f.get("marking") == "grey_list"), None)
+    sanctions_findings = [f for f in findings if f.get("marking") == "sanctions_regime"]
+
+    check("FATF Call for Action gets a black_list marking", black is not None)
+    check("black_list marking is on the right node and severity high",
+          black and "c-black" in black["nodes"] and black["severity"] == "high")
+    check("'black list' appears in the title text", black and "black list" in black["title"].lower())
+
+    check("FATF Increased Monitoring gets a grey_list marking", grey is not None)
+    check("grey_list marking is on the right node and severity medium",
+          grey and "c-grey" in grey["nodes"] and grey["severity"] == "medium")
+    check("'grey list' appears in the title text", grey and "grey list" in grey["title"].lower())
+    check("Vietnam (no sanctions regime) does not also get a sanctions_regime finding",
+          not any("c-grey" in f["nodes"] for f in sanctions_findings))
+
+    check("a sanctions regime produces its own sanctions_regime finding", len(sanctions_findings) == 1)
+    sanctions_finding = sanctions_findings[0]
+    check("both the UN-only and the FATF-black jurisdiction are flagged under it",
+          "c-un-only" in sanctions_finding["nodes"] and "c-black" in sanctions_finding["nodes"])
+    check("the sanctions_regime finding is high severity", sanctions_finding["severity"] == "high")
+    check("North Korea's multiple sanctioning bodies (UN, OFAC, EU, UK) are all named in the detail",
+          all(body in sanctions_finding["detail"] for body in ("UN", "OFAC", "EU", "UK")))
+    check("Somalia's UN-only listing is named too, without claiming OFAC/EU/UK for it",
+          "Somalia (UN sanctions)" in sanctions_finding["detail"])
+
+
+def test_uae_dubai_time():
+    print("tz.py — every displayed timestamp reads in UAE/Dubai time (UTC+4)")
+    from datetime import datetime, timezone
+
+    utc_midnight = datetime(2024, 1, 1, 0, 0, 0, tzinfo=timezone.utc)
+    check("UTC 00:00 is 04:00 in Dubai (fixed UTC+4, no DST)",
+          tz.format_dubai(utc_midnight) == "2024-01-01 04:00 GST")
+    check("the GST label is always stated, not left implicit",
+          "GST" in tz.format_dubai())
+    check("format_dubai_from_epoch matches format_dubai on the same instant",
+          tz.format_dubai_from_epoch(utc_midnight.timestamp()) == tz.format_dubai(utc_midnight))
+    check("a naive datetime is treated as UTC before converting, not as already Dubai time",
+          tz.format_dubai(datetime(2024, 1, 1, 0, 0, 0)) == "2024-01-01 04:00 GST")
+    check("now_dubai() carries the +04:00 offset", tz.now_dubai().utcoffset().total_seconds() == 4 * 3600)
+
+
+def test_match_confidence_note():
+    print("opensanctions._note_match_confidence — surfacing how weak a match really is")
+    store = EntityStore()
+    store.add_node(Node(id="os-1", type=PERSON, name="Akbar Ali"))
+
+    opensanctions._note_match_confidence(store, "os-1", "m.a yusuff ali", 0.55)
+    note = store.nodes["os-1"].notes[-1]
+    check("the note names the searched query and a percentage", "m.a yusuff ali" in note and "55%" in note)
+    check("a score below LOW_CONFIDENCE_MATCH gets an explicit weak-match warning",
+          "weak match" in note.lower())
+
+    store2 = EntityStore()
+    store2.add_node(Node(id="os-2", type=PERSON, name="Real Match"))
+    opensanctions._note_match_confidence(store2, "os-2", "real match", 0.95)
+    strong_note = store2.nodes["os-2"].notes[-1]
+    check("a strong match records confidence without the weak-match warning",
+          "95%" in strong_note and "weak match" not in strong_note.lower())
+
+    check("an unknown node id is a no-op, not an error",
+          opensanctions._note_match_confidence(store, "nope", "x", 0.5) is None)
+
+    opensanctions._note_match_confidence(store, "os-1", "m.a yusuff ali", 0.55)
+    check("the same note isn't appended twice", store.nodes["os-1"].notes.count(note) == 1)
+
+
+def test_merge_by_score():
+    print("opensanctions._merge_by_score — combining Person + Company /match queries")
+    person_results = [{"score": 0.4, "match": {"id": "e1"}}, {"score": 0.9, "match": {"id": "e2"}}]
+    company_results = [{"score": 0.95, "match": {"id": "e1"}}, {"score": 0.1, "match": {"id": "e3"}}]
+    merged = opensanctions._merge_by_score(person_results, company_results)
+    by_id = {r["match"]["id"]: r["score"] for r in merged}
+    check("an entity seen in both lists keeps its best score", by_id["e1"] == 0.95)
+    check("an entity seen in only one list is still present", by_id["e2"] == 0.9 and by_id["e3"] == 0.1)
+    check("results come back sorted best score first",
+          [r["score"] for r in merged] == sorted((r["score"] for r in merged), reverse=True))
+    check("no results in, no results out", opensanctions._merge_by_score([], []) == [])
+
+
+def test_weak_match_filtering():
+    print("opensanctions._filter_weak_matches — a weak namesake isn't 'the' result")
+    results = [
+        {"score": 0.95, "match": {"id": "os-1"}},
+        {"score": 0.42, "match": {"id": "os-2"}},
+        {"score": 0.5, "match": {"id": "os-3"}},
+        {"score": None, "match": {"id": "os-4"}},
+    ]
+    kept = opensanctions._filter_weak_matches(results, min_score=0.5)
+    kept_ids = [r["match"]["id"] for r in kept]
+    check("a strong match is kept", "os-1" in kept_ids)
+    check("a weak match below the floor is dropped", "os-2" not in kept_ids)
+    check("a match exactly at the floor is kept (inclusive)", "os-3" in kept_ids)
+    check("a missing score is treated as 0 and dropped", "os-4" not in kept_ids)
+    check("all weak matches filtered out of an all-weak list -> empty, not a fallback pick",
+          opensanctions._filter_weak_matches([{"score": 0.1, "match": {"id": "x"}}], min_score=0.5) == [])
+
+
+def test_adverse_media_is_manual_search_only():
+    print("adverse media is a structured keyword search — no AI call, no API key, always attached")
+    payload = run_search("Viktor Branko")  # matches in demo mode
+    media = payload["adverse_media"]
+    check("manual_search is attached", bool(media.get("manual_search")))
+    check("the query includes the subject's name", '"Viktor Branko"' in media["manual_search"]["query"])
+    check("a general 'know more' link is included too", "general_url" in media["manual_search"]
+          and media["manual_search"]["general_url"])
+    check("no AI-derived fields are present", "findings" not in media and "summary" not in media)
+    check("with no saved review, the decision is unreviewed by default", "overall_decision" not in media)
+
+    review_id = db.save_adverse_media_review(
+        name="Viktor Branko", query=media["manual_search"]["query"],
+        classifications=["confirmed"], overall_decision="confirmed",
+        rationale="Matches a known case.", screened_by="tester", case_ref="CASE-1",
+    )
+    check("the review saves", review_id > 0)
+    again = run_search("Viktor Branko")
+    check("a saved review is merged back into the next search",
+          again["adverse_media"]["overall_decision"] == "confirmed")
+    check("the review details come along with it",
+          again["adverse_media"]["review"]["screened_by"] == "tester")
+
+
+def test_fatf_marking_helper():
+    print("reference.fatf_marking() — shared black/grey list lookup")
+    check("North Korea (FATF Call for Action) is black_list", fatf_marking("kp") == "black_list")
+    check("Kuwait (FATF Increased Monitoring) is grey_list", fatf_marking("kw") == "grey_list")
+    check("a clean jurisdiction has no marking", fatf_marking("us") is None)
+    check("no code -> no marking", fatf_marking(None) is None)
+
+
+def test_un_sanctioned_helper():
+    print("reference.un_sanctioned() — UN Security Council sanctions regime, independent of FATF")
+    check("North Korea is both FATF black list AND UN sanctioned", un_sanctioned("kp") is True)
+    check("Somalia is UN sanctioned with no FATF listing at all", un_sanctioned("so") is True)
+    check("Kuwait (FATF grey list only) is not UN sanctioned", un_sanctioned("kw") is False)
+    check("a clean jurisdiction is not UN sanctioned", un_sanctioned("us") is False)
+    check("no code -> not UN sanctioned", un_sanctioned(None) is False)
+
+
+def test_sanctioning_bodies():
+    print("reference.sanctioning_bodies() — UN plus OFAC/EU/UK country programmes")
+    check("North Korea carries all four bodies", set(sanctioning_bodies("kp")) == {"UN", "OFAC", "EU", "UK"})
+    check("Russia carries OFAC/EU/UK but not UN (no UNSC regime — Russia holds a veto)",
+          set(sanctioning_bodies("ru")) == {"OFAC", "EU", "UK"})
+    check("Cuba carries only OFAC (comprehensive US embargo, no broad EU/UK/UN programme)",
+          sanctioning_bodies("cu") == ["OFAC"])
+    check("Somalia carries only UN (no OFAC/EU/UK broad country programme in the curated table)",
+          sanctioning_bodies("so") == ["UN"])
+    check("a clean jurisdiction carries no bodies", sanctioning_bodies("us") == [])
+    check("no code -> no bodies, not an error", sanctioning_bodies(None) == [])
+
+
+def test_client_risk_rating():
+    print("client risk rating (client-supplied workbook rubric)")
+    check("screening outcome is one of the workbook's own options",
+          "PEP identified" in risk_rating.options()["screening_outcome"])
+    check("rate() is standalone — no payload, node or search required",
+          risk_rating.rate(nationality="af")["rows"][0]["selected"] == "Afghanistan")
+
+    # Reproduces the workbook's own worked example exactly (Assessment sheet:
+    # Afghan national, born and residing in Kuwait, works in the UAE, clean
+    # screening, salaried in Asset Management, paid by manager's cheque,
+    # salary as source of funds -> the workbook computes 57, "High Risk").
+    result = risk_rating.rate(
+        nationality="af", country_of_birth="kw", country_of_residence="kw",
+        business_work_location="ae",
+        screening_outcome="Screened, PEP not identified, not on relevant lists",
+        employment_type="Salaried", employment_industry="Asset Management",
+        mode_of_payment="Manager's Cheque", source_of_funds="Employment (Salaried)",
+    )
+    check("matches the workbook's own worked example (score 57)", result["score"] == 57.0)
+    check("57 bands as High", result["band"] == "high")
+    check("all nine criteria scored", result["complete"] and not result["missing"])
+    check("Kuwait country-of-birth row carries the grey_list marking",
+          result["rows"][1]["marking"] == "grey_list")
+    check("Kuwait carries no sanctioning bodies", result["rows"][1]["sanctioning_bodies"] == [])
+    check("the UAE work-location row has no marking (not FATF-listed)",
+          result["rows"][3]["marking"] is None)
+    check("a non-country row (Screening) has no marking key at all",
+          "marking" not in result["rows"][4])
+
+    kp_result = risk_rating.rate(nationality="kp")
+    check("a heavily-sanctioned nationality lists every body, independently of its FATF marking",
+          set(kp_result["rows"][0]["sanctioning_bodies"]) == {"UN", "OFAC", "EU", "UK"}
+          and kp_result["rows"][0]["marking"] == "black_list")
+    somalia_result = risk_rating.rate(nationality="so")
+    check("UN sanctions can apply with no FATF marking at all",
+          somalia_result["rows"][0]["sanctioning_bodies"] == ["UN"]
+          and somalia_result["rows"][0]["marking"] is None)
+
+    check("missing fields are reported, not silently zeroed",
+          risk_rating.rate(nationality="us")["missing"])
+    check("an unknown label scores nothing rather than guessing",
+          risk_rating.rate(employment_type="Not a real category")
+          ["rows"][5]["weighted_score"] is None)
+
+    low = risk_rating.rate(
+        nationality="us", country_of_birth="us", country_of_residence="us",
+        business_work_location="us",
+        screening_outcome="Screened, PEP not identified, not on relevant lists",
+        employment_type="Salaried", employment_industry="Education",
+        mode_of_payment="Local Bank Transfer", source_of_funds="Employment (Salaried)",
+    )
+    check("a low-risk profile bands low", low["band"] == "low")
+
+
+def test_server_screen_endpoint():
+    print("server.py — /api/screen wiring (also guards against import-time syntax errors)")
+    check("SCREENING_DETAIL_FIELDS covers the expanded identification form's fields",
+          {"alias", "nationality", "passport_number", "company_name", "pep_indicator"}
+          <= set(server.SCREENING_DETAIL_FIELDS))
+    client = server.app.test_client()
+    response = client.post("/api/screen", json={
+        "name": "James Okoro", "nationality": "gb", "occupation": "Trader",
+        "unexpected_field": "must not crash anything",
+    })
+    check("the endpoint responds 200", response.status_code == 200)
+    body = response.get_json()
+    check("the expanded fields reach screen_name() end to end",
+          body["screening_details"].get("nationality") == "gb"
+          and body["screening_details"].get("occupation") == "Trader")
+
+
+def test_server_download_all_endpoint():
+    print("server.py — /api/download_all.zip wiring")
+    import zipfile as _zipfile
+    import io as _io
+
+    payload = run_search("falcon capital", hops=4)
+    branko = next(n["id"] for n in payload["nodes"] if n["name"] == "Viktor Branko")
+    client = server.app.test_client()
+
+    missing = client.post("/api/download_all.zip", json={})
+    check("missing payload/node_id is a 400, not a 500", missing.status_code == 400)
+
+    response = client.post("/api/download_all.zip", json={
+        "payload": payload, "node_id": branko, "analyst_comments": "Escalate.",
+    })
+    check("the endpoint responds 200", response.status_code == 200)
+    check("the response is a ZIP file", response.mimetype == "application/zip")
+    zf = _zipfile.ZipFile(_io.BytesIO(response.data))
+    check("the ZIP contains all five documents", len(zf.namelist()) == 5)
+
+
+def test_screen_name_button():
+    print("'Screen this name' lookup for the risk-rating form")
+    check("blank name is rejected", "error" in screen_name(""))
+
+    clean = screen_name("James Okoro")
+    check("a clean demo record suggests the negative-result label",
+          clean.get("outcome") == "Screened, PEP not identified, not on relevant lists")
+    check("no live key -> flagged as demo data", clean.get("demo_mode") is True)
+
+    sanctioned = screen_name("Viktor Branko")
+    check("a sanctioned demo record suggests 'On relevant lists'",
+          sanctioned.get("outcome") == "On relevant  lists")
+    check("the match itself is returned, not just the label",
+          any("sanctioned" in m["flags"] for m in sanctioned.get("matches", [])))
+
+    pep = screen_name("Elena Kovacs")
+    check("a PEP demo record suggests 'PEP identified'", pep.get("outcome") == "PEP identified")
+
+    check("each match carries a country label (for demo data)",
+          all("country" in m for m in sanctioned.get("matches", [])))
+    check("a demo match from a non-FATF-listed country has no marking",
+          all(m.get("fatf_marking") is None for m in sanctioned.get("matches", [])))
+    check("each match also carries a sanctioning_bodies list (empty for Serbia)",
+          all(m.get("sanctioning_bodies") == [] for m in sanctioned.get("matches", [])))
+
+    original_available, original_match = opensanctions.available, opensanctions.match
+    try:
+        opensanctions.available = lambda: True
+        opensanctions.match = lambda **kwargs: [{
+            "score": 0.95,
+            "caption": "Someone From Pyongyang",
+            "properties": {"country": ["kp"], "topics": ["sanction"]},
+        }]
+        live = screen_name("Someone From Pyongyang")
+        check("a live match from a heavily-sanctioned, FATF-black-listed country carries all bodies",
+              set(live["matches"][0]["sanctioning_bodies"]) == {"UN", "OFAC", "EU", "UK"}
+              and live["matches"][0]["fatf_marking"] == "black_list")
+    finally:
+        opensanctions.available, opensanctions.match = original_available, original_match
+
+    with_details = screen_name(
+        "James Okoro", nationality="gb", birth_date="1980-02-09",
+        occupation="Trader", employer="Some Firm", pep_indicator="No",
+        sanctions_reference="REF-1", notes="Screened at onboarding.",
+        unexpected_field="ignored",
+    )
+    check("context-only fields land in screening_details",
+          with_details["screening_details"].get("occupation") == "Trader"
+          and with_details["screening_details"].get("pep_indicator") == "No")
+    check("fields sent to the matcher also appear in screening_details for the audit trail",
+          with_details["screening_details"].get("nationality") == "gb")
+    check("empty/unsupplied fields are not padded into screening_details",
+          "address" not in with_details["screening_details"])
+
+
+def test_extra_match_properties():
+    print("search._extra_match_properties — expanded ID form -> FollowTheMoney properties")
+    props = search._extra_match_properties({
+        "alias": "Jonathan Doe", "place_of_birth": "Lagos", "gender": "Male",
+        "passport_number": "P1234567", "national_id_number": "N9876543",
+        "email": "person@example.com", "phone": "+123456789", "website": "example.com",
+        "tax_id": "TX001", "position": "Managing Director",
+        "country_of_residence": "ae",
+        # no FTM equivalent — must never leak into the match query
+        "occupation": "Trader", "known_associates": "Someone Else",
+    })
+    check("alias maps to FTM 'alias'", props.get("alias") == ["Jonathan Doe"])
+    check("place_of_birth maps to FTM 'birthPlace'", props.get("birthPlace") == ["Lagos"])
+    check("passport/national ID map to passportNumber/idNumber",
+          props.get("passportNumber") == ["P1234567"] and props.get("idNumber") == ["N9876543"])
+    check("email/phone/website/tax id/position all carry through",
+          props.get("email") == ["person@example.com"] and props.get("phone") == ["+123456789"]
+          and props.get("website") == ["example.com"] and props.get("taxNumber") == ["TX001"]
+          and props.get("position") == ["Managing Director"])
+    check("country_of_residence maps to FTM 'country'", props.get("country") == ["ae"])
+    check("fields with no FTM equivalent are not sent to the matcher",
+          "occupation" not in props and "known_associates" not in props)
+
+    company_props = search._extra_match_properties({"company_address": "Some Street, Dubai"})
+    check("company_address falls back onto the same 'address' property as a person's address",
+          company_props.get("address") == ["Some Street, Dubai"])
+
+    check("no details supplied -> no properties, not an error", search._extra_match_properties({}) == {})
+
+
+def test_satellite_view_urls():
+    print("satellite view URL building (no key, no network needed for this part)")
+    url = geocode.satellite_image_url(25.0772, 55.1409, size=500)
+    check("satellite URL points at Esri World Imagery", "World_Imagery" in url)
+    check("satellite URL carries a bbox around the point",
+          "bbox=55.13" in url or "bbox=55.14" in url)
+    check("no api key or token anywhere in the URL",
+          "key=" not in url.lower() and "token=" not in url.lower())
+
+    osm = geocode.osm_url(25.0772, 55.1409)
+    check("OSM link carries the same coordinates", "25.0772" in osm and "55.1409" in osm)
+
+    check("blank address geocodes to nothing, not an error", geocode.geocode("") is None)
+    # geocode() itself calls the live Nominatim API — like OpenSanctions and
+    # OpenCorporates, that's not reachable from this sandbox, so the actual
+    # network call isn't exercised here.
+
+
+def test_standalone_risk_rating_pdf():
+    print("client risk rating as its own PDF")
+    rating = risk_rating.rate(
+        nationality="af", country_of_birth="kw", country_of_residence="kw",
+        business_work_location="ae",
+        screening_outcome="Screened, PEP not identified, not on relevant lists",
+        employment_type="Salaried", employment_industry="Asset Management",
+        mode_of_payment="Manager's Cheque", source_of_funds="Employment (Salaried)",
+    )
+    data = pdf_renderer.render_risk_rating(rating)
+    check("standalone PDF renders on its own, no entity or report needed",
+          data.startswith(b"%PDF") and len(data) > 1500)
+
+    empty = pdf_renderer.render_risk_rating(risk_rating.rate())
+    check("an empty worksheet still renders rather than crashing",
+          empty.startswith(b"%PDF"))
+
+
+def test_enhanced_risk_rating_fields():
+    print("risk_rating.rate() — subject details, risk matrix, reasoning, mitigation, sign-off")
+    rating = risk_rating.rate(
+        nationality="af", country_of_birth="kw", country_of_residence="kw",
+        business_work_location="ae",
+        screening_outcome="Screened, PEP not identified, not on relevant lists",
+        employment_type="Salaried", employment_industry="Asset Management",
+        mode_of_payment="Manager's Cheque", source_of_funds="Employment (Salaried)",
+        subject_name="Test Subject", screening_reference="REF-2026-001",
+        compliance_notes="Reviewed against the firm's EWRA.", prepared_by="Analyst A",
+        review_status="Pending senior review",
+    )
+    check("subject_name carries through untouched", rating["subject_name"] == "Test Subject")
+    check("screening_reference carries through untouched", rating["screening_reference"] == "REF-2026-001")
+    check("compliance_notes carries through untouched",
+          rating["compliance_notes"] == "Reviewed against the firm's EWRA.")
+    check("prepared_by carries through untouched", rating["prepared_by"] == "Analyst A")
+    check("review_status carries through untouched", rating["review_status"] == "Pending senior review")
+    check("risk matrix has all three bands", {m["band"] for m in rating["risk_matrix"]} == {"low", "medium", "high"})
+    check("reasoning names the score's actual band", "High" in rating["reasoning"])
+    check("mitigation recommendations are non-empty for a High result", rating["mitigation"])
+
+    default_rating = risk_rating.rate(nationality="af")
+    check("no prepared_by supplied -> None, not an invented name", default_rating["prepared_by"] is None)
+    check("no compliance notes -> None, not an empty string", default_rating["compliance_notes"] is None)
+    check("review_status defaults to a draft state, not blank",
+          default_rating["review_status"] == "Draft — pending review")
+
+    data = pdf_renderer.render_risk_rating(rating)
+    text = pdf_text(data)
+    check("the PDF states the subject name", "Test Subject" in text)
+    check("the PDF states the screening reference", "REF-2026-001" in text)
+    check("the PDF includes the risk matrix", "Risk matrix" in text)
+    check("the PDF includes reasoning", "Reasoning" in text)
+    check("the PDF includes mitigation recommendations", "Mitigation recommendations" in text)
+    check("the PDF states compliance notes", "Reviewed against the firm" in text)
+    check("the PDF states who prepared it and its review status",
+          "Analyst A" in text and "Pending senior review" in text)
+    check("the standalone Risk Assessment PDF also carries the sign-off block",
+          all(role in text for role in ("Prepared By", "Reviewed By", "Approved By")))
+
+
+def test_edd_checklist():
+    print("EDD checklist")
+    payload = run_search("falcon capital", hops=4)
+    webb = next(n["id"] for n in payload["nodes"] if n["name"] == "Marcus Webb")
+    report = build_report(payload, webb)
+    rows = edd.build_checklist(report)
+    check("all seven trigger questions are present", len(rows) == 7)
+    complex_row = next(r for r in rows if "complexity" in r["question"])
+    check("nominee director's complex-structure question answers Yes",
+          complex_row["answer"] == "Yes")
+    unavailable = [r for r in rows if r["answer"].startswith("Not available")]
+    check("facts this tool has no source for say so, not a guessed No",
+          len(unavailable) == 3)
+
+    branko = next(n["id"] for n in payload["nodes"] if n["name"] == "Viktor Branko")
+    sanctioned_report = build_report(payload, branko)
+    sanctioned_rows = edd.build_checklist(sanctioned_report)
+    check("a sanctioned entity answers Yes to the sanctions question",
+          sanctioned_rows[0]["answer"] == "Yes")
+
+    data = pdf_renderer.render_edd_checklist(report, rows)
+    check("EDD checklist renders as its own PDF", data.startswith(b"%PDF") and len(data) > 1500)
+    text = pdf_text(data)
+    check("the EDD PDF carries a Prepared/Reviewed/Approved signature block",
+          all(role in text for role in ("Prepared By", "Reviewed By", "Approved By")))
+
+
+def test_mou_draft():
+    print("MOU draft")
+    payload = run_search("falcon capital", hops=4)
+    webb = next(n["id"] for n in payload["nodes"] if n["name"] == "Marcus Webb")
+    report = build_report(payload, webb)
+    purchaser_pdf = pdf_renderer.render_mou_draft(report, role="purchaser")
+    seller_pdf = pdf_renderer.render_mou_draft(report, role="seller")
+    check("MOU draft renders as purchaser", purchaser_pdf.startswith(b"%PDF"))
+    check("MOU draft renders as seller", seller_pdf.startswith(b"%PDF"))
+    check("purchaser vs seller pre-fill actually differs", purchaser_pdf != seller_pdf)
+
+
+def test_goaml_export():
+    print("goAML XML draft")
+    payload = run_search("falcon capital", hops=4)
+    branko = next(n["id"] for n in payload["nodes"] if n["name"] == "Viktor Branko")
+    report = build_report(payload, branko)
+    xml_bytes = goaml.build_xml(report, reason="Sanctions hit found during onboarding")
+    check("well-formed XML with a declaration", xml_bytes.startswith(b"<?xml"))
+    check("marked as a draft, not a validated submission", b'draft="true"' in xml_bytes)
+    check("subject name is present", b"Viktor Branko" in xml_bytes)
+    check("the reason for the report carries through", b"Sanctions hit found" in xml_bytes)
+    check("defaults to STR", b"<report_type>STR</report_type>" in xml_bytes)
+    check("generated_at is stated in UAE/Dubai time (+04:00)", b"+04:00" in xml_bytes)
+    check("the report's own generated_at is UAE/Dubai time too", "GST" in report["generated_at"])
+
+    sar_bytes = goaml.build_xml(report, report_type="SAR")
+    check("report_type can be switched to SAR", b"<report_type>SAR</report_type>" in sar_bytes)
+    check("an unknown report_type falls back to STR rather than erroring",
+          b"<report_type>STR</report_type>" in goaml.build_xml(report, report_type="NOPE"))
+
+    with_code = goaml.build_xml(report, reason_code="BCNNP")
+    check("a recognised reason code adds its own label",
+          b"<reason_code>BCNNP</reason_code>" in with_code
+          and b"payroll" in with_code)
+    check("an unrecognised reason code is silently skipped, not invented",
+          b"<reason_code>" not in goaml.build_xml(report, reason_code="ZZZZZ"))
+
+
+def test_reasons_reference():
+    print("reasons.py — 'reason for reporting' reference library")
+    all_reasons = reasons.list_reasons()
+    check("the reference library loaded a substantial code list", len(all_reasons) > 100)
+    check("every entry has both a code and a description",
+          all(r.get("code") and r.get("description") for r in all_reasons))
+
+    check("get_reason() is case-insensitive", reasons.get_reason("bcnnp") is not None)
+    check("an unknown code returns None, not an error", reasons.get_reason("ZZZZZ") is None)
+    check("no code -> None", reasons.get_reason(None) is None)
+
+    hits = reasons.list_reasons("shell")
+    check("keyword search matches on description text", len(hits) > 0)
+    check("keyword search results actually contain the keyword",
+          all("shell" in r["description"].lower() for r in hits))
+
+
+def test_goaml_match_report():
+    print("goAML draft for a single screening match (CNMR/PNMR)")
+    match = {
+        "name": "Viktor Branko", "score": 0.95, "country": "Serbia",
+        "fatf_marking": None, "flags": ["sanctioned", "crime"],
+    }
+    confirmed = goaml.build_match_xml("Viktor Branko", match, report_type="CNMR")
+    check("well-formed XML with a declaration", confirmed.startswith(b"<?xml"))
+    check("marked as a draft", b'draft="true"' in confirmed)
+    check("report type is CNMR with its full label",
+          b"<report_type>CNMR</report_type>" in confirmed
+          and b"Confirmed Name Match" in confirmed)
+    check("carries the UAE TFS 5-day filing note", b"5 days" in confirmed)
+    check("the matched record's name and score are present",
+          b"Viktor Branko" in confirmed and b"95.0" in confirmed)
+    check("flags carry through", b"<flag>sanctioned</flag>" in confirmed)
+
+    partial = goaml.build_match_xml("Viktor Branko", match, report_type="PNMR")
+    check("report type can be PNMR instead", b"<report_type>PNMR</report_type>" in partial)
+    check("an unknown report_type falls back to PNMR rather than erroring",
+          b"<report_type>PNMR</report_type>" in goaml.build_match_xml("x", match, report_type="NOPE"))
+
+    marked = goaml.build_match_xml(
+        "Someone", {"name": "Someone", "score": None, "country": "Kuwait",
+                     "fatf_marking": "grey_list", "flags": []},
+        report_type="PNMR",
+    )
+    check("a FATF marking on the match carries into the draft",
+          b"<fatf_marking>grey_list</fatf_marking>" in marked)
+
+
+def test_batch_screen():
+    print("batch screening")
+    results = batch_screen(["Viktor Branko", "Elena Kovacs", "Definitely Nobody Xyz"])
+    by_name = {r["name"]: r for r in results}
+    check("sanctioned entity matched with its flags",
+          by_name["Viktor Branko"]["matched"] and
+          "sanctioned" in by_name["Viktor Branko"]["flags"])
+    check("PEP matched with red band absent (orange only)",
+          by_name["Elena Kovacs"]["risk_band"] == "orange")
+    check("a name with no match says so, not an error",
+          by_name["Definitely Nobody Xyz"]["matched"] is False)
+    check("blank names are skipped, not counted as no-match",
+          len(batch_screen(["", "  ", "Viktor Branko"])) == 1)
+
+
+def test_db_persistence(tmp_path_str="/tmp/claude-0/-home-user-dbxfcvnbgfcn/c1a81b38-8897-5298-910e-b3b2bf0d638b/scratchpad/test_sanctionsplus.db"):
+    print("cases, watchlist and activity log persistence")
+    import pathlib
+    db._DB_PATH = pathlib.Path(tmp_path_str)
+    if db._DB_PATH.exists():
+        db._DB_PATH.unlink()
+    db.init()
+
+    case_id = db.save_case("Test case", "demo:marcus-webb", "Marcus Webb",
+                            {"nodes": [], "edges": []}, notes="initial note")
+    check("case is listed", any(c["id"] == case_id for c in db.list_cases()))
+    fetched = db.get_case(case_id)
+    check("fetched case carries its payload back", fetched["payload"] == {"nodes": [], "edges": []})
+    check("update_case_notes changes the note",
+          db.update_case_notes(case_id, "updated") and db.get_case(case_id)["notes"] == "updated")
+    check("deleting an unknown case reports False", not db.delete_case(999999))
+    check("deleting a real case reports True", db.delete_case(case_id))
+    check("deleted case is gone", db.get_case(case_id) is None)
+
+    watch_id = db.add_watch("Viktor Branko")
+    check("watch is listed", any(w["id"] == watch_id for w in db.list_watches()))
+    db.update_watch_result(watch_id, ["sanctioned", "crime"], "red")
+    watch = db.get_watch(watch_id)
+    check("watch result round-trips as a list", watch["last_flags"] == ["sanctioned", "crime"])
+    check("watch band updates", watch["last_band"] == "red")
+    check("removing a watch works", db.delete_watch(watch_id))
+
+    db.log_activity("test_action", "some detail")
+    recent = db.recent_activity(limit=5)
+    check("activity log records the action", recent[0]["action"] == "test_action")
+
+
+def test_report_carries_adverse_media_manual_search():
+    print("report.py passes the structured adverse-media search through untouched")
+    payload = run_search("falcon capital", hops=4)
+    root_id = next(n["id"] for n in payload["nodes"] if n.get("is_root"))
+    root_report = build_report(payload, root_id)
+    check("the manual search is on the report", bool(root_report["media"]["manual_search"]))
+    check("it never invents a Findings entry",
+          not any(f.get("kind") == "adverse_media" for f in root_report["findings"]))
+
+
+def test_auto_risk_assessment():
+    print("report.auto_risk_assessment() — automatic, on every downloaded report")
+    payload = run_search("falcon capital", hops=4)
+
+    webb = next(n["id"] for n in payload["nodes"] if n["name"] == "Marcus Webb")
+    clean_ish = build_report(payload, webb)
+    assessment = auto_risk_assessment(clean_ish)
+    check("an orange-band nominee rates Medium, not Low",
+          assessment["overall_rating"] == "Medium")
+    check("risk score carries through from the subject", assessment["risk_score"] == clean_ish["subject"]["risk_score"])
+    check("risk factors are the finding titles", assessment["risk_factors"]
+          and all(isinstance(f, str) for f in assessment["risk_factors"]))
+    check("screening results mention what was actually screened",
+          "Screened against" in assessment["screening_results"])
+    check("recommended actions are non-empty and specific to Medium",
+          assessment["recommended_actions"] == report.RECOMMENDED_ACTIONS["Medium"])
+    check("no analyst comments supplied -> says so explicitly, not blank",
+          assessment["analyst_comments"] == "None recorded.")
+    check("a supplied analyst comment carries through verbatim",
+          auto_risk_assessment(clean_ish, "Reviewed, no concerns.")["analyst_comments"]
+          == "Reviewed, no concerns.")
+    check("assessment carries its own UAE/Dubai generated timestamp",
+          "GST" in assessment["generated_at"])
+
+    branko = next(n["id"] for n in payload["nodes"] if n["name"] == "Viktor Branko")
+    sanctioned = build_report(payload, branko)
+    critical = auto_risk_assessment(sanctioned)
+    check("a red band with a 'sanctioned' flag escalates to Critical, not just High",
+          critical["overall_rating"] == "Critical")
+    check("Critical carries its own STR-filing recommendation",
+          any("STR" in a for a in critical["recommended_actions"]))
+
+    empty_findings_report = dict(clean_ish)
+    empty_findings_report["findings"] = []
+    empty_findings_report["subject"] = dict(clean_ish["subject"])
+    empty_findings_report["subject"]["risk_band"] = "green"
+    empty_findings_report["subject"]["flags"] = []
+    clean = auto_risk_assessment(empty_findings_report)
+    check("a green band with no flags rates Low", clean["overall_rating"] == "Low")
+    check("no findings -> risk factors say so rather than an empty list",
+          clean["risk_factors"] == ["No adverse findings identified in the sources checked."])
+
+    pdf_data = pdf_renderer.render(sanctioned)
+    text = pdf_text(pdf_data)
+    check("the PDF's Risk Assessment section states the overall rating",
+          "CRITICAL RISK" in text.upper())
+    check("recommended actions appear in the rendered PDF",
+          "STR" in text)
+
+
+def test_download_all_package():
+    print("package.build_zip — the 'Download All' investigation package")
+    import io as _io
+    import zipfile as _zipfile
+
+    payload = run_search("falcon capital", hops=4)
+    branko = next(n["id"] for n in payload["nodes"] if n["name"] == "Viktor Branko")
+    sanctioned = build_report(payload, branko)
+
+    data = package.build_zip(sanctioned, analyst_comments="Escalated to MLRO.")
+    zf = _zipfile.ZipFile(_io.BytesIO(data))
+    names = zf.namelist()
+    check("the package has exactly the five promised documents", len(names) == 5)
+    check("a screening report PDF is included",
+          any(n.startswith("01_Screening_Report_") and n.endswith(".pdf") for n in names))
+    check("a standalone risk assessment PDF is included",
+          any(n.startswith("02_Risk_Assessment_") and n.endswith(".pdf") for n in names))
+    check("an EDD report PDF is included",
+          any(n.startswith("03_EDD_Report_") and n.endswith(".pdf") for n in names))
+    check("an evidence/sources text file is included",
+          any(n.startswith("04_Evidence_and_Sources_") and n.endswith(".txt") for n in names))
+    check("an audit trail CSV is included",
+          any(n.startswith("05_Audit_Trail_") and n.endswith(".csv") for n in names))
+
+    for name in names:
+        content = zf.read(name)
+        check(f"{name} is non-trivially sized", len(content) > 50)
+        if name.endswith(".pdf"):
+            check(f"{name} is a well-formed PDF", content.startswith(b"%PDF"))
+
+    risk_pdf = zf.read(next(n for n in names if n.startswith("02_Risk_Assessment_")))
+    text = pdf_text(risk_pdf)
+    check("the analyst comment carries through into the standalone risk assessment PDF",
+          "Escalated to MLRO" in text)
+
+    evidence_text = zf.read(next(n for n in names if n.startswith("04_Evidence_and_Sources_"))).decode()
+    check("the evidence file names the subject", "Viktor Branko" in evidence_text)
+
+    # A name with no filesystem-unsafe characters lets us confirm sanitisation
+    # doesn't crash on a name that's already clean — a fuller check lives in
+    # package._safe_filename directly below.
+    check("_safe_filename strips unsafe characters",
+          package._safe_filename('Odd/Name:With*Chars?') == "Odd_Name_With_Chars")
+    check("_safe_filename never returns empty", package._safe_filename("") == "entity")
+
+
+def test_report_and_pdf():
+    print("report and PDF")
+    payload = run_search("falcon capital", hops=4)
+    webb = next(n["id"] for n in payload["nodes"] if n["name"] == "Marcus Webb")
+    report = build_report(payload, webb)
+    check("nominee bands orange, not green", report["subject"]["risk_band"] == "orange")
+    check("all eight directorships listed", len(report["affiliations"]["current"]) == 8)
+    check("narrative explains the band", any("controlling role" in p for p in report["narrative"]))
+
+    branko = next(n["id"] for n in payload["nodes"] if n["name"] == "Viktor Branko")
+    sanctioned = build_report(payload, branko)
+    check("sanctioned subject bands red", sanctioned["subject"]["risk_band"] == "red")
+    check("ownership route to the target is shown", sanctioned["ownership_paths"])
+    check("affiliations carry their own band",
+          all(a["band"] in {"red", "orange", "green"}
+              for a in sanctioned["affiliations"]["current"]))
+
+    data = pdf_renderer.render(sanctioned)
+    check("PDF renders", data.startswith(b"%PDF") and len(data) > 2000)
+    text = pdf_text(data)
+    check("the report PDF carries a Prepared/Reviewed/Approved signature block",
+          all(role in text for role in ("Prepared By", "Reviewed By", "Approved By")))
+    check("the PDF opens with a cover page classification marker",
+          "COMPLIANCE REPORT" in text and "Confidential" in text)
+    check("the cover page states the overall rating", "Critical" in text or "High" in text)
+    check("an executive summary section is present", "Executive summary" in text)
+    check("the executive summary states what was screened and the rating",
+          "screened against" in text.lower())
+    check("no real firm name or logo placeholder leaks onto the cover page",
+          "Al Mira" not in text and "AKW" not in text)
+
+    rating = risk_rating.rate(
+        nationality="af", country_of_birth="kw", country_of_residence="kw",
+        business_work_location="ae",
+        screening_outcome="Screened, PEP not identified, not on relevant lists",
+        employment_type="Salaried", employment_industry="Asset Management",
+        mode_of_payment="Manager's Cheque", source_of_funds="Employment (Salaried)",
+    )
+    rated_pdf = pdf_renderer.render(sanctioned, risk_rating=rating)
+    check("PDF with a client risk rating still renders and grows",
+          rated_pdf.startswith(b"%PDF") and len(rated_pdf) > len(data))
+    check("a rating with nothing selected adds no section",
+          len(pdf_renderer.render(sanctioned, risk_rating={"rows": []})) == len(data))
+
+    missing = build_report(payload, "does-not-exist")
+    check("unknown entity returns an error, not a crash", "error" in missing)
+
+
+def test_identity_matches_surface_in_report():
+    print("unresolved identity matches reach the report")
+    payload = run_search("falcon capital", hops=4)
+    node = next((n["id"] for n in payload["nodes"] if n["name"] == "Rashid Al Mansoori"), None)
+    check("subject present", node is not None)
+    if node:
+        report = build_report(payload, node)
+        check("possible-match record is flagged for verification",
+              len(report["identity_matches"]) == 1)
+
+
+if __name__ == "__main__":
+    for test in (
+        test_name_normalisation,
+        test_merge_on_registration_number,
+        test_weak_match_links_rather_than_merges,
+        test_conflicting_birth_years_do_not_merge,
+        test_detectors_and_ubos,
+        test_ubo_traversal_ignores_directorships,
+        test_flags_distinguish_sanctions_from_office,
+        test_risk_bands,
+        test_bands_never_contradict_findings,
+        test_place_labels,
+        test_fatf_jurisdiction_detector,
+        test_fatf_black_and_grey_list_markings,
+        test_fatf_marking_helper,
+        test_un_sanctioned_helper,
+        test_sanctioning_bodies,
+        test_uae_dubai_time,
+        test_match_confidence_note,
+        test_merge_by_score,
+        test_weak_match_filtering,
+        test_adverse_media_is_manual_search_only,
+        test_client_risk_rating,
+        test_server_screen_endpoint,
+        test_server_download_all_endpoint,
+        test_screen_name_button,
+        test_extra_match_properties,
+        test_satellite_view_urls,
+        test_standalone_risk_rating_pdf,
+        test_enhanced_risk_rating_fields,
+        test_edd_checklist,
+        test_mou_draft,
+        test_goaml_export,
+        test_reasons_reference,
+        test_goaml_match_report,
+        test_batch_screen,
+        test_db_persistence,
+        test_report_carries_adverse_media_manual_search,
+        test_auto_risk_assessment,
+        test_download_all_package,
+        test_report_and_pdf,
+        test_identity_matches_surface_in_report,
+    ):
+        test()
+    print()
+    if failures:
+        print(f"{len(failures)} check(s) failed")
+        sys.exit(1)
+    print("all checks passed")

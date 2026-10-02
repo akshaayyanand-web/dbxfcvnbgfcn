@@ -1,0 +1,1137 @@
+{
+ "source": "Standard STR/SAR red-flag typology reference used for goAML reason-for-reporting codes.",
+ "reasons": [
+  {
+   "code": "ACTRC",
+   "description": "The customer appears to be acting as an agent for an undisclosed principal, but declines or is reluctant, without legitimate commercial reasons, to provide information, or is otherwise evasive regarding that person or entity."
+  },
+  {
+   "code": "AFFRD",
+   "description": "FRAUD - Advance fee fraud/Phishing or email fraud/Inheritance fraud/fake prizes frauds/romance fraud"
+  },
+  {
+   "code": "AFQSC",
+   "description": "Accounts of foreign workers or students/minors where the employer or employment agency serves as a custodian."
+  },
+  {
+   "code": "ALCNJ",
+   "description": "Amended letters of credit without justification."
+  },
+  {
+   "code": "ALCNR",
+   "description": "Significantly amended letters of credit without reasonable justification or changes to location of payment or the beneficiary just before payment is made."
+  },
+  {
+   "code": "ANDRS",
+   "description": "The customer requests that a transaction be processed in such a manner so as to avoid the firm's normal documentation requirements."
+  },
+  {
+   "code": "ANPOR",
+   "description": "TF - Abuse of non-profit organization."
+  },
+  {
+   "code": "ARIET",
+   "description": "An account that receives incoming electronic funds transfers then shortly afterward originates outgoing wire transfers or cash withdrawals slightly less than the incoming electronic fund transfers"
+  },
+  {
+   "code": "ASKS",
+   "description": "Customer asks many questions about how the financial institution disseminates information about the identification of its customers."
+  },
+  {
+   "code": "ATMFR",
+   "description": "FRAUD - ATM/Card Skimming frauds"
+  },
+  {
+   "code": "AVOID",
+   "description": "Customer discusses a financial institution's recordkeeping or reporting requirements with the apparent intention of avoiding them."
+  },
+  {
+   "code": "BBCRP",
+   "description": "BRIBERY & CORRUPTION - The customer makes significant cash withdrawals or outgoing wire transfers in high-risk Countries, prior or after the award of public contracts or other benefits, including honors and decorations, in the UAE or in foreign Countries."
+  },
+  {
+   "code": "BCNNP",
+   "description": "A business customer does not exhibit normal payroll expenditures (e.g. wages, payroll taxes); payroll costs can be non-existent or extremely low for the size of the customer's alleged operations, workforce and/or business"
+  },
+  {
+   "code": "BEHAV",
+   "description": "Customer appears to have a hidden agenda or behaves abnormally. (such as turning down the chance to obtain a higher interest rate on a large account balance.)"
+  },
+  {
+   "code": "BIDWT",
+   "description": "Customer deposits bearer instruments followed by instructions to wire the funds to a third party."
+  },
+  {
+   "code": "BOAUI",
+   "description": "Beneficial owner (UBO) of the account is not properly identified."
+  },
+  {
+   "code": "BRIBE",
+   "description": "Customer suggests paying a gratuity to an employee."
+  },
+  {
+   "code": "BWTHM",
+   "description": "Beneficiaries receiving wire transfers from countries with high migrant populations who are not nationals of those countries."
+  },
+  {
+   "code": "CAOCS",
+   "description": "Customer requests advice on overly-complex company/trust structure that go beyond their financial needs - possible tax evasion"
+  },
+  {
+   "code": "CAUHA",
+   "description": "The customer's account shows an unexplained high level of activity with very low levels of securities transactions."
+  },
+  {
+   "code": "CBMFP",
+   "description": "Cross border movement of funds and precious metals and stones - TBML"
+  },
+  {
+   "code": "CBODS",
+   "description": "CBUAE ODS DATA (FOR CBUAE INTERNAL USE ONLY)"
+  },
+  {
+   "code": "CCOAF",
+   "description": "Customer cashes out annuities of their insurance policy during the free look/grace period or surrenders the annuities early."
+  },
+  {
+   "code": "CCOLN",
+   "description": "Customer uses cash collateral located offshore to obtain a loan."
+  },
+  {
+   "code": "CDATM",
+   "description": "Customer conducts several cash deposits in small amounts at ATMs."
+  },
+  {
+   "code": "CDFAS",
+   "description": "FRAUD - Charity/donations fraud activity"
+  },
+  {
+   "code": "CDLC",
+   "description": "Customer collateralizes a loan with cash deposits."
+  },
+  {
+   "code": "CFTCZ",
+   "description": "Customer requests fund transfer to a conflict zone - possible tax evasion"
+  },
+  {
+   "code": "CHBEN",
+   "description": "Changing the named beneficiary of a policy to a person (third party) with no clear relationship to the policyholder."
+  },
+  {
+   "code": "CHQDP",
+   "description": "FRAUD - Cheques deposited from a possible funnel account appear to be pre-signed, bearing different handwriting in the signature and payee fields - forged cheques"
+  },
+  {
+   "code": "CIAPT",
+   "description": "Customer uses an investment account as a pass-through vehicle to wire funds to offshore locations."
+  },
+  {
+   "code": "CLCAC",
+   "description": "Customer changes the place of payment in a letter of credit to an account in a country other than the beneficiary's stated location - possible sanctions circumvention."
+  },
+  {
+   "code": "CLLPS",
+   "description": "Customer wants to liquidate a large position through a series of small transactions."
+  },
+  {
+   "code": "CLSIT",
+   "description": "The customer lives in the locality where a securities issuer is located - possible indicator of insider trading"
+  },
+  {
+   "code": "CMCTH",
+   "description": "Customer has money in, or corporate entities based in tax havens - possible tax evasion"
+  },
+  {
+   "code": "CMTSA",
+   "description": "Customer makes multiple cash, money orders, traveler's cheques or cashier's cheques deposits in small amounts to fund an investment account."
+  },
+  {
+   "code": "CNTRF",
+   "description": "Customer's cash deposits often contain counterfeit bills or musty or extremely dirty bills."
+  },
+  {
+   "code": "CODLC",
+   "description": "Customer purchases certificates of deposit and uses them as collateral for a loan."
+  },
+  {
+   "code": "COMPL",
+   "description": "A transaction is made to appear more complicated than it needs to be by use of impressive but nonsensical terms such as emission rate, prime bank notes, standby commitment, arbitrage or hedge contracts."
+  },
+  {
+   "code": "COVRT",
+   "description": "An incoming wire transfer has instructions to convert the funds to cashier's cheques and to mail them to a non-accountholder."
+  },
+  {
+   "code": "CPCHQ",
+   "description": "Cashing of payroll cheques where the majority of the funds are kept by the employer or deposited back into the employer's A/C; this activity may be detected by those financial institutions that have access to paystubs and other payroll records."
+  },
+  {
+   "code": "CPINS",
+   "description": "Cash payments on insurance policies."
+  },
+  {
+   "code": "CRATE",
+   "description": "Customer requests advice on how to evade tax - possible tax evasion"
+  },
+  {
+   "code": "CRPAC",
+   "description": "Corporate account has deposits or withdrawals primarily in cash, rather than cheques or transfers to hide the money trail."
+  },
+  {
+   "code": "CRRCF",
+   "description": "Customer requests radical change to financial strategy - possible tax evasion"
+  },
+  {
+   "code": "CSEWA",
+   "description": "The customer's account has unexplained or sudden extensive wire activity, especially in accounts that had little or no previous activity."
+  },
+  {
+   "code": "CSHEP",
+   "description": "Customer seemingly engages in trading high end/luxury products at low prices - possible counterfeit/pirated/stolen products trade"
+  },
+  {
+   "code": "CSJNE",
+   "description": "Commodities are shipped through one or more jurisdictions for no apparent economic or logistical reason - sanctions circumvention."
+  },
+  {
+   "code": "CSPOA",
+   "description": "Customer has suspicious property ownership arrangements - possible tax evasion"
+  },
+  {
+   "code": "CSSIP",
+   "description": "Complex/secretive strategies to investment - possible indicator of a Ponzi/pyramid scheme"
+  },
+  {
+   "code": "CSUBS",
+   "description": "Common signer(s)/custodian(s) in apparently unrelated business and/or personal accounts; similarly, common information (e.g., address, phone number, employment information) used to open multiple accounts in different names"
+  },
+  {
+   "code": "CTRGB",
+   "description": "Customer transactions related to gambling/betting"
+  },
+  {
+   "code": "CUHTI",
+   "description": "Customer conducts an unusually high level of transactions over the Internet or by telephone."
+  },
+  {
+   "code": "DAMDS",
+   "description": "A deposit account opened with a minimal deposit soon followed by large electronic fund transfer deposits"
+  },
+  {
+   "code": "DCSRF",
+   "description": "Deposit customers who suddenly begin receiving and sending electronic fund transfers related to new employment, investments, business opportunities or acquaintances (especially opportunities found on the Internet)"
+  },
+  {
+   "code": "DDAFC",
+   "description": "Deposits or transfers to a diamond/precious metals/gemstones dealers account from foreign companies followed by immediate transfer of similar amounts to another jurisdiction."
+  },
+  {
+   "code": "DISCN",
+   "description": "Customer's home or business telephone is disconnected or unreachable."
+  },
+  {
+   "code": "DISCR",
+   "description": "Discrepancies in the description of goods or commodity in the invoice or of the actual goods shipped."
+  },
+  {
+   "code": "DISTA",
+   "description": "Customer repeatedly uses bank or branch locations geographically distant from customers home or office without sufficient business purpose."
+  },
+  {
+   "code": "DOCNT",
+   "description": "LC/LG Documents arrive without title documents."
+  },
+  {
+   "code": "DPMSI",
+   "description": "Precious metals and stones (jewelry and watches included) transactions with resident individuals for cash transactions equal to or exceeding AED 55,000 or its equivalent in other currencies"
+  },
+  {
+   "code": "DPMSJ",
+   "description": "Precious metals and stones (jewelry and watches included) transactions with entities/companies in transactions equal to or exceeding AED 55,000 or its equivalent in other currencies, in cash or through international wire transfer"
+  },
+  {
+   "code": "DPMSN",
+   "description": "Precious metals and stones (jewelry and watches included) transactions with non-resident individuals for cash transactions equal to or exceeding AED 55,000 or its equivalent in other currencies"
+  },
+  {
+   "code": "DRMTA",
+   "description": "Corporate account shows little or no regular, periodic activity, or dormant."
+  },
+  {
+   "code": "DTNTR",
+   "description": "Customer suspected to be involved/connected to potential Drug Trafficking/Narcotics Trade"
+  },
+  {
+   "code": "EATPV",
+   "description": "Employee avoids taking periodic vacations."
+  },
+  {
+   "code": "EAUBO",
+   "description": "Employee assists transactions where the identity of the ultimate beneficiary or counter party is undisclosed. (Staff Collusion)"
+  },
+  {
+   "code": "EEXCB",
+   "description": "Employee exaggerates the credentials, background or financial ability and resources of a customer in written reports the bank requires."
+  },
+  {
+   "code": "EJEUA",
+   "description": "The customer engages in excessive journal entries between unrelated accounts without any apparent business purpose - layering or structuring to obscure the money trail."
+  },
+  {
+   "code": "ELLLS",
+   "description": "Employee lives a lavish lifestyle that could not be supported by his or her salary."
+  },
+  {
+   "code": "EORIC",
+   "description": "FRAUD - Employee frequently overrides internal controls or established approval authority or circumvents policy. (Staff Fraud)"
+  },
+  {
+   "code": "EURSE",
+   "description": "Employee is involved in an excessive number of unresolved exceptions."
+  },
+  {
+   "code": "FAICD",
+   "description": "Financial activity is inconsistent with practices in the diamond/precious metals/gemstones trade."
+  },
+  {
+   "code": "FALSI",
+   "description": "FRAUD - Use of false identification - Fraud/Forgery - Identity theft"
+  },
+  {
+   "code": "FAMLY",
+   "description": "Customer, who is a public official, opens account in the name of a family member who begins making large deposits not consistent with the known sources of legitimate family income."
+  },
+  {
+   "code": "FATM",
+   "description": "Frequent domestic and international ATM activity."
+  },
+  {
+   "code": "FCCFI",
+   "description": "FRAUD - Falsification of certified cheques, cashiers cheques or non-cash item cheques drawn against a borrower/buyers account, rather than from the account of a financial institution."
+  },
+  {
+   "code": "FCSCS",
+   "description": "Use of false corporations/companies/business structures, including shell companies."
+  },
+  {
+   "code": "FDFRI",
+   "description": "FRAUD - Fund Recall Request - International"
+  },
+  {
+   "code": "FDFRR",
+   "description": "FRAUD - Fund Recall Request - Domestic"
+  },
+  {
+   "code": "FFSIT",
+   "description": "The customer is known to have friends or family who work at or for the securities issuer - possible indicator of insider trading"
+  },
+  {
+   "code": "FIFIP",
+   "description": "False invoicing or fabricated invoices or price manipulation"
+  },
+  {
+   "code": "FMLPM",
+   "description": "Customer seeks trade financing on the export or import of commodities whose stated prices are substantially more or less than those in a similar market situation or environment - over or under invoicing"
+  },
+  {
+   "code": "FNACC",
+   "description": "A customer's A/C appears to function as a funnel A/C whereby cash deposits occur in cities/states where the customer does not reside or conduct business. Frequently, in the case of funnel A/Cs, the funds are quickly subsequently withdrawn."
+  },
+  {
+   "code": "FORCD",
+   "description": "FRAUD - Customer provides forged record of past or present employment on a loan application."
+  },
+  {
+   "code": "FOWNB",
+   "description": "Frequent outbound wire transfers, with no business or apparent lawful purpose, directed to countries at higher risk for human trafficking or to countries that are inconsistent with the customer's expected activity."
+  },
+  {
+   "code": "FPOES",
+   "description": "Frequent payments to online escort services for advertising, including small posting fees to companies of online classifieds as well as more expensive, higher-end advertising and website hosting companies."
+  },
+  {
+   "code": "FRDBG",
+   "description": "FRAUD - Betting and gambling fraud."
+  },
+  {
+   "code": "FRDCF",
+   "description": "FRAUD - Corporate Fraud"
+  },
+  {
+   "code": "FRDHL",
+   "description": "FRAUD - High end and luxury goods fraud (e.g. precious metals and stones, counterfeit goods, etc.)"
+  },
+  {
+   "code": "FRDIG",
+   "description": "FRAUD - Impersonation of officials and government agency fraud."
+  },
+  {
+   "code": "FRDMB",
+   "description": "Fraud - Using MVTS or MSB\u2019s accounts to send or receive funds which are suspected to be fraudulent proceeds."
+  },
+  {
+   "code": "FRDMR",
+   "description": "Fraud - Several transfers from multiple remitters directed to a single beneficiary with no reasonable explanation."
+  },
+  {
+   "code": "FRDRR",
+   "description": "Fraud - Customer receives multiple transfers from unrelated parties, specifically individuals residing in foreign jurisdiction, on which a \u201cFund Recall Request\u201d has been received."
+  },
+  {
+   "code": "FRDVC",
+   "description": "Fraud - Virtual Currency (VC) Fraud"
+  },
+  {
+   "code": "FRESL",
+   "description": "Frequent exchange of small denomination for larger denomination bills by a customer who is not in a cash-intensive industry. This type of activity may occur as smugglers ready proceeds for bulk cash shipments."
+  },
+  {
+   "code": "FRICA",
+   "description": "FRAUD - False/fraudulent insurance claims"
+  },
+  {
+   "code": "FRQDW",
+   "description": "Customer makes frequent deposits or withdrawals of large amounts of currency for no apparent business reason, or for a business that generally does not generate large amounts of cash."
+  },
+  {
+   "code": "FSDSB",
+   "description": "Business customer presents financial statements noticeably different from those of similar businesses."
+  },
+  {
+   "code": "FSNCA",
+   "description": "A customer's financial statement makes representations that do not conform to accounting principles."
+  },
+  {
+   "code": "FTIEA",
+   "description": "Frequent transactions, inconsistent with expected activity and/or line of business, carried out by a business customer in apparent efforts to provide sustenance to individuals (e.g., payment for housing, lodging, regular vehicle rentals)"
+  },
+  {
+   "code": "FTRWA",
+   "description": "Frequent transactions in rounded off amounts."
+  },
+  {
+   "code": "FURTP",
+   "description": "Customer is transferring funds on behalf of unrelated third parties for a commission - possible fund transfer scam"
+  },
+  {
+   "code": "FXCUR",
+   "description": "Customer conducts an unusual number of foreign currency exchange transactions."
+  },
+  {
+   "code": "HIRNR",
+   "description": "High investment returns with little or no risks - possible indicator of a Ponzi/pyramid scheme"
+  },
+  {
+   "code": "HRCTR",
+   "description": "Reporting transactions related to high risk countries as per NAMLCFTC\u2019s directives"
+  },
+  {
+   "code": "HRJWT",
+   "description": "Wire transfer activity to and from secrecy havens or higher-risk geographic locations without apparent business reason or is inconsistent with customer's transaction history."
+  },
+  {
+   "code": "ICANA",
+   "description": "Transactions that are inconsistent with the account's normal activity."
+  },
+  {
+   "code": "ICFCC",
+   "description": "The issuing company has experienced frequent or continuous changes in its business structure and/or undergoes frequent material changes in its business strategy or line of business - possible indicator of market manipulation"
+  },
+  {
+   "code": "ICICP",
+   "description": "Inflows are largely received in cash where substantial cash receipts are inconsistent with the customer's line of business; extensive use of cash to purchase assets and to conduct transactions."
+  },
+  {
+   "code": "ICSLP",
+   "description": "The officers or insiders of the issuing company of a stock are associated with other low priced, illiquid or low volume companies - possible indicator of market manipulation"
+  },
+  {
+   "code": "IDVER",
+   "description": "FRAUD - Customer tries to conceal/forge identification documents or declines to produce originals for verification."
+  },
+  {
+   "code": "IETHR",
+   "description": "Transactions conducted by individuals, escorted by a third party (e.g., under the pretext of requiring an interpreter) to transfer funds (that may seem to be their salaries) to other countries."
+  },
+  {
+   "code": "IIWTA",
+   "description": "An increase in international wire transfer activity in an account with no history of such activity or where the stated business of the customer does not warrant it."
+  },
+  {
+   "code": "ININF",
+   "description": "Improper/incomplete file documentation, including borrower/buyer reluctance to provide more information and/or unfulfilled promises to provide more information."
+  },
+  {
+   "code": "INTWD",
+   "description": "Non-customer deposits cash into a customer account, which was subsequently withdrawn in a different geographic location"
+  },
+  {
+   "code": "INWMI",
+   "description": "An incoming wire transfer, followed by an immediate purchase by the beneficiary of monetary instruments for payment to another party (Third party)"
+  },
+  {
+   "code": "IPOWT",
+   "description": "Customer frequently shifts purported international profits by wire transfer out of the country for possible tax evasion or avoidance."
+  },
+  {
+   "code": "ISHRV",
+   "description": "The officers or insiders of the securities/stocks issuing company have a history of regulatory violations - possible indicator of market manipulation"
+  },
+  {
+   "code": "ITLSL",
+   "description": "TFS - Inclusion of the individual/entity in the international Sanctions list e.g. OFAC, UKHMT, EU, etc."
+  },
+  {
+   "code": "ITTRD",
+   "description": "Inisder Trading - The subject possessing legitimately privileged information communicates such information to a third party that should not have access to it."
+  },
+  {
+   "code": "IUIUD",
+   "description": "Investor seems uninterested in the usual decisions to be made about investment accounts, such as risks, commissions, fees or the suitability of the investment vehicles."
+  },
+  {
+   "code": "IVADA",
+   "description": "An increase of the volume of the activity in a diamond dealer's account despite a significant decrease in the industry-wide volume."
+  },
+  {
+   "code": "JSUAC",
+   "description": "A customer journals securities between unrelated accounts for no apparent business reason"
+  },
+  {
+   "code": "KTSSP",
+   "description": "Keywords entered into the transaction that could relate to the sale of suspicious products."
+  },
+  {
+   "code": "LADST",
+   "description": "Lack of appropriate documentation to support transactions."
+  },
+  {
+   "code": "LAVBS",
+   "description": "FRAUD - Low appraisal values, non-arms length relationships between short sale buyers and sellers, or previous fraudulent sale attempts in short-sale transactions."
+  },
+  {
+   "code": "LBFNA",
+   "description": "Large business presents financial statements that are not prepared by an accountant."
+  },
+  {
+   "code": "LCGLD",
+   "description": "Letter of Credit covers goods that have little demand in importer's country."
+  },
+  {
+   "code": "LCGRP",
+   "description": "Letter of Credit covers goods that are rarely if ever produced in the exporter's country."
+  },
+  {
+   "code": "LCHRC",
+   "description": "Letter of Credit is received from countries with a high risk for money laundering."
+  },
+  {
+   "code": "LCINC",
+   "description": "Letter of Credit is inconsistent with customer's business."
+  },
+  {
+   "code": "LOCRS",
+   "description": "Customer requests loans either made to offshore companies or secured by obligations of offshore banks."
+  },
+  {
+   "code": "LOWBL",
+   "description": "Account shows high velocity in the movement of funds"
+  },
+  {
+   "code": "LPRNR",
+   "description": "Borrower applies for a loan for a primary residence but does not reside in it as indicated on the loan application; other individuals occupy the borrower's new primary residence indicating the property is being used as income-generating property"
+  },
+  {
+   "code": "LPSIT",
+   "description": "The customer makes a large purchase or sale of a security, or option on a security, shortly before news is issued that affects the price of the security - possible indicator of insider trading"
+  },
+  {
+   "code": "LPUTO",
+   "description": "Customer's loan proceeds are unexpectedly transferred offshore."
+  },
+  {
+   "code": "LRGCS",
+   "description": "Customer makes large cash deposit containing many larger denomination bills."
+  },
+  {
+   "code": "LRTSM",
+   "description": "The customer engages in large or repeated trading in securities that are illiquid, low priced or difficult to price - possible indicator of market manipulation"
+  },
+  {
+   "code": "LSTPC",
+   "description": "Lack of concern for significant tax or other penalties assessed when canceling an insurance policy."
+  },
+  {
+   "code": "LTINV",
+   "description": "The customer makes a fund deposit for the purpose of purchasing a long-term investment followed shortly thereafter by a request to liquidate the position and transfer the proceeds from the account."
+  },
+  {
+   "code": "MACCA",
+   "description": "Multiple accounts are used to collect and funnel funds to a small number of Crypto Assets records."
+  },
+  {
+   "code": "MACMN",
+   "description": "For no apparent reason, the customer has multiple accounts under a single name or multiple names, with a large number of inter-account or third-party transfers."
+  },
+  {
+   "code": "MCDSL",
+   "description": "Multiple cash deposits in small amounts in an account followed by a large wire transfer to another country."
+  },
+  {
+   "code": "MCDWS",
+   "description": "Multiple cash deposits and withdrawals with suspicious references."
+  },
+  {
+   "code": "MHVPS",
+   "description": "Multiple high-value payments or transfers between shell companies with no apparent legitimate business purpose."
+  },
+  {
+   "code": "MLTAC",
+   "description": "Customer maintains an inordinately large number of accounts for the type of business purportedly being conducted."
+  },
+  {
+   "code": "MMINV",
+   "description": "Market Manipulation - Investor trades under different account names under his control for the purpose of inflating or deflating the financial instrument price"
+  },
+  {
+   "code": "MMOT",
+   "description": "Market Maniplulation - Orders to trade or transactions represent a significant proportion of the daily volume of transactions in the relevant financial instrument, especially when those activities lead to a significant change in their prices."
+  },
+  {
+   "code": "MNTRF",
+   "description": "Customer withdraws cash from one of his accounts and deposits the cash into another account that he owns to obscure the money trail."
+  },
+  {
+   "code": "MONIS",
+   "description": "Customer makes frequent purchases of monetary instruments with cash in small amounts"
+  },
+  {
+   "code": "MORDD",
+   "description": "Customer deposits large numbers of consecutively numbered money orders or cheques."
+  },
+  {
+   "code": "MPINS",
+   "description": "Use of multiple currency equivalents (e.g., cashier's cheques and money orders) different sources to make insurance policy or annuity payments."
+  },
+  {
+   "code": "MRAHT",
+   "description": "TF - Media reports that the account holder is linked to known terrorist organization or is engaged terrorist activities and organizations."
+  },
+  {
+   "code": "MSBWT",
+   "description": "Account in the name of a currency exchange house receives multiple wire transfers and/or cash deposits in small amounts."
+  },
+  {
+   "code": "MSDBR",
+   "description": "Customer rents multiple safe deposit boxes/lockers."
+  },
+  {
+   "code": "MSREP",
+   "description": "Past misrepresentations made by borrower/buyer in attempts to secure funding, property, refinance, and/or short sales."
+  },
+  {
+   "code": "MTOCB",
+   "description": "Multiple transfers going to one common Beneficiary."
+  },
+  {
+   "code": "MURCW",
+   "description": "Multiple, apparently unrelated, customers sending wire transfers to the same beneficiary. These wire senders may also use similar transactional information including but not limited to a common address and phone number without justification."
+  },
+  {
+   "code": "MWTDS",
+   "description": "Multiple wire transfers conducted at different branches of a financial institution to or from UAE on the same day or on consecutive days."
+  },
+  {
+   "code": "NBPNO",
+   "description": "Companies operating in jurisdictions where their business purpose is not fully understood and there are difficulties in determining ownership."
+  },
+  {
+   "code": "NBRPT",
+   "description": "No apparent business relationship between the parties and transactions."
+  },
+  {
+   "code": "NBRT",
+   "description": "No business rationale or economic justifications for the transactions."
+  },
+  {
+   "code": "NEJUS",
+   "description": "The transaction is not economically justified considering the accountholder's business or profession."
+  },
+  {
+   "code": "NIUTS",
+   "description": "Negotiable instruments used to fund transactions in sequential numbers and/or missing payee information."
+  },
+  {
+   "code": "NMISA",
+   "description": "Non-accountholder sends wire transfer with funds that include numerous monetary instruments, in small amounts"
+  },
+  {
+   "code": "NMRAN",
+   "description": "Negative media reports or adverse news that the account holder is linked to alleged crimes or related to criminals."
+  },
+  {
+   "code": "NOCNT",
+   "description": "Customer makes large cash deposit without having counted the cash."
+  },
+  {
+   "code": "NODAT",
+   "description": "A newly opened deposit account with an unusual amount of activity, such as account inquiries, or a large amounts or high number of incoming electronic fund transfers"
+  },
+  {
+   "code": "NOEPC",
+   "description": "Customer purchases a number of open-end prepaid cards for large amounts, inconsistent with normal business activity."
+  },
+  {
+   "code": "NOID",
+   "description": "Customer tries to open an account without identification, references or complete physical address."
+  },
+  {
+   "code": "NOMRG",
+   "description": "Customer indulges in foreign exchange transactions/ currency swaps without caring about the margins."
+  },
+  {
+   "code": "NOPUR",
+   "description": "Customer deposits cheques and/or money orders that are not consistent with the stated purpose of the account or nature of business."
+  },
+  {
+   "code": "NORCD",
+   "description": "Customer provides no record of past or present employment on a loan application."
+  },
+  {
+   "code": "NRPDD",
+   "description": "Name of receiver in the payment from the diamond/precious metals/gemstones dealer is not the exporter/supplier."
+  },
+  {
+   "code": "NTFTP",
+   "description": "Use of nominees, trusts, family member or third-party accounts."
+  },
+  {
+   "code": "OCRIP",
+   "description": "Overly consistent returns on investment - possible indicator of a Ponzi/pyramid scheme"
+  },
+  {
+   "code": "OESOP",
+   "description": "Open export is settled by offsetting to, and receiving payment from a third party."
+  },
+  {
+   "code": "OFFSH",
+   "description": "Transaction involves offshore institutions whose names resemble those of well-known legitimate financial institutions."
+  },
+  {
+   "code": "ONACC",
+   "description": "Customer deposits cash into several accounts in small amounts and then consolidates the funds into one account and wire transfers them abroad."
+  },
+  {
+   "code": "OOUPG",
+   "description": "Obvious over-or underpricing of goods and services."
+  },
+  {
+   "code": "OUMID",
+   "description": "One person uses multiple identification documents"
+  },
+  {
+   "code": "OUTAD",
+   "description": "Customer's permanent address is outside of the institution's service area."
+  },
+  {
+   "code": "PACCB",
+   "description": "Customer uses a personal account for business purposes."
+  },
+  {
+   "code": "PAYPL",
+   "description": "Customer suddenly pays off a large problem loan with no plausible explanation as to the source of funds - premature settlement."
+  },
+  {
+   "code": "PCAFT",
+   "description": "Purchase of Crypto Assets shortly following receipt of funds transfers from unconnected third parties."
+  },
+  {
+   "code": "PCBHA",
+   "description": "FCA - Passengers crossing in and out of the UAE boarders declaring huge amounts of cash either for variety of reasons or for trade and exchange companies"
+  },
+  {
+   "code": "PCOMP",
+   "description": "PROJECT COMPOUND"
+  },
+  {
+   "code": "PCPPP",
+   "description": "An insurance policy calling for the periodic payment of premiums in large amounts."
+  },
+  {
+   "code": "PDIM",
+   "description": "Payments related to the appearance of rare or unique diamonds in the international market outside of known trading procedures (e.g., Argyle's rare pink diamond appearing in the international marketplace outside of the annual tender process)"
+  },
+  {
+   "code": "PESRA",
+   "description": "Payments to employment or student recruitment agencies that are not licensed/registered or that have labor violations or fake employment/job offers or promises."
+  },
+  {
+   "code": "PFCSA",
+   "description": "Customer comes in frequently to purchase foreign currencies in small amounts/denominations."
+  },
+  {
+   "code": "PPPAO",
+   "description": "Insurance Policy premiums paid from abroad, especially from an offshore/high risk jurisdiction."
+  },
+  {
+   "code": "PPUNS",
+   "description": "Purchases of products that appear outside the customer's normal range of financial wealth or estate planning needs."
+  },
+  {
+   "code": "PSCOL",
+   "description": "Two or more persons collaborating in one transaction."
+  },
+  {
+   "code": "PSHPS",
+   "description": "One party purchases securities at a high price and then sells them at a considerable loss to another party"
+  },
+  {
+   "code": "PSPIP",
+   "description": "The customer\u2019s purchase of securities products does not correspond to his or her investment profile"
+  },
+  {
+   "code": "PSRJS",
+   "description": "The customer deposits physical securities together with a request to journal the shares into multiple accounts that do not appear to be related, or to sell or otherwise transfer ownership of the shares - possible indicator of market manipulation"
+  },
+  {
+   "code": "PTHRD",
+   "description": "Customer requests payment of proceeds to an unrelated third party."
+  },
+  {
+   "code": "PUSID",
+   "description": "Two or more persons use the same identification."
+  },
+  {
+   "code": "QMOFS",
+   "description": "Funds deposited are moved quickly out of the account via payment methods inconsistent with the established purpose of the account."
+  },
+  {
+   "code": "REJAP",
+   "description": "A transaction includes circumstances that would cause a banker to reject a loan application because of doubts about the collateral."
+  },
+  {
+   "code": "RELCT",
+   "description": "A business customer is reluctant to provide complete info about the nature and purpose of its business, anticipated account activity and other details about the business or to provide financial statements/docs about a related business entities"
+  },
+  {
+   "code": "RESUB",
+   "description": "FRAUD - Apparent resubmission of rejected loan application with key borrower details changed from individual borrower to company; this activity may identify the same person attempting to secure a loan fraudulently through a non-existent person."
+  },
+  {
+   "code": "RFIUR",
+   "description": "Response to FIU Request (AIF/AIFT/ECDD/ECDDT)"
+  },
+  {
+   "code": "RFPRA",
+   "description": "Borrower/buyer requests refinancing for ?primary residence? when public and personal documents indicate that the borrower/buyer resides somewhere other than the address on the loan application."
+  },
+  {
+   "code": "RIBIC",
+   "description": "Redemption of insurance bonds originally subscribed to by an individual in one country by a business entity in another country."
+  },
+  {
+   "code": "RPSIS",
+   "description": "A customer\u2019s transactions show a pattern of receiving physical securities or receiving incoming shares transfers that are then sold, with the proceeds wired out of the account - possible indicator of market manipulation"
+  },
+  {
+   "code": "RRFTC",
+   "description": "Repeated receipt of funds transfers from Crypto Asset Exchanges inconsistent with customer profile."
+  },
+  {
+   "code": "RRLCP",
+   "description": "Refunds requested during an insurance policy's legal cancellation period or free-look period or grace period"
+  },
+  {
+   "code": "RTMSB",
+   "description": "Receiving/transferring funds for import/export where the ordering customer/beneficiary is an MSB."
+  },
+  {
+   "code": "SACRD",
+   "description": "Transaction altered/split to avoid completion of record of funds transfer, money order or traveler's cheques of AED 75,000 or more - possible structuring."
+  },
+  {
+   "code": "SADIS",
+   "description": "Suspicious act done by an internal staff/employee."
+  },
+  {
+   "code": "SAMAD",
+   "description": "Transacting businesses share the same address, provide only a registered agent's address, or raise other address-related inconsistencies."
+  },
+  {
+   "code": "SAMIF",
+   "description": "FRAUD - Systems/accounts/mobile SIMs/internet or mobile banking fraud/hacking"
+  },
+  {
+   "code": "SBAMB",
+   "description": "A single bank account is used by multiple businesses."
+  },
+  {
+   "code": "SBAMD",
+   "description": "A single bank account has multiple deposit handlers (retail and wholesale)."
+  },
+  {
+   "code": "SCTFS",
+   "description": "A series of complicated transfers of funds from one person to another as a means to hide the source and intended use of the funds - structuring."
+  },
+  {
+   "code": "SDBLT",
+   "description": "Customer spends an unusual amount of time in the safe deposit box/locker area, possibly indicating the safekeeping of large amounts of cash."
+  },
+  {
+   "code": "SDPCD",
+   "description": "Customer often visits the safe deposit box area immediately before making cash deposits."
+  },
+  {
+   "code": "SDWPS",
+   "description": "Substantial deductions to wages. A customer with a business may deduct large amounts from wages of its employees alleging extensive charges where they only receive a small fraction of their wages; this may occur before or after payment of wages"
+  },
+  {
+   "code": "SFSPS",
+   "description": "The customer\u2019s account is opened or significantly funded shortly before a purchase of securities - possible indicator of insider trading"
+  },
+  {
+   "code": "SGBCD",
+   "description": "Sale of gold bars, coins and loose diamonds from a jewelry store (retail)."
+  },
+  {
+   "code": "SIDCM",
+   "description": "Borrower/buyer submits invalid documents in order to cancel mortgage obligations or to pay off his or her loan balances(s) - premature settlement."
+  },
+  {
+   "code": "SIWOT",
+   "description": "Customer receives many small incoming wire transfers and then orders a large outgoing wire transfer to another country."
+  },
+  {
+   "code": "SLCPB",
+   "description": "Customer's standby letter of credit is used as a bid or performance bond without the normal reference to an underlying project or contract, or designates unusual beneficiaries."
+  },
+  {
+   "code": "SLEMI",
+   "description": "Customer decides to settle his loans earlier than expected in multiple instances - premature settlement."
+  },
+  {
+   "code": "SMRDP",
+   "description": "The stocks/securities issuing company has failed to make required regulatory disclosures - possible indicator of market manipulation"
+  },
+  {
+   "code": "SMRFS",
+   "description": "Customer conducts large cash transactions at different branches on the same day, or coordinates others to do so on his behalf."
+  },
+  {
+   "code": "SNPUL",
+   "description": "Same notary public and/or other ?authorized representative? working with and/or receiving payments from unusually large number of borrowers."
+  },
+  {
+   "code": "SPDAC",
+   "description": "Wire transfers are sent or received from the same person to/or from different accounts."
+  },
+  {
+   "code": "SPSIT",
+   "description": "The customer sells his or her position in a security in conjunction with a significant announcement about the security - possible indicator of insider trading"
+  },
+  {
+   "code": "SPTSM",
+   "description": "The stocks/securities issuing company has been the subject of a prior trading suspension - possible indicator of market manipulation"
+  },
+  {
+   "code": "SPUML",
+   "description": "Same person uses multiple locations in a short time period."
+  },
+  {
+   "code": "SSBBF",
+   "description": "FRAUD - The customer, for no apparent reason engages in transactions involving certain types of securities which, although legitimate, have been used in connection with fraudulent schemes and money laundering activity."
+  },
+  {
+   "code": "SSICB",
+   "description": "Size of the shipment appears inconsistent with the regular volume of business of the importer or of the exporter."
+  },
+  {
+   "code": "STDNT",
+   "description": "Customer, who is a student/minor, uncharacteristically transfers or exchanges large sums of money."
+  },
+  {
+   "code": "STOPM",
+   "description": "Customer does not wish a statement of his account or any mail sent to him - hold mail."
+  },
+  {
+   "code": "STRPS",
+   "description": "Customer frequently deposits large sums of cash wrapped in currency straps."
+  },
+  {
+   "code": "STRUC",
+   "description": "Structured currency deposits to individual checking accounts with multiple daily deposits to multiple accounts at different branches of the same bank on the same day."
+  },
+  {
+   "code": "SVACC",
+   "description": "Customer opens several accounts in one or more names, and then makes several cash deposits under the reporting threshold - structuring."
+  },
+  {
+   "code": "TAELC",
+   "description": "Transaction involves the use of repeatedly amended or frequently extended letters of credit."
+  },
+  {
+   "code": "TAICE",
+   "description": "Transactional activity (credits and/or debits) inconsistent with a customer's alleged employment, business or expected activity, or where transactions lack a business or apparent lawful purpose."
+  },
+  {
+   "code": "TCAST",
+   "description": "Transactions involving crypto asset exchanges are followed within a short time by funds transfers to or ATM withdrawals in high risk geographies."
+  },
+  {
+   "code": "TDITM",
+   "description": "Selling and buying diamonds between two local companies through an intermediary located abroad [lack of business justification and/or uncertainty as to actual passage of goods between companies]."
+  },
+  {
+   "code": "TFCTC",
+   "description": "TF - Collecting Terrorism related Funds through Crowdfunding Techniques"
+  },
+  {
+   "code": "TFDNP",
+   "description": "TF - Donations/Non-Profit Organizations (NPOs)"
+  },
+  {
+   "code": "TFFSM",
+   "description": "TF - Fundraising through social media"
+  },
+  {
+   "code": "TFFTH",
+   "description": "TF - Fund Transfers to/from High-risk Jurisdiction"
+  },
+  {
+   "code": "TFFVC",
+   "description": "TF - Fundraising through virtual currencies"
+  },
+  {
+   "code": "TFITF",
+   "description": "TF - Investment of or financial management of terrorism related funds in the UAE"
+  },
+  {
+   "code": "TFOCF",
+   "description": "TF - Ownership or Control over UAE Financial Institutions or MVTs"
+  },
+  {
+   "code": "TFSDL",
+   "description": "TFS/PFS - Domestic list"
+  },
+  {
+   "code": "TFSTC",
+   "description": "TF - Smuggling or transportation of Cash, including through FTFs"
+  },
+  {
+   "code": "TFSUN",
+   "description": "TFS/PFS - UNSCRs"
+  },
+  {
+   "code": "TFTAU",
+   "description": "TF - Trade Activities in the UAE \u2013 Selling of goods by terrorists or terrorist networks"
+  },
+  {
+   "code": "THRDD",
+   "description": "Use of third parties to deposit funds into a single or multiple diamond/ precious metals/gemstones dealers? accounts."
+  },
+  {
+   "code": "THRDP",
+   "description": "Agent, attorney or financial advisor acts for another person without proper documentation, such as a power of attorney."
+  },
+  {
+   "code": "THRPC",
+   "description": "Customer deposits a large number of third-party cheques."
+  },
+  {
+   "code": "TLVCD",
+   "description": "Trade in large volumes conducted with countries that are not part of the diamond pipeline."
+  },
+  {
+   "code": "TMHRC",
+   "description": "Funds transferred into an account and moved to a high risk country in the same amount."
+  },
+  {
+   "code": "TOGTH",
+   "description": "Customer comes in with another customer and they go to different tellers to conduct multiple currency transactions - possible structuring to avoid reporting thresholds."
+  },
+  {
+   "code": "TORGA",
+   "description": "TF - The parties to the transaction (owner, beneficiary, etc.) are from countries known to support terrorist activities and organizations."
+  },
+  {
+   "code": "TRDPP",
+   "description": "Payment made via virtually any method (cash, wire, cheque, bank drafts, etc.) by a third party with no connection to the underlying transaction."
+  },
+  {
+   "code": "TREAT",
+   "description": "Customer threatens an employee in an effort to discourage required recordkeeping or reporting."
+  },
+  {
+   "code": "TRVCH",
+   "description": "Customer deposits a large number of traveler's cheques, often in the same denominations and in sequence."
+  },
+  {
+   "code": "TSUCO",
+   "description": "Transaction's structure appears unnecessarily complex and designed to obscure the true nature of the transaction."
+  },
+  {
+   "code": "UCAFC",
+   "description": "Unusual cash activity in foreign bank accounts."
+  },
+  {
+   "code": "UCRPI",
+   "description": "Employee uses company resources to further private interests."
+  },
+  {
+   "code": "UFNPO",
+   "description": "The use of funds by non-profit organization is not consistent with the purpose for which it was established."
+  },
+  {
+   "code": "UHACT",
+   "description": "Unlicensed Hawaladar Activity"
+  },
+  {
+   "code": "UIPPS",
+   "description": "Unregistered/unapproved investment - possible indicator of a Ponzi/pyramid scheme"
+  },
+  {
+   "code": "ULICE",
+   "description": "Unexplained/unjustified lifestyle incommensurate with employment or business line; profits/deposits significantly greater than that of peers in similar professions/business lines."
+  },
+  {
+   "code": "UMFAC",
+   "description": "Use of multiple foreign bank accounts."
+  },
+  {
+   "code": "UNFAM",
+   "description": "Transaction involves unfamiliar countries or islands that are hard to find on an atlas or map - offshore high risk jurisdictions."
+  },
+  {
+   "code": "UNLAG",
+   "description": "Agent of the buyer and/or seller in mortgage transaction is unlicensed."
+  },
+  {
+   "code": "UNUSU",
+   "description": "Customer has an unusual or excessively nervous demeanor."
+  },
+  {
+   "code": "UNWIL",
+   "description": "Customer is unwilling to provide/concealing personal background information when opening an account."
+  },
+  {
+   "code": "UUMTC",
+   "description": "Unusual use of money orders, traveler's cheques or funds transfers."
+  },
+  {
+   "code": "VPIES",
+   "description": "Volume of purchases and/or imports that grossly exceed the expected sales amount."
+  },
+  {
+   "code": "WICNB",
+   "description": "Funds withdrawn from the accounts are not consistent with the normal business or personal activity of the accountholder or include transfers to suspicious international jurisdictions."
+  },
+  {
+   "code": "WRNIP",
+   "description": "Customer's internet protocol (IP) address does not match the identifying information provided during online registration"
+  },
+  {
+   "code": "WTOHC",
+   "description": "Wire transfers that originate from countries with high migrant populations are directed to beneficiaries located in the UAE."
+  }
+ ]
+}
