@@ -10,6 +10,7 @@ import db
 import edd
 import geocode
 import goaml
+import intake
 import keywords
 import package
 import pdf as pdf_renderer
@@ -463,6 +464,26 @@ def api_goaml_match_xml():
         mimetype="application/xml",
         headers={"Content-Disposition": f'attachment; filename="SanctionsPlus_{report_type}_{filename}.xml"'},
     )
+
+
+@app.post("/api/extract_document")
+def api_extract_document():
+    """Pull a counterparty name off an uploaded .pdf/.txt document (purchase
+    order, onboarding form, invoice) so it can be screened without typing it
+    in. Simple label-based text extraction — see intake.py — not an AI call."""
+    if "file" not in request.files:
+        return jsonify({"error": "No file uploaded."}), 400
+    upload = request.files["file"]
+    try:
+        text = intake.extract_text(upload.filename, upload.read())
+    except Exception as exc:
+        return jsonify({"error": f"Could not read that file: {exc}"[:240]}), 400
+    result = intake.extract_counterparty(text)
+    if not result["name"]:
+        return jsonify({"error": "No name found in that document — add a labelled line "
+                                  "such as \"Buyer: …\" or \"Counterparty: …\"."}), 422
+    db.log_activity("document_scanned", result["name"])
+    return jsonify(result)
 
 
 @app.post("/api/batch_screen")

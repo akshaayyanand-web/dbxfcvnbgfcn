@@ -1714,6 +1714,54 @@ $('#watch-check-all').addEventListener('click', async (event) => {
   renderWatchlist();
 });
 
+/* ------------------------------------------------------------------ *
+ * Document intake — upload a purchase/onboarding document instead of
+ * typing a name. intake.py pulls a labelled counterparty line out of the
+ * file (no AI call); the steps below just animate quickly over that real,
+ * near-instant extraction so it reads as a live scan rather than a blink.
+ * ------------------------------------------------------------------ */
+const DOC_SCAN_STEPS = [
+  'Reading document…',
+  'Extracting counterparty details…',
+  'Cross-referencing against sanctions &amp; PEP sources…',
+  'Preparing screening request…',
+];
+
+async function runDocScan() {
+  const fileInput = $('#doc-file');
+  if (!fileInput.files.length) { alert('Choose a document first.'); return; }
+
+  const overlay = $('#doc-scan-overlay');
+  const stepsEl = $('#doc-scan-steps');
+  stepsEl.innerHTML = DOC_SCAN_STEPS.map((label, i) =>
+    `<div class="doc-scan-step" data-i="${i}">${label}</div>`).join('');
+  overlay.hidden = false;
+
+  const formData = new FormData();
+  formData.append('file', fileInput.files[0]);
+  const requestPromise = fetch('/api/extract_document', {method: 'POST', body: formData})
+    .then((r) => r.json())
+    .catch(() => ({error: 'Could not reach the server.'}));
+
+  for (let i = 0; i < DOC_SCAN_STEPS.length; i++) {
+    await new Promise((resolve) => setTimeout(resolve, 260));
+    const el = stepsEl.querySelector(`[data-i="${i}"]`);
+    if (el) el.classList.add('done');
+  }
+  const result = await requestPromise;
+  overlay.hidden = true;
+
+  if (result.error) {
+    $('#errors').innerHTML = `<div class="err"><b>Document scan</b>: ${escapeHtml(result.error)}</div>`;
+    return;
+  }
+  $('#name').value = result.name;
+  $('#entity_type').value = result.entity_type || 'any';
+  syncOptional();
+  $('#form').dispatchEvent(new Event('submit'));
+}
+$('#doc-scan').addEventListener('click', runDocScan);
+
 $('#batch-run').addEventListener('click', async (event) => {
   const fileInput = $('#batch-file');
   if (!fileInput.files.length) { alert('Choose a CSV or text file first.'); return; }

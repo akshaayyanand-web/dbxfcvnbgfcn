@@ -99,6 +99,16 @@
 
           <button type="submit" id="go">Screen</button>
         </form>
+
+        <div class="doc-intake">
+          <h3>Or screen from a document</h3>
+          <p class="hint">Upload a purchase order, onboarding form or invoice naming the
+            counterparty — the counterparty's name is pulled straight from the document and
+            screened, no typing required.</p>
+          <input id="doc-file" type="file" accept=".pdf,.txt">
+          <button class="ghost" id="doc-scan" type="button">Scan document</button>
+        </div>
+
         <div class="section" id="errors" style="margin-top:22px"></div>
       </section>
 
@@ -231,6 +241,13 @@
       <!-- ---------------- findings + UBOs ---------------- -->
       <section class="col right" id="right"></section>
     </main>
+  </div>
+</div>
+
+<div id="doc-scan-overlay" class="doc-scan-overlay" hidden>
+  <div class="doc-scan-card">
+    <div class="doc-scan-spinner"></div>
+    <div class="doc-scan-steps" id="doc-scan-steps"></div>
   </div>
 </div>
 
