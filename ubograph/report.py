@@ -272,6 +272,93 @@ def auto_risk_assessment(report: dict, analyst_comments: Optional[str] = None) -
     }
 
 
+def _entity_resolution_summary(report: dict) -> str:
+    """Plain-language summary of what identity resolution actually did —
+    which sources were checked and whether any near-duplicate identity was
+    found and left for a human to confirm. Deterministic, not generated."""
+    subject = report["subject"]
+    name = subject.get("name") or "This entity"
+    sources = report.get("sources_used") or subject.get("sources") or []
+    identifiers = [v for v in (subject.get("country"), subject.get("birth_date"), subject.get("reg_number")) if v]
+    parts = [
+        f"Resolved \"{name}\" against {', '.join(sources) if sources else 'no configured source'}"
+        + (f", narrowed using {len(identifiers)} supplied identifier(s)." if identifiers else
+           ", using the name alone — add a birth year, nationality or registration number to "
+           "narrow a common name.")
+    ]
+    matches = report.get("identity_matches") or []
+    if matches:
+        parts.append(
+            f"{len(matches)} other record{'s' if len(matches) != 1 else ''} share a close name "
+            "match but were NOT automatically merged — each is a possible same-identity "
+            "candidate pending manual confirmation, not a resolved duplicate."
+        )
+    else:
+        parts.append("No unresolved near-duplicate identity found in this result set.")
+    return " ".join(parts)
+
+
+def _draft_sar_narrative(report: dict, rating: str) -> Optional[str]:
+    """A starting-point SAR/STR narrative for High/Critical ratings only —
+    explicitly unfiled and explicitly for a human compliance officer to
+    verify, edit and file themselves. Never actually submitted anywhere."""
+    if rating not in ("High", "Critical"):
+        return None
+    subject = report["subject"]
+    name = subject.get("name") or "The subject"
+    flags = ", ".join(subject.get("flags") or []) or "the flags identified"
+    titles = ", ".join(f["title"] for f in (report.get("findings") or [])) or "the findings above"
+    sources = ", ".join(report.get("sources_used") or []) or "the configured sources"
+    return (
+        "DRAFT — not filed. For compliance officer review only.\n\n"
+        f"Subject: {name}. Basis for escalation: {flags} ({titles}), identified through "
+        f"automated screening against {sources}. This draft narrative is a starting point "
+        "for the officer's own investigation — it must be verified, edited and formally "
+        "filed by a human compliance officer through the relevant regulator's own system "
+        "(e.g. goAML/FinCEN). It is not itself a filing, and nothing has been frozen, "
+        "blocked or reported."
+    )
+
+
+def aca_briefing(report: dict, analyst_comments: Optional[str] = None) -> dict:
+    """"Autonomous Compliance Agent" demo briefing: restates the same
+    deterministic, template-driven output as auto_risk_assessment() in a
+    staged, agent-style shape (entity resolution -> risk reasoning ->
+    evidence -> draft filing -> recommended action -> audit trail) for an
+    illustrative, presentation-style view.
+
+    Nothing here is model-generated and no filing, freeze or other action is
+    ever actually taken: every field is computed from this report's own
+    already-screened data, and the draft SAR/STR text is explicitly unfiled
+    pending a human compliance officer.
+    """
+    assessment = auto_risk_assessment(report, analyst_comments)
+    rating = assessment["overall_rating"]
+    audit_trail = [
+        {"step": "Entity resolution", "detail": _entity_resolution_summary(report)},
+        {"step": "Risk reasoning", "detail": report["subject"].get("band_reason") or ""},
+    ]
+    audit_trail += [
+        {"step": f"Finding: {f['title']}", "detail": f["detail"]}
+        for f in (report.get("findings") or [])
+    ]
+    audit_trail.append({
+        "step": "Recommended action",
+        "detail": "; ".join(assessment["recommended_actions"]),
+    })
+    return {
+        "overall_rating": rating,
+        "risk_score": assessment["risk_score"],
+        "entity_resolution": _entity_resolution_summary(report),
+        "risk_factors": assessment["risk_factors"],
+        "screening_results": assessment["screening_results"],
+        "recommended_actions": assessment["recommended_actions"],
+        "draft_sar": _draft_sar_narrative(report, rating),
+        "audit_trail": audit_trail,
+        "generated_at": assessment["generated_at"],
+    }
+
+
 def _load_dossier(subject: dict):
     """Full source detail for the subject, fetched on demand.
 

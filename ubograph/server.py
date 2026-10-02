@@ -16,7 +16,7 @@ import pdf as pdf_renderer
 import reasons
 import reference
 import risk_rating
-from report import build_report
+from report import aca_briefing, build_report
 from search import batch_screen, run_search, screen_name
 
 app = Flask(__name__, static_folder="frontend", static_url_path="")
@@ -296,6 +296,7 @@ def api_report():
     report = build_report(payload, node_id)
     if report.get("error"):
         return jsonify(report), 404
+    report["aca"] = aca_briefing(report)
     db.log_activity("report_viewed", report["subject"].get("name", ""))
     return jsonify(report)
 

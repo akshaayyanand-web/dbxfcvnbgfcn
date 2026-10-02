@@ -268,6 +268,34 @@ td.num{font-family:var(--mono); font-size:12.5px; text-align:right; white-space:
                      border-left:2px solid var(--orange); padding-left:8px}
 .report .disclaimer{font-size:12.5px; color:var(--muted); border-top:1px solid var(--line);
                     margin-top:26px; padding-top:12px}
+
+.aca-panel{
+  margin-top:26px; padding:18px; border-radius:var(--radius-md); background:var(--accent-soft);
+  border:1px solid var(--accent);
+}
+.aca-head{display:flex; gap:12px; align-items:flex-start}
+.aca-badge{
+  flex:none; display:inline-flex; align-items:center; justify-content:center;
+  width:40px; height:40px; border-radius:var(--radius-sm); background:var(--accent-strong);
+  color:#fff; font:800 13px/1 var(--mono); letter-spacing:.02em;
+}
+.aca-head h3{margin:0 0 4px}
+.aca-head .meta{margin:0; font-size:12.5px; color:var(--muted)}
+.aca-steps{margin-top:14px; display:flex; flex-direction:column; gap:10px}
+.aca-step{
+  background:var(--panel); border-radius:var(--radius-sm); padding:12px 14px;
+  border-left:3px solid var(--accent); opacity:0; transform:translateY(6px);
+  transition:opacity .35s ease, transform .35s ease;
+}
+.aca-step.show{opacity:1; transform:translateY(0)}
+.aca-step-label{font-weight:600; font-size:13px; color:var(--accent-strong)}
+.aca-step-body{font-size:13px; color:var(--ink); margin-top:5px}
+.aca-step-body ul,.aca-step-body ol{margin:4px 0 0; padding-left:20px}
+.aca-step-body li{margin-bottom:3px}
+.aca-sar{
+  font:12.5px/1.5 var(--mono); background:var(--bg); border-radius:var(--radius-sm);
+  padding:10px 12px; white-space:normal;
+}
 .actions{display:flex; gap:9px; align-items:center; margin:16px 0 4px; flex-wrap:wrap}
 .action-groups{
   display:flex; flex-direction:column; gap:10px; align-items:flex-start;
