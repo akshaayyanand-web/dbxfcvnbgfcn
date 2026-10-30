@@ -2,7 +2,7 @@
 name = "flame-in-freefall"
 version = "0.1.0"
 description = "Microgravity combustion video analysis and predictive modelling platform"
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 
 [tool.pytest.ini_options]
 pythonpath = ["."]

@@ -3,6 +3,48 @@
 Every result here was produced by actually running the commands shown. Nothing
 is extrapolated.
 
+## Run of 2026-10-30, increment 4 (FastAPI backend, persistence, Docker)
+
+```bash
+FLAME_RUN_NASA_TESTS=1 python -m pytest -q
+```
+
+**Result: 122 passed, 0 failed, 0 skipped (83 s).** Without
+`FLAME_RUN_NASA_TESTS`, the one NASA end-to-end test is skipped (it needs the
+580 MB 19254C1 image sequence).
+
+`test_api.py` (14 tests) covers:
+* health and status, with no path leaks;
+* experiment CRUD and validation (O2 > 1, blank name, unknown field, bad
+  calibration, bad analysis config);
+* upload → job → telemetry paging → JSON/CSV results → WebSocket stream →
+  export → reanalysis;
+* upload security: wrong extension, spoofed signature, empty file,
+  valid-signature-but-undecodable, path-traversal file name, size limit with
+  cleanup;
+* samples, cancellation of a queued job and the conflicts it causes;
+* restart recovery (processing → failed, queued → completed);
+* prediction (OOD warning, forbidden input, missing input, experiment
+  model-version link) and model unavailable (503);
+* datasets and filters;
+* API key (401, reads open, WebSocket rejected) and rate limiting (429);
+* NASA sample end to end (opt-in): 19254C1 through the API, 159 limb fits,
+  the same as the standalone run.
+
+### Live server and container checks
+
+| Check | Result |
+|---|---|
+| `uvicorn backend.app:app` | health OK, 19 routes in OpenAPI, `/docs` 200, JSON logs |
+| `docker build` (base `mirror.gcr.io/library/python:3.13-slim`, Docker Hub was rate-limited) | built, 1.5 GB |
+| API container + `postgres:16-alpine` | health `healthy`; writes without key → 401; synthetic job completed (150 frames) with rows in PostgreSQL; prediction OK |
+| NASA sample 19254C1 inside the container (read-only data mount) | completed in 26 s, 159 limb fits, mean R 16.04 mm, identical to local |
+| Error log lines | 0 |
+
+`docker compose up` itself and the GitHub Actions workflow
+(`.github/workflows/ci.yml`) were written but **not executed** in this
+environment.
+
 ## Run of 2026-10-30, increment 3 (shell-limb radius, flame-lifetime model)
 
 ```bash
@@ -215,4 +257,4 @@ there before quoting any number.
 ## Not yet tested
 
 * Flame-size measurement on real ACME science-camera images (needs an image-sequence loader and a successful test point).
-* API, database, WebSocket, ML, reports and frontend: not yet implemented.
+* Reports (PDF) and frontend: not yet implemented.

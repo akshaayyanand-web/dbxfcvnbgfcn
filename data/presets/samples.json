@@ -1,0 +1,49 @@
+{
+  "schema": "flame-in-freefall/samples/v1",
+  "samples": [
+    {
+      "id": "PSI-23/19254C1",
+      "title": "s-Flame 19254C1: spherical C2H4/N2 diffusion flame (ISS)",
+      "data_class": "nasa_psi",
+      "directory": "raw/PSI-23/img/19254C1",
+      "source": "NASA PSI-23 (ACME s-Flame), CFI intensified camera, CC0-1.0, DOI 10.60555/k57n-p030",
+      "download_hint": "python -m backend.data.psi_client PSI-23 --match 19254C1_INTNS.zip --max-bytes 800000000, then unzip into data/raw/PSI-23/img/19254C1",
+      "test_point": "19254C1",
+      "conditions": {"fuel_type": "50% C2H4 / 50% N2 bottle, diluted with N2 (nominal 21.5 % C2H4)", "oxygen_fraction": 0.21, "flow_programme": "constant", "atmosphere_inert": "N2"},
+      "calibration": {"known_length_mm": 6.35, "known_length_sigma_mm": 0.05, "measured_length_px": 98.0, "measured_length_sigma_px": 2.65,
+                      "image_width": 1392, "image_height": 1040, "camera_id": "ACME CFI intensified camera",
+                      "method": "in-image burner sphere (measure_dark_disk)",
+                      "notes": "98 +/- 1 px on this test; sigma includes the +/-2.5 % between-test spread (SCIENTIFIC_ASSUMPTIONS A-CAL-4)"},
+      "analysis_config": {"segmentation": {"blur_kernel": 9, "morph_kernel": 7, "min_contour_area_px": 500},
+                          "start_time_s": 3.4, "end_time_s": 21.5, "processing_scale": 0.5, "frame_step": 2,
+                          "radius_method": "limb", "limb_center_hint": [670.5, 382.4], "limb_min_radius_mm": 3.175}
+    },
+    {
+      "id": "PSI-23/19304A7",
+      "title": "s-Flame 19304A7: CH4/N2 flame that opens into a C shape (ISS)",
+      "data_class": "nasa_psi",
+      "directory": "raw/PSI-23/img/19304A7",
+      "source": "NASA PSI-23 (ACME s-Flame), CFI intensified camera, CC0-1.0, DOI 10.60555/k57n-p030",
+      "download_hint": "python -m backend.data.psi_client PSI-23 --match 19304A7_INTNS.zip --max-bytes 300000000, then unzip into data/raw/PSI-23/img/19304A7",
+      "test_point": "19304A7",
+      "conditions": {"fuel_type": "45% CH4 / 55% N2", "oxygen_fraction": 0.21, "flow_programme": "constant", "atmosphere_inert": "N2"},
+      "calibration": {"known_length_mm": 6.35, "known_length_sigma_mm": 0.05, "measured_length_px": 103.0, "measured_length_sigma_px": 2.5,
+                      "image_width": 1392, "image_height": 1040, "camera_id": "ACME CFI intensified camera",
+                      "method": "in-image burner sphere (measure_dark_disk)", "notes": "103 +/- 2.5 px on this test"},
+      "analysis_config": {"segmentation": {"blur_kernel": 9, "morph_kernel": 7, "min_contour_area_px": 500},
+                          "start_time_s": 1.95, "end_time_s": 5.6, "processing_scale": 0.5,
+                          "radius_method": "limb", "limb_center_hint": [666.5, 379.8], "limb_min_radius_mm": 3.175}
+    },
+    {
+      "id": "SYNTHETIC/demo",
+      "title": "SYNTHETIC demonstration video (not NASA data)",
+      "data_class": "synthetic",
+      "generated": true,
+      "source": "backend/vision/synthetic.py - simulated, watermarked, with ground truth",
+      "conditions": {"fuel_type": "simulated", "oxygen_fraction": null, "flow_programme": "simulated"},
+      "calibration": {"known_length_mm": 10.0, "measured_length_px": 100.0, "measured_length_sigma_px": 1.0,
+                      "image_width": 640, "image_height": 480, "method": "nominal synthetic scale (simulated)"},
+      "analysis_config": {}
+    }
+  ]
+}

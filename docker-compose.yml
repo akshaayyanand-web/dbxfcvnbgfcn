@@ -1,0 +1,42 @@
+# FLAME IN FREEFALL - API + PostgreSQL.
+#   cp .env.example .env   (set POSTGRES_PASSWORD)
+#   docker compose up --build
+# NASA image sequences (optional, large) are mounted read-only from ./data/raw.
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: flame
+      POSTGRES_USER: flame
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U flame -d flame"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+
+  api:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      FLAME_DATABASE_URL: postgresql+psycopg://flame:${POSTGRES_PASSWORD}@db:5432/flame
+      FLAME_API_KEY: ${FLAME_API_KEY:-}
+      FLAME_CORS_ORIGINS: ${FLAME_CORS_ORIGINS:-http://localhost:5173}
+      FLAME_MAX_UPLOAD_MB: ${FLAME_MAX_UPLOAD_MB:-500}
+      FLAME_MAX_WORKERS: ${FLAME_MAX_WORKERS:-2}
+      FLAME_RATE_LIMIT_PER_MINUTE: ${FLAME_RATE_LIMIT_PER_MINUTE:-30}
+    volumes:
+      - storage:/app/storage
+      - ./data/raw:/app/data/raw:ro
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+  storage:

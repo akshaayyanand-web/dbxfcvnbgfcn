@@ -12,3 +12,5 @@ data/raw/
 *.mov
 *.groundtruth.json
 data/docs/
+storage/
+docker/extra-ca/*.crt

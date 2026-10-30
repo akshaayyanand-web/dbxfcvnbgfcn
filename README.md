@@ -3,18 +3,22 @@
 Microgravity combustion intelligence platform. It turns combustion video and
 experiment records into traceable measurements, predictions and reports.
 
-> **Status: increment 1 of 7.** The physics engine and computer-vision engine are
-> implemented and tested. The data, ML, API, frontend and deployment layers are
-> planned (see `PROJECT_STATUS.md`). **No NASA data has been ingested yet**
-> (see `docs/DATA_AVAILABILITY_MATRIX.md`). All sample videos are SYNTHETIC and
-> labelled as such.
+> **Status (2026-10-30):** the following are implemented and tested (122 tests):
+> * physics, computer-vision and shell-limb measurement engines;
+> * the NASA ACME s-Flame dataset (289 test points from NASA PSI, CC0);
+> * a cross-validated flame-lifetime survival model (it ranks conditions, but absolute accuracy is limited: A-ML-4);
+> * the FastAPI backend with persistence, jobs and live telemetry;
+> * Docker deployment.
+>
+> The React interface and report generation are next (see `PROJECT_STATUS.md`).
+> Synthetic demo content is always labelled SYNTHETIC.
 
 ## Quick start
 
-Requires Python 3.11+. FFmpeg is optional.
+Requires Python 3.12+ (tested on 3.13). FFmpeg is strongly recommended (A-CV-10).
 
 ```bash
-python -m pip install -r backend/requirements.txt
+python -m pip install -r backend/requirements-dev.txt
 ```
 
 ```bash
@@ -31,6 +35,18 @@ Analyse it (10 mm reference spanning 100 px), writing JSON, CSV and an annotated
 
 ```bash
 python -m backend.tools.analyze_video samples/SYNTHETIC_spherical_flame_demo.mp4 --experiment-id DEMO-001 --known-mm 10 --measured-px 100 --annotate --out results/
+```
+
+Run the API (docs at http://127.0.0.1:8000/docs):
+
+```bash
+uvicorn backend.app:app --reload
+```
+
+Or run the full stack with PostgreSQL (see `DEPLOYMENT_GUIDE.md`):
+
+```bash
+docker compose up --build
 ```
 
 Benchmark on your hardware:
@@ -84,4 +100,6 @@ Missing detections stay missing. Nothing is interpolated.
 | `DATA_DICTIONARY.md` | Every output field with unit and quantity class |
 | `docs/DATA_AVAILABILITY_MATRIX.md` | What NASA ACME data is known or unknown |
 | `TEST_REPORT.md` | Executed test results, accuracy and benchmarks |
+| `API_DOCUMENTATION.md` | Every endpoint, request/response and error code |
+| `DEPLOYMENT_GUIDE.md` | Local, Docker/PostgreSQL, configuration, operations |
 | `PROJECT_STATUS.md` | Done, remaining, risks, known issues |

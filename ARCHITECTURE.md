@@ -11,27 +11,28 @@ that verify it against known references.
 ```
                  ┌────────────────────────────────────────────────────────────┐
                  │ 7. Enterprise infrastructure (FastAPI, PostgreSQL, jobs,   │
-                 │    auth, logging, Docker, CI)                     [planned]│
+                 │    auth, logging, Docker, CI)                       [done] │
                  └───────────────┬───────────────────────────┬────────────────┘
                                  │                           │
 ┌────────────────────┐   ┌───────▼──────────┐   ┌────────────▼──────────┐   ┌──────────────────┐
 │ 1. Scientific data │   │ 2. Computer      │──▶│ 4. Physics engine     │──▶│ 6. Reporting     │
 │    (ingestion,     │   │    vision  [done]│   │  geometry, kinematics,│   │  PDF/CSV/JSON    │
-│    provenance,     │   │  segmentation,   │   │  uncertainty,         │   │        [planned] │
-│    registry)       │   │  tracking,       │   │  validation    [done] │   └──────────────────┘
-│        [blocked*]  │   │  calibration     │   └────────────┬──────────┘            ▲
+│    provenance,     │   │  segmentation,   │   │  uncertainty,         │   │ [JSON/CSV done,  │
+│    registry)       │   │  tracking,       │   │  validation    [done] │   │   PDF planned]   │
+│          [s-Flame] │   │  calibration,    │   │                       │   └──────────────────┘
+│                    │   │  limb fit [done] │   └────────────┬──────────┘            ▲
 └─────────┬──────────┘   └───────┬──────────┘                │                       │
           │                      │ per-frame events          │                       │
           ▼                      ▼                           ▼                       │
 ┌────────────────────┐   ┌──────────────────┐   ┌───────────────────────┐            │
 │ 3. Predictive      │   │ 5. Real-time     │   │ Experiment "digital   │────────────┘
 │    intelligence    │   │    telemetry     │   │ twin" record (DB)     │
-│        [planned]   │   │  (WebSocket)     │   │             [planned] │
-└────────────────────┘   │  [callback done, │   └───────────────────────┘
-                         │   WS planned]    │
+│  [s-Flame AFT done]│   │  (WebSocket)     │   │                [done] │
+└────────────────────┘   │  [callback + WS  │   └───────────────────────┘
+                         │   done]          │
                          └──────────────────┘
 ```
-\* Blocked on network access to NASA PSI; see `docs/DATA_AVAILABILITY_MATRIX.md`.
+Status as of increment 4. Reporting (PDF) and the React frontend remain.
 
 ## Module map (implemented)
 
@@ -92,3 +93,15 @@ Follows the master specification, Part XVII. The directories `backend/data`,
 `backend/ml`, `backend/experiments` and `backend/reports` exist as empty packages.
 Their status is tracked in `PROJECT_STATUS.md`. Frontend (React + Vite + TS) and
 deployment files will be added in later increments.
+
+## Backend modules (increment 4)
+
+| Module | Responsibility |
+|---|---|
+| `backend/app.py` | FastAPI routes, error mapping, CORS, auth/rate-limit dependencies, WebSocket |
+| `backend/config.py` | Environment settings |
+| `backend/database.py` | SQLAlchemy models `Experiment`, `AnalysisJob`, `SchemaVersion` |
+| `backend/experiments/` | Pydantic schemas, repository, service (create/update/duplicate/analyse/export) |
+| `backend/jobs.py` | Thread-pool job runner, telemetry ring buffer, cancellation, restart recovery |
+| `backend/security.py` | Upload validation, API key, rate limiter |
+| `backend/data/samples.py` | Server-side sample registry (NASA presets, synthetic demo) |

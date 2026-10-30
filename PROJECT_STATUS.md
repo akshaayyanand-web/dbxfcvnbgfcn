@@ -43,10 +43,22 @@ _Last updated: 2026-10-30. Submission target: 2026-11-14/15._
 | Shell-limb radius (RANSAC circle fit to outer half-max edges) + engine `radius_method="limb"` | `backend/vision/limb.py`, `cv_engine.py` | 8 tests, real flame 19254C1 |
 | Flame-lifetime survival model (AFT, leave-one-day-out, calibrated intervals, OOD and leakage guards, JSON artifacts) | `backend/ml/survival.py`, `backend/ml/sflame_model.py`, `models/sflame_lifetime/` | 8 tests, validation table |
 
+## Completed (increment 4)
+
+| Component | Files | Verified by |
+|---|---|---|
+| FastAPI backend: 19 routes incl. experiments CRUD/duplicate/reanalyze, upload and sample analysis, jobs, telemetry polling and WebSocket, results, predict, models, datasets, export | `backend/app.py`, `backend/experiments/`, `backend/jobs.py` | 14 API tests, live uvicorn |
+| Persistence (SQLAlchemy; SQLite default, PostgreSQL) and job recovery after restart | `backend/database.py`, `backend/jobs.py` | tests; Postgres in Docker |
+| Security: upload signature/size/traversal checks, optional API key, rate limit, no path leaks | `backend/security.py` | tests |
+| Server-side samples with measured calibration presets (2 NASA, 1 synthetic) | `data/presets/samples.json`, `backend/data/samples.py` | tests |
+| Docker image, compose (API + Postgres), `.env.example`, CI workflow, API and deployment docs | `Dockerfile`, `docker-compose.yml`, `.github/workflows/ci.yml`, `API_DOCUMENTATION.md`, `DEPLOYMENT_GUIDE.md` | image built and run with Postgres (compose and CI not executed) |
+
 ## Remaining (in planned order)
 
-0. **Next:** FastAPI backend (experiments, analysis jobs, telemetry WebSocket,
-   model inference, exports) and persistence, then the React interface.
+0. **Next:** the React + Vite + TypeScript mission-control interface (overview,
+   experiment config, live analysis with overlays, prediction, data explorer,
+   analytics, comparison, report centre, settings, presentation mode), then
+   PDF report generation.
 1. **Data layer, remaining:** a general dataset registry for the other ACME
    investigations (PSI-10 Flame Design and PSI-159 CFI-G use different file
    naming), CIR chamber pressure/O2 if obtainable (per-test O2 is currently

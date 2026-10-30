@@ -1,11 +1,14 @@
-# Versions pinned to those used for the recorded test run (TEST_REPORT.md).
-# Runtime
+# Runtime dependencies, pinned to the versions used for the recorded test runs (TEST_REPORT.md).
 numpy==2.5.3
 pandas==3.0.5
 scipy==1.18.1
 opencv-python-headless==5.0.0.93
-# Test
-pytest==9.2.0
-# External executables (optional, recommended): ffmpeg / ffprobe
-#   - ffprobe: codec name and duration in metadata
-#   - ffmpeg: variable-frame-rate synthetic test videos
+fastapi==0.162.0
+starlette==1.7.0
+pydantic==2.13.5
+uvicorn==0.54.0
+SQLAlchemy==2.1.6
+python-multipart==0.0.32
+psycopg[binary]==3.3.6
+# External executables (recommended): ffmpeg / ffprobe
+#   - required for reliable decoding of interlaced H.264 (A-CV-10)

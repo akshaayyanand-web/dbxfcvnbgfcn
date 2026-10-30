@@ -1,0 +1,9 @@
+.git
+storage
+data/raw
+data/docs
+**/__pycache__
+.pytest_cache
+.env
+*.mp4
+*.avi
