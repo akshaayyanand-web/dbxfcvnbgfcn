@@ -86,9 +86,10 @@ docker compose up --build
   limiter and telemetry buffers are in-memory, so run **one API process**. Use
   a shared queue (e.g. Redis + RQ/Celery) before scaling horizontally.
 * **Schema:** the schema is created with `create_all`, and a `schema_version`
-  row (currently 1) is recorded. Any change to existing tables must bump
-  `SCHEMA_VERSION` and ship a migration script. Alembic is the intended tool
-  once the schema is no longer additive-only.
+  row (currently 2) is recorded. Additive changes ship as entries in
+  `MIGRATIONS` (`backend/database.py`), applied once at startup: v2 added
+  `experiments.archived`. Alembic is the intended tool once a change is no
+  longer additive.
 * **Security:**
   * uploads are checked by extension and file signature, streamed with a size
     cap, and stored under random names;

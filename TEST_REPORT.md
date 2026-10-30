@@ -3,6 +3,42 @@
 Every result here was produced by actually running the commands shown. Nothing
 is extrapolated.
 
+## Run of 2026-10-30, increment 5 (interface-support API, reports, data correction)
+
+```bash
+python -m pytest -q
+```
+
+**Result: 128 passed, 1 skipped (the opt-in NASA test), 0 failed (80 s).**
+
+New `test_api_extra.py` (7 tests) covers:
+* frames: media info, JPEG frames with cache identity, out-of-range 404, 409
+  without input;
+* segmentation preview against the synthetic truth (91.33 px at frame 30);
+* prediction history and its experiment link;
+* reports: 13 sections, JSON/PDF/CSV, section subsets, unknown sections
+  rejected, comparison report, missing format 404;
+* dataset statistics and settings: validation, and the default analysis
+  config applied to new experiments;
+* archive filter, processing queue, activity feed, resource and throughput
+  metrics, logs;
+* migration of a schema-v1 database.
+
+**Data correction found by these tests:** the dataset statistics reported 2
+duplicate test-point IDs. Cause: NASA re-runs saved as `<tp>_1`. The builder
+double-counted `19256B2` and `20176K1` and dropped their `_1` runs (A-SF-8).
+
+After the fix:
+* 289 runs, 0 duplicates;
+* `20176K1_1` added (extinguished after 2.73 s);
+* `19256B2_1` had no fuel flow.
+
+The retrained lifetime model is `sflame-lifetime-ab84071f3631`. Every time ratio
+moved by at most 0.01. C-index across days is 0.696 (was 0.697), within-day
+0.561, and median |log error| 0.727. The interval inflation is
+×1.38 (was ×1.36). The increment-3 tables
+below are kept as recorded at the time.
+
 ## Run of 2026-10-30, increment 4 (FastAPI backend, persistence, Docker)
 
 ```bash
