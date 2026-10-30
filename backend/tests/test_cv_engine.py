@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import json
 import math
+import shutil
 import threading
 
 import cv2
@@ -30,6 +31,7 @@ from backend.vision.geometry import measure_contour
 from backend.vision.segmentation import SegmentationConfig, SegmentationMethod, Segmenter, find_contours
 from backend.vision.synthetic import SyntheticFlameSpec, write_synthetic_video
 from backend.vision.tracking import DetectionStatus, FlameTracker
+from backend.tests.conftest import requires_ffmpeg
 
 CAL = dict(known_length_mm=10.0, measured_length_px=100.0, measured_length_sigma_px=1.0,
            image_width=640, image_height=480)
@@ -427,3 +429,46 @@ def test_data_dictionary_in_sync():
     text = (Path(__file__).resolve().parents[2] / "DATA_DICTIONARY.md").read_text()
     missing = [k for k in FIELD_DEFINITIONS if f"| `{k}` |" not in text]
     assert not missing, f"DATA_DICTIONARY.md is missing fields: {missing}"
+
+
+@requires_ffmpeg
+def test_interlaced_video_decodes_correctly(demo_video, tmp_path):
+    """Regression: OpenCV can return all-black frames for interlaced H.264 (seen on real ACME
+    downlink video, and process-state dependent), so FFmpeg is the default decoder."""
+    from backend.vision.synthetic import write_interlaced_copy
+    path, gt, _ = demo_video
+    inter = write_interlaced_copy(path, tmp_path / "SYNTHETIC_interlaced.mp4")
+    res = FlameAnalyzer(AnalysisConfig(max_frames=90)).analyze(inter, "AUTO")
+    assert res.summary["decoder"] == "ffmpeg"
+    d = merged(res, gt)
+    np.testing.assert_allclose(d.timestamp_s, d.timestamp_s_true, atol=1e-3)
+    vis = d.query("flame_visible")
+    assert (vis.status == "detected").all()
+    assert (vis.equivalent_radius_px - vis.radius_px).abs().max() < 1.0
+
+
+def test_blank_decoder_output_is_reported_as_error(tmp_path):
+    p = tmp_path / "zeros.avi"
+    w = cv2.VideoWriter(str(p), cv2.VideoWriter_fourcc(*"MJPG"), 10, (64, 48))
+    for _ in range(5):
+        w.write(np.zeros((48, 64, 3), np.uint8))
+    w.release()
+    res = FlameAnalyzer(AnalysisConfig(decoder="opencv")).analyze(p, "ZEROS")
+    assert any(i.code == "all_frames_blank" and i.severity == "error" for i in res.issues)
+
+
+@pytest.mark.parametrize("decoder", ["opencv", "ffmpeg"])
+def test_both_decoders_agree_on_progressive_video(demo_video, decoder):
+    if decoder == "ffmpeg" and shutil.which("ffmpeg") is None:
+        pytest.skip("ffmpeg not installed")
+    path, gt, _ = demo_video
+    res = FlameAnalyzer(AnalysisConfig(decoder=decoder, max_frames=60)).analyze(path, decoder)
+    assert res.summary["decoder"] == decoder
+    d = merged(res, gt)
+    np.testing.assert_allclose(d.timestamp_s, d.timestamp_s_true, atol=1e-3)
+    assert (d.equivalent_radius_px - d.radius_px).abs().max() < 1.0
+
+
+def test_decoder_validation():
+    with pytest.raises(ValueError):
+        AnalysisConfig(decoder="gstreamer").validate()

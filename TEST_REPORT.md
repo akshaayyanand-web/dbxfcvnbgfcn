@@ -3,6 +3,39 @@
 Every result here was produced by actually running the commands shown. Nothing
 is extrapolated.
 
+## Run of 2026-10-30, update (real NASA data, decoder fix, PSI client)
+
+```bash
+python -m pytest -q
+```
+
+**Result: 73 passed, 0 failed, 0 skipped (33.6 s).** The 11 tests added since the first run:
+* `test_interlaced_video_decodes_correctly`: regression for the blank-frame
+  failure found on real ACME video. It uses a synthetic interlaced H.264 file
+  with ground truth: radius error < 1 px and timestamps < 1 ms.
+* `test_blank_decoder_output_is_reported_as_error`
+* `test_both_decoders_agree_on_progressive_video` [opencv, ffmpeg]
+* `test_decoder_validation`
+* `test_data.py` (6 tests): PSI client parsing, deduplication, refusal of
+  restricted or oversized files, rejection of a non-HTTPS signed URL, accession
+  validation.
+
+**Benchmark after making FFmpeg the default decoder** (same hardware, 3 repeats, median):
+
+| Case | OpenCV decoder (before) | FFmpeg decoder (now) | Target < 3 s |
+|---|---|---|---|
+| 640×480 | 1.80 s | **1.92 s** | met |
+| 1280×720 full res | 4.78 s | **5.20 s** | **not met** |
+| 1280×720 `processing_scale=0.5` | 1.46 s | **1.78 s** | met |
+
+Accuracy was unchanged: max radius error 0.15 / 0.17 / 0.22 px.
+
+**First run on real NASA footage:** PSI-23 test point 19254H1, downlink MP4,
+55–80 s, every 3rd frame. FFmpeg decoding worked and the timestamps came from
+the container. The engine reported 240 "detected" frames, but the object was a
+**static hardware glow at the image border, not a flame** (A-CV-11). This is a
+recorded limitation, not a validated measurement.
+
 ## Run of 2026-10-30 (increment 1: physics and CV engine)
 
 **Environment:** Linux 6.18 x86_64 cloud container, 4 vCPU Intel Xeon @ 2.10 GHz,
@@ -56,5 +89,5 @@ there before quoting any number.
 
 ## Not yet tested
 
-* Real ACME (or any real) flame footage: not available in this environment.
+* Flame-size measurement on real ACME science-camera images (needs an image-sequence loader and a successful test point).
 * API, database, WebSocket, ML, reports and frontend: not yet implemented.

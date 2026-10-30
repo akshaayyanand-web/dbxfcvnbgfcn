@@ -71,6 +71,23 @@ are underestimated. The frame is flagged `touches_border` and the analysis gets 
 foreground) × min(1, local contrast ÷ 0.25). `confidence` = quality × tracking
 continuity. Neither is a calibrated probability of correctness.
 
+**A-CV-10: Decoding.** FFmpeg is the default decoder. Interlaced frames are
+deinterlaced with `yadif`, one output frame per input frame. Timestamps come from
+the video stream's packet PTS, sorted into presentation order.
+
+OpenCV is a fallback only. On the real ACME s-Flame downlink MP4 (interlaced
+H.264), OpenCV returned *successfully decoded, all-black* frames. On a synthetic
+reproduction, the same file decoded correctly or as black depending on unrelated
+process state, so no per-file check can make it trustworthy. If every analysed
+frame is exactly zero, the run gets an `all_frames_blank` **error**.
+
+**A-CV-11: Static non-flame emitters.** Hot igniters, heated burner parts and
+indicator LEDs are bright, compact and stable. The segmenter cannot tell them
+from a flame. In the 19254H1 downlink video the engine reported 240 "detections"
+of a static border glow while no flame was visible. Real-footage analysis
+therefore needs a region of interest (planned) and visual confirmation. A
+detection whose size and position never change is suspect.
+
 ## 3. Calibration
 
 **A-CAL-1.** `mm_per_px = known_length_mm / measured_length_px`. This is valid only
@@ -107,8 +124,8 @@ Properties:
 * `numpy.gradient` finite differences are available as an unsmoothed reference.
 
 **A-PH-3: Timestamps.** Per-frame presentation timestamps come from the
-container (OpenCV `CAP_PROP_POS_MSEC`, checked against `ffprobe` packet times
-during development). `index / fps` is used only if the container timestamps are
+container: the video stream's packet PTS via `ffprobe` when decoding with FFmpeg
+(the default), or OpenCV `CAP_PROP_POS_MSEC` with the OpenCV fallback. `index / fps` is used only if the container timestamps are
 not strictly increasing, and the result records which source was used.
 Variable frame rate is detected and reported.
 
@@ -157,9 +174,15 @@ agrees within 8 %. The calibration contributes `|v|·σ_s/s` to the systematic p
 
 ## 6. Data
 
-**A-DATA-1.** No NASA data has been ingested yet; see
-`docs/DATA_AVAILABILITY_MATRIX.md`. No model may be described as NASA-trained
-until the provenance records in the dataset registry show it was.
+**A-DATA-1.** NASA ACME data is available from PSI (CC0, verified 2026-10-30;
+see `docs/DATA_AVAILABILITY_MATRIX.md`). Only individual files have been
+inspected so far, and no model has been trained. No model may be described as
+NASA-trained until the provenance records show it was.
+
+**A-DATA-4.** ACME telemetry is stored as raw sensor voltages. Any conversion to
+physical units (pressure, flow, temperature) needs the transfer functions from
+NASA's engineering documents. Until those are verified, the values are reported
+only as voltages.
 
 **A-DATA-2.** All synthetic content carries the `SYNTHETIC_` filename prefix, an
 on-frame watermark ("SYNTHETIC DEMO - NOT NASA DATA") and a ground-truth sidecar

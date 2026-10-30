@@ -116,6 +116,7 @@ class VideoMetadata:
     reported_frame_count: int
     duration_s: float | None
     file_size_bytes: int
+    opencv_first_frame_blank: bool = False  # OpenCV decoded frame 0 as all zeros (e.g. interlaced H.264)
 
     def to_dict(self) -> dict:
         return asdict(self)
@@ -171,6 +172,7 @@ def probe_video(path: str | Path, max_file_bytes: int = DEFAULT_MAX_FILE_BYTES) 
         fps = float(cap.get(cv2.CAP_PROP_FPS) or 0.0)
         count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT) or 0)
         fourcc = _fourcc_to_str(cap.get(cv2.CAP_PROP_FOURCC))
+        first_blank = not frame.any()
     finally:
         cap.release()
 
@@ -190,7 +192,107 @@ def probe_video(path: str | Path, max_file_bytes: int = DEFAULT_MAX_FILE_BYTES) 
         filename=path.name, container=ext.lstrip("."), codec_fourcc=fourcc, codec_name=codec_name,
         width=width, height=height, nominal_fps=fps if math.isfinite(fps) else 0.0,
         reported_frame_count=count, duration_s=duration, file_size_bytes=size,
+        opencv_first_frame_blank=first_blank,
     )
+
+
+# ----------------------------------------------------------------------------- decoding
+
+DECODERS = ("auto", "opencv", "ffmpeg")
+
+
+class FFmpegCapture:
+    """Minimal ``cv2.VideoCapture``-compatible reader that decodes through the ``ffmpeg`` executable.
+
+    Needed because OpenCV's FFmpeg backend can return *successfully decoded but
+    all-black* frames for interlaced H.264 (observed on NASA ACME s-Flame
+    downlink recordings). Frames flagged as interlaced are deinterlaced with
+    ``yadif`` (one output frame per input frame, so frame indices are preserved).
+    Presentation timestamps come from the stream's packet PTS (via ``ffprobe``),
+    sorted into presentation order; if they cannot be read, ``index / fps`` is used.
+    Supports only the subset of the VideoCapture API used by ``FlameAnalyzer``.
+    """
+
+    def __init__(self, path: str | Path, width: int, height: int, fps: float) -> None:
+        ffmpeg, ffprobe = shutil.which("ffmpeg"), shutil.which("ffprobe")
+        if ffmpeg is None:
+            raise VideoDecodeError("The ffmpeg executable is required for decoder='ffmpeg'.")
+        self._w, self._h, self._fps = width, height, fps
+        self._frame_bytes = width * height * 3
+        self._buf: bytes | None = None
+        self._index = -1
+        self._pts: list[float] = []
+        if ffprobe is not None:
+            try:
+                out = subprocess.run(
+                    [ffprobe, "-v", "error", "-select_streams", "v:0", "-show_entries", "packet=pts_time",
+                     "-of", "csv=p=0", str(path)], capture_output=True, text=True, timeout=120, check=True)
+                pts = sorted(float(x) for x in out.stdout.split() if x.strip() not in ("", "N/A"))
+                self._pts = pts
+            except (subprocess.SubprocessError, ValueError, OSError) as exc:
+                logger.warning("ffprobe packet timestamps unavailable: %s", exc)
+        self._proc = subprocess.Popen(
+            [ffmpeg, "-v", "error", "-i", str(path), "-map", "0:v:0", "-vf", "yadif=0:-1:1",
+             "-fps_mode", "passthrough", "-f", "rawvideo", "-pix_fmt", "bgr24", "-"],
+            stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
+
+    def isOpened(self) -> bool:  # noqa: N802 - mirrors the OpenCV API
+        return self._proc.poll() is None or self._buf is not None
+
+    def grab(self) -> bool:
+        data = self._proc.stdout.read(self._frame_bytes) if self._proc.stdout else b""
+        if len(data) < self._frame_bytes:
+            self._buf = None
+            return False
+        self._buf = data
+        self._index += 1
+        return True
+
+    def retrieve(self) -> tuple[bool, np.ndarray | None]:
+        if self._buf is None:
+            return False, None
+        return True, np.frombuffer(self._buf, np.uint8).reshape(self._h, self._w, 3).copy()
+
+    def read(self) -> tuple[bool, np.ndarray | None]:
+        return self.retrieve() if self.grab() else (False, None)
+
+    def get(self, prop: int) -> float:
+        if prop == cv2.CAP_PROP_POS_MSEC:
+            if 0 <= self._index < len(self._pts):
+                return (self._pts[self._index] - self._pts[0]) * 1000.0
+            return self._index / self._fps * 1000.0 if self._fps > 0 else math.nan
+        return 0.0
+
+    def release(self) -> None:
+        if self._proc.stdout:
+            self._proc.stdout.close()
+        if self._proc.poll() is None:
+            self._proc.kill()
+        self._proc.wait()
+
+
+def open_capture(path: str | Path, meta: VideoMetadata, decoder: str = "auto") -> tuple[Any, str, list[str]]:
+    """Open a frame reader. Returns ``(capture, decoder_used, notes)``.
+
+    ``auto`` uses FFmpeg whenever the executable is installed. OpenCV's decoding
+    of interlaced H.264 was found to be unreliable in a way that depends on
+    unrelated process state (identical files decoded correctly or as all-black
+    frames depending on what had been imported or opened before), so it cannot
+    be validated per file and is used only as a fallback.
+    """
+    if decoder not in DECODERS:
+        raise ValueError(f"decoder must be one of {DECODERS}.")
+    notes: list[str] = []
+    use_ffmpeg = decoder == "ffmpeg" or (decoder == "auto" and shutil.which("ffmpeg") is not None)
+    if decoder == "auto" and not use_ffmpeg:
+        notes.append("ffmpeg is not installed; decoding with OpenCV, which can return blank frames for "
+                     "interlaced video. Install ffmpeg for reliable decoding.")
+    if use_ffmpeg:
+        return FFmpegCapture(path, meta.width, meta.height, meta.nominal_fps), "ffmpeg", notes
+    cap = cv2.VideoCapture(str(path))
+    if not cap.isOpened():
+        raise VideoDecodeError("Video could not be opened for decoding.")
+    return cap, "opencv", notes
 
 
 # ----------------------------------------------------------------------------- config
@@ -213,8 +315,11 @@ class AnalysisConfig:
     contour_max_points: int = 72
     max_file_bytes: int = DEFAULT_MAX_FILE_BYTES
     max_plausible_velocity_mm_s: float = 5000.0
+    decoder: str = "auto"                   # auto | opencv | ffmpeg
 
     def validate(self) -> None:
+        if self.decoder not in DECODERS:
+            raise ValueError(f"decoder must be one of {DECODERS}.")
         self.segmentation.validate()
         self.tracking.validate()
         self.derivatives.validate()
@@ -633,9 +738,12 @@ class FlameAnalyzer:
         writer = None
         est_total = meta.reported_frame_count
 
-        cap = cv2.VideoCapture(str(path))
-        if not cap.isOpened():
-            raise VideoDecodeError("Video could not be opened for decoding.")
+        cap, decoder_used, decoder_notes = open_capture(path, meta, cfg.decoder)
+        issues.extend(pv.ValidationIssue("decoder", "warning", n) for n in decoder_notes)
+        if decoder_used == "opencv" and meta.opencv_first_frame_blank:
+            issues.append(pv.ValidationIssue(
+                "decoder", "warning", "OpenCV decoded the first frame as all zeros; check for a decoder failure."))
+        blank_frames = 0
         try:
             if annotated_output_path is not None:
                 writer = cv2.VideoWriter(
@@ -687,6 +795,8 @@ class FlameAnalyzer:
                         experiment_id, index, t_container, DetectionStatus.FRAME_ERROR.value,
                         warnings=["frame could not be retrieved"]))
                     continue
+                if not frame.any():
+                    blank_frames += 1
                 m, contour, _ = self._measure_frame(frame, segmenter, tracker, experiment_id, index, t_container)
                 measurements.append(m)
                 analyzed += 1
@@ -708,9 +818,16 @@ class FlameAnalyzer:
 
         if decoded == 0:
             raise VideoDecodeError("No frames could be decoded.")
+        if analyzed and blank_frames == analyzed:
+            issues.append(pv.ValidationIssue(
+                "all_frames_blank", "error",
+                f"All {analyzed} analysed frames are exactly zero, which real sensors almost never produce. "
+                f"This usually indicates a decoder failure (decoder used: {decoder_used}); verify with "
+                f"decoder='ffmpeg' before trusting any result."))
         timestamp_source = self._finalise_timestamps(measurements, pos_ms, meta, issues)
         self._compute_kinematics(measurements)
         summary = self._summarise(measurements, meta, issues, decoded, time.perf_counter() - started, timestamp_source)
+        summary["decoder"] = decoder_used
         return AnalysisResult(
             experiment_id, meta, cfg, self.calibration, measurements, summary, issues, timestamp_source)
 
@@ -887,7 +1004,7 @@ class FlameAnalyzer:
         if frame_index < 0 or (meta.reported_frame_count and frame_index >= meta.reported_frame_count):
             raise ValueError(f"frame_index must be within 0-{meta.reported_frame_count - 1}.")
         segmenter = Segmenter(self.config.segmentation)
-        cap = cv2.VideoCapture(str(video_path))
+        cap, _, _ = open_capture(video_path, meta, self.config.decoder)
         try:
             frame, t0, ms = None, None, 0.0
             for i in range(frame_index + 1):

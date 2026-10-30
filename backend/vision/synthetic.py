@@ -192,6 +192,26 @@ def write_vfr_synthetic_video(path: str | Path, spec: SyntheticFlameSpec, drop_f
     return gt
 
 
+def write_interlaced_copy(src: str | Path, dst: str | Path) -> Path:
+    """Re-encode a synthetic video as interlaced-flagged H.264 (same frames and timestamps).
+
+    Reproduces the OpenCV failure mode seen on NASA ACME downlink recordings,
+    where interlaced H.264 frames are returned as all-black images. Requires ``ffmpeg``.
+    """
+    ffmpeg = shutil.which("ffmpeg")
+    if ffmpeg is None:
+        raise RuntimeError("ffmpeg executable not found.")
+    dst = Path(dst)
+    if not dst.name.startswith("SYNTHETIC_"):
+        raise ValueError("Synthetic video filenames must start with 'SYNTHETIC_'.")
+    subprocess.run(
+        [ffmpeg, "-y", "-v", "error", "-i", str(src), "-vf", "setfield=tff", "-flags", "+ilme+ildct",
+         "-c:v", "libx264", "-x264-params", "tff=1", "-crf", "12", "-pix_fmt", "yuv420p",
+         "-metadata", f"comment={WATERMARK}", str(dst)],
+        check=True, capture_output=True, timeout=120)
+    return dst
+
+
 if __name__ == "__main__":  # pragma: no cover - convenience entry point
     import argparse
 
