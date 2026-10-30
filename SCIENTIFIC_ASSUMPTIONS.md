@@ -278,7 +278,10 @@ porous sphere (final report §3). Its silhouette is measured with
 supply-tube sector excluded, and the centre refined by a circle fit. The
 silhouette is soft because the flame emits in front of the sphere. That biases
 the half-depth edge, so the stated uncertainty (sector scatter + 1 px) is a
-lower bound. For 19304A7: 103 ± 2.5 px → 0.0617 mm/px (±2.5 %).
+lower bound. For 19304A7: 103 ± 2.5 px. For 19254C1: 98 ± 1 px, with the
+centre within 4 px. The 5 % between-test difference exceeds both stated
+uncertainties, so the method has a systematic error of about ±2.5 %, which is
+added in quadrature to the per-test value. Per-test calibration is preferred.
 
 **A-CV-12: Shell flames and the equivalent radius.** A spherical diffusion flame
 is a thin luminous shell. In projection it is brightest at its limb, and its
@@ -298,3 +301,78 @@ through the sphere–tube joint. Consequences:
 igniter tip and the ignition kernel dominate the image. Analyses should start
 after this period. The OH* photomultiplier flame-on time (A-SF-1) gives the
 time origin.
+
+**A-CV-14: Shell-limb radius (`radius_method="limb"`).** The flame-shell radius
+is the outer half-maximum edge of the luminous shell, fitted as a circle:
+* polar profiles in 72 sectors, anchored on the *outermost* significant local
+  maximum (so interior sources such as the igniter are ignored);
+* RANSAC with inlier tolerance `max(2 px, 2 % R)`, then a least-squares refit;
+* a sector must reach ≥ 20 % of the frame's brightest limb;
+* a fit is accepted only with ≥ 8 inliers, ≥ 90° arc, ≥ 40 % coverage, RMS ≤
+  `max(2 px, 3 % R)`, no saturation, and R ≥ `limb_min_radius_mm` (set to the
+  burner radius 3.175 mm for s-Flame: the flame encloses its burner).
+
+Validation on synthetic projected shells (full, C-shaped, half, clipped, with
+a 5× brighter interior source): within 0.3 px of the true outer radius. On
+PSI-23 19254C1 the area-equivalent radius under-measured the shell by a median
+of 12 % (IQR 8.5–15.7 %, 75 frames). The limb fit measured 84 further frames in
+which region segmentation had lost the dim shell. The 40 % coverage floor was
+chosen on that same test: lower-coverage fits deviated from neighbouring frames
+by up to 0.8 mm. It is therefore tuned on real data and should be re-checked on
+other tests. The limb radius is the *outer* half-maximum edge, which lies within
+about half the shell thickness plus the blur width inside the true outer
+radius. It is not the location of peak heat release.
+
+## 9. Flame-lifetime model (`backend/ml/sflame_model.py`)
+
+**A-ML-1: Population and target.** Constant-flow s-Flame tests with a sustained
+flame: 144 tests on 18 test days, of which 113 extinguished and 31 were still
+burning at fuel shut-off (right-censored). Ramped tests are excluded because
+their lifetime is set by the commanded ramp. Target: flame lifetime from OH*
+emission onset to emission end (A-SF-1).
+
+**A-ML-2: Features.** Only quantities fixed before ignition are allowed:
+* nominal delivered fuel-line H2/CH4/C2H4 fractions,
+* ln total flow,
+* helium atmosphere,
+* test order in the day (a vitiation proxy).
+
+Post-ignition quantities are rejected by a guard, both in training and at
+inference. O2 is excluded from the selected model because it is unknown on
+mixed-O2 days. A model with O2 (105 tests) ranked better (C = 0.74), but it
+cannot be applied to those days.
+
+**A-ML-3: Model.** Log-normal accelerated-failure-time model, chosen against
+Weibull and five feature sets by leave-one-test-day-out C-index. It assumes
+censoring is non-informative given the features. That is questionable for the
+29 tests stopped by the burner temperature limit, which may relate to flame
+proximity.
+
+**A-ML-4: What the validation says.** On held-out test days:
+* C-index 0.70 (0.5 = no skill), so the model ranks conditions.
+* Within a single day the ranking is weak (C ≈ 0.56).
+* The median absolute log error on events is 0.73 (a factor of ~2.1), which is
+  **not better** than the intercept-only baseline (0.65).
+
+The model is therefore an interpretable description of how lifetime varies
+across the test matrix. It is not an accurate predictor of absolute lifetime
+for a new test day. Day-level effects (vitiation history, igniter design change
+in round 2, unknown O2) dominate.
+
+**A-ML-5: Intervals.** Predictive intervals integrate parameter uncertainty
+(draws from the asymptotic normal) and are widened by a factor of 1.36 on σ.
+That factor is the smallest that gives 80 % coverage of held-out-day events
+(70 % before). The calibration uses the same predictions as model selection,
+so it is mildly optimistic.
+
+**A-ML-6: Associations, not causes.** Helium atmosphere: time ratio 0.52
+(95 % CI 0.42–0.64). Test order: 0.76 per SD (0.65–0.89), consistent with
+vitiation shortening later flames. Both effects are confounded with
+round-level changes (igniter tip, bottles) and must not be read as causal.
+
+**A-ML-7: Why no random forest / XGBoost.** With 144 censored observations in
+18 groups, standard tree ensembles would either discard censoring (biasing
+lifetimes low; demonstrated in `test_ignoring_censoring_biases_lifetimes_low`)
+or need survival-specific implementations whose added flexibility the data
+cannot support. They can be revisited with survival-capable implementations if
+more test points (e.g. from PSI-10 or PSI-159) become usable.

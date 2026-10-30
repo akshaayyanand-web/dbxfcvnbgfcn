@@ -56,6 +56,7 @@ from backend.physics.uncertainty import (
 )
 from backend.vision.calibration import Calibration, DistortionCorrection
 from backend.vision.geometry import ContourGeometry, measure_contour, simplify_contour
+from backend.vision.limb import LimbConfig, fit_limb
 from backend.vision.image_sequence import ImageSequenceCapture, ImageSequenceConfig, frame_times, list_frames, read_raw
 from backend.vision.segmentation import SegmentationConfig, SegmentationMethod, Segmenter, find_contours
 from backend.vision.tracking import DetectionStatus, FlameTracker, TrackingConfig
@@ -351,6 +352,11 @@ class AnalysisConfig:
     exclude_regions: list[tuple[int, int, int, int]] = field(default_factory=list)  # (x, y, w, h) zeroed
     static_check_min_duration_s: float = 3.0  # warn if a detection is unchanged for at least this long
     min_circularity_for_volume: float = 0.75  # below this, equivalent spherical volume is not reported
+    radius_method: str = "equivalent"         # "equivalent" (area-equivalent radius) or "limb" (shell-edge fit)
+    limb: LimbConfig = field(default_factory=LimbConfig)
+    limb_center_hint: tuple[float, float] | None = None  # original px, e.g. the burner centre
+    limb_min_arc_for_volume_deg: float = 180.0
+    limb_min_radius_mm: float | None = None   # e.g. the burner radius: a burner-supported flame encloses its burner
 
     def validate(self) -> None:
         if self.decoder not in DECODERS:
@@ -366,6 +372,9 @@ class AnalysisConfig:
             raise ValueError("frame_step must be >= 1.")
         if self.max_frames is not None and self.max_frames < 1:
             raise ValueError("max_frames must be >= 1 when given.")
+        if self.radius_method not in ("equivalent", "limb"):
+            raise ValueError("radius_method must be 'equivalent' or 'limb'.")
+        self.limb.validate()
         if not 0 <= self.min_circularity_for_volume <= 1:
             raise ValueError("min_circularity_for_volume must be within [0, 1].")
         if not 0 < self.processing_scale <= 1:
@@ -384,6 +393,8 @@ class AnalysisConfig:
         d["tracking"] = self.tracking.to_dict()
         d["derivatives"] = asdict(self.derivatives)
         d["image_sequence"] = asdict(self.image_sequence)
+        d["limb"] = asdict(self.limb)
+        d["limb_center_hint"] = list(self.limb_center_hint) if self.limb_center_hint else None
         d["exclude_regions"] = [list(r) for r in self.exclude_regions]
         d["roi"] = list(self.roi) if self.roi else None
         return d
@@ -395,6 +406,9 @@ class AnalysisConfig:
         trk = TrackingConfig(**(data.pop("tracking", {}) or {}))
         der = DerivativeConfig(**(data.pop("derivatives", {}) or {}))
         data["image_sequence"] = ImageSequenceConfig(**(data.pop("image_sequence", {}) or {}))
+        data["limb"] = LimbConfig(**(data.pop("limb", {}) or {}))
+        if data.get("limb_center_hint") is not None:
+            data["limb_center_hint"] = tuple(data["limb_center_hint"])
         if data.get("roi") is not None:
             data["roi"] = tuple(data["roi"])
         data["exclude_regions"] = [tuple(r) for r in data.get("exclude_regions", []) or []]
@@ -458,6 +472,16 @@ FIELD_DEFINITIONS: dict[str, tuple[str, str, str]] = {
     "acceleration_sigma_mm_s2": ("mm/s^2", "calculated", "Random + scale uncertainty in quadrature."),
     "centroid_displacement_px": ("px", "calculated", "Distance of centroid from the first accepted centroid."),
     "centroid_displacement_mm": ("mm", "calculated", "centroid_displacement_px x scale."),
+    "limb_radius_px": ("px", "image_derived", "Shell-limb radius: RANSAC circle fit to outer half-maximum edges (radius_method=limb)."),
+    "limb_radius_sigma_px": ("px", "calculated", "Bootstrap fit uncertainty and edge localisation (edge_sigma_px) in quadrature."),
+    "limb_center_x_px": ("px", "image_derived", "Fitted limb circle centre x."),
+    "limb_center_y_px": ("px", "image_derived", "Fitted limb circle centre y."),
+    "limb_coverage": ("0-1", "image_derived", "Fraction of angular sectors contributing a limb edge (partial shells < 1)."),
+    "limb_arc_deg": ("deg", "image_derived", "Angular span of the limb edge points used in the fit."),
+    "limb_rms_px": ("px", "image_derived", "RMS distance of inlier edge points from the fitted circle."),
+    "limb_fit_ok": ("bool", "calculated", "Fit sufficient: >= 8 inliers, arc >= 90 deg, coverage >= 40 %, RMS <= max(2 px, 3 % R), not saturated."),
+    "limb_radius_mm": ("mm", "calculated", "limb_radius_px x calibration scale."),
+    "limb_radius_sigma_mm": ("mm", "calculated", "Random and calibration-scale uncertainty in quadrature."),
     "warnings": ("-", "metadata", "Per-frame notes and warnings, '; '-separated in CSV."),
 }
 
@@ -515,6 +539,16 @@ class FrameMeasurement:
     acceleration_sigma_mm_s2: float | None = None
     centroid_displacement_px: float | None = None
     centroid_displacement_mm: float | None = None
+    limb_radius_px: float | None = None
+    limb_radius_sigma_px: float | None = None
+    limb_center_x_px: float | None = None
+    limb_center_y_px: float | None = None
+    limb_coverage: float | None = None
+    limb_arc_deg: float | None = None
+    limb_rms_px: float | None = None
+    limb_fit_ok: bool | None = None
+    limb_radius_mm: float | None = None
+    limb_radius_sigma_mm: float | None = None
     warnings: list[str] = field(default_factory=list)
     contour_px: list[list[float]] | None = None
 
@@ -636,7 +670,14 @@ def render_overlay(frame: np.ndarray, m: FrameMeasurement, contour: np.ndarray |
         c = (int(round(m.centroid_x_px)), int(round(m.centroid_y_px)))
         cv2.drawMarker(out, c, colour, cv2.MARKER_CROSS, 12, 1, cv2.LINE_AA)
         cv2.circle(out, c, int(round(m.equivalent_radius_px)), _WHITE, 1, cv2.LINE_AA)
-    size = (f"r={m.radius_mm:.2f} mm" if m.radius_mm is not None
+    if m.limb_fit_ok and m.limb_radius_px is not None:
+        cv2.circle(out, (int(round(m.limb_center_x_px)), int(round(m.limb_center_y_px))),
+                   int(round(m.limb_radius_px)), (0, 200, 255), 2, cv2.LINE_AA)
+    if m.limb_fit_ok and m.limb_radius_mm is not None:
+        size = f"R_limb={m.limb_radius_mm:.2f} mm"
+    else:
+        size = None
+    size = size or (f"r={m.radius_mm:.2f} mm" if m.radius_mm is not None
             else f"r={m.equivalent_radius_px:.1f} px" if m.equivalent_radius_px is not None else "r=--")
     text = f"#{m.frame_index}  t={m.timestamp_s:.3f}s  {m.status}  {size}"
     cv2.putText(out, text, (8, 18), cv2.FONT_HERSHEY_SIMPLEX, 0.5, colour, 1, cv2.LINE_AA)
@@ -726,6 +767,8 @@ class FlameAnalyzer:
         m.status = decision.status.value
         m.warnings.extend(decision.notes)
         g = decision.chosen
+        if cfg.radius_method == "limb":
+            self._measure_limb(m, seg.intensity, g)
         if g is None:
             return m, None, seg.mask
 
@@ -767,7 +810,9 @@ class FlameAnalyzer:
             m.area_mm2 = m.area_px2 * s * s
             m.area_sigma_mm2 = circle_area_sigma(r.value, r.total)
             m.perimeter_mm = m.perimeter_px * s
-            if g.circularity >= cfg.min_circularity_for_volume and not g.touches_border:
+            if cfg.radius_method == "limb":
+                pass  # the volume follows the limb radius (set in _measure_limb)
+            elif g.circularity >= cfg.min_circularity_for_volume and not g.touches_border:
                 m.equivalent_volume_mm3 = equivalent_spherical_volume(r.value)
                 m.equivalent_volume_sigma_mm3 = sphere_volume_sigma(r.value, r.total)
             else:
@@ -875,6 +920,11 @@ class FlameAnalyzer:
                 m, contour, _ = self._measure_frame(frame, segmenter, tracker, experiment_id, index, t_container)
                 if getattr(cap, "last_saturated", False):
                     m.warnings.append("sensor saturation in this frame; intensities and boundary may be distorted")
+                    if m.limb_fit_ok:
+                        # A saturated plateau has no measurable limb profile (e.g. the ignition flash).
+                        m.limb_fit_ok = False
+                        m.equivalent_volume_mm3 = m.equivalent_volume_sigma_mm3 = None
+                        m.warnings.append("limb fit rejected: saturated frame")
                 measurements.append(m)
                 analyzed += 1
                 if writer is not None:
@@ -938,13 +988,57 @@ class FlameAnalyzer:
         issues.extend(pv.validate_timestamps(np.array([m.timestamp_s for m in ms if m.status != "frame_error"])))
         return source
 
+    def _measure_limb(self, m: FrameMeasurement, intensity: np.ndarray, g: ContourGeometry | None) -> None:
+        """Shell-limb fit (A-CV-14). Runs even when region segmentation found no accepted contour."""
+        cfg = self.config
+        sc = cfg.processing_scale
+        if cfg.limb_center_hint is not None:
+            hint = (cfg.limb_center_hint[0] * sc, cfg.limb_center_hint[1] * sc)
+        elif g is not None:
+            hint = (g.centroid_x_px, g.centroid_y_px)
+        else:
+            hint = (intensity.shape[1] / 2.0, intensity.shape[0] / 2.0)
+        fit = fit_limb(intensity, hint, cfg.limb)
+        if fit is None or not math.isfinite(fit.radius_px):
+            m.limb_fit_ok = False
+            return
+        inv = 1.0 / sc
+        m.limb_radius_px = fit.radius_px * inv
+        m.limb_radius_sigma_px = math.hypot(fit.radius_sigma_px if math.isfinite(fit.radius_sigma_px) else 0.0,
+                                            cfg.edge_sigma_px) * inv
+        m.limb_center_x_px, m.limb_center_y_px = fit.center_px[0] * inv, fit.center_px[1] * inv
+        m.limb_coverage, m.limb_arc_deg, m.limb_rms_px = fit.coverage, fit.arc_deg, fit.rms_residual_px * inv
+        m.limb_fit_ok = fit.sufficient
+        if not fit.sufficient:
+            m.warnings.extend(f"limb: {n}" for n in fit.notes[:1])
+        if (fit.sufficient and cfg.limb_min_radius_mm is not None and self.calibration is not None
+                and m.limb_radius_px * self.calibration.mm_per_px < cfg.limb_min_radius_mm):
+            m.limb_fit_ok = False
+            m.warnings.append(f"limb fit rejected: radius below the physical minimum {cfg.limb_min_radius_mm} mm "
+                              "(e.g. igniter glow, not a flame enclosing the burner)")
+        if self.calibration is not None:
+            s, ss = self.calibration.mm_per_px, self.calibration.mm_per_px_sigma
+            q = px_to_physical(m.limb_radius_px, m.limb_radius_sigma_px, s, ss, 1)
+            m.limb_radius_mm, m.limb_radius_sigma_mm = q.value, q.total
+            if fit.sufficient and fit.arc_deg >= cfg.limb_min_arc_for_volume_deg:
+                m.equivalent_volume_mm3 = equivalent_spherical_volume(q.value)
+                m.equivalent_volume_sigma_mm3 = sphere_volume_sigma(q.value, q.total)
+            else:
+                m.warnings.append("equivalent spherical volume not reported: limb fit insufficient or arc "
+                                  f"< {cfg.limb_min_arc_for_volume_deg:.0f} deg")
+
     def _compute_kinematics(self, ms: list[FrameMeasurement]) -> None:
         if not ms:
             return
         t = np.array([m.timestamp_s for m in ms], dtype=float)
-        acc = np.array([m.accepted for m in ms])
-        r = np.array([m.equivalent_radius_px if m.accepted else np.nan for m in ms], dtype=float)
-        sr = np.array([m.equivalent_radius_sigma_px if m.accepted else np.nan for m in ms], dtype=float)
+        if self.config.radius_method == "limb":
+            acc = np.array([bool(m.limb_fit_ok) for m in ms])
+            r = np.array([m.limb_radius_px if a else np.nan for m, a in zip(ms, acc)], dtype=float)
+            sr = np.array([m.limb_radius_sigma_px if a else np.nan for m, a in zip(ms, acc)], dtype=float)
+        else:
+            acc = np.array([m.accepted for m in ms])
+            r = np.array([m.equivalent_radius_px if m.accepted else np.nan for m in ms], dtype=float)
+            sr = np.array([m.equivalent_radius_sigma_px if m.accepted else np.nan for m in ms], dtype=float)
         if acc.sum() >= self.config.derivatives.polyorder + 1:
             kin = local_polynomial_kinematics(t, r, sr, self.config.derivatives)
             cal = self.calibration
@@ -987,8 +1081,10 @@ class FlameAnalyzer:
         acc = [m for m in valid if m.accepted]
         idx = np.array([m.frame_index for m in valid])
         t = np.array([m.timestamp_s for m in valid])
-        ext: ExtinctionEstimate = estimate_extinction(
-            t, np.array([m.accepted for m in valid], dtype=bool), cfg.extinction_min_missing_frames)
+        # Flame present: an accepted region detection, or (limb mode) a sufficient limb fit, since a dim
+        # shell can still have a measurable limb after it falls below the region-segmentation threshold.
+        present = np.array([m.accepted or bool(m.limb_fit_ok) for m in valid], dtype=bool)
+        ext: ExtinctionEstimate = estimate_extinction(t, present, cfg.extinction_min_missing_frames)
 
         issues.extend(pv.check_radius_bounds(
             np.array([m.equivalent_radius_px if m.accepted else np.nan for m in valid], dtype=float),
@@ -1042,6 +1138,10 @@ class FlameAnalyzer:
             },
             "expansion_velocity_px_s": stat(m.expansion_velocity_px_s for m in acc),
             "expansion_velocity_mm_s": stat(m.expansion_velocity_mm_s for m in acc),
+            "radius_method": cfg.radius_method,
+            "limb_fits_ok": sum(1 for m in valid if m.limb_fit_ok) if cfg.radius_method == "limb" else None,
+            "limb_radius_mm": stat(m.limb_radius_mm for m in valid if m.limb_fit_ok),
+            "limb_radius_px": stat(m.limb_radius_px for m in valid if m.limb_fit_ok),
             "circularity": circ,
             "frames_volume_suppressed_non_spherical": sum(
                 1 for m in acc if any(w.startswith("equivalent spherical volume not reported") for w in m.warnings)),

@@ -70,6 +70,16 @@ Source of truth: `FIELD_DEFINITIONS` in `backend/vision/cv_engine.py`. The test
 | `acceleration_sigma_mm_s2` | mm/s^2 | calculated | Random + scale uncertainty in quadrature. |
 | `centroid_displacement_px` | px | calculated | Distance of centroid from the first accepted centroid. |
 | `centroid_displacement_mm` | mm | calculated | centroid_displacement_px x scale. |
+| `limb_radius_px` | px | image_derived | Shell-limb radius: RANSAC circle fit to outer half-maximum edges (radius_method=limb). |
+| `limb_radius_sigma_px` | px | calculated | Bootstrap fit uncertainty and edge localisation (edge_sigma_px) in quadrature. |
+| `limb_center_x_px` | px | image_derived | Fitted limb circle centre x. |
+| `limb_center_y_px` | px | image_derived | Fitted limb circle centre y. |
+| `limb_coverage` | 0-1 | image_derived | Fraction of angular sectors contributing a limb edge (partial shells < 1). |
+| `limb_arc_deg` | deg | image_derived | Angular span of the limb edge points used in the fit. |
+| `limb_rms_px` | px | image_derived | RMS distance of inlier edge points from the fitted circle. |
+| `limb_fit_ok` | bool | calculated | Fit sufficient: >= 8 inliers, arc >= 90 deg, coverage >= 40 %, RMS <= max(2 px, 3 % R), not saturated. |
+| `limb_radius_mm` | mm | calculated | limb_radius_px x calibration scale. |
+| `limb_radius_sigma_mm` | mm | calculated | Random and calibration-scale uncertainty in quadrature. |
 | `warnings` | - | metadata | Per-frame notes and warnings, '; '-separated in CSV. |
 
 ## Detection status values
@@ -135,3 +145,16 @@ Interpretation (2021). Labelling rules: `SCIENTIFIC_ASSUMPTIONS.md` §7.
 | `detection_lag_s` | s | calculated | `fuel_off − flame_off`: delay between emission loss and the automatic fuel shut-off |
 | `pta3_kpa_at_ignition_low_confidence` | kPa | calculated | PTA3 `(V−0.5)·14.5038·10/4` psia [NIDD]. **Uncalibrated transducer** [DI] |
 | `quality_flags` | – | metadata | `;`-separated flags (see `sflame_quality_report.json`) |
+
+## Flame-lifetime model artifacts (`models/sflame_lifetime/`)
+
+| File | Content |
+|---|---|
+| `model.json` | Schema `flame-in-freefall/sflame-lifetime-model/v1`: model version, population, target definition, training-data SHA-256, distribution, standardiser, coefficients, covariance, interval inflation, feature ranges, coefficient table (time ratios, 95 % CI, p), validation, limitations |
+| `evaluation_metrics.json` | Leave-one-test-day-out metrics for all candidates and the baseline |
+| `feature_schema.json` | Features (name, description, unit), training ranges, forbidden (post-ignition) inputs |
+| `cv_predictions.csv` | Held-out-day 10/50/90 % lifetime quantiles for every training test point |
+
+Predictions are returned with `quantity_class: "predicted"`, a median, an 80 %
+interval (including parameter uncertainty and the cross-validated inflation),
+out-of-range warnings and the model's limitations.

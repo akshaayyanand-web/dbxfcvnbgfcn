@@ -1,0 +1,637 @@
+{
+  "schema": "flame-in-freefall/sflame-lifetime-model/v1",
+  "created_at": "2026-10-30T19:18:57.329710+00:00",
+  "model_version": "sflame-lifetime-8c860fba8213",
+  "population": "constant-flow s-Flame tests with a sustained OH* flame (PSI-23)",
+  "target": {
+    "name": "flame_lifetime_s",
+    "definition": "OH* emission onset to emission end",
+    "censoring": "right-censored when burning at fuel shut-off"
+  },
+  "training_data": {
+    "file": "sflame_test_points.csv",
+    "sha256": "9a15daa8c87db92c07a0634e51ec5e97409fda65ee2c3d9e2d5f7f53ec9367c8",
+    "n": 144,
+    "n_events": 113,
+    "test_days": [
+      "19254",
+      "19256",
+      "19304",
+      "19308",
+      "19352",
+      "20006",
+      "20013",
+      "20024",
+      "20029",
+      "20132",
+      "20136",
+      "20142",
+      "20155",
+      "20160",
+      "20164",
+      "20170",
+      "20176",
+      "20190"
+    ],
+    "source": "NASA PSI-23 ACME s-Flame, CC0-1.0, DOI 10.60555/k57n-p030"
+  },
+  "distribution": "lognormal",
+  "l2": 0.0,
+  "features": [
+    {
+      "name": "x_H2",
+      "description": "H2 mole fraction in the delivered fuel-line mixture (nominal)",
+      "unit": "-"
+    },
+    {
+      "name": "x_CH4",
+      "description": "CH4 mole fraction in the delivered fuel-line mixture (nominal)",
+      "unit": "-"
+    },
+    {
+      "name": "x_C2H4",
+      "description": "C2H4 mole fraction in the delivered fuel-line mixture (nominal)",
+      "unit": "-"
+    },
+    {
+      "name": "log_total_slpm",
+      "description": "ln of total fuel-line flow, indicated N2-equivalent SLPM",
+      "unit": "ln(SLPM)"
+    },
+    {
+      "name": "he_atmosphere",
+      "description": "1 if the chamber inert was helium (round 2), else 0",
+      "unit": "-"
+    },
+    {
+      "name": "test_order_in_day",
+      "description": "order of the test within its day (vitiation proxy)",
+      "unit": "-"
+    }
+  ],
+  "standardizer": {
+    "mean": [
+      0.14443526022001038,
+      0.1429675604497435,
+      0.06558977025517526,
+      -0.6976874784343557,
+      0.5138888888888888,
+      8.07638888888889
+    ],
+    "std": [
+      0.17401829072067795,
+      0.16377931955755895,
+      0.10260089859031608,
+      0.7021502396369801,
+      0.4998070615401828,
+      5.778407918361912
+    ]
+  },
+  "coef": [
+    2.1392739160820637,
+    0.4062045375223079,
+    -0.4398394167174349,
+    -0.11170133520174541,
+    0.05670674221537339,
+    -0.6556435211102251,
+    -0.2768797640650315
+  ],
+  "log_sigma": -0.12095608642132842,
+  "cov": [
+    [
+      0.0064111436247259726,
+      0.0019912347364394105,
+      -0.000144148689277998,
+      0.00039429520393240966,
+      -0.0005132332811546994,
+      -0.0004757223055366291,
+      -0.0005713645771271532,
+      0.0009866650121908484
+    ],
+    [
+      0.001991234736439411,
+      0.04114551732653691,
+      0.03052200403718404,
+      0.03771771058216281,
+      -0.0004952086148700298,
+      -0.010921504732881601,
+      0.0012027565973839426,
+      0.0010741343346585231
+    ],
+    [
+      -0.0001441486892779984,
+      0.03052200403718404,
+      0.034792586737606664,
+      0.036144352599275925,
+      0.0034119881906509273,
+      -0.009803619462272718,
+      0.003529014126762954,
+      -0.0007817881956744775
+    ],
+    [
+      0.0003942952039324112,
+      0.03771771058216282,
+      0.036144352599275925,
+      0.04601266651129687,
+      0.003458234860402941,
+      -0.011978156941300491,
+      0.0026206700657495766,
+      -0.00040469416006901326
+    ],
+    [
+      -0.0005132332811546995,
+      -0.0004952086148700314,
+      0.0034119881906509264,
+      0.003458234860402939,
+      0.009733303387726877,
+      -0.004961996246416907,
+      0.0013601732317742574,
+      -0.00027923959892791575
+    ],
+    [
+      -0.0004757223055366291,
+      -0.0109215047328816,
+      -0.009803619462272716,
+      -0.011978156941300487,
+      -0.004961996246416908,
+      0.011547321970592979,
+      -0.0010323209438500435,
+      -0.0003431783348218413
+    ],
+    [
+      -0.0005713645771271531,
+      0.0012027565973839421,
+      0.0035290141267629535,
+      0.0026206700657495758,
+      0.0013601732317742574,
+      -0.0010323209438500432,
+      0.006534929234504165,
+      -0.000509412410058972
+    ],
+    [
+      0.0009866650121908484,
+      0.0010741343346585225,
+      -0.0007817881956744783,
+      -0.00040469416006901407,
+      -0.0002792395989279158,
+      -0.0003431783348218411,
+      -0.000509412410058972,
+      0.004815919113158065
+    ]
+  ],
+  "converged": true,
+  "interval_inflation": {
+    "level": 0.8,
+    "factor": 1.36,
+    "coverage_before": 0.6991150442477876,
+    "coverage_after": 0.8053097345132744,
+    "n_events": 113,
+    "method": "leave-one-day-out event residuals, sigma scaled by k"
+  },
+  "coefficient_table_standardized": [
+    {
+      "term": "intercept",
+      "coef": 2.1392739160820637,
+      "se": 0.08006961736342925,
+      "time_ratio": 8.493268563812782,
+      "time_ratio_ci95": [
+        7.25969245268098,
+        9.936455485853397
+      ],
+      "p_value": 2.933807153574899e-157
+    },
+    {
+      "term": "x_H2",
+      "coef": 0.4062045375223079,
+      "se": 0.20284357847005388,
+      "time_ratio": 1.5011095542891997,
+      "time_ratio_ci95": [
+        1.008668479265442,
+        2.2339648162885952
+      ],
+      "p_value": 0.045225542660327384
+    },
+    {
+      "term": "x_CH4",
+      "coef": -0.4398394167174349,
+      "se": 0.18652771037464289,
+      "time_ratio": 0.6441398508700554,
+      "time_ratio_ci95": [
+        0.44689405358413786,
+        0.9284441002318685
+      ],
+      "p_value": 0.018371815502638934
+    },
+    {
+      "term": "x_C2H4",
+      "coef": -0.11170133520174541,
+      "se": 0.21450563281950633,
+      "time_ratio": 0.894311316926794,
+      "time_ratio_ci95": [
+        0.5873511800955631,
+        1.3616942617757384
+      ],
+      "p_value": 0.6025489708975602
+    },
+    {
+      "term": "log_total_slpm",
+      "coef": 0.05670674221537339,
+      "se": 0.0986575054809662,
+      "time_ratio": 1.0583453968556795,
+      "time_ratio_ci95": [
+        0.872265029335355,
+        1.2841223038588299
+      ],
+      "p_value": 0.5654374809801745
+    },
+    {
+      "term": "he_atmosphere",
+      "coef": -0.6556435211102251,
+      "se": 0.10745846625833154,
+      "time_ratio": 0.5191078981866895,
+      "time_ratio_ci95": [
+        0.4205204723695201,
+        0.6408083022483881
+      ],
+      "p_value": 1.051652426161766e-09
+    },
+    {
+      "term": "test_order_in_day",
+      "coef": -0.2768797640650315,
+      "se": 0.08083890916201285,
+      "time_ratio": 0.7581456479814208,
+      "time_ratio_ci95": [
+        0.6470549704578225,
+        0.8883091078745295
+      ],
+      "p_value": 0.000614617487103956
+    }
+  ],
+  "feature_ranges": {
+    "x_H2": {
+      "min": 0.0,
+      "max": 0.6983240223463687,
+      "observed_values": null
+    },
+    "x_CH4": {
+      "min": 0.0,
+      "max": 0.45,
+      "observed_values": null
+    },
+    "x_C2H4": {
+      "min": 0.0,
+      "max": 0.3,
+      "observed_values": null
+    },
+    "log_total_slpm": {
+      "min": -2.5282944331309873,
+      "max": 0.6915358831171697,
+      "observed_values": null
+    },
+    "he_atmosphere": {
+      "min": 0.0,
+      "max": 1.0,
+      "observed_values": [
+        0.0,
+        1.0
+      ]
+    },
+    "test_order_in_day": {
+      "min": 1.0,
+      "max": 25.0,
+      "observed_values": null
+    }
+  },
+  "validation": {
+    "scheme": "leave-one-test-day-out",
+    "selected": {
+      "distribution": "lognormal",
+      "features": [
+        "x_H2",
+        "x_CH4",
+        "x_C2H4",
+        "log_total_slpm",
+        "he_atmosphere",
+        "test_order_in_day"
+      ],
+      "n": 144,
+      "n_events": 113,
+      "n_groups": 18,
+      "c_index": 0.6968156830204336,
+      "c_index_within_day": 0.5618661257606491,
+      "events_median_abs_log_error": 0.727399899716231,
+      "events_median_abs_error_s": 4.096640953273237,
+      "events_80pct_interval_coverage": 0.6902654867256637,
+      "censored_upper_bound_consistent": 1.0,
+      "fold_failures": 0,
+      "candidate": "fuel_flow_atmosphere_order"
+    },
+    "baseline_intercept_only": {
+      "distribution": "lognormal",
+      "features": [],
+      "n": 144,
+      "n_events": 113,
+      "n_groups": 18,
+      "c_index": 0.19328907789648378,
+      "c_index_within_day": 0.5,
+      "events_median_abs_log_error": 0.6526790185650944,
+      "events_median_abs_error_s": 4.662049088435309,
+      "events_80pct_interval_coverage": 0.8761061946902655,
+      "censored_upper_bound_consistent": 0.5161290322580645,
+      "fold_failures": 0,
+      "candidate": "baseline_intercept_only"
+    },
+    "baseline_note": "A constant predictor has C-index 0.5 by definition. Its pooled leave-one-day-out C-index is below 0.5 because each fold's intercept is fitted without the held-out day (long-lived days get lower predictions); compare error metrics, not C, with it.",
+    "all_candidates": [
+      {
+        "distribution": "weibull",
+        "features": [],
+        "n": 144,
+        "n_events": 113,
+        "n_groups": 18,
+        "c_index": 0.19826781454205994,
+        "c_index_within_day": 0.5,
+        "events_median_abs_log_error": 0.7204267178180217,
+        "events_median_abs_error_s": 5.7581631344298465,
+        "events_80pct_interval_coverage": 0.9646017699115044,
+        "censored_upper_bound_consistent": 0.5161290322580645,
+        "fold_failures": 0,
+        "candidate": "baseline_intercept_only"
+      },
+      {
+        "distribution": "lognormal",
+        "features": [],
+        "n": 144,
+        "n_events": 113,
+        "n_groups": 18,
+        "c_index": 0.19328907789648378,
+        "c_index_within_day": 0.5,
+        "events_median_abs_log_error": 0.6526790185650944,
+        "events_median_abs_error_s": 4.662049088435309,
+        "events_80pct_interval_coverage": 0.8761061946902655,
+        "censored_upper_bound_consistent": 0.5161290322580645,
+        "fold_failures": 0,
+        "candidate": "baseline_intercept_only"
+      },
+      {
+        "distribution": "weibull",
+        "features": [
+          "x_H2",
+          "x_CH4",
+          "x_C2H4"
+        ],
+        "n": 144,
+        "n_events": 113,
+        "n_groups": 18,
+        "c_index": 0.5991079763510009,
+        "c_index_within_day": 0.44421906693711966,
+        "events_median_abs_log_error": 0.6297273018988143,
+        "events_median_abs_error_s": 4.662903957733153,
+        "events_80pct_interval_coverage": 0.7699115044247787,
+        "censored_upper_bound_consistent": 0.7741935483870968,
+        "fold_failures": 0,
+        "candidate": "fuel_composition"
+      },
+      {
+        "distribution": "lognormal",
+        "features": [
+          "x_H2",
+          "x_CH4",
+          "x_C2H4"
+        ],
+        "n": 144,
+        "n_events": 113,
+        "n_groups": 18,
+        "c_index": 0.5984856342703039,
+        "c_index_within_day": 0.4300202839756592,
+        "events_median_abs_log_error": 0.6136111381621684,
+        "events_median_abs_error_s": 3.9135521344845845,
+        "events_80pct_interval_coverage": 0.8230088495575221,
+        "censored_upper_bound_consistent": 0.7741935483870968,
+        "fold_failures": 0,
+        "candidate": "fuel_composition"
+      },
+      {
+        "distribution": "weibull",
+        "features": [
+          "x_H2",
+          "x_CH4",
+          "x_C2H4",
+          "log_total_slpm"
+        ],
+        "n": 144,
+        "n_events": 113,
+        "n_groups": 18,
+        "c_index": 0.6218753241365004,
+        "c_index_within_day": 0.28093306288032455,
+        "events_median_abs_log_error": 0.7164869760486425,
+        "events_median_abs_error_s": 4.696770596614022,
+        "events_80pct_interval_coverage": 0.7699115044247787,
+        "censored_upper_bound_consistent": 0.7741935483870968,
+        "fold_failures": 0,
+        "candidate": "fuel_and_flow"
+      },
+      {
+        "distribution": "lognormal",
+        "features": [
+          "x_H2",
+          "x_CH4",
+          "x_C2H4",
+          "log_total_slpm"
+        ],
+        "n": 144,
+        "n_events": 113,
+        "n_groups": 18,
+        "c_index": 0.6103619956436054,
+        "c_index_within_day": 0.28498985801217036,
+        "events_median_abs_log_error": 0.7695525438904992,
+        "events_median_abs_error_s": 3.9999620180504403,
+        "events_80pct_interval_coverage": 0.8407079646017699,
+        "censored_upper_bound_consistent": 0.7741935483870968,
+        "fold_failures": 0,
+        "candidate": "fuel_and_flow"
+      },
+      {
+        "distribution": "weibull",
+        "features": [
+          "x_H2",
+          "x_CH4",
+          "x_C2H4",
+          "log_total_slpm",
+          "he_atmosphere"
+        ],
+        "n": 144,
+        "n_events": 113,
+        "n_groups": 18,
+        "c_index": 0.6878435846903849,
+        "c_index_within_day": 0.4249492900608519,
+        "events_median_abs_log_error": 0.8050850514861552,
+        "events_median_abs_error_s": 4.96378383978341,
+        "events_80pct_interval_coverage": 0.7256637168141593,
+        "censored_upper_bound_consistent": 0.7096774193548387,
+        "fold_failures": 0,
+        "candidate": "fuel_flow_atmosphere"
+      },
+      {
+        "distribution": "lognormal",
+        "features": [
+          "x_H2",
+          "x_CH4",
+          "x_C2H4",
+          "log_total_slpm",
+          "he_atmosphere"
+        ],
+        "n": 144,
+        "n_events": 113,
+        "n_groups": 18,
+        "c_index": 0.693444663416658,
+        "c_index_within_day": 0.5872210953346856,
+        "events_median_abs_log_error": 0.7718806116168759,
+        "events_median_abs_error_s": 4.352126017164639,
+        "events_80pct_interval_coverage": 0.7168141592920354,
+        "censored_upper_bound_consistent": 0.8709677419354839,
+        "fold_failures": 0,
+        "candidate": "fuel_flow_atmosphere"
+      },
+      {
+        "distribution": "weibull",
+        "features": [
+          "x_H2",
+          "x_CH4",
+          "x_C2H4",
+          "log_total_slpm",
+          "he_atmosphere",
+          "test_order_in_day"
+        ],
+        "n": 144,
+        "n_events": 113,
+        "n_groups": 18,
+        "c_index": 0.6885177886111399,
+        "c_index_within_day": 0.5172413793103449,
+        "events_median_abs_log_error": 0.7706695148553881,
+        "events_median_abs_error_s": 3.745088736825997,
+        "events_80pct_interval_coverage": 0.6548672566371682,
+        "censored_upper_bound_consistent": 0.8064516129032258,
+        "fold_failures": 0,
+        "candidate": "fuel_flow_atmosphere_order"
+      },
+      {
+        "distribution": "lognormal",
+        "features": [
+          "x_H2",
+          "x_CH4",
+          "x_C2H4",
+          "log_total_slpm",
+          "he_atmosphere",
+          "test_order_in_day"
+        ],
+        "n": 144,
+        "n_events": 113,
+        "n_groups": 18,
+        "c_index": 0.6968156830204336,
+        "c_index_within_day": 0.5618661257606491,
+        "events_median_abs_log_error": 0.727399899716231,
+        "events_median_abs_error_s": 4.096640953273237,
+        "events_80pct_interval_coverage": 0.6902654867256637,
+        "censored_upper_bound_consistent": 1.0,
+        "fold_failures": 0,
+        "candidate": "fuel_flow_atmosphere_order"
+      },
+      {
+        "distribution": "weibull",
+        "features": [
+          "x_H2",
+          "x_CH4",
+          "x_C2H4",
+          "log_total_slpm",
+          "he_atmosphere",
+          "o2_30"
+        ],
+        "n": 105,
+        "n_events": 85,
+        "n_groups": 13,
+        "c_index": 0.725243274184316,
+        "c_index_within_day": 0.3415977961432507,
+        "events_median_abs_log_error": 0.6060656661878139,
+        "events_median_abs_error_s": 4.402731874270922,
+        "events_80pct_interval_coverage": 0.6470588235294118,
+        "censored_upper_bound_consistent": 0.7,
+        "fold_failures": 0,
+        "candidate": "with_o2"
+      },
+      {
+        "distribution": "lognormal",
+        "features": [
+          "x_H2",
+          "x_CH4",
+          "x_C2H4",
+          "log_total_slpm",
+          "he_atmosphere",
+          "o2_30"
+        ],
+        "n": 105,
+        "n_events": 85,
+        "n_groups": 13,
+        "c_index": 0.7379316924251097,
+        "c_index_within_day": 0.571625344352617,
+        "events_median_abs_log_error": 0.6053039956331987,
+        "events_median_abs_error_s": 3.327244424925989,
+        "events_80pct_interval_coverage": 0.611764705882353,
+        "censored_upper_bound_consistent": 0.75,
+        "fold_failures": 0,
+        "candidate": "with_o2"
+      },
+      {
+        "distribution": "weibull",
+        "features": [
+          "x_H2",
+          "x_CH4",
+          "x_C2H4",
+          "log_total_slpm",
+          "he_atmosphere"
+        ],
+        "n": 105,
+        "n_events": 85,
+        "n_groups": 13,
+        "c_index": 0.662087387903072,
+        "c_index_within_day": 0.29201101928374656,
+        "events_median_abs_log_error": 0.8748217466793506,
+        "events_median_abs_error_s": 5.50929288154544,
+        "events_80pct_interval_coverage": 0.6588235294117647,
+        "censored_upper_bound_consistent": 0.8,
+        "fold_failures": 0,
+        "candidate": "fuel_flow_atmosphere(O2-known rows)"
+      },
+      {
+        "distribution": "lognormal",
+        "features": [
+          "x_H2",
+          "x_CH4",
+          "x_C2H4",
+          "log_total_slpm",
+          "he_atmosphere"
+        ],
+        "n": 105,
+        "n_events": 85,
+        "n_groups": 13,
+        "c_index": 0.669337912612097,
+        "c_index_within_day": 0.39118457300275483,
+        "events_median_abs_log_error": 0.7429682274283377,
+        "events_median_abs_error_s": 4.852037950189645,
+        "events_80pct_interval_coverage": 0.6235294117647059,
+        "censored_upper_bound_consistent": 0.9,
+        "fold_failures": 0,
+        "candidate": "fuel_flow_atmosphere(O2-known rows)"
+      }
+    ]
+  },
+  "limitations": [
+    "Associational model of the s-Flame constant-flow test matrix; not a causal or physics model.",
+    "Compositions and flows are nominal (no gas conversion factors).",
+    "O2 is unknown for mixed-O2 days, so the selected model does not use O2.",
+    "Possible informative censoring: some flames were stopped by a burner temperature limit.",
+    "Outside the training ranges (feature_ranges), predictions are extrapolations and are flagged.",
+    "On held-out test days the median lifetime is typically off by a factor of ~2; the model ranks conditions (C-index ~0.7) better than it predicts absolute lifetimes.",
+    "Prediction intervals are widened by a factor calibrated on the same leave-one-day-out predictions used for model selection (in-sample calibration; mildly optimistic)."
+  ]
+}

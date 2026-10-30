@@ -1,0 +1,89 @@
+{
+  "features": [
+    {
+      "name": "x_H2",
+      "description": "H2 mole fraction in the delivered fuel-line mixture (nominal)",
+      "unit": "-"
+    },
+    {
+      "name": "x_CH4",
+      "description": "CH4 mole fraction in the delivered fuel-line mixture (nominal)",
+      "unit": "-"
+    },
+    {
+      "name": "x_C2H4",
+      "description": "C2H4 mole fraction in the delivered fuel-line mixture (nominal)",
+      "unit": "-"
+    },
+    {
+      "name": "log_total_slpm",
+      "description": "ln of total fuel-line flow, indicated N2-equivalent SLPM",
+      "unit": "ln(SLPM)"
+    },
+    {
+      "name": "he_atmosphere",
+      "description": "1 if the chamber inert was helium (round 2), else 0",
+      "unit": "-"
+    },
+    {
+      "name": "test_order_in_day",
+      "description": "order of the test within its day (vitiation proxy)",
+      "unit": "-"
+    }
+  ],
+  "ranges": {
+    "x_H2": {
+      "min": 0.0,
+      "max": 0.6983240223463687,
+      "observed_values": null
+    },
+    "x_CH4": {
+      "min": 0.0,
+      "max": 0.45,
+      "observed_values": null
+    },
+    "x_C2H4": {
+      "min": 0.0,
+      "max": 0.3,
+      "observed_values": null
+    },
+    "log_total_slpm": {
+      "min": -2.5282944331309873,
+      "max": 0.6915358831171697,
+      "observed_values": null
+    },
+    "he_atmosphere": {
+      "min": 0.0,
+      "max": 1.0,
+      "observed_values": [
+        0.0,
+        1.0
+      ]
+    },
+    "test_order_in_day": {
+      "min": 1.0,
+      "max": 25.0,
+      "observed_values": null
+    }
+  },
+  "forbidden_inputs": [
+    "detection_lag_s",
+    "event_observed",
+    "flame_duration_s",
+    "flame_off_utc",
+    "flame_on_utc",
+    "fuel_duration_s",
+    "fuel_off_utc",
+    "fuel_species_fraction_at_extinction",
+    "ignition_delay_s",
+    "nasa_extinction_detected_utc",
+    "nasa_stop_reason",
+    "outcome",
+    "pmt1_baseline_v",
+    "pmt1_peak_v",
+    "pta3_kpa_at_ignition_low_confidence",
+    "quality_flags",
+    "time_since_last_flow_change_s",
+    "total_slpm_at_extinction"
+  ]
+}

@@ -1,0 +1,323 @@
+{
+  "scheme": "leave-one-test-day-out",
+  "selected": {
+    "distribution": "lognormal",
+    "features": [
+      "x_H2",
+      "x_CH4",
+      "x_C2H4",
+      "log_total_slpm",
+      "he_atmosphere",
+      "test_order_in_day"
+    ],
+    "n": 144,
+    "n_events": 113,
+    "n_groups": 18,
+    "c_index": 0.6968156830204336,
+    "c_index_within_day": 0.5618661257606491,
+    "events_median_abs_log_error": 0.727399899716231,
+    "events_median_abs_error_s": 4.096640953273237,
+    "events_80pct_interval_coverage": 0.6902654867256637,
+    "censored_upper_bound_consistent": 1.0,
+    "fold_failures": 0,
+    "candidate": "fuel_flow_atmosphere_order"
+  },
+  "baseline_intercept_only": {
+    "distribution": "lognormal",
+    "features": [],
+    "n": 144,
+    "n_events": 113,
+    "n_groups": 18,
+    "c_index": 0.19328907789648378,
+    "c_index_within_day": 0.5,
+    "events_median_abs_log_error": 0.6526790185650944,
+    "events_median_abs_error_s": 4.662049088435309,
+    "events_80pct_interval_coverage": 0.8761061946902655,
+    "censored_upper_bound_consistent": 0.5161290322580645,
+    "fold_failures": 0,
+    "candidate": "baseline_intercept_only"
+  },
+  "baseline_note": "A constant predictor has C-index 0.5 by definition. Its pooled leave-one-day-out C-index is below 0.5 because each fold's intercept is fitted without the held-out day (long-lived days get lower predictions); compare error metrics, not C, with it.",
+  "all_candidates": [
+    {
+      "distribution": "weibull",
+      "features": [],
+      "n": 144,
+      "n_events": 113,
+      "n_groups": 18,
+      "c_index": 0.19826781454205994,
+      "c_index_within_day": 0.5,
+      "events_median_abs_log_error": 0.7204267178180217,
+      "events_median_abs_error_s": 5.7581631344298465,
+      "events_80pct_interval_coverage": 0.9646017699115044,
+      "censored_upper_bound_consistent": 0.5161290322580645,
+      "fold_failures": 0,
+      "candidate": "baseline_intercept_only"
+    },
+    {
+      "distribution": "lognormal",
+      "features": [],
+      "n": 144,
+      "n_events": 113,
+      "n_groups": 18,
+      "c_index": 0.19328907789648378,
+      "c_index_within_day": 0.5,
+      "events_median_abs_log_error": 0.6526790185650944,
+      "events_median_abs_error_s": 4.662049088435309,
+      "events_80pct_interval_coverage": 0.8761061946902655,
+      "censored_upper_bound_consistent": 0.5161290322580645,
+      "fold_failures": 0,
+      "candidate": "baseline_intercept_only"
+    },
+    {
+      "distribution": "weibull",
+      "features": [
+        "x_H2",
+        "x_CH4",
+        "x_C2H4"
+      ],
+      "n": 144,
+      "n_events": 113,
+      "n_groups": 18,
+      "c_index": 0.5991079763510009,
+      "c_index_within_day": 0.44421906693711966,
+      "events_median_abs_log_error": 0.6297273018988143,
+      "events_median_abs_error_s": 4.662903957733153,
+      "events_80pct_interval_coverage": 0.7699115044247787,
+      "censored_upper_bound_consistent": 0.7741935483870968,
+      "fold_failures": 0,
+      "candidate": "fuel_composition"
+    },
+    {
+      "distribution": "lognormal",
+      "features": [
+        "x_H2",
+        "x_CH4",
+        "x_C2H4"
+      ],
+      "n": 144,
+      "n_events": 113,
+      "n_groups": 18,
+      "c_index": 0.5984856342703039,
+      "c_index_within_day": 0.4300202839756592,
+      "events_median_abs_log_error": 0.6136111381621684,
+      "events_median_abs_error_s": 3.9135521344845845,
+      "events_80pct_interval_coverage": 0.8230088495575221,
+      "censored_upper_bound_consistent": 0.7741935483870968,
+      "fold_failures": 0,
+      "candidate": "fuel_composition"
+    },
+    {
+      "distribution": "weibull",
+      "features": [
+        "x_H2",
+        "x_CH4",
+        "x_C2H4",
+        "log_total_slpm"
+      ],
+      "n": 144,
+      "n_events": 113,
+      "n_groups": 18,
+      "c_index": 0.6218753241365004,
+      "c_index_within_day": 0.28093306288032455,
+      "events_median_abs_log_error": 0.7164869760486425,
+      "events_median_abs_error_s": 4.696770596614022,
+      "events_80pct_interval_coverage": 0.7699115044247787,
+      "censored_upper_bound_consistent": 0.7741935483870968,
+      "fold_failures": 0,
+      "candidate": "fuel_and_flow"
+    },
+    {
+      "distribution": "lognormal",
+      "features": [
+        "x_H2",
+        "x_CH4",
+        "x_C2H4",
+        "log_total_slpm"
+      ],
+      "n": 144,
+      "n_events": 113,
+      "n_groups": 18,
+      "c_index": 0.6103619956436054,
+      "c_index_within_day": 0.28498985801217036,
+      "events_median_abs_log_error": 0.7695525438904992,
+      "events_median_abs_error_s": 3.9999620180504403,
+      "events_80pct_interval_coverage": 0.8407079646017699,
+      "censored_upper_bound_consistent": 0.7741935483870968,
+      "fold_failures": 0,
+      "candidate": "fuel_and_flow"
+    },
+    {
+      "distribution": "weibull",
+      "features": [
+        "x_H2",
+        "x_CH4",
+        "x_C2H4",
+        "log_total_slpm",
+        "he_atmosphere"
+      ],
+      "n": 144,
+      "n_events": 113,
+      "n_groups": 18,
+      "c_index": 0.6878435846903849,
+      "c_index_within_day": 0.4249492900608519,
+      "events_median_abs_log_error": 0.8050850514861552,
+      "events_median_abs_error_s": 4.96378383978341,
+      "events_80pct_interval_coverage": 0.7256637168141593,
+      "censored_upper_bound_consistent": 0.7096774193548387,
+      "fold_failures": 0,
+      "candidate": "fuel_flow_atmosphere"
+    },
+    {
+      "distribution": "lognormal",
+      "features": [
+        "x_H2",
+        "x_CH4",
+        "x_C2H4",
+        "log_total_slpm",
+        "he_atmosphere"
+      ],
+      "n": 144,
+      "n_events": 113,
+      "n_groups": 18,
+      "c_index": 0.693444663416658,
+      "c_index_within_day": 0.5872210953346856,
+      "events_median_abs_log_error": 0.7718806116168759,
+      "events_median_abs_error_s": 4.352126017164639,
+      "events_80pct_interval_coverage": 0.7168141592920354,
+      "censored_upper_bound_consistent": 0.8709677419354839,
+      "fold_failures": 0,
+      "candidate": "fuel_flow_atmosphere"
+    },
+    {
+      "distribution": "weibull",
+      "features": [
+        "x_H2",
+        "x_CH4",
+        "x_C2H4",
+        "log_total_slpm",
+        "he_atmosphere",
+        "test_order_in_day"
+      ],
+      "n": 144,
+      "n_events": 113,
+      "n_groups": 18,
+      "c_index": 0.6885177886111399,
+      "c_index_within_day": 0.5172413793103449,
+      "events_median_abs_log_error": 0.7706695148553881,
+      "events_median_abs_error_s": 3.745088736825997,
+      "events_80pct_interval_coverage": 0.6548672566371682,
+      "censored_upper_bound_consistent": 0.8064516129032258,
+      "fold_failures": 0,
+      "candidate": "fuel_flow_atmosphere_order"
+    },
+    {
+      "distribution": "lognormal",
+      "features": [
+        "x_H2",
+        "x_CH4",
+        "x_C2H4",
+        "log_total_slpm",
+        "he_atmosphere",
+        "test_order_in_day"
+      ],
+      "n": 144,
+      "n_events": 113,
+      "n_groups": 18,
+      "c_index": 0.6968156830204336,
+      "c_index_within_day": 0.5618661257606491,
+      "events_median_abs_log_error": 0.727399899716231,
+      "events_median_abs_error_s": 4.096640953273237,
+      "events_80pct_interval_coverage": 0.6902654867256637,
+      "censored_upper_bound_consistent": 1.0,
+      "fold_failures": 0,
+      "candidate": "fuel_flow_atmosphere_order"
+    },
+    {
+      "distribution": "weibull",
+      "features": [
+        "x_H2",
+        "x_CH4",
+        "x_C2H4",
+        "log_total_slpm",
+        "he_atmosphere",
+        "o2_30"
+      ],
+      "n": 105,
+      "n_events": 85,
+      "n_groups": 13,
+      "c_index": 0.725243274184316,
+      "c_index_within_day": 0.3415977961432507,
+      "events_median_abs_log_error": 0.6060656661878139,
+      "events_median_abs_error_s": 4.402731874270922,
+      "events_80pct_interval_coverage": 0.6470588235294118,
+      "censored_upper_bound_consistent": 0.7,
+      "fold_failures": 0,
+      "candidate": "with_o2"
+    },
+    {
+      "distribution": "lognormal",
+      "features": [
+        "x_H2",
+        "x_CH4",
+        "x_C2H4",
+        "log_total_slpm",
+        "he_atmosphere",
+        "o2_30"
+      ],
+      "n": 105,
+      "n_events": 85,
+      "n_groups": 13,
+      "c_index": 0.7379316924251097,
+      "c_index_within_day": 0.571625344352617,
+      "events_median_abs_log_error": 0.6053039956331987,
+      "events_median_abs_error_s": 3.327244424925989,
+      "events_80pct_interval_coverage": 0.611764705882353,
+      "censored_upper_bound_consistent": 0.75,
+      "fold_failures": 0,
+      "candidate": "with_o2"
+    },
+    {
+      "distribution": "weibull",
+      "features": [
+        "x_H2",
+        "x_CH4",
+        "x_C2H4",
+        "log_total_slpm",
+        "he_atmosphere"
+      ],
+      "n": 105,
+      "n_events": 85,
+      "n_groups": 13,
+      "c_index": 0.662087387903072,
+      "c_index_within_day": 0.29201101928374656,
+      "events_median_abs_log_error": 0.8748217466793506,
+      "events_median_abs_error_s": 5.50929288154544,
+      "events_80pct_interval_coverage": 0.6588235294117647,
+      "censored_upper_bound_consistent": 0.8,
+      "fold_failures": 0,
+      "candidate": "fuel_flow_atmosphere(O2-known rows)"
+    },
+    {
+      "distribution": "lognormal",
+      "features": [
+        "x_H2",
+        "x_CH4",
+        "x_C2H4",
+        "log_total_slpm",
+        "he_atmosphere"
+      ],
+      "n": 105,
+      "n_events": 85,
+      "n_groups": 13,
+      "c_index": 0.669337912612097,
+      "c_index_within_day": 0.39118457300275483,
+      "events_median_abs_log_error": 0.7429682274283377,
+      "events_median_abs_error_s": 4.852037950189645,
+      "events_80pct_interval_coverage": 0.6235294117647059,
+      "censored_upper_bound_consistent": 0.9,
+      "fold_failures": 0,
+      "candidate": "fuel_flow_atmosphere(O2-known rows)"
+    }
+  ]
+}

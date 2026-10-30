@@ -3,6 +3,80 @@
 Every result here was produced by actually running the commands shown. Nothing
 is extrapolated.
 
+## Run of 2026-10-30, increment 3 (shell-limb radius, flame-lifetime model)
+
+```bash
+python -m pytest -q
+```
+
+**Result: 108 passed, 0 failed (44.1 s).** New suites:
+* `test_limb.py` (8): outer radius within 1 px on synthetic projected shells
+  (full, C-shaped, half, clipped). Interior igniter and uneven shell ignored.
+  Noise-only and 60° arcs rejected. Engine limb mode on a synthetic growing
+  shell: radius ±1 px, growth rate within 5 %, igniter spot and saturated frame
+  rejected, volume from limb radius.
+* `test_ml.py` (8): AFT parameter recovery with censoring (Weibull,
+  log-normal). Naive regression biased low under censoring. Kaplan–Meier and
+  C-index reference values. Population selection. Forbidden-feature guard. No
+  test day in its own training fold. Reproducible artifacts. Out-of-range and
+  post-ignition inputs rejected.
+
+### Real flame, shell-limb radius: PSI-23 19254C1 (C2H4/N2, ~21 % O2, constant flow)
+
+| Check | Result |
+|---|---|
+| Burner calibration (this test) | 98 ± 1 px (19304A7: 103 ± 2.5 px), so ±2.5 % systematic is added |
+| Limb fits accepted | 159 of 210 analysed frames (ignition flash, igniter and dim partial shells rejected) |
+| Flame-shell radius | 12.1 mm (+2.4 s) → 18.6 mm (+15.3 s), monotonic growth |
+| Growth rate dR/dt | ≈1.4 mm/s early, decaying to ≈0.4 mm/s (decelerating expansion) |
+| Radius uncertainty | ±0.48 mm median (calibration ≈0.44 mm dominates) |
+| Area-equivalent vs limb radius | −12 % median (IQR −15.7 to −8.5 %): the old method under-measures |
+| Camera extinction vs OH* PMT | +16.57 ± 0.04 s vs +16.74 s (0.17 s apart) |
+| Wall time | 27 s for 210 frames at 0.5 scale (limb fit ≈0.1 s per frame) |
+
+Figure: `docs/img/PSI-23_19254C1_limb_overlay.jpg`. Yellow is the limb fit,
+white the area-equivalent circle, cyan the threshold outline.
+
+### Flame-lifetime model (constant-flow s-Flame, leave-one-test-day-out)
+
+| Candidate | Dist | n | C (pooled) | C (within day) | median abs log error (events) | 80 % PI coverage |
+|---|---|---|---|---|---|---|
+| baseline_intercept_only | weibull | 144 | 0.198 | 0.500 | 0.720 | 0.96 |
+| baseline_intercept_only | lognormal | 144 | 0.193 | 0.500 | 0.653 | 0.88 |
+| fuel_composition | weibull | 144 | 0.599 | 0.444 | 0.630 | 0.77 |
+| fuel_composition | lognormal | 144 | 0.598 | 0.430 | 0.614 | 0.82 |
+| fuel_and_flow | weibull | 144 | 0.622 | 0.281 | 0.716 | 0.77 |
+| fuel_and_flow | lognormal | 144 | 0.610 | 0.285 | 0.770 | 0.84 |
+| fuel_flow_atmosphere | weibull | 144 | 0.688 | 0.425 | 0.805 | 0.73 |
+| fuel_flow_atmosphere | lognormal | 144 | 0.693 | 0.587 | 0.772 | 0.72 |
+| fuel_flow_atmosphere_order | weibull | 144 | 0.689 | 0.517 | 0.771 | 0.65 |
+| fuel_flow_atmosphere_order | lognormal | 144 | 0.697 | 0.562 | 0.727 | 0.69 |
+| with_o2 | weibull | 105 | 0.725 | 0.342 | 0.606 | 0.65 |
+| with_o2 | lognormal | 105 | 0.738 | 0.572 | 0.605 | 0.61 |
+| fuel_flow_atmosphere(O2-known rows) | weibull | 105 | 0.662 | 0.292 | 0.875 | 0.66 |
+| fuel_flow_atmosphere(O2-known rows) | lognormal | 105 | 0.669 | 0.391 | 0.743 | 0.62 |
+
+The intercept-only pooled C is below 0.5 because of fold-specific intercepts; a
+constant predictor's C is 0.5 by definition. Selected: `fuel_flow_atmosphere_order`,
+lognormal, model `sflame-lifetime-8c860fba8213`. Interval inflation ×1.36
+takes held-out coverage from 70% to 81%.
+
+Standardised time ratios (per 1 SD of each feature):
+
+| Term | Time ratio | 95 % CI | p |
+|---|---|---|---|
+| intercept | 8.493 | [7.260, 9.936] | 2.9e-157 |
+| x_H2 | 1.501 | [1.009, 2.234] | 0.045 |
+| x_CH4 | 0.644 | [0.447, 0.928] | 0.018 |
+| x_C2H4 | 0.894 | [0.587, 1.362] | 0.6 |
+| log_total_slpm | 1.058 | [0.872, 1.284] | 0.57 |
+| he_atmosphere | 0.519 | [0.421, 0.641] | 1.1e-09 |
+| test_order_in_day | 0.758 | [0.647, 0.888] | 0.00061 |
+
+**Conclusion:** the model ranks conditions (C ≈ 0.70) but does not predict
+absolute lifetimes on new test days better than the baseline (median error
+factor ~2). See A-ML-4.
+
 ## Run of 2026-10-30, increment 2 (s-Flame dataset and first real flame images)
 
 ```bash

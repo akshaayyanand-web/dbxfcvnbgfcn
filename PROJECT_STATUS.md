@@ -36,10 +36,17 @@ _Last updated: 2026-10-30. Submission target: 2026-11-14/15._
 | In-image burner calibration | `backend/vision/calibration.py::measure_dark_disk` | synthetic test, applied to 19304A7 |
 | First real flame analysis (19304A7) | `data/processed/19304A7_cv_analysis.*`, `docs/img/` | extinction within 0.18 s of the PMT |
 
+## Completed (increment 3)
+
+| Component | Files | Verified by |
+|---|---|---|
+| Shell-limb radius (RANSAC circle fit to outer half-max edges) + engine `radius_method="limb"` | `backend/vision/limb.py`, `cv_engine.py` | 8 tests, real flame 19254C1 |
+| Flame-lifetime survival model (AFT, leave-one-day-out, calibrated intervals, OOD and leakage guards, JSON artifacts) | `backend/ml/survival.py`, `backend/ml/sflame_model.py`, `models/sflame_lifetime/` | 8 tests, validation table |
+
 ## Remaining (in planned order)
 
-0. **Next:** a limb (outer-edge) circle fit for shell-flame radius (A-CV-12), and a
-   survival / extinction model on `sflame_test_points.csv` with test-day-grouped CV.
+0. **Next:** FastAPI backend (experiments, analysis jobs, telemetry WebSocket,
+   model inference, exports) and persistence, then the React interface.
 1. **Data layer, remaining:** a general dataset registry for the other ACME
    investigations (PSI-10 Flame Design and PSI-159 CFI-G use different file
    naming), CIR chamber pressure/O2 if obtainable (per-test O2 is currently
