@@ -193,3 +193,57 @@ fitted to any experiment.
 is correct. It does not show how well real flame images, which have soot
 luminosity, burner glare, reflections and dim blue edges, can be segmented.
 That requires real footage.
+
+## 7. s-Flame test-point labels (NASA PSI-23)
+
+**A-SF-1: Flame presence.** A flame is present when the OH* photomultiplier
+(PMT1, 310 nm, 125 Hz) exceeds its pre-fuel baseline by
+`max(10 × MAD, 0.02 V)` after a 0.1 s rolling median. It is *sustained* when
+that lasts ≥ 1 s, with gaps ≤ 0.2 s bridged. PMT readings ≥ 4.2 V are excluded
+because they occur before the script applies PMT gain. OH* was chosen because
+every s-Flame fuel produces it and the hot-wire igniter does not emit
+appreciably at 310 nm.
+
+**A-SF-2: Outcome classes.**
+* `extinguished` (event observed): emission ended ≥ 0.1 s before the fuel was
+  shut off.
+* `burning_at_fuel_off` (right-censored at the fuel shut-off).
+* `ambiguous_nasa_extinction`: NASA's onboard detector declared extinction, but
+  OH* persisted until the fuel stopped. NASA's detection criteria differ from
+  ours, and the flame was probably weakening. These are excluded from timing
+  labels rather than assigned.
+* `no_sustained_flame`: e.g. ignition failure. 17 of these were logged by NASA
+  as "EXTINCTION DETECTED" and must not count as flame lifetimes.
+
+Agreement with NASA's own stop reasons: 184 of 220 "EXTINCTION DETECTED" are
+`extinguished`, and all 23 "burner temperature limit" stops that had a flame
+were still burning at fuel-off (see `sflame_quality_report.json`).
+
+**A-SF-3: Lifetime origin.** `flame_duration_s` runs from emission onset, not
+from commanded fuel-on. In 52 tests (mostly the helium round) emission began up
+to 1.4 s before the logged fuel-on, apparently from fuel delivered before the
+setpoint record (priming). The setpoint log is therefore not the time origin.
+
+**A-SF-4: Composition and flow.** Flows are N2-equivalent indicated SLPM
+(confirmed by the `...N2Slpm` parameter names in `as run` files). Gas conversion
+factors for the real mixtures [DI §4.A.1] are not applied, so compositions and
+flows are *nominal*. They are internally consistent for comparing tests with
+the same bottles, but not absolute.
+
+**A-SF-5: Oxygen.** Chamber O2 is known only at day level. On days with
+"~30% and ~21%" (and some 17.5% tests on day 20190 per the final report), the
+per-test O2 is not in the downloaded files, so `o2_nominal` is empty and those
+tests must be excluded from, or modelled without, an O2 feature. Vitiation
+lowers O2 through each test day (table footnote). `test_order_in_day` is
+provided as a proxy and is not a measurement.
+
+**A-SF-6: Source discrepancies resolved.** The experimental table's "N3–N6"
+entries are corrected to N2 (rule SFLAME-T1, originals kept). For day 20190 the
+table says 35% H2, but the final report and the MFC gas code say 45% H2. The
+gas code is used.
+
+**A-SF-7: Not causal.** Outcomes also depend on factors not in the table:
+igniter timing and design (loop vs coil tip), burner heating, and chamber
+vitiation. 19254H1 and 19254H3 had identical setpoints, yet one failed to
+ignite and the other burned for 46 s. Any model built on this table predicts
+associations within the s-Flame test matrix only.

@@ -1,0 +1,84 @@
+{
+  "schema": "flame-in-freefall/sflame-test-points/v1",
+  "test_points": 289,
+  "outcomes": {
+    "extinguished": 203,
+    "burning_at_fuel_off": 46,
+    "no_sustained_flame": 20,
+    "ambiguous_nasa_extinction": 20
+  },
+  "outcome_vs_nasa_stop_reason": {
+    "ambiguous_nasa_extinction": {
+      "Burner temperature limit exceeded for specified duration": 0,
+      "EXTINCTION DETECTED": 20,
+      "completed": 0,
+      "no_log": 0
+    },
+    "burning_at_fuel_off": {
+      "Burner temperature limit exceeded for specified duration": 23,
+      "EXTINCTION DETECTED": 0,
+      "completed": 17,
+      "no_log": 6
+    },
+    "extinguished": {
+      "Burner temperature limit exceeded for specified duration": 5,
+      "EXTINCTION DETECTED": 184,
+      "completed": 1,
+      "no_log": 13
+    },
+    "no_sustained_flame": {
+      "Burner temperature limit exceeded for specified duration": 1,
+      "EXTINCTION DETECTED": 17,
+      "completed": 0,
+      "no_log": 2
+    }
+  },
+  "flag_counts": {
+    "experimental_table_corrected": 124,
+    "o2_ambiguous_mixed_day": 92,
+    "emission_before_logged_fuel_on": 52,
+    "no_test_point_log": 21,
+    "detection": 19,
+    "emission_persisted_after_fuel_off": 3,
+    "telemetry_malformed_rows": 2
+  },
+  "experimental_table_corrections": [
+    {
+      "Test Day": "19256",
+      "corrections": "SFLAME-T1(Atmosphere);SFLAME-T1(Fuel Bottle);"
+    },
+    {
+      "Test Day": "19304",
+      "corrections": "SFLAME-T1(Atmosphere);"
+    },
+    {
+      "Test Day": "19308",
+      "corrections": "SFLAME-T1(Fuel Bottle);"
+    },
+    {
+      "Test Day": "20006",
+      "corrections": "SFLAME-T1(Atmosphere);"
+    },
+    {
+      "Test Day": "20013",
+      "corrections": "SFLAME-T1(Atmosphere);"
+    },
+    {
+      "Test Day": "20024",
+      "corrections": "SFLAME-T1(Atmosphere);"
+    },
+    {
+      "Test Day": "20029",
+      "corrections": "SFLAME-T1(Atmosphere);"
+    }
+  ],
+  "known_source_discrepancies": [
+    "PSI-23 experimental table lists day 20190 fuel as '35% H2 with He'; the final report (Table 1, \u00a7C) and the MFC header gas code 14 both give 45% H2 / 55% He. The header code is used.",
+    "Days with '~30% and ~21% O2' (and some 17.5% O2 tests on 20190 per the final report) have no per-test O2 in the downloaded files; o2_nominal is left empty for those tests."
+  ],
+  "caveats": [
+    "Flows are indicated N2-equivalent SLPM without gas conversion factors.",
+    "pta3_kpa is from an uncalibrated ACME transducer (NASA data interpretation guide).",
+    "Labels derive from PMT1 (OH*, 310 nm) with a 1 s sustain rule; see SCIENTIFIC_ASSUMPTIONS.md A-SF."
+  ]
+}

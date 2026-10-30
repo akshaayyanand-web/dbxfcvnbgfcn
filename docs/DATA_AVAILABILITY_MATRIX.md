@@ -50,13 +50,14 @@ Legend: **A** = available and inspected, **P** = present but not yet parsed or c
 | Variable | Role | Unit | Source | Status | Coverage | Notes |
 |---|---|---|---|---|---|---|
 | Test-point ID | key | – | file names, `_TP.txt` | **A** | 291 test points | Use for grouped CV |
-| Fuel composition | condition | mole % | experimental table (per day), mfc header gas IDs | **P** | 31 test days | Gas-ID code meaning needs the engineering docs |
-| O₂ fraction | condition | mole % | experimental table | **P** | "~21 %" / "~30 %" | **Data-quality defect:** the atmosphere column reads "with N2, N3, N4, N5, N6", most likely spreadsheet autofill of "N2". Must be corrected with a documented rule, not silently |
+| Fuel composition | condition | mole fraction | MFC gas codes [IDD Table 34] + indicated flows | **A** (nominal) | 289 | Gas conversion factors not applied (A-SF-4) |
+| O₂ fraction | condition | mole fraction | experimental table (day level) | **A** for 197 tests, **unknown** for 92 | day level | "N3–N6" defect corrected by rule SFLAME-T1. Mixed-O₂ days have no per-test value (A-SF-5) |
 | Chamber pressure | condition | V → kPa | `PTA1–3` in `_data.csv` | **P** | per test point | Calibration factor U. The table notes "~1 atm, pressure rises and O₂ drops with vitiation" |
-| Fuel / oxidiser flow | condition | V → sccm | `MFCA1–3` in `_data.csv`, setpoints | **P** | per test point | Full-scale ranges are in the setpoint header |
-| Ignition time | outcome anchor | UTC | `_TP.txt` "Ignition and retraction" | **A** (1) / P | 267 logs | |
-| **Extinction time / flame lifetime** | **outcome** | s | `_TP.txt` "Extinction detected" − ignition | **A** (1) / P | ≤ 267 | 19254H1: ignition 18:38:28, extinction 18:38:32, **"Test Point Failure: EXTINCTION DETECTED"**. Detection method and resolution need the docs. **Best candidate ML target** |
-| Test outcome (nominal vs failure + reason) | outcome | category | `_TP.txt` | **A** (1) / P | ≤ 267 | Possible classification target |
+| Fuel / diluent flow | condition | SLPM (N2-equiv.) | setpoints, conversion [NIDD] | **A** (indicated) | 289 | |
+| Flame on/off times | outcome anchor | UTC (8 ms) | OH* photomultiplier PMT1 in `_data.csv` | **A** | 289 tests | `data/processed/sflame_test_points.csv` (A-SF-1) |
+| **Flame lifetime (with censoring)** | **outcome** | s | PMT1 emission onset → end | **A** | 203 extinctions + 46 censored | Best ML target. 20 ambiguous and 20 no-flame tests excluded (A-SF-2) |
+| Commanded flow at extinction | outcome | SLPM (N2-equiv.) | setpoints at flame-off | **A** | 203 | Radiative (ramp-up) vs kinetic (ramp-down) limits per the final report |
+| NASA stop reason | metadata / check | category | `_TP.txt` | **A** | 267 logs | "EXTINCTION DETECTED" is the normal stop path, not a failure. Used only as a cross-check |
 | Flame radius vs time | outcome | mm | science-camera TIFFs → this CV engine | P | ≤ 286 | Needs a successful test point, an image-sequence loader and pixel scale (camera docs) |
 | Flame temperature | outcome | V → K | thermocouples `TCA–TCD`, `TC200A/B` | **P** (raw V) | per test point | Thermocouple type, position and cold-junction handling must come from the docs. **Do not train or report temperatures until the conversion is verified** |
 | Radiative emission | outcome | V → W | radiometer channels | **P** (raw V) | per test point | Calibration U |
@@ -72,8 +73,12 @@ Legend: **A** = available and inspected, **P** = present but not yet parsed or c
    frames. It was a **static hardware glow at the image border**, not a flame
    (A-CV-11). Downlink video must not be used for flame size without a region of
    interest and visual confirmation.
-3. 19254H1 is a **failed test point**: early extinction about 4 s after ignition.
-   Test outcomes therefore vary and must be modelled, not assumed.
+3. 19254H1 is an **ignition failure**, which corrects an earlier reading of
+   "early extinction". The OH* photomultiplier shows only a 0.6 s flash at
+   18:38:29.3, *before* fuel reached the burner (fuel flow rises at 18:38:30.9).
+   NASA's log says "EXTINCTION DETECTED" because that is the script's generic stop
+   path. 19254H3 used identical setpoints and burned for 42.8 s. Labels must
+   therefore come from the sensor signals, not the stop reason (A-SF-2, A-SF-7).
 
 ## 5. Rules that follow
 

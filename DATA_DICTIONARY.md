@@ -102,3 +102,36 @@ Source of truth: `FIELD_DEFINITIONS` in `backend/vision/cv_engine.py`. The test
 `frame_index`, `timestamp_s`, `flame_visible`, `radius_px`, `radius_rate_px_s`,
 `radius_accel_px_s2`, `center_x_px`, `center_y_px` (and `source_frame_index`
 for variable-frame-rate files).
+
+## s-Flame test-point table (`data/processed/sflame_test_points.csv`)
+
+Built by `python -m backend.data.sflame_dataset` from NASA PSI-23 (CC0-1.0, DOI
+10.60555/k57n-p030). `sflame_manifest.json` records the SHA-256 of every input
+file. One row per test point (289 rows). Sources: `[IDD]` ACME-DOC-010 Rev D,
+`[NIDD]` ACME non-imaging data file description, `[DI]` s-Flame Data
+Interpretation (2021). Labelling rules: `SCIENTIFIC_ASSUMPTIONS.md` §7.
+
+| Column | Unit | Class | Definition / source |
+|---|---|---|---|
+| `test_point` | – | metadata | NASA test-point ID `YYDDD<letter><n>` [DI §4.A.1] |
+| `test_day`, `test_date_utc`, `test_order_in_day` | – | metadata | Day code, header date, order by fuel-on time within the day (vitiation proxy) |
+| `round` | – | metadata | 1 = nitrogen-diluted (2019–Jan 2020), 2 = helium-diluted (May–Jul 2020) |
+| `fuel_bottle_code`, `fuel_bottle` | –, JSON mole fractions | direct_measurement (setup) | MFCA3 gas code and composition [IDD Table 34] |
+| `diluent_mfc_gas` | – | direct_measurement (setup) | MFCA2 gas (always N2 in s-Flame) |
+| `flow_programme` | – | calculated | constant / ramp_up / ramp_down / up_down / stepped, from the commanded setpoints |
+| `fuel_on_utc`, `fuel_off_utc`, `fuel_duration_s` | ISO time, s | direct_measurement | First non-zero fuel setpoint, next zero setpoint (ms resolution) |
+| `atmosphere_day`, `atmosphere_inert` | – | direct_measurement (day level) | From the experimental table after correction SFLAME-T1 |
+| `o2_nominal` | mole fraction | direct_measurement (day level, nominal) | Single nominal O2 for the day; **empty** when the day mixed O2 levels |
+| `initial_fuel_slpm`, `initial_diluent_slpm`, `initial_total_slpm`, `max_total_slpm`, `min_total_slpm` | SLPM (N2-equivalent, indicated) | calculated | `V / 5 × full scale` [NIDD], **no gas conversion factor** |
+| `initial_fuel_species_fraction`, `initial_x_{H2,CH4,C2H4,N2,He}` | mole fraction | calculated | Delivered fuel-line mixture from bottle composition and indicated flows (nominal) |
+| `n_flow_steps` | – | calculated | Number of distinct commanded flow states |
+| `planned_constant_flow_s`, `burner_temperature_limit_c` | s, °C | direct_measurement (plan) | From `as run<tp>.txt` (available for 237 tests). Planned time is the censoring horizon |
+| `nasa_stop_reason`, `nasa_ignition_utc`, `nasa_extinction_detected_utc` | –, ISO time (1 s resolution) | direct_measurement | From `_TP.txt`. "EXTINCTION DETECTED" is the script's normal stop path |
+| `flame_on_utc`, `flame_off_utc`, `flame_duration_s` | ISO time, s | calculated | Sustained OH* emission (PMT1, 125 Hz) per A-SF-1 |
+| `ignition_delay_s` | s | calculated | `flame_on − fuel_on`. Negative values mean emission before the logged fuel-on (flagged) |
+| `pmt1_baseline_v`, `pmt1_peak_v` | V | direct_measurement | Raw photomultiplier voltages; not radiometrically calibrated |
+| `outcome`, `event_observed` | – | calculated | See A-SF-2. `event_observed` = True (extinction), False (censored), empty (not applicable) |
+| `total_slpm_at_extinction`, `fuel_species_fraction_at_extinction`, `time_since_last_flow_change_s` | SLPM, mole fraction, s | calculated | Commanded state when emission ended (extinguished tests only) |
+| `detection_lag_s` | s | calculated | `fuel_off − flame_off`: delay between emission loss and the automatic fuel shut-off |
+| `pta3_kpa_at_ignition_low_confidence` | kPa | calculated | PTA3 `(V−0.5)·14.5038·10/4` psia [NIDD]. **Uncalibrated transducer** [DI] |
+| `quality_flags` | – | metadata | `;`-separated flags (see `sflame_quality_report.json`) |

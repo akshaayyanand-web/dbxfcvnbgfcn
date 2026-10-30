@@ -11,3 +11,4 @@ data/raw/
 *.avi
 *.mov
 *.groundtruth.json
+data/docs/
