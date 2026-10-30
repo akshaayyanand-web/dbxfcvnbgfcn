@@ -1,0 +1,10 @@
+# Versions pinned to those used for the recorded test run (TEST_REPORT.md).
+# Runtime
+numpy==2.5.3
+pandas==3.0.5
+opencv-python-headless==5.0.0.93
+# Test
+pytest==9.2.0
+# External executables (optional, recommended): ffmpeg / ffprobe
+#   - ffprobe: codec name and duration in metadata
+#   - ffmpeg: variable-frame-rate synthetic test videos
