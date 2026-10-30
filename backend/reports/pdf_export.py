@@ -19,7 +19,7 @@ from reportlab.platypus import Image, ListFlowable, ListItem, Paragraph, SimpleD
 
 # Design-system colours (light theme) for print.
 INK, MUTED, SUBTLE, LINE, SURFACE = "#0d1116", "#3a414b", "#5f6773", "#dfe3e8", "#f3f5f7"
-CLASS_STYLE = {"measured": ("#0a63b8", "-"), "calculated": ("#3a414b", "-"), "predicted": ("#4c6a00", "--"),
+CLASS_STYLE = {"measured": ("#0a63b8", "-"), "image_derived": ("#0a63b8", "-"), "calculated": ("#3a414b", "-"), "predicted": ("#4c6a00", "--"),
                "simulated": ("#5f6773", ":")}
 COMPARE = ["#0a63b8", "#c2410c", "#6941c6", "#0b6f80", "#4c6a00"]
 

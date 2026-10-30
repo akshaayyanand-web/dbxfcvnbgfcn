@@ -363,7 +363,7 @@ proximity.
 * The median absolute log error on events is 0.73 (a factor of ~2.1), which is
   **not better** than the intercept-only baseline (0.65).
 
-The model is therefore an interpretable description of how lifetime varies
+On the same held-out predictions, restricted to the 113 observed extinctions: R² on ln(lifetime) is −1.06, RMSE 1.10 (ln units) and MAE 5.0 s (`/api/models/cv-predictions`). Negative R² means the median prediction for an unseen day is worse than that subset's own mean. Part of this is structural: censored tests (mostly H2) lengthen the fitted lifetimes, while this metric ignores censoring. The model is therefore an interpretable description of how lifetime varies
 across the test matrix. It is not an accurate predictor of absolute lifetime
 for a new test day. Day-level effects (vitiation history, igniter design change
 in round 2, unknown O2) dominate.

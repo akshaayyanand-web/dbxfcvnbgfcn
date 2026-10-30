@@ -13,6 +13,7 @@ import asyncio
 import json
 import logging
 import math
+import os
 import platform
 import shutil
 import sys
@@ -395,8 +396,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         if st.model is None:
             return {"models": [], "error": st.model_error}
         a = st.model.a
-        keys = ("model_version", "created_at", "population", "target", "training_data", "distribution",
-                "features", "feature_ranges", "coefficient_table_standardized", "interval_inflation", "limitations")
+        keys = ("model_version", "created_at", "population", "target", "training_data", "distribution", "l2",
+                "features", "feature_ranges", "coefficient_table_standardized", "interval_inflation", "limitations",
+                "standardizer", "coef", "log_sigma", "converged")
         sel = a["validation"]["selected"]
         return _clean({"models": [{**{k: a[k] for k in keys},
                                    "validation": {"scheme": a["validation"]["scheme"], "selected": sel,
@@ -411,7 +413,12 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         st = request.app.state
         out = []
         if st.dataset is not None:
+            man_path = st.settings.data_dir / "processed" / "sflame_manifest.json"
+            manifest = json.loads(man_path.read_text()) if man_path.exists() else {}
             out.append({"id": "sflame_test_points", "title": "NASA ACME s-Flame test points (PSI-23)",
+                        "file_format": "CSV", "built_at": manifest.get("built_at"),
+                        "source_files": len(manifest.get("inputs", {})),
+                        "detection_config": manifest.get("detection_config"),
                         "data_class": "nasa_psi", "rows": int(len(st.dataset)),
                         "provenance": {"source": "NASA Physical Sciences Informatics, PSI-23", "license": "CC0-1.0",
                                        "doi": "10.60555/k57n-p030",
@@ -443,7 +450,30 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         return Response(content, media_type=media, headers={"Content-Disposition": f'attachment; filename="{filename}"'})
 
     app.include_router(extra_router)
+    _mount_frontend(app, settings)
     return app
+
+
+def _mount_frontend(app: FastAPI, settings: Settings) -> None:
+    """Serve the built React app (frontend/dist) with SPA fallback, when it exists."""
+    from fastapi.responses import FileResponse
+    from fastapi.staticfiles import StaticFiles
+
+    from backend.config import REPO_ROOT
+
+    dist = Path(os.environ.get("FLAME_FRONTEND_DIST", str(REPO_ROOT / "frontend" / "dist")))
+    if not (dist / "index.html").exists():
+        return
+    app.mount("/assets", StaticFiles(directory=dist / "assets"), name="assets")
+
+    @app.get("/{full_path:path}", include_in_schema=False)
+    def spa(full_path: str):
+        if full_path.startswith("api/"):
+            raise HTTPException(status.HTTP_404_NOT_FOUND, "Not found")
+        candidate = (dist / full_path).resolve()
+        if full_path and candidate.is_file() and dist.resolve() in candidate.parents:
+            return FileResponse(candidate)
+        return FileResponse(dist / "index.html")
 
 
 app = create_app()

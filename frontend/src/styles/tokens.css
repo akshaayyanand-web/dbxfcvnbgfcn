@@ -1,0 +1,161 @@
+/* Flame in Freefall — generated from tokens.json by scripts/build-tokens.mjs. Do not edit. */
+:root {
+  --bg: #ffffff;
+  --surface: #f3f5f7;
+  --surface-raised: #ffffff;
+  --surface-sunken: #e9edf1;
+  --line: #dfe3e8;
+  --line-strong: #868e99;
+  --ink: #0d1116;
+  --ink-muted: #3a414b;
+  --ink-subtle: #5f6773;
+  --ink-pill: #0d1116;
+  --on-ink-pill: #ffffff;
+  --sky-500: #1b8cf0;
+  --sky-wash: #bfe0ff;
+  --sky-strong: #0a63b8;
+  --on-sky-strong: #ffffff;
+  --sky-text: #0a63b8;
+  --sky-tint: #e3f1ff;
+  --lime-400: #d4f25a;
+  --on-lime: #0d1116;
+  --lime-text: #4c6a00;
+  --lime-tint: #f2fbd2;
+  --ok: #0b6f80;
+  --ok-tint: #dff3f5;
+  --warn: #9a4f00;
+  --warn-tint: #fff1d6;
+  --bad: #b42318;
+  --bad-tint: #fde4e1;
+  --q-measured: #0a63b8;
+  --q-calculated: #3a414b;
+  --q-predicted: #4c6a00;
+  --q-simulated: #5f6773;
+  --series-3: #c2410c;
+  --series-4: #6941c6;
+  --overlay-contour: #4fd1ff;
+  --overlay-limb: #d4f25a;
+  --overlay-centroid: #ffffff;
+  --overlay-warn: #ffb547;
+  --video-ground: #050608;
+  --focus-ring: #0a63b8;
+  --shadow-card: 0 1px 2px rgba(13,17,22,0.05), 0 8px 24px rgba(13,17,22,0.06);
+  --shadow-pop: 0 12px 40px rgba(13,17,22,0.16);
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+  --radius-xs: 6px;
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --radius-pill: 999px;
+  --font-display: "Hanken Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "DM Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+  --bg: #0b0e12;
+  --surface: #14181e;
+  --surface-raised: #1a1f26;
+  --surface-sunken: #0f1216;
+  --line: #2a3038;
+  --line-strong: #5f6874;
+  --ink: #eef1f5;
+  --ink-muted: #b6bdc7;
+  --ink-subtle: #8f97a3;
+  --ink-pill: #eef1f5;
+  --on-ink-pill: #0d1116;
+  --sky-500: #3d9ff5;
+  --sky-wash: #123556;
+  --sky-strong: #3d9ff5;
+  --on-sky-strong: #06121f;
+  --sky-text: #7cc0ff;
+  --sky-tint: #0f2a45;
+  --lime-400: #d4f25a;
+  --on-lime: #0d1116;
+  --lime-text: #cdef5a;
+  --lime-tint: #25300a;
+  --ok: #4cc3d4;
+  --ok-tint: #0b2e33;
+  --warn: #f2b25c;
+  --warn-tint: #33240a;
+  --bad: #ff8a7a;
+  --bad-tint: #3b1512;
+  --q-measured: #7cc0ff;
+  --q-calculated: #b6bdc7;
+  --q-predicted: #cdef5a;
+  --q-simulated: #8f97a3;
+  --series-3: #ff9a5c;
+  --series-4: #b9a3ff;
+  --overlay-contour: #4fd1ff;
+  --overlay-limb: #d4f25a;
+  --overlay-centroid: #ffffff;
+  --overlay-warn: #ffb547;
+  --video-ground: #050608;
+  --focus-ring: #7cc0ff;
+  --shadow-card: 0 1px 2px rgba(0,0,0,0.4), 0 8px 24px rgba(0,0,0,0.35);
+  --shadow-pop: 0 12px 40px rgba(0,0,0,0.6);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0b0e12;
+  --surface: #14181e;
+  --surface-raised: #1a1f26;
+  --surface-sunken: #0f1216;
+  --line: #2a3038;
+  --line-strong: #5f6874;
+  --ink: #eef1f5;
+  --ink-muted: #b6bdc7;
+  --ink-subtle: #8f97a3;
+  --ink-pill: #eef1f5;
+  --on-ink-pill: #0d1116;
+  --sky-500: #3d9ff5;
+  --sky-wash: #123556;
+  --sky-strong: #3d9ff5;
+  --on-sky-strong: #06121f;
+  --sky-text: #7cc0ff;
+  --sky-tint: #0f2a45;
+  --lime-400: #d4f25a;
+  --on-lime: #0d1116;
+  --lime-text: #cdef5a;
+  --lime-tint: #25300a;
+  --ok: #4cc3d4;
+  --ok-tint: #0b2e33;
+  --warn: #f2b25c;
+  --warn-tint: #33240a;
+  --bad: #ff8a7a;
+  --bad-tint: #3b1512;
+  --q-measured: #7cc0ff;
+  --q-calculated: #b6bdc7;
+  --q-predicted: #cdef5a;
+  --q-simulated: #8f97a3;
+  --series-3: #ff9a5c;
+  --series-4: #b9a3ff;
+  --overlay-contour: #4fd1ff;
+  --overlay-limb: #d4f25a;
+  --overlay-centroid: #ffffff;
+  --overlay-warn: #ffb547;
+  --video-ground: #050608;
+  --focus-ring: #7cc0ff;
+  --shadow-card: 0 1px 2px rgba(0,0,0,0.4), 0 8px 24px rgba(0,0,0,0.35);
+  --shadow-pop: 0 12px 40px rgba(0,0,0,0.6);
+  color-scheme: dark;
+}
+.display-xl { font-family: var(--font-display); font-size: 56px; line-height: 56px; font-weight: 300; letter-spacing: -0.04em; }
+.display-l { font-family: var(--font-display); font-size: 40px; line-height: 44px; font-weight: 300; letter-spacing: -0.035em; }
+.metric-xl { font-family: var(--font-display); font-size: 44px; line-height: 44px; font-weight: 300; letter-spacing: -0.03em; }
+.title-l { font-family: var(--font-display); font-size: 24px; line-height: 30px; font-weight: 500; letter-spacing: -0.02em; }
+.title { font-family: var(--font-display); font-size: 17px; line-height: 24px; font-weight: 500; letter-spacing: -0.01em; }
+.body { font-family: var(--font-display); font-size: 15px; line-height: 22px; font-weight: 400; }
+.body-s { font-family: var(--font-display); font-size: 13px; line-height: 18px; font-weight: 400; }
+.label { font-family: var(--font-mono); font-size: 11px; line-height: 14px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; }
+.data { font-family: var(--font-mono); font-size: 13px; line-height: 18px; font-weight: 400; }
+.data-s { font-family: var(--font-mono); font-size: 12px; line-height: 16px; font-weight: 400; }

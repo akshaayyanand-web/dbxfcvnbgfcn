@@ -435,3 +435,55 @@ def job_stats(db) -> dict:
     frames = sum(j.frames_processed for j in done if j.finished_at and j.started_at)
     return {"completed_jobs_timed": len(durs), "average_duration_s": (sum(durs) / len(durs)) if durs else None,
             "throughput_frames_per_s": (frames / sum(durs)) if durs and sum(durs) > 0 else None}
+
+
+# ----------------------------------------------------------- model evaluation
+
+@router.get("/api/models/cv-predictions", tags=["prediction"])
+def model_cv_predictions(request: Request):
+    """Held-out-day predictions of the selected model for every training test point, plus metrics.
+
+    R² and RMSE are computed on log(lifetime) over OBSERVED extinctions only (censored tests excluded), and
+    MAE in seconds on the same set; with censoring these are descriptive, the C-index is the primary metric.
+    """
+    st = request.app.state
+    if st.model is None:
+        raise HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE, st.model_error or "Model unavailable.")
+    path = st.settings.models_dir / "sflame_lifetime" / "cv_predictions.csv"
+    if not path.exists():
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "No cross-validation predictions stored with the model.")
+    df = pd.read_csv(path, dtype={"test_point": str, "group": str})
+    ev = df[df["event"].astype(bool) & df["pred_median_s"].notna()]
+    lt, lp = np.log(ev["time_s"].to_numpy()), np.log(ev["pred_median_s"].to_numpy())
+    resid = lt - lp
+    ss_res, ss_tot = float(np.sum(resid ** 2)), float(np.sum((lt - lt.mean()) ** 2))
+    metrics = {"n_events": int(len(ev)), "n_censored": int((~df["event"].astype(bool)).sum()),
+               "r2_log": 1 - ss_res / ss_tot if ss_tot > 0 else None, "rmse_log": float(np.sqrt(np.mean(resid ** 2))),
+               "mae_s": float(np.mean(np.abs(ev["time_s"] - ev["pred_median_s"]))),
+               "median_abs_error_s": float(np.median(np.abs(ev["time_s"] - ev["pred_median_s"]))),
+               "note": "Held-out-day predictions; R² and RMSE on ln(lifetime) for observed extinctions only."}
+    return _clean({"metrics": metrics, "rows": df.to_dict("records")})
+
+
+# ------------------------------------------------------------------ documents
+
+DOCS = {"readme": "README.md", "assumptions": "SCIENTIFIC_ASSUMPTIONS.md", "dictionary": "DATA_DICTIONARY.md",
+        "architecture": "ARCHITECTURE.md", "api": "API_DOCUMENTATION.md", "tests": "TEST_REPORT.md",
+        "status": "PROJECT_STATUS.md", "deployment": "DEPLOYMENT_GUIDE.md", "data-availability": "docs/DATA_AVAILABILITY_MATRIX.md"}
+
+
+@router.get("/api/docs", tags=["system"])
+def list_docs():
+    return [{"id": k, "file": v} for k, v in DOCS.items()]
+
+
+@router.get("/api/docs/{doc_id}", tags=["system"])
+def get_doc(doc_id: str):
+    """Project documents by fixed id (an allow-list; no client-supplied paths)."""
+    from backend.config import REPO_ROOT
+    if doc_id not in DOCS:
+        raise NotFound(doc_id)
+    path = REPO_ROOT / DOCS[doc_id]
+    if not path.exists():
+        raise HTTPException(status.HTTP_404_NOT_FOUND, f"{DOCS[doc_id]} is not available in this deployment.")
+    return Response(path.read_text(), media_type="text/markdown; charset=utf-8")

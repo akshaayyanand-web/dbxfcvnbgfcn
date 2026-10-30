@@ -136,3 +136,40 @@ def test_v1_database_is_migrated(tmp_path):
     assert db.create_all() == []
     with db.session() as s:
         assert s.get(Experiment, "EXP-old").archived is False
+
+
+def test_model_evidence_endpoints(tmp_path):
+    with TestClient(create_app(_settings(tmp_path))) as c:
+        m = c.get("/api/models").json()["models"][0]
+        assert len(m["coef"]) == len(m["features"]) + 1 and len(m["standardizer"]["mean"]) == len(m["features"])
+        assert isinstance(m["converged"], bool)
+        cv = c.get("/api/models/cv-predictions").json()
+        met, rows = cv["metrics"], cv["rows"]
+        assert met["n_events"] + met["n_censored"] == len(rows) == m["training_data"]["n"]
+        assert met["r2_log"] is not None and met["r2_log"] < 0          # reported as is, not hidden
+        assert all(r["pred_q10_s"] <= r["pred_median_s"] <= r["pred_q90_s"] for r in rows)
+        ds = c.get("/api/datasets").json()["datasets"][0]
+        assert ds["built_at"] and ds["source_files"] > 0 and ds["detection_config"]["channel"] == "PMT1"
+
+
+def test_docs_allow_list(tmp_path):
+    with TestClient(create_app(_settings(tmp_path))) as c:
+        ids = {d["id"] for d in c.get("/api/docs").json()}
+        assert {"readme", "assumptions", "api"} <= ids
+        r = c.get("/api/docs/assumptions")
+        assert r.status_code == 200 and r.headers["content-type"].startswith("text/markdown") and "A-ML-4" in r.text
+        assert c.get("/api/docs/..%2F..%2Fetc%2Fpasswd").status_code == 404
+        assert c.get("/api/docs/unknown").status_code == 404
+
+
+def test_frontend_served_with_spa_fallback(tmp_path, monkeypatch):
+    dist = tmp_path / "dist"
+    (dist / "assets").mkdir(parents=True)
+    (dist / "index.html").write_text("<!doctype html><div id=root></div>")
+    (dist / "assets" / "app.js").write_text("console.log(1)")
+    monkeypatch.setenv("FLAME_FRONTEND_DIST", str(dist))
+    with TestClient(create_app(_settings(tmp_path))) as c:
+        assert "id=root" in c.get("/experiments/EXP-1").text                  # client-side route
+        assert c.get("/assets/app.js").text == "console.log(1)"
+        assert c.get("/api/does-not-exist").status_code == 404                 # API 404s are not masked
+        assert c.get("/api/health").json()["status"] == "ok"

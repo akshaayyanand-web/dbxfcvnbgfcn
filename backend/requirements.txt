@@ -10,5 +10,8 @@ uvicorn==0.54.0
 SQLAlchemy==2.1.6
 python-multipart==0.0.32
 psycopg[binary]==3.3.6
+# Reports: PDF layout and figures
+reportlab==5.0.1
+matplotlib==3.11.2
 # External executables (recommended): ffmpeg / ffprobe
 #   - required for reliable decoding of interlaced H.264 (A-CV-10)

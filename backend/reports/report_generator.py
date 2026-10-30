@@ -136,7 +136,7 @@ def build_experiment_report(exp: dict, analysis: dict | None, predictions: list[
         ])
         add("temporal", [
             {"type": "figure", "id": "radius", "title": f"Flame radius vs time ({unit})", "x": "t (s)", "y": f"radius ({unit})",
-             "series": [{"name": "radius", "class": "measured", "points": _series(meas, rkey if unit == "mm" else "equivalent_radius_px")}]},
+             "series": [{"name": "radius", "class": "image_derived", "points": _series(meas, rkey if unit == "mm" else "equivalent_radius_px")}]},
             {"type": "figure", "id": "velocity", "title": f"Radial expansion rate ({vunit})", "x": "t (s)", "y": vunit,
              "series": [{"name": "dr/dt", "class": "calculated", "points": _series(meas, "expansion_velocity_mm_s" if vunit == "mm/s" else "expansion_velocity_px_s")}]},
         ])
@@ -231,7 +231,7 @@ def build_comparison_report(items: list[tuple[dict, dict | None]]) -> dict:
                          _f((s.get("expansion_velocity_mm_s") or {}).get("max"), 3),
                          _f(ext.get("time_s"), 3) if ext.get("status") == "observed" else "not observed"])
         meas = (analysis or {}).get("measurements") or []
-        series.append({"name": exp.get("id"), "class": "measured", "points": _series(meas, key)})
+        series.append({"name": exp.get("id"), "class": "image_derived", "points": _series(meas, key)})
     return {"schema": "flame-in-freefall/report/v1", "title": "Comparison report: " + ", ".join(e.get("id") for e, _ in items),
             "generated_at": datetime.now(timezone.utc).isoformat(), "sections": [
                 {"id": "conditions", "title": "Experimental conditions", "blocks": [{"type": "table", "columns": [
