@@ -7,3 +7,5 @@ data/docs
 .env
 *.mp4
 *.avi
+frontend/node_modules
+frontend/dist

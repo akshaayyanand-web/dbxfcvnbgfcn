@@ -14,3 +14,8 @@ data/raw/
 data/docs/
 storage/
 docker/extra-ca/*.crt
+
+# Frontend build output and dependencies
+frontend/node_modules/
+frontend/dist/
+frontend/*.tsbuildinfo

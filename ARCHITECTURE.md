@@ -87,21 +87,36 @@ after last frame:
 Memory use is O(frames × fields): frames are not retained. Only a simplified
 contour of ≤ 72 vertices is stored per frame, and that can be disabled.
 
-## Planned layout (remaining subsystems)
+## Web app (`frontend/`)
 
-Follows the master specification, Part XVII. The directories `backend/data`,
-`backend/ml`, `backend/experiments` and `backend/reports` exist as empty packages.
-Their status is tracked in `PROJECT_STATUS.md`. Frontend (React + Vite + TS) and
-deployment files will be added in later increments.
+React 18 + Vite + TypeScript. All server access goes through
+`src/services/api.ts`; types mirror the API in `src/types/api.ts`.
 
-## Backend modules (increment 4)
+| Area | Files |
+|---|---|
+| Design system: tokens (JSON, compiled to CSS custom properties), components | `src/design-system/`, `src/styles/tokens.css`, `ds.css`, `app.css` |
+| Shell: 7 navigation categories, experiment context, live job status, notifications, workspace menu | `src/components/AppShell.tsx`, `src/store/app.ts` |
+| Data hooks: async loading, polling, job telemetry (WebSocket with polling fallback) | `src/hooks/index.ts` |
+| Charts (Recharts; fixed series order validated for colour-vision deficiency; table view on every chart) | `src/charts/index.tsx` |
+| Frame viewer: server-decoded frames with SVG overlay in full-resolution pixels; calibration clicks | `src/components/VideoViewer.tsx` |
+| Pages: Mission Control, Experiments, Experiment detail, Video Intelligence, Flame analytics, Prediction, Models, Datasets, Comparison, Reports, System, Settings, guided demo | `src/pages/` |
+
+The frontend never computes a measurement. It formats server values, draws
+frames without a value as gaps, and labels every quantity with its class. The
+one client-side calculation is the per-feature contribution on the Prediction
+page (coefficient × standardized input, from `/api/models`).
+
+## Backend modules (increments 4–6)
 
 | Module | Responsibility |
 |---|---|
 | `backend/app.py` | FastAPI routes, error mapping, CORS, auth/rate-limit dependencies, WebSocket |
 | `backend/config.py` | Environment settings |
-| `backend/database.py` | SQLAlchemy models `Experiment`, `AnalysisJob`, `SchemaVersion` |
+| `backend/database.py` | SQLAlchemy models `Experiment`, `AnalysisJob`, `Prediction`, `Report`, `AppSetting`, `SchemaVersion`; additive migrations |
 | `backend/experiments/` | Pydantic schemas, repository, service (create/update/duplicate/analyse/export) |
 | `backend/jobs.py` | Thread-pool job runner, telemetry ring buffer, cancellation, restart recovery |
 | `backend/security.py` | Upload validation, API key, rate limiter |
 | `backend/data/samples.py` | Server-side sample registry (NASA presets, synthetic demo) |
+| `backend/api_extra.py` | Interface-support routes: frames, previews, jobs, activity, predictions, reports, dataset stats, settings, logs, model CV predictions, docs |
+| `backend/media.py` | Frame decoding and caching, segmentation preview |
+| `backend/reports/` | Report content (13 sections) and PDF/JSON/CSV rendering |

@@ -53,62 +53,36 @@ _Last updated: 2026-10-30. Submission target: 2026-11-14/15._
 | Server-side samples with measured calibration presets (2 NASA, 1 synthetic) | `data/presets/samples.json`, `backend/data/samples.py` | tests |
 | Docker image, compose (API + Postgres), `.env.example`, CI workflow, API and deployment docs | `Dockerfile`, `docker-compose.yml`, `.github/workflows/ci.yml`, `API_DOCUMENTATION.md`, `DEPLOYMENT_GUIDE.md` | image built and run with Postgres (compose and CI not executed) |
 
-## Remaining (in planned order)
+## Completed (increment 5)
 
-0. **Next:** the React + Vite + TypeScript mission-control interface (overview,
-   experiment config, live analysis with overlays, prediction, data explorer,
-   analytics, comparison, report centre, settings, presentation mode), then
-   PDF report generation.
-1. **Data layer, remaining:** a general dataset registry for the other ACME
+| Component | Files | Verified by |
+|---|---|---|
+| Interface-support API: frames, previews, jobs, activity, predictions, reports, dataset stats, settings, logs | `backend/api_extra.py`, `backend/media.py` | `test_api_extra.py` |
+| Scientific reports: 13 sections, PDF (ReportLab + Matplotlib), JSON, CSV; experiment and comparison reports | `backend/reports/` | tests (PDF, JSON and CSV downloads) |
+| Schema v2 migration (archive flag, predictions, reports, settings) | `backend/database.py` | migration test from a v1 database |
+
+## Completed (increment 6)
+
+| Component | Files | Verified by |
+|---|---|---|
+| Design system: tokens, 21 React components plus 4 chart components and the frame viewer, chart palette validated for colour-vision deficiency (light and dark) | `frontend/src/design-system/`, `frontend/src/styles/`, published design-system artifact | frontend tests; palette validator |
+| Web app: app shell and 12 pages plus a 15-step guided demo, on live API data only | `frontend/src/` | typecheck, build, 11 vitest tests, browser run against the live API at 1440 px and 390 px |
+| API additions for the web app: model CV predictions and metrics (incl. negative R²), model internals, dataset manifest fields, project docs, SPA serving | `backend/app.py`, `backend/api_extra.py` | 3 new tests |
+| Docker: two-stage build (Node builds the frontend; the Python image serves it) | `Dockerfile` | not built in this increment |
+
+## Remaining
+
+1. **Data layer:** a general dataset registry for the other ACME
    investigations (PSI-10 Flame Design and PSI-159 CFI-G use different file
    naming), CIR chamber pressure/O2 if obtainable (per-test O2 is currently
    unknown on mixed days), and thermocouple conversion (type K/B, NIST
    polynomials + cold junction).
-1b. **CV on real imagery, remaining:** a limb fit, igniter-period handling, and
-   validation on more test points (only 19304A7 so far; day 19256 camera data
-   is known to be incomplete).
-2. **ML layer** (`backend/ml/`): baselines (linear, RF, XGBoost), grouped CV,
-   SHAP, conformal or quantile intervals, OOD warnings, and the model registry.
-   This trains only on targets marked **A** in the availability matrix.
-3. **Experiments and persistence**: SQLAlchemy models, Alembic migrations, and
-   the experiment "digital twin" record.
-4. **FastAPI**: endpoints from the spec, background jobs, WebSocket telemetry,
-   upload validation (MIME, size, safe names), auth, rate limiting.
-5. **Reports**: PDF/CSV/JSON with methodology, calibration, charts, limitations.
-6. **Frontend**: React + Vite + TS mission-control UI (9 pages + presentation mode).
-7. **Deployment**: Dockerfile, docker-compose (API, Postgres, Redis, web),
-   `.env.example`, CI workflow, `DEPLOYMENT_GUIDE.md`.
-
-## Risks
-
-| Risk | Impact | Mitigation |
-|---|---|---|
-| ~~ACME data inaccessible~~ resolved 2026-10-30 (PSI is open, CC0) | – | – |
-| ACME archives are huge (s-Flame ≈ 1.5 TB; zips up to 760 MB each) | Disk and time limits | Selective download via `psi_client` (size cap, deduplication); one camera type per test point |
-| Downlink MP4s don't show the dim s-Flame flames | No flame size from MP4 | Use the science-camera TIFF sequences (planned loader) |
-| Telemetry is raw voltages | Wrong units if guessed | Conversions only from NASA docs (A-DATA-4) |
-| Real footage harder to segment (glare, soot, dim blue edges, burner) | Radius bias or dropouts | 5 configurable methods, preview tool, contrast floor, per-frame quality/flags. Must be checked on real video. |
-| Too few experiments for ML (ACME ≈ 1,500 flames across 6 investigations; per-target labels unknown) | Overfitting, wide intervals | Experiment-grouped CV, simple baselines first, report intervals and limitations |
-| Temperature/soot targets may not exist in accessible data | Spec pages show nothing | Show "no validated model for this target" instead of a fabricated output |
-| 1280×720 full-resolution analysis is 4.8 s per 5 s clip on the test container | Misses the 3 s target | Use `processing_scale=0.5` (1.46 s, ≤ 0.22 px extra error). Benchmark on the demo laptop. |
-| Schedule (15 days) | Incomplete integration | Vertical slices with tests at every step |
-
-## Known issues and limitations
-
-* Reported uncertainty is a lower bound (A-UQ-3). It excludes the
-  method-dependent boundary offset, which was +3.2 px for MOG2 vs Otsu on
-  synthetic data.
-* `frame_error` handling depends on OpenCV continuing to decode after a bad
-  frame. Many containers stop at the first unreadable packet, and the run then
-  reports `decoding_ended_early`.
-* The tracker follows a single flame. Split or multiple flames are reduced to
-  the best-matching contour.
-* The VFR and interlace tests need the `ffmpeg` executable and are skipped without it.
-* No region-of-interest masking yet. Static hardware glow can be "detected" as a flame (A-CV-11).
-* FFmpeg decoding is 7–20 % slower than OpenCV on progressive video.
-
-## Dependencies
-
-Runtime: numpy, pandas, opencv-python-headless (pinned in `backend/requirements.txt`).
-Optional: ffmpeg/ffprobe. Test: pytest. Further dependencies will be added only
-when their subsystem is implemented.
+2. **CV on real imagery:** igniter-period handling and validation on more test
+   points (19254C1 and 19304A7 so far; day 19256 camera data is incomplete).
+   Segmentation preview on 16-bit image sequences takes about 10 s per frame.
+3. **ML:** alternative model families and conformal intervals; the current
+   model ranks conditions but does not beat the mean on absolute lifetime.
+4. **Deployment:** run `docker compose` and the CI workflow end to end; build
+   the two-stage image; Alembic if migrations stop being additive.
+5. **Frontend:** browser end-to-end tests in CI (the browser run was manual),
+   and upload of image-sequence archives through the web app (CLI only today).

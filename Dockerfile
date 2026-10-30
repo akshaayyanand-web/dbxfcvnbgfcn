@@ -1,6 +1,17 @@
-# FLAME IN FREEFALL - API image
-# BASE_IMAGE can point at a registry mirror (e.g. mirror.gcr.io/library/python:3.13-slim) if Docker Hub is rate-limited.
+# FLAME IN FREEFALL - API + web app image
+# BASE_IMAGE / NODE_IMAGE can point at a registry mirror (e.g. mirror.gcr.io/library/python:3.13-slim) if Docker Hub is rate-limited.
 ARG BASE_IMAGE=python:3.13-slim
+ARG NODE_IMAGE=node:20-slim
+
+# Stage 1: build the React frontend (static files only; Node is not in the final image).
+FROM ${NODE_IMAGE} AS web
+WORKDIR /web
+COPY frontend/package.json frontend/package-lock.json ./
+RUN npm ci --no-audit --no-fund
+COPY frontend/ ./
+RUN npm run build
+
+# Stage 2: the API, which also serves the built frontend.
 FROM ${BASE_IMAGE}
 
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 PIP_NO_CACHE_DIR=1
@@ -25,6 +36,10 @@ COPY backend/ backend/
 COPY data/presets/ data/presets/
 COPY data/processed/ data/processed/
 COPY models/ models/
+COPY --from=web /web/dist/ frontend/dist/
+# Project documents served read-only by /api/docs (allow-list in backend/api_extra.py).
+COPY README.md SCIENTIFIC_ASSUMPTIONS.md DATA_DICTIONARY.md ARCHITECTURE.md API_DOCUMENTATION.md TEST_REPORT.md PROJECT_STATUS.md DEPLOYMENT_GUIDE.md ./
+COPY docs/DATA_AVAILABILITY_MATRIX.md docs/
 
 RUN useradd --create-home --uid 10001 flame && mkdir -p /app/storage /app/data/raw && chown -R flame /app/storage
 USER flame

@@ -3,6 +3,49 @@
 Every result here was produced by actually running the commands shown. Nothing
 is extrapolated.
 
+## Run of 2026-10-30, increment 6 (web app and design system)
+
+```bash
+python -m pytest -q
+```
+
+**Backend: 131 passed, 1 skipped (the opt-in NASA test), 0 failed (76 s).** The
+3 new tests in `test_api_extra.py` cover:
+* model internals and the cross-validated predictions endpoint, including that
+  R² on ln(lifetime) is reported even though it is negative;
+* the documents allow-list (path traversal returns 404);
+* serving the built web app, with client-route fallback and API 404s intact.
+
+```bash
+cd frontend && npm run typecheck && npm test && npm run build
+```
+
+**Frontend: typecheck clean, 11 passed, build succeeded.** The tests cover
+formatting, gaps kept as gaps, mm only when calibrated, rejected limb fits
+hidden, CSV quoting, design-system components, the Markdown renderer (no HTML
+injection), and the app shell's 7 navigation categories with an unreachable API.
+
+**Browser run (manual, Playwright/Chromium) against the live API** with the
+synthetic demo and NASA 19254C1 analysed through `/api/analyze-sample`:
+* all 13 routes at 1440 px and 390 px: no console errors and no horizontal
+  overflow, after three fixes found in this run;
+* prediction for 19254C1 (median 14.1 s, 80 % interval 2.9–65.8 s, observed
+  16.7 s), a two-experiment comparison, and experiment and comparison reports
+  generated and previewed;
+* frame stepping with overlays and a segmentation preview: the preview takes
+  about 11 s on the 16-bit image sequence.
+
+The chart palette was checked with the dataviz palette validator. It passes in
+light and dark mode (lightness band, chroma, colour-vision-deficiency
+separation, contrast).
+
+Defects found and fixed in this run:
+* Chart lines bridged frames without a value. Each series is now drawn from its
+  own points, so gaps stay gaps.
+* Report figures labelled radius as "measured". It is now image-derived, per
+  `FIELD_DEFINITIONS`.
+* Three layout overflows at phone width.
+
 ## Run of 2026-10-30, increment 5 (interface-support API, reports, data correction)
 
 ```bash
@@ -292,5 +335,5 @@ there before quoting any number.
 
 ## Not yet tested
 
-* Flame-size measurement on real ACME science-camera images (needs an image-sequence loader and a successful test point).
-* Reports (PDF) and frontend: not yet implemented.
+* Browser end-to-end tests are not automated (the increment-6 browser run was manual).
+* The two-stage Docker image (frontend build stage) has not been built.

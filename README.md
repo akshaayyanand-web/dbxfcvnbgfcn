@@ -3,14 +3,15 @@
 Microgravity combustion intelligence platform. It turns combustion video and
 experiment records into traceable measurements, predictions and reports.
 
-> **Status (2026-10-30):** the following are implemented and tested (122 tests):
+> **Status (2026-10-30):** the following are implemented and tested:
 > * physics, computer-vision and shell-limb measurement engines;
 > * the NASA ACME s-Flame dataset (289 test points from NASA PSI, CC0);
 > * a cross-validated flame-lifetime survival model (it ranks conditions, but absolute accuracy is limited: A-ML-4);
-> * the FastAPI backend with persistence, jobs and live telemetry;
+> * the FastAPI backend with persistence, jobs, live telemetry and PDF/JSON/CSV reports;
+> * the React web app: 12 pages plus a guided demo, on the design system in `frontend/src/design-system`;
 > * Docker deployment.
 >
-> The React interface and report generation are next (see `PROJECT_STATUS.md`).
+> Test counts are in `TEST_REPORT.md`; open work is in `PROJECT_STATUS.md`.
 > Synthetic demo content is always labelled SYNTHETIC.
 
 ## Quick start
@@ -42,6 +43,14 @@ Run the API (docs at http://127.0.0.1:8000/docs):
 ```bash
 uvicorn backend.app:app --reload
 ```
+
+Run the web app (Node 20+). Vite proxies `/api` to the server above; open http://127.0.0.1:5173:
+
+```bash
+cd frontend && npm ci && npm run dev
+```
+
+Or build it once (`npm run build`) and the API serves it at http://127.0.0.1:8000.
 
 Or run the full stack with PostgreSQL (see `DEPLOYMENT_GUIDE.md`):
 

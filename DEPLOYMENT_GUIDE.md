@@ -20,6 +20,26 @@ uvicorn backend.app:app --reload
 The API runs at http://127.0.0.1:8000 (docs at `/docs`). Data goes to
 `./storage/` (SQLite database, uploads, results), which is gitignored.
 
+### Web app
+
+Requires Node 20+. For development, run Vite next to the API; it proxies
+`/api` (including WebSockets) to port 8000:
+
+```bash
+cd frontend && npm ci && npm run dev
+```
+
+Open http://127.0.0.1:5173. For a single-process setup, build once and let the
+API serve it at http://127.0.0.1:8000:
+
+```bash
+cd frontend && npm ci && npm run build
+```
+
+Frontend checks: `npm run typecheck` and `npm test`. Design tokens live in
+`frontend/src/design-system/tokens.json`; `npm run tokens` regenerates
+`src/styles/tokens.css` from it.
+
 ## 2. Docker Compose (PostgreSQL)
 
 ```bash
@@ -62,6 +82,10 @@ docker compose up --build
   (gitignored). The Dockerfile installs it before `apt` (switched to HTTPS) and
   `pip` run. Pass the proxy with `--build-arg HTTPS_PROXY=...` and, if needed,
   `--network host`.
+
+The image is built in two stages: Node builds `frontend/dist`, and only the
+static files are copied into the Python image. Set `NODE_IMAGE` like
+`BASE_IMAGE` to use a registry mirror.
 
 ## 3. Configuration (environment variables)
 

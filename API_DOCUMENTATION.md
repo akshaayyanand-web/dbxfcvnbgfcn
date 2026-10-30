@@ -2,7 +2,7 @@
 
 Base URL: `http://<host>:8000`. The interactive OpenAPI docs are at `/docs`, and
 the machine-readable schema is at `/openapi.json`. Every route below is
-implemented and covered by `backend/tests/test_api.py`.
+implemented and covered by `backend/tests/test_api.py` and `backend/tests/test_api_extra.py`.
 
 ## Conventions
 
@@ -100,6 +100,30 @@ Telemetry event fields: `seq`, `frame_index`, `timestamp_s`, `status`,
 | GET | `/api/datasets` | Dataset cards (NASA s-Flame test points: provenance, licence, quality report, columns) |
 | GET | `/api/datasets/sflame/test-points?outcome&flow_programme&test_day&limit` | Filtered rows |
 | POST | `/api/export` | `{"experiment_id", "format": "json" \| "csv"}`. JSON gives the full experiment record (experiment, jobs, latest analysis); CSV gives the per-frame measurements (409 without a completed analysis) |
+
+## Interface support
+
+These routes back the web app (`frontend/`). They follow the same conventions.
+
+| Method | Path | Description |
+|---|---|---|
+| GET | `/api/jobs?status&limit` | All analysis jobs, newest first, with duration |
+| GET | `/api/activity?limit` | Activity feed: experiments created, analyses started/finished, predictions, reports, dataset build |
+| GET | `/api/experiments/{id}/media` | Video metadata of the experiment's input (409 without input) |
+| GET | `/api/experiments/{id}/frames/{index}.jpg?max_width` | One decoded frame as JPEG, through the same decoder and image-sequence scaling as the analysis; cached |
+| POST | `/api/experiments/{id}/preview` | `{"frame_index", "analysis_config"?, "calibration"?}`: segment one frame without saving; returns the measurement, mask PNG and overlay JPEG (base64) |
+| GET | `/api/predictions?experiment_id` · `/api/predictions/{id}` | Stored predictions with inputs, result and model version |
+| POST | `/api/reports` | `{"experiment_id"}` or `{"comparison_ids": [≥2]}`, optional `sections` (13 ids) and `title`. Builds the report and its PDF/JSON/CSV files |
+| GET | `/api/reports?experiment_id` · `/api/reports/{id}` · `/api/reports/{id}/download?format=pdf\|json\|csv` | List, content, and files |
+| GET | `/api/datasets/sflame/stats` | Completeness, duplicates, per-variable statistics and histograms, quality report |
+| GET · PUT | `/api/settings` | Workspace settings (`workspace_name`, `units`, `date_format`, `default_analysis_config`, `default_model`, `export_format`) and read-only server limits |
+| GET | `/api/logs?q&limit` | Recent in-memory log records and failed-job errors, newest first |
+| GET | `/api/models/cv-predictions` | Leave-one-day-out predictions for every training run, plus held-out metrics including R² on ln(lifetime) (negative for the current model, A-ML-4) |
+| GET | `/api/docs` · `/api/docs/{id}` | Project documents by fixed id (allow-list; no client paths) as Markdown |
+
+When `frontend/dist` exists (or `FLAME_FRONTEND_DIST` points at a build), the API
+also serves the web app at `/`, with client-side routes falling back to
+`index.html`. Unknown `/api/...` paths still return 404.
 
 ## Example
 
