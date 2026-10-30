@@ -56,6 +56,7 @@ from backend.physics.uncertainty import (
 )
 from backend.vision.calibration import Calibration, DistortionCorrection
 from backend.vision.geometry import ContourGeometry, measure_contour, simplify_contour
+from backend.vision.image_sequence import ImageSequenceCapture, ImageSequenceConfig, frame_times, list_frames, read_raw
 from backend.vision.segmentation import SegmentationConfig, SegmentationMethod, Segmenter, find_contours
 from backend.vision.tracking import DetectionStatus, FlameTracker, TrackingConfig
 
@@ -148,6 +149,8 @@ def _ffprobe_stream(path: Path) -> dict | None:
 def probe_video(path: str | Path, max_file_bytes: int = DEFAULT_MAX_FILE_BYTES) -> VideoMetadata:
     """Validate a video file and extract its metadata without decoding all frames."""
     path = Path(path)
+    if path.is_dir():
+        return probe_image_sequence(path)
     if not path.is_file():
         raise VideoValidationError(f"Video file not found: {path.name}")
     ext = path.suffix.lower()
@@ -271,7 +274,31 @@ class FFmpegCapture:
         self._proc.wait()
 
 
-def open_capture(path: str | Path, meta: VideoMetadata, decoder: str = "auto") -> tuple[Any, str, list[str]]:
+def probe_image_sequence(directory: str | Path) -> VideoMetadata:
+    """Metadata for a directory of frames (container ``image-sequence``)."""
+    try:
+        files = list_frames(directory)
+        first = read_raw(files[0])
+    except (FileNotFoundError, ValueError) as exc:
+        raise VideoValidationError(str(exc)) from exc
+    t, _ = frame_times(files)
+    fps = 0.0
+    if t is not None and len(t) > 1:
+        dt = np.diff(t)
+        if np.any(dt <= 0):
+            raise VideoValidationError("Frame timestamps in file names are not strictly increasing.")
+        fps = float(1.0 / np.median(dt))
+    return VideoMetadata(
+        filename=Path(directory).name, container="image-sequence", codec_fourcc=f"{first.dtype}",
+        codec_name="tiff" if files[0].suffix.lower() in (".tif", ".tiff") else files[0].suffix.lstrip("."),
+        width=int(first.shape[1]), height=int(first.shape[0]), nominal_fps=fps,
+        reported_frame_count=len(files), duration_s=float(t[-1]) if t is not None else None,
+        file_size_bytes=int(sum(f.stat().st_size for f in files)),
+    )
+
+
+def open_capture(path: str | Path, meta: VideoMetadata, decoder: str = "auto",
+                 sequence_config: ImageSequenceConfig | None = None) -> tuple[Any, str, list[str]]:
     """Open a frame reader. Returns ``(capture, decoder_used, notes)``.
 
     ``auto`` uses FFmpeg whenever the executable is installed. OpenCV's decoding
@@ -283,6 +310,9 @@ def open_capture(path: str | Path, meta: VideoMetadata, decoder: str = "auto") -
     if decoder not in DECODERS:
         raise ValueError(f"decoder must be one of {DECODERS}.")
     notes: list[str] = []
+    if meta.container == "image-sequence":
+        cap = ImageSequenceCapture(path, sequence_config, meta.nominal_fps)
+        return cap, "image-sequence", cap.notes + [f"frame times from {cap.time_source}"]
     use_ffmpeg = decoder == "ffmpeg" or (decoder == "auto" and shutil.which("ffmpeg") is not None)
     if decoder == "auto" and not use_ffmpeg:
         notes.append("ffmpeg is not installed; decoding with OpenCV, which can return blank frames for "
@@ -316,10 +346,19 @@ class AnalysisConfig:
     max_file_bytes: int = DEFAULT_MAX_FILE_BYTES
     max_plausible_velocity_mm_s: float = 5000.0
     decoder: str = "auto"                   # auto | opencv | ffmpeg
+    image_sequence: ImageSequenceConfig = field(default_factory=ImageSequenceConfig)
+    roi: tuple[int, int, int, int] | None = None              # (x, y, w, h) original px; outside is ignored
+    exclude_regions: list[tuple[int, int, int, int]] = field(default_factory=list)  # (x, y, w, h) zeroed
+    static_check_min_duration_s: float = 3.0  # warn if a detection is unchanged for at least this long
+    min_circularity_for_volume: float = 0.75  # below this, equivalent spherical volume is not reported
 
     def validate(self) -> None:
         if self.decoder not in DECODERS:
             raise ValueError(f"decoder must be one of {DECODERS}.")
+        self.image_sequence.validate()
+        for r in ([self.roi] if self.roi else []) + list(self.exclude_regions):
+            if len(r) != 4 or r[2] <= 0 or r[3] <= 0 or r[0] < 0 or r[1] < 0:
+                raise ValueError("Regions must be (x, y, w, h) with x, y >= 0 and w, h > 0.")
         self.segmentation.validate()
         self.tracking.validate()
         self.derivatives.validate()
@@ -327,6 +366,8 @@ class AnalysisConfig:
             raise ValueError("frame_step must be >= 1.")
         if self.max_frames is not None and self.max_frames < 1:
             raise ValueError("max_frames must be >= 1 when given.")
+        if not 0 <= self.min_circularity_for_volume <= 1:
+            raise ValueError("min_circularity_for_volume must be within [0, 1].")
         if not 0 < self.processing_scale <= 1:
             raise ValueError("processing_scale must be in (0, 1].")
         if self.edge_sigma_px < 0:
@@ -342,6 +383,9 @@ class AnalysisConfig:
         d["segmentation"] = self.segmentation.to_dict()
         d["tracking"] = self.tracking.to_dict()
         d["derivatives"] = asdict(self.derivatives)
+        d["image_sequence"] = asdict(self.image_sequence)
+        d["exclude_regions"] = [list(r) for r in self.exclude_regions]
+        d["roi"] = list(self.roi) if self.roi else None
         return d
 
     @classmethod
@@ -350,6 +394,10 @@ class AnalysisConfig:
         seg = SegmentationConfig.from_dict(data.pop("segmentation", {}) or {})
         trk = TrackingConfig(**(data.pop("tracking", {}) or {}))
         der = DerivativeConfig(**(data.pop("derivatives", {}) or {}))
+        data["image_sequence"] = ImageSequenceConfig(**(data.pop("image_sequence", {}) or {}))
+        if data.get("roi") is not None:
+            data["roi"] = tuple(data["roi"])
+        data["exclude_regions"] = [tuple(r) for r in data.get("exclude_regions", []) or []]
         allowed = {f.name for f in fields(cls)}
         return cls(segmentation=seg, tracking=trk, derivatives=der,
                    **{k: v for k, v in data.items() if k in allowed})
@@ -622,9 +670,30 @@ class FlameAnalyzer:
 
     # -- per-frame ---------------------------------------------------------------
 
+    def _region_mask(self, shape: tuple[int, int]) -> np.ndarray | None:
+        cfg = self.config
+        if cfg.roi is None and not cfg.exclude_regions:
+            return None
+        key = (shape, cfg.roi, tuple(cfg.exclude_regions))
+        if getattr(self, "_mask_key", None) != key:
+            h, w = shape
+            mask = np.zeros((h, w), np.uint8)
+            if cfg.roi is None:
+                mask[:] = 1
+            else:
+                x, y, rw, rh = cfg.roi
+                mask[y:y + rh, x:x + rw] = 1
+            for x, y, rw, rh in cfg.exclude_regions:
+                mask[y:y + rh, x:x + rw] = 0
+            self._mask_key, self._mask = key, mask
+        return self._mask
+
     def _prepare(self, frame: np.ndarray) -> np.ndarray:
         if self.distortion is not None:
             frame = self.distortion.apply(frame)
+        mask = self._region_mask(frame.shape[:2])
+        if mask is not None:
+            frame = frame * mask[:, :, None] if frame.ndim == 3 else frame * mask
         s = self.config.processing_scale
         if s < 1.0:
             frame = cv2.resize(frame, None, fx=s, fy=s, interpolation=cv2.INTER_AREA)
@@ -698,8 +767,13 @@ class FlameAnalyzer:
             m.area_mm2 = m.area_px2 * s * s
             m.area_sigma_mm2 = circle_area_sigma(r.value, r.total)
             m.perimeter_mm = m.perimeter_px * s
-            m.equivalent_volume_mm3 = equivalent_spherical_volume(r.value)
-            m.equivalent_volume_sigma_mm3 = sphere_volume_sigma(r.value, r.total)
+            if g.circularity >= cfg.min_circularity_for_volume and not g.touches_border:
+                m.equivalent_volume_mm3 = equivalent_spherical_volume(r.value)
+                m.equivalent_volume_sigma_mm3 = sphere_volume_sigma(r.value, r.total)
+            else:
+                m.warnings.append(
+                    "equivalent spherical volume not reported: flame is not approximately circular "
+                    f"(circularity {g.circularity:.2f} < {cfg.min_circularity_for_volume}) or is clipped by the frame")
 
         full_res_contour = (g.contour.astype(float) * inv)
         if cfg.store_contours:
@@ -738,8 +812,9 @@ class FlameAnalyzer:
         writer = None
         est_total = meta.reported_frame_count
 
-        cap, decoder_used, decoder_notes = open_capture(path, meta, cfg.decoder)
-        issues.extend(pv.ValidationIssue("decoder", "warning", n) for n in decoder_notes)
+        cap, decoder_used, decoder_notes = open_capture(path, meta, cfg.decoder, cfg.image_sequence)
+        severity = "info" if decoder_used == "image-sequence" else "warning"
+        issues.extend(pv.ValidationIssue("decoder", severity, n) for n in decoder_notes)
         if decoder_used == "opencv" and meta.opencv_first_frame_blank:
             issues.append(pv.ValidationIssue(
                 "decoder", "warning", "OpenCV decoded the first frame as all zeros; check for a decoder failure."))
@@ -798,6 +873,8 @@ class FlameAnalyzer:
                 if not frame.any():
                     blank_frames += 1
                 m, contour, _ = self._measure_frame(frame, segmenter, tracker, experiment_id, index, t_container)
+                if getattr(cap, "last_saturated", False):
+                    m.warnings.append("sensor saturation in this frame; intensities and boundary may be distorted")
                 measurements.append(m)
                 analyzed += 1
                 if writer is not None:
@@ -824,7 +901,8 @@ class FlameAnalyzer:
                 f"All {analyzed} analysed frames are exactly zero, which real sensors almost never produce. "
                 f"This usually indicates a decoder failure (decoder used: {decoder_used}); verify with "
                 f"decoder='ffmpeg' before trusting any result."))
-        timestamp_source = self._finalise_timestamps(measurements, pos_ms, meta, issues)
+        timestamp_source = self._finalise_timestamps(
+            measurements, pos_ms, meta, issues, getattr(cap, "time_source", "container_pts"))
         self._compute_kinematics(measurements)
         summary = self._summarise(measurements, meta, issues, decoded, time.perf_counter() - started, timestamp_source)
         summary["decoder"] = decoder_used
@@ -835,14 +913,14 @@ class FlameAnalyzer:
 
     def _finalise_timestamps(
         self, ms: list[FrameMeasurement], pos_ms: list[float], meta: VideoMetadata,
-        issues: list[pv.ValidationIssue],
+        issues: list[pv.ValidationIssue], primary_source: str = "container_pts",
     ) -> str:
-        """Keep container timestamps if they are usable; otherwise fall back to index / fps."""
+        """Keep the primary timestamps if they are usable; otherwise fall back to index / fps."""
         t = np.array([m.timestamp_s for m in ms], dtype=float)
         ok = np.isfinite(t)
         usable = ok.sum() < 2 or bool(np.all(np.diff(t[ok]) > 0))
         if usable:
-            source = "container_pts"
+            source = primary_source if primary_source != "none" else "nominal_fps"
         elif meta.nominal_fps > 0:
             source = "nominal_fps"
             for m in ms:
@@ -933,6 +1011,7 @@ class FlameAnalyzer:
                     "std": float(arr.std(ddof=1)) if arr.size > 1 else 0.0, "n": int(arr.size)}
 
         circ = stat(m.circularity for m in acc)
+        issues.extend(self._static_detection_check(acc))
         # Observed scatter of the radius about its local-polynomial smooth (robust MAD estimate),
         # reported next to the *assumed* boundary uncertainty so that the assumption can be checked.
         resid = np.array([m.equivalent_radius_px - m.radius_smoothed_px for m in acc
@@ -964,6 +1043,8 @@ class FlameAnalyzer:
             "expansion_velocity_px_s": stat(m.expansion_velocity_px_s for m in acc),
             "expansion_velocity_mm_s": stat(m.expansion_velocity_mm_s for m in acc),
             "circularity": circ,
+            "frames_volume_suppressed_non_spherical": sum(
+                1 for m in acc if any(w.startswith("equivalent spherical volume not reported") for w in m.warnings)),
             "shape_stability_cv": (circ["std"] / circ["mean"]) if circ and circ["mean"] else None,
             "eccentricity": stat(m.eccentricity for m in acc),
             "boundary_roughness": stat(m.boundary_roughness for m in acc),
@@ -987,6 +1068,27 @@ class FlameAnalyzer:
             ],
         })
 
+    def _static_detection_check(self, acc: list[FrameMeasurement]) -> list[pv.ValidationIssue]:
+        """Flag detections whose size and position never change (A-CV-11: hardware glow, not flame)."""
+        if len(acc) < 5:
+            return []
+        t = np.array([m.timestamp_s for m in acc])
+        span = float(t.max() - t.min())
+        if span < self.config.static_check_min_duration_s:
+            return []
+        r = np.array([m.equivalent_radius_px for m in acc])
+        cx = np.array([m.centroid_x_px for m in acc])
+        cy = np.array([m.centroid_y_px for m in acc])
+        rel_r = float(np.std(r) / np.mean(r)) if np.mean(r) > 0 else 0.0
+        drift = float(np.hypot(cx - np.median(cx), cy - np.median(cy)).max())
+        if rel_r < 0.02 and drift < 2.0:
+            return [pv.ValidationIssue(
+                "static_detection", "warning",
+                f"The detected object stays the same size (radius CV {rel_r:.1%}) and in the same place "
+                f"(max drift {drift:.1f} px) for {span:.1f} s. Flames evolve; this is probably a static emitter "
+                f"(igniter, heated hardware, LED). Inspect the overlay and use exclude_regions or roi.")]
+        return []
+
     # -- inspection helpers --------------------------------------------------------------
 
     def preview_frame(
@@ -1004,7 +1106,7 @@ class FlameAnalyzer:
         if frame_index < 0 or (meta.reported_frame_count and frame_index >= meta.reported_frame_count):
             raise ValueError(f"frame_index must be within 0-{meta.reported_frame_count - 1}.")
         segmenter = Segmenter(self.config.segmentation)
-        cap, _, _ = open_capture(video_path, meta, self.config.decoder)
+        cap, _, _ = open_capture(video_path, meta, self.config.decoder, self.config.image_sequence)
         try:
             frame, t0, ms = None, None, 0.0
             for i in range(frame_index + 1):

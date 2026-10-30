@@ -57,7 +57,7 @@ Source of truth: `FIELD_DEFINITIONS` in `backend/vision/cv_engine.py`. The test
 | `area_mm2` | mm^2 | calculated | Projected area x scale^2. |
 | `area_sigma_mm2` | mm^2 | calculated | 2 pi r sigma_r (total). |
 | `perimeter_mm` | mm | calculated | Perimeter x scale. |
-| `equivalent_volume_mm3` | mm^3 | calculated | (4/3) pi r^3 - equivalent SPHERICAL estimate, not a 3-D measurement. |
+| `equivalent_volume_mm3` | mm^3 | calculated | (4/3) pi r^3 - equivalent SPHERICAL estimate, not a 3-D measurement. Empty when circularity < `min_circularity_for_volume` (0.75) or the flame is clipped. |
 | `equivalent_volume_sigma_mm3` | mm^3 | calculated | 4 pi r^2 sigma_r (total, first order). |
 | `radius_smoothed_px` | px | calculated | Local-polynomial smoothed equivalent radius. |
 | `expansion_velocity_px_s` | px/s | calculated | dr/dt from timestamp-aware local polynomial fit. |

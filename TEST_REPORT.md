@@ -3,6 +3,57 @@
 Every result here was produced by actually running the commands shown. Nothing
 is extrapolated.
 
+## Run of 2026-10-30, increment 2 (s-Flame dataset and first real flame images)
+
+```bash
+python -m pytest -q
+```
+
+**Result: 92 passed, 0 failed.** New suites:
+* `test_sflame.py` (9): documented unit conversions, gas-code tables, header
+  and log parsing including a malformed real header, midnight rollover, flow
+  programmes, OH* flame detection (gain-off level, ignition flash,
+  extinguished vs censored), the experimental-table correction rule.
+* `test_image_sequence.py` (10, synthetic 16-bit stacks): filename timestamps,
+  dark subtraction, hot-pixel removal, saturation flag, scale excluding
+  saturated frames, lit dark frames reported, end-to-end radius < 1 px,
+  static-emitter warning, exclusion regions, ROI, volume suppression for a
+  C-shaped emitter, burner-disk measurement (100 px truth → within 3 px).
+
+### s-Flame dataset vs NASA's own records (all 289 test points)
+
+| Our label (OH* PMT) | NASA "EXTINCTION DETECTED" | NASA burner-T limit | completed | no log |
+|---|---|---|---|---|
+| extinguished | 184 | 5 | 1 | 13 |
+| burning at fuel off (censored) | 0 | 23 | 17 | 6 |
+| ambiguous (excluded) | 20 | 0 | 0 | 0 |
+| no sustained flame | 17 | 1 | 0 | 2 |
+
+### First real flame image analysis: PSI-23 test 19304A7
+
+The data is the CFI intensified camera, 248 frames of 1392×1040×16-bit TIFF
+(45 % CH4/N2 fuel, ~21 % O2), analysed at 0.5 processing scale.
+
+| Check | Result |
+|---|---|
+| Visible-extinction time, camera (this engine) | 19:40:47.80 ± 0.02 s |
+| Flame-off time, OH* photomultiplier (independent instrument) | 19:40:47.98 |
+| Agreement | **0.18 s** (different bands: CH* camera vs OH* PMT) |
+| Burner-sphere calibration | 103 ± 2.5 px = 6.35 mm → 0.0617 mm/px |
+| Frames detected / rejected by tracker / not detected | 57 / 9 / 19 |
+| Circularity (mean, range) | 0.37 (0.13–0.88): **the flame is not spherical** |
+| Equivalent volume suppressed | 56 of 57 frames |
+| Wall time (85 frames analysed) | 6.3 s |
+
+Visual inspection (`docs/img/PSI-23_19304A7_cv_overlay.jpg`):
+* The first frames capture the igniter glow and the ignition kernel, not the
+  flame (A-CV-13).
+* On the near-spherical shell, a global threshold captures only its brighter
+  part, so the radius is under-measured (A-CV-12).
+* Later, the C-shaped opening flame is outlined well.
+
+**Not validated:** a flame-shell radius. That needs a limb fit (next step).
+
 ## Run of 2026-10-30, update (real NASA data, decoder fix, PSI client)
 
 ```bash

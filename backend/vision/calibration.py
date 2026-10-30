@@ -166,3 +166,102 @@ class DistortionCorrection:
 
     def to_dict(self) -> dict:
         return {"camera_matrix": self.camera_matrix, "dist_coeffs": self.dist_coeffs}
+
+
+@dataclass
+class DiskMeasurement:
+    """Result of measuring a dark circular reference object (e.g. a burner sphere) in an image."""
+
+    diameter_px: float
+    diameter_sigma_px: float
+    center_px: tuple[float, float]
+    sector_radii_px: list[float]
+    method: str = "radial half-depth edge, per angular sector"
+
+
+def measure_dark_disk(
+    image: np.ndarray,
+    center_guess: tuple[float, float],
+    max_radius_px: float,
+    excluded_angles_deg: list[tuple[float, float]] | None = None,
+    n_sectors: int = 24,
+    refine_center: bool = True,
+) -> DiskMeasurement:
+    """Measure the diameter of a dark disk silhouetted against a brighter surround.
+
+    For each angular sector (skipping ``excluded_angles_deg``, e.g. the burner's
+    supply tube; 0 deg = +x, angles increase towards +y), the radial intensity
+    profile is averaged and the edge is taken where it first rises past the
+    midpoint between the inner dark level (median inside 30 % of
+    ``max_radius_px``) and the outer level (median of the outer 30 %). The
+    diameter is twice the median sector radius. Its 1-sigma uncertainty is
+    ``2 * 1.4826 * MAD / sqrt(n)`` of the sector radii, plus 1 px for edge
+    localisation, combined in quadrature. With ``refine_center`` the centre is
+    re-estimated once from opposing sector edges.
+
+    Limitations: a soft or partially filled silhouette (emission in front of the
+    object) biases the half-depth edge. Report the reference as an *in-image*
+    calibration with this method named.
+    """
+    img = np.asarray(image, dtype=np.float32)
+    if img.ndim == 3:
+        img = img.max(axis=2)
+    excluded = excluded_angles_deg or []
+
+    def is_excluded(a: float) -> bool:
+        for lo, hi in excluded:
+            lo, hi = lo % 360, hi % 360
+            if (lo <= hi and lo <= a <= hi) or (lo > hi and (a >= lo or a <= hi)):
+                return True
+        return False
+
+    def sector_edges(cx: float, cy: float) -> dict[float, float]:
+        h, w = img.shape
+        yy, xx = np.mgrid[0:h, 0:w]
+        dx, dy = xx - cx, yy - cy
+        rr = np.hypot(dx, dy)
+        ang = (np.degrees(np.arctan2(dy, dx)) + 360) % 360
+        near = rr <= max_radius_px
+        edges = {}
+        width = 360.0 / n_sectors
+        nbins = int(max_radius_px)
+        for k in range(n_sectors):
+            a0 = k * width
+            mid = a0 + width / 2
+            if is_excluded(mid):
+                continue
+            sel = near & (ang >= a0) & (ang < a0 + width)
+            if sel.sum() < 50:
+                continue
+            r = rr[sel]
+            v = img[sel]
+            bins = np.clip(r.astype(int), 0, nbins - 1)
+            prof = np.bincount(bins, weights=v, minlength=nbins) / np.maximum(np.bincount(bins, minlength=nbins), 1)
+            prof = np.convolve(prof, np.ones(5) / 5, mode="same")
+            inner = np.median(prof[: max(3, int(0.3 * nbins))])
+            outer = np.median(prof[int(0.7 * nbins):])
+            if outer - inner <= 0:
+                continue
+            half = inner + 0.5 * (outer - inner)
+            above = np.flatnonzero(prof[int(0.05 * nbins):] > half)
+            if above.size:
+                edges[mid] = float(above[0] + int(0.05 * nbins))
+        return edges
+
+    cx, cy = center_guess
+    edges = sector_edges(cx, cy)
+    if refine_center and len(edges) >= 6:
+        pts = np.array([[cx + r * np.cos(np.radians(a)), cy + r * np.sin(np.radians(a))] for a, r in edges.items()])
+        # Algebraic circle fit (Kasa) to the edge points.
+        A = np.c_[2 * pts[:, 0], 2 * pts[:, 1], np.ones(len(pts))]
+        b = (pts ** 2).sum(axis=1)
+        sol, *_ = np.linalg.lstsq(A, b, rcond=None)
+        cx, cy = float(sol[0]), float(sol[1])
+        edges = sector_edges(cx, cy)
+    if len(edges) < 4:
+        raise CalibrationError("Too few usable sectors to measure the disk; check the centre guess and radius.")
+    radii = np.array(list(edges.values()))
+    med = float(np.median(radii))
+    mad = float(np.median(np.abs(radii - med))) * 1.4826
+    sigma_d = float(np.hypot(2 * mad / np.sqrt(len(radii)), 1.0))
+    return DiskMeasurement(2 * med, sigma_d, (cx, cy), radii.tolist())

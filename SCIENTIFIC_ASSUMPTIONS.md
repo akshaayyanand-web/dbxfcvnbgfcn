@@ -247,3 +247,54 @@ igniter timing and design (loop vs coil tip), burner heating, and chamber
 vitiation. 19254H1 and 19254H3 had identical setpoints, yet one failed to
 ignite and the other burned for 46 s. Any model built on this table predicts
 associations within the s-Flame test matrix only.
+
+## 8. Scientific image sequences and real-flame measurement
+
+**A-IMG-1: Frame times.** Frame times come from the timestamp in each file name
+(ms resolution). ACME camera frame intervals vary with exposure (DI §4.B), and
+the variation is reported.
+
+**A-IMG-2: Dark frame.** The dark frame is the per-pixel median of the first
+`dark_frames` (default 10) frames, which must be flame-free. Whole-frame mean
+brightness is checked and a warning is issued if the leading frames appear lit.
+Per-pixel extremes are not used for this check because intensifier noise is
+large.
+
+**A-IMG-3: Hot pixels.** A 3×3 median filter removes radiation-induced hot
+pixels (DI: "a star field"). It also slightly smooths real edges.
+
+**A-IMG-4: Brightness scale.** One fixed 16→8-bit scale is used for the whole
+sequence: the 99.95th percentile of dark-subtracted counts over sampled
+*non-saturated* frames. Saturated frames (e.g. the ignition burst) are
+excluded, because on 19304A7 they would have compressed the flame to ~5 % of
+the range. Per-frame normalisation is never used.
+
+**A-IMG-5: Saturation.** Frames whose raw maximum is ≥ 65,000 counts are
+flagged. Their intensities and boundaries are not trustworthy.
+
+**A-CAL-4: In-image burner calibration.** The s-Flame burner is a 6.35 mm
+porous sphere (final report §3). Its silhouette is measured with
+`measure_dark_disk`: radial half-depth edges in angular sectors, the
+supply-tube sector excluded, and the centre refined by a circle fit. The
+silhouette is soft because the flame emits in front of the sphere. That biases
+the half-depth edge, so the stated uncertainty (sector scatter + 1 px) is a
+lower bound. For 19304A7: 103 ± 2.5 px → 0.0617 mm/px (±2.5 %).
+
+**A-CV-12: Shell flames and the equivalent radius.** A spherical diffusion flame
+is a thin luminous shell. In projection it is brightest at its limb, and its
+brightness varies around the shell. On 19304A7 a single global (Otsu) threshold
+captured only the brighter part of the shell, which **under-measures the
+radius**. Later in the burn the flame opened into a C shape (local extinction /
+flame hole) and then broke up. NASA's final report notes that s-Flame flames
+were often not spherically symmetric at high flow, because of extra flow
+through the sphere–tube joint. Consequences:
+* `equivalent_volume_mm3` is suppressed when circularity < 0.75 or the flame
+  is clipped (56 of 57 frames on 19304A7).
+* The area-equivalent radius of a shell flame is reported, but it is *not* the
+  flame-shell radius. A limb (outer-edge) circle fit is required for that and
+  is not yet implemented.
+
+**A-CV-13: Igniter contamination.** In the first ~0.5 s after ignition the hot
+igniter tip and the ignition kernel dominate the image. Analyses should start
+after this period. The OH* photomultiplier flame-on time (A-SF-1) gives the
+time origin.

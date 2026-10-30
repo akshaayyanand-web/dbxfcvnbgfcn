@@ -26,17 +26,28 @@ _Last updated: 2026-10-30. Submission target: 2026-11-14/15._
 | PSI client with provenance (DOI, licence, SHA-256) | `backend/data/psi_client.py` | live download, 6 offline tests |
 | FFmpeg decoder (default) + blank-frame guard | `backend/vision/cv_engine.py` | regression tests on synthetic interlaced video |
 
+## Completed (increment 2)
+
+| Component | Files | Verified by |
+|---|---|---|
+| s-Flame test-point dataset (289 tests, labels with censoring, quality report, input manifest) | `backend/data/sflame*.py`, `data/processed/sflame_*` | 9 tests, cross-check vs NASA stop reasons |
+| Image-sequence input (16-bit TIFF, filename times, dark/hot-pixel/saturation handling) | `backend/vision/image_sequence.py` | 10 tests |
+| ROI / exclusion masks, static-emitter warning, non-spherical volume suppression | `backend/vision/cv_engine.py` | tests |
+| In-image burner calibration | `backend/vision/calibration.py::measure_dark_disk` | synthetic test, applied to 19304A7 |
+| First real flame analysis (19304A7) | `data/processed/19304A7_cv_analysis.*`, `docs/img/` | extinction within 0.18 s of the PMT |
+
 ## Remaining (in planned order)
 
-1. **Data layer** (`backend/data/`): parse all 267 s-Flame `_TP.txt` logs
-   (ignition, extinction, outcome) and the `_mfcSetpoints.csv` headers into one
-   test-point table. Add documented correction rules (e.g. the "N3…N6"
-   atmosphere entries), a dataset registry and a quality report. Get unit
-   conversions from the PSI engineering documents.
-1b. **CV on real science imagery:** an image-sequence loader (16-bit TIFF +
-   frame-timestamp log), a region of interest and exclusion masks, a
-   static-object warning, a successful test point with a visible flame, and the
-   pixel scale from the camera docs.
+0. **Next:** a limb (outer-edge) circle fit for shell-flame radius (A-CV-12), and a
+   survival / extinction model on `sflame_test_points.csv` with test-day-grouped CV.
+1. **Data layer, remaining:** a general dataset registry for the other ACME
+   investigations (PSI-10 Flame Design and PSI-159 CFI-G use different file
+   naming), CIR chamber pressure/O2 if obtainable (per-test O2 is currently
+   unknown on mixed days), and thermocouple conversion (type K/B, NIST
+   polynomials + cold junction).
+1b. **CV on real imagery, remaining:** a limb fit, igniter-period handling, and
+   validation on more test points (only 19304A7 so far; day 19256 camera data
+   is known to be incomplete).
 2. **ML layer** (`backend/ml/`): baselines (linear, RF, XGBoost), grouped CV,
    SHAP, conformal or quantile intervals, OOD warnings, and the model registry.
    This trains only on targets marked **A** in the availability matrix.
