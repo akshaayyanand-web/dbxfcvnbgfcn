@@ -50,6 +50,7 @@ class ExperimentCreate(BaseModel):
 class ExperimentUpdate(BaseModel):
     model_config = ConfigDict(extra="forbid")
     name: str | None = Field(default=None, min_length=1, max_length=200)
+    archived: bool | None = None
     description: str | None = Field(default=None, max_length=5000)
     fuel_type: str | None = Field(default=None, max_length=200)
     oxygen_fraction: float | None = Field(default=None, ge=0, le=1)
@@ -82,6 +83,7 @@ class ExperimentOut(BaseModel):
     status: str
     model_version: str | None
     latest_job_id: str | None
+    archived: bool = False
 
 
 class JobOut(BaseModel):

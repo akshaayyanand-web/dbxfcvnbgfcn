@@ -89,15 +89,21 @@ def _iso(dt: datetime | None) -> str | None:
     return dt.isoformat(timespec="milliseconds") if dt else None
 
 
-def build_row(tp: str, raw: Path, day_table: pd.DataFrame, cfg: FlameDetectionConfig) -> tuple[dict, list[Path]]:
+def build_row(run_id: str, raw: Path, day_table: pd.DataFrame, cfg: FlameDetectionConfig,
+              shared: bool = False) -> tuple[dict, list[Path]]:
+    """One row per *run*. NASA saves a re-run of a test point as ``<tp>_1``, ``<tp>_2``... [IDD §8.1];
+    the run's own files carry the suffix, while ``_TP.txt`` and ``as run`` files exist once per test point."""
     used: list[Path] = []
     flags: list[str] = []
-    sp_path = raw / f"{tp}_mfcSetpoints.csv"
+    tp = run_id.split("_")[0]
+    sp_path = raw / f"{run_id}_mfcSetpoints.csv"
     header, sp = parse_setpoints(sp_path)
     used.append(sp_path)
     prog = flow_programme(header, sp)
     row: dict = {
-        "test_point": tp,
+        "test_point": run_id,
+        "test_point_base": tp,
+        "run_suffix": run_id[len(tp) + 1:] if run_id != tp else "",
         "test_day": tp[:5],
         "test_date_utc": header.timestamp.date().isoformat(),
         "round": 2 if tp[:5] >= "20132" else 1,
@@ -144,7 +150,9 @@ def build_row(tp: str, raw: Path, day_table: pd.DataFrame, cfg: FlameDetectionCo
             row[f"initial_x_{sp_name}"] = mix.get(sp_name, 0.0) if mix else np.nan
 
     as_run = raw / f"as run{tp}.txt"
-    if as_run.exists():
+    if shared:
+        flags.append("multiple_runs_share_test_point_id")
+    if as_run.exists() and not shared:
         used.append(as_run)
         params = _parse_as_run(as_run)
         row["planned_constant_flow_s"] = float(params["constantFlowTimeSec"]) if "constantFlowTimeSec" in params else np.nan
@@ -152,19 +160,27 @@ def build_row(tp: str, raw: Path, day_table: pd.DataFrame, cfg: FlameDetectionCo
     else:
         row["planned_constant_flow_s"] = np.nan
         row["burner_temperature_limit_c"] = np.nan
+        if as_run.exists():
+            flags.append("as_run_not_attributed_shared_test_point")
 
     tp_path = raw / f"{tp}_TP.txt"
-    if tp_path.exists():
+    log = parse_tp(tp_path.read_text(errors="replace")) if tp_path.exists() else None
+    start = log.events.get("Script start") if log else None
+    # The timing log belongs to this run only if its script start matches the run's data header (same script).
+    matches = start is not None and abs((start - header.timestamp.replace(microsecond=0)).total_seconds()) <= 60
+    if log is not None and matches:
         used.append(tp_path)
-        log = parse_tp(tp_path.read_text(errors="replace"))
         row["nasa_stop_reason"] = log.failure_reason or ("completed" if log.script_completed_normally else "unknown")
         row["nasa_ignition_utc"] = _iso(log.ignition)
         row["nasa_extinction_detected_utc"] = _iso(log.extinction_detected)
+    elif log is not None:
+        row.update(nasa_stop_reason="log_belongs_to_other_run", nasa_ignition_utc=None, nasa_extinction_detected_utc=None)
+        flags.append("test_point_log_belongs_to_other_run")
     else:
         row.update(nasa_stop_reason="no_log", nasa_ignition_utc=None, nasa_extinction_detected_utc=None)
         flags.append("no_test_point_log")
 
-    data_path = raw / f"{tp}_data.csv"
+    data_path = raw / f"{run_id}_data.csv"
     if not data_path.exists() or prog.fuel_on is None:
         row["outcome"] = "no_data" if not data_path.exists() else "no_fuel_flow"
         row["event_observed"] = None
@@ -218,12 +234,15 @@ def build(raw: Path, cfg: FlameDetectionConfig | None = None) -> tuple[pd.DataFr
     day_table = load_experimental_table(table_files[0])
     used: set[Path] = {table_files[0]}
     rows = []
-    for sp in sorted(raw.glob("*_mfcSetpoints.csv")):
-        tp = sp.name.split("_")[0]
+    run_ids = sorted(sp.name[: -len("_mfcSetpoints.csv")] for sp in raw.glob("*_mfcSetpoints.csv"))
+    bases = pd.Series([r.split("_")[0] for r in run_ids])
+    shared_bases = set(bases[bases.duplicated(keep=False)])
+    for run_id in run_ids:
+        sp = raw / f"{run_id}_mfcSetpoints.csv"
         try:
-            row, files = build_row(tp, raw, day_table, cfg)
+            row, files = build_row(run_id, raw, day_table, cfg, shared=run_id.split("_")[0] in shared_bases)
         except (ValueError, KeyError) as exc:
-            row, files = {"test_point": tp, "outcome": "parse_error", "quality_flags": f"parse_error:{exc}"}, [sp]
+            row, files = {"test_point": run_id, "outcome": "parse_error", "quality_flags": f"parse_error:{exc}"}, [sp]
         rows.append(row)
         used.update(files)
     df = pd.DataFrame(rows)

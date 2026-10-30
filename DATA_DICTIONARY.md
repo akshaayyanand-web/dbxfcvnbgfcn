@@ -123,7 +123,8 @@ Interpretation (2021). Labelling rules: `SCIENTIFIC_ASSUMPTIONS.md` §7.
 
 | Column | Unit | Class | Definition / source |
 |---|---|---|---|
-| `test_point` | – | metadata | NASA test-point ID `YYDDD<letter><n>` [DI §4.A.1] |
+| `test_point` | – | metadata | Run ID: NASA test-point ID `YYDDD<letter><n>` [DI §4.A.1], plus `_<k>` for a re-run under the same name [IDD §8.1] |
+| `test_point_base`, `run_suffix` | – | metadata | The NASA test-point ID without the suffix, and the suffix (empty for the first run). Read both as text |
 | `test_day`, `test_date_utc`, `test_order_in_day` | – | metadata | Day code, header date, order by fuel-on time within the day (vitiation proxy) |
 | `round` | – | metadata | 1 = nitrogen-diluted (2019–Jan 2020), 2 = helium-diluted (May–Jul 2020) |
 | `fuel_bottle_code`, `fuel_bottle` | –, JSON mole fractions | direct_measurement (setup) | MFCA3 gas code and composition [IDD Table 34] |

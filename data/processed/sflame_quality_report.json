@@ -2,34 +2,46 @@
   "schema": "flame-in-freefall/sflame-test-points/v1",
   "test_points": 289,
   "outcomes": {
-    "extinguished": 203,
+    "extinguished": 202,
     "burning_at_fuel_off": 46,
     "no_sustained_flame": 20,
-    "ambiguous_nasa_extinction": 20
+    "ambiguous_nasa_extinction": 20,
+    "no_fuel_flow": 1
   },
   "outcome_vs_nasa_stop_reason": {
     "ambiguous_nasa_extinction": {
       "Burner temperature limit exceeded for specified duration": 0,
       "EXTINCTION DETECTED": 20,
       "completed": 0,
+      "log_belongs_to_other_run": 0,
       "no_log": 0
     },
     "burning_at_fuel_off": {
       "Burner temperature limit exceeded for specified duration": 23,
       "EXTINCTION DETECTED": 0,
       "completed": 17,
+      "log_belongs_to_other_run": 0,
       "no_log": 6
     },
     "extinguished": {
       "Burner temperature limit exceeded for specified duration": 5,
-      "EXTINCTION DETECTED": 184,
+      "EXTINCTION DETECTED": 181,
       "completed": 1,
+      "log_belongs_to_other_run": 2,
       "no_log": 13
+    },
+    "no_fuel_flow": {
+      "Burner temperature limit exceeded for specified duration": 0,
+      "EXTINCTION DETECTED": 0,
+      "completed": 0,
+      "log_belongs_to_other_run": 1,
+      "no_log": 0
     },
     "no_sustained_flame": {
       "Burner temperature limit exceeded for specified duration": 1,
       "EXTINCTION DETECTED": 17,
       "completed": 0,
+      "log_belongs_to_other_run": 0,
       "no_log": 2
     }
   },
@@ -39,7 +51,10 @@
     "emission_before_logged_fuel_on": 52,
     "no_test_point_log": 21,
     "detection": 19,
+    "multiple_runs_share_test_point_id": 4,
+    "as_run_not_attributed_shared_test_point": 4,
     "emission_persisted_after_fuel_off": 3,
+    "test_point_log_belongs_to_other_run": 3,
     "telemetry_malformed_rows": 2
   },
   "experimental_table_corrections": [

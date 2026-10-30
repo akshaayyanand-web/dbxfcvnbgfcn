@@ -237,6 +237,15 @@ tests must be excluded from, or modelled without, an O2 feature. Vitiation
 lowers O2 through each test day (table footnote). `test_order_in_day` is
 provided as a proxy and is not a measurement.
 
+**A-SF-8: Re-runs under one test-point name.** NASA saves a re-run of a test
+point as `<tp>_1`, `<tp>_2`, … (ACME-DOC-010 §8.1). Each run is its own row
+(`test_point` = run ID; `test_point_base`, `run_suffix`). The single `_TP.txt`
+of a test point is attributed only to the run whose data-header time matches
+its "Script start" within 60 s. The single `as run` file is not attributed when
+several runs share the name. This affects 19256B2/19256B2_1 and
+20176K1/20176K1_1. A builder bug double-counted the first run and dropped the
+second; it was fixed on 2026-10-30, and the model was retrained.
+
 **A-SF-6: Source discrepancies resolved.** The experimental table's "N3–N6"
 entries are corrected to N2 (rule SFLAME-T1, originals kept). For day 20190 the
 table says 35% H2, but the final report and the MFC gas code say 45% H2. The
@@ -360,7 +369,7 @@ for a new test day. Day-level effects (vitiation history, igniter design change
 in round 2, unknown O2) dominate.
 
 **A-ML-5: Intervals.** Predictive intervals integrate parameter uncertainty
-(draws from the asymptotic normal) and are widened by a factor of 1.36 on σ.
+(draws from the asymptotic normal) and are widened by a factor of 1.38 on σ.
 That factor is the smallest that gives 80 % coverage of held-out-day events
 (70 % before). The calibration uses the same predictions as model selection,
 so it is mildly optimistic.

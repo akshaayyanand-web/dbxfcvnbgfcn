@@ -46,6 +46,8 @@ from backend.jobs import TERMINAL, JobManager
 from backend.ml.sflame_model import LifetimeModel
 from backend.security import RateLimiter, require_api_key, save_upload
 from backend.vision.cv_engine import ENGINE_VERSION, VideoValidationError, probe_video
+from backend.api_extra import LOG_BUFFER, job_stats, resources, router as extra_router
+from backend.database import Prediction
 
 API_VERSION = "0.4.0"
 
@@ -63,7 +65,7 @@ def _configure_logging(level: str) -> None:
     handler = logging.StreamHandler(sys.stdout)
     handler.setFormatter(JsonFormatter())
     root = logging.getLogger("flame")
-    root.handlers[:] = [handler]
+    root.handlers[:] = [handler, LOG_BUFFER]
     root.setLevel(level)
 
 
@@ -79,7 +81,8 @@ def _load_model(settings: Settings) -> tuple[LifetimeModel | None, str | None]:
 def _load_dataset(settings: Settings) -> tuple[pd.DataFrame | None, dict | None]:
     base = settings.data_dir / "processed"
     try:
-        df = pd.read_csv(base / "sflame_test_points.csv")
+        df = pd.read_csv(base / "sflame_test_points.csv",
+                         dtype={"test_point": str, "test_point_base": str, "run_suffix": str, "test_day": str})
         report = json.loads((base / "sflame_quality_report.json").read_text())
         return df, report
     except FileNotFoundError:
@@ -106,7 +109,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         _configure_logging(settings.log_level)
         settings.ensure_dirs()
         db = Database(settings.database_url)
-        db.create_all()
+        applied = db.create_all()
+        if applied:
+            logging.getLogger("flame.app").warning("database migrations applied: %s", ", ".join(applied))
         samples = SampleRegistry(settings.data_dir, settings.storage_dir)
         jobs = JobManager(db, settings, samples)
         app.state.settings, app.state.db, app.state.samples, app.state.jobs = settings, db, samples, jobs
@@ -183,6 +188,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                         "ffmpeg": shutil.which("ffmpeg") is not None, "platform": platform.platform()},
             "auth_required_for_writes": st.settings.api_key is not None,
             "recovery_on_startup": st.recovery,
+            "resources": resources(),
+            "processing": job_stats(st.db),
         }
 
     # -- experiments ----------------------------------------------------------------------
@@ -194,9 +201,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     @app.get("/api/experiments", response_model=list[ExperimentOut], tags=["experiments"])
     def list_experiments(request: Request, limit: int = Query(100, ge=1, le=500), offset: int = Query(0, ge=0),
-                         status_filter: str | None = Query(None, alias="status", max_length=16)):
+                         status_filter: str | None = Query(None, alias="status", max_length=16),
+                         include_archived: bool = Query(False)):
         with request.app.state.db.session() as s:
-            return repo.list_experiments(s, limit, offset, status_filter)
+            return repo.list_experiments(s, limit, offset, status_filter, include_archived)
 
     @app.get("/api/experiments/{experiment_id}", response_model=ExperimentOut, tags=["experiments"])
     def get_experiment(experiment_id: str, request: Request):
@@ -368,13 +376,17 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         if st.model is None:
             raise HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE, st.model_error or "Model unavailable.")
         result = st.model.predict(body.inputs, body.interval)
-        if body.experiment_id:
-            with st.db.session() as s:
+        with st.db.session() as s:
+            if body.experiment_id:
                 exp = repo.get_experiment(s, body.experiment_id)
                 if exp is None:
                     raise NotFound(body.experiment_id)
                 exp.model_version = result["model_version"]
-                s.commit()
+            rec = Prediction(experiment_id=body.experiment_id, model_version=result["model_version"],
+                             inputs=dict(body.inputs), result=_clean(result))
+            s.add(rec)
+            s.commit()
+            result["prediction_id"] = rec.id
         return result
 
     @app.get("/api/models", tags=["prediction"])
@@ -430,6 +442,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         content, media, filename = svc(request).export(body.experiment_id, body.format)
         return Response(content, media_type=media, headers={"Content-Disposition": f'attachment; filename="{filename}"'})
 
+    app.include_router(extra_router)
     return app
 
 

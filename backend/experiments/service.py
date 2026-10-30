@@ -12,7 +12,7 @@ import io
 import json
 from pathlib import Path
 
-from backend.database import AnalysisJob, Database, Experiment, utcnow
+from backend.database import AnalysisJob, AppSetting, Database, Experiment, utcnow
 from backend.experiments import repository as repo
 from backend.experiments.schemas import CalibrationIn, ExperimentCreate, ExperimentUpdate
 from backend.jobs import JobManager
@@ -53,6 +53,13 @@ class ExperimentService:
         self.db = db
         self.jobs = jobs
 
+    def default_analysis_config(self) -> dict | None:
+        """The workspace default from Settings (used when an experiment brings no configuration)."""
+        with self.db.session() as s:
+            row = s.get(AppSetting, "default_analysis_config")
+            value = (row.value or {}).get("v") if row else None
+        return value or None
+
     def create(self, body: ExperimentCreate, data_class: str = "user") -> Experiment:
         with self.db.session() as s:
             exp = Experiment(
@@ -60,7 +67,8 @@ class ExperimentService:
                 fuel_type=body.fuel_type, oxygen_fraction=body.oxygen_fraction,
                 chamber_pressure_kpa=body.chamber_pressure_kpa, burn_duration_s=body.burn_duration_s,
                 camera=body.camera, calibration=validate_calibration(body.calibration),
-                analysis_config=validate_analysis_config(body.analysis_config) if body.analysis_config else None,
+                analysis_config=validate_analysis_config(body.analysis_config or self.default_analysis_config())
+                if (body.analysis_config or self.default_analysis_config()) else None,
                 dataset_ref=body.dataset_ref,
             )
             s.add(exp)

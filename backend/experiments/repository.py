@@ -12,10 +12,13 @@ def get_experiment(s: Session, experiment_id: str) -> Experiment | None:
     return s.get(Experiment, experiment_id)
 
 
-def list_experiments(s: Session, limit: int = 100, offset: int = 0, status: str | None = None) -> list[Experiment]:
+def list_experiments(s: Session, limit: int = 100, offset: int = 0, status: str | None = None,
+                     include_archived: bool = False) -> list[Experiment]:
     q = select(Experiment).order_by(Experiment.created_at.desc()).limit(limit).offset(offset)
     if status:
         q = q.where(Experiment.status == status)
+    if not include_archived:
+        q = q.where(Experiment.archived.is_(False))
     return list(s.scalars(q))
 
 
