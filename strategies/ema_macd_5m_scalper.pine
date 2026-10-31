@@ -1,0 +1,116 @@
+// This Pine Script® code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+//@version=5
+// EMA 20/50 + MACD 5-minute scalper with a 4H trend filter.
+//
+// Non-repainting by design:
+//   * Signals are evaluated on closed bars only (calc_on_every_tick = false) and fill at the NEXT bar's open.
+//   * The 4H trend filter reads the previous, fully closed 4H bar ([1] + lookahead_on), so the
+//     historical backtest only ever sees data that was really available at that moment.
+//   * Stop and target are fixed when the signal fires and never move afterwards.
+strategy("EMA20/50 + MACD 5m Scalper", overlay = true,
+     initial_capital = 10000, pyramiding = 0,
+     commission_type = strategy.commission.percent, commission_value = 0.05,
+     slippage = 2, process_orders_on_close = false, calc_on_every_tick = false,
+     margin_long = 100, margin_short = 100)
+
+// ───────── Inputs ─────────
+grpT = "Trend filter"
+trendTF   = input.timeframe("240", "Higher timeframe", group = grpT)
+trendLen  = input.int(200, "HTF EMA length", minval = 1, group = grpT)
+useLocal  = input.bool(false, "Also require price vs 5m EMA 200", group = grpT)
+
+grpE = "Entry trigger"
+fastLen   = input.int(20, "Fast EMA", minval = 1, group = grpE)
+slowLen   = input.int(50, "Slow EMA", minval = 1, group = grpE)
+macdFast  = input.int(12, "MACD fast", group = grpE)
+macdSlow  = input.int(26, "MACD slow", group = grpE)
+macdSig   = input.int(9, "MACD signal", group = grpE)
+crossWin  = input.int(6, "EMA / MACD cross must be within N bars", minval = 0, group = grpE)
+nearTol   = input.float(0.15, "Candle 'near EMAs' tolerance %", minval = 0, step = 0.05, group = grpE)
+needPat   = input.bool(true, "Require hammer / engulfing pattern", group = grpE)
+volLen    = input.int(20, "Volume average length", minval = 1, group = grpE)
+volMult   = input.float(1.2, "Volume must exceed average ×", minval = 0, step = 0.1, group = grpE)
+
+grpR = "Risk"
+swingLen  = input.int(10, "Swing lookback for stop (bars)", minval = 2, group = grpR)
+slBuf     = input.float(0.05, "Stop buffer beyond swing %", minval = 0, step = 0.01, group = grpR)
+rr        = input.float(2.0, "Reward : risk", minval = 0.5, step = 0.1, group = grpR)
+minRiskP  = input.float(0.25, "Skip if stop closer than %  (fees)", minval = 0, step = 0.05, group = grpR)
+maxRiskP  = input.float(1.5, "Skip if stop wider than %", minval = 0.1, step = 0.1, group = grpR)
+riskPct   = input.float(1.0, "Risk per trade % of equity", minval = 0.1, maxval = 5, step = 0.1, group = grpR)
+maxLev    = input.float(1.0, "Max position size × equity (1 = no leverage)", minval = 0.1, step = 0.5, group = grpR)
+dayLoss   = input.float(5.0, "Daily loss limit % (stop trading for the day)", minval = 0.5, step = 0.5, group = grpR)
+
+strategy.risk.max_intraday_loss(dayLoss, strategy.percent_of_equity)
+
+// ───────── Indicators ─────────
+emaF  = ta.ema(close, fastLen)
+emaS  = ta.ema(close, slowLen)
+ema200 = ta.ema(close, 200)
+htfEma = request.security(syminfo.tickerid, trendTF, ta.ema(close, trendLen)[1], lookahead = barmerge.lookahead_on)
+[macdLine, sigLine, hist] = ta.macd(close, macdFast, macdSlow, macdSig)
+
+trendUp = close > htfEma and (not useLocal or close > ema200)
+trendDn = close < htfEma and (not useLocal or close < ema200)
+
+emaUp  = emaF > emaS and nz(ta.barssince(ta.crossover(emaF, emaS)), 9999) <= crossWin
+emaDn  = emaF < emaS and nz(ta.barssince(ta.crossunder(emaF, emaS)), 9999) <= crossWin
+macdUp = macdLine > sigLine and hist > 0 and nz(ta.barssince(ta.crossover(macdLine, sigLine)), 9999) <= crossWin
+macdDn = macdLine < sigLine and hist < 0 and nz(ta.barssince(ta.crossunder(macdLine, sigLine)), 9999) <= crossWin
+
+body   = math.abs(close - open)
+rng    = high - low
+lowerW = math.min(open, close) - low
+upperW = high - math.max(open, close)
+bullEngulf   = close > open and close[1] < open[1] and close >= open[1] and open <= close[1]
+bearEngulf   = close < open and close[1] > open[1] and close <= open[1] and open >= close[1]
+hammer       = rng > 0 and lowerW >= 2 * body and upperW <= 0.25 * rng
+shootingStar = rng > 0 and upperW >= 2 * body and lowerW <= 0.25 * rng
+bullPat = not needPat or bullEngulf or hammer
+bearPat = not needPat or bearEngulf or shootingStar
+
+zoneTop = math.max(emaF, emaS) * (1 + nearTol / 100)
+zoneBot = math.min(emaF, emaS) * (1 - nearTol / 100)
+nearEmas = low <= zoneTop and high >= zoneBot
+
+volOk = volume > ta.sma(volume, volLen) * volMult and volume > volume[1]
+
+// ───────── Stops, targets, size ─────────
+longStop  = ta.lowest(low, swingLen) * (1 - slBuf / 100)
+shortStop = ta.highest(high, swingLen) * (1 + slBuf / 100)
+longRisk  = close - longStop
+shortRisk = shortStop - close
+longRiskP  = longRisk / close * 100
+shortRiskP = shortRisk / close * 100
+
+sizeFor(riskPerUnit) =>
+    q = strategy.equity * riskPct / 100 / riskPerUnit
+    math.min(q, strategy.equity * maxLev / close)
+
+longSig  = trendUp and emaUp and macdUp and bullPat and nearEmas and volOk and longRiskP >= minRiskP and longRiskP <= maxRiskP
+shortSig = trendDn and emaDn and macdDn and bearPat and nearEmas and volOk and shortRiskP >= minRiskP and shortRiskP <= maxRiskP
+
+var float stopPx = na
+var float tpPx   = na
+
+if strategy.position_size == 0
+    if longSig
+        stopPx := longStop
+        tpPx   := close + rr * longRisk
+        strategy.entry("Long", strategy.long, qty = sizeFor(longRisk))
+    else if shortSig
+        stopPx := shortStop
+        tpPx   := close - rr * shortRisk
+        strategy.entry("Short", strategy.short, qty = sizeFor(shortRisk))
+
+strategy.exit("L exit", "Long",  stop = stopPx, limit = tpPx)
+strategy.exit("S exit", "Short", stop = stopPx, limit = tpPx)
+
+// ───────── Visuals ─────────
+plot(emaF, "EMA fast", color.new(color.teal, 0))
+plot(emaS, "EMA slow", color.new(color.orange, 0))
+plot(htfEma, "HTF EMA", color.new(color.gray, 0), 2, plot.style_stepline)
+plot(strategy.position_size != 0 ? stopPx : na, "Stop", color.red, 1, plot.style_linebr)
+plot(strategy.position_size != 0 ? tpPx : na, "Target", color.green, 1, plot.style_linebr)
+plotshape(longSig and strategy.position_size == 0, "Long signal", shape.triangleup, location.belowbar, color.teal, size = size.tiny)
+plotshape(shortSig and strategy.position_size == 0, "Short signal", shape.triangledown, location.abovebar, color.red, size = size.tiny)
