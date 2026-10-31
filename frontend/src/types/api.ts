@@ -416,7 +416,7 @@ export interface SystemStatus {
     load_average: { "1m": number; "5m": number; "15m": number } | null;
     cpu_load_fraction_1m?: number;
     memory: { total_bytes: number; available_bytes: number; used_fraction: number } | null;
-    process_max_rss_bytes: number;
+    process_max_rss_bytes: number | null;
     gpu: null;
     gpu_note: string;
   };

@@ -173,3 +173,17 @@ def test_frontend_served_with_spa_fallback(tmp_path, monkeypatch):
         assert c.get("/assets/app.js").text == "console.log(1)"
         assert c.get("/api/does-not-exist").status_code == 404                 # API 404s are not masked
         assert c.get("/api/health").json()["status"] == "ok"
+
+
+def test_resource_metrics_without_unix_modules(monkeypatch):
+    """On Windows there is no `resource` module, no os.getloadavg and no /proc: report, don't crash."""
+    import builtins
+
+    import backend.api_extra as ax
+    monkeypatch.setattr(ax, "resource", None)
+    monkeypatch.delattr(ax.os, "getloadavg", raising=False)
+    real_open = builtins.open
+    monkeypatch.setattr(builtins, "open", lambda f, *a, **k: (_ for _ in ()).throw(OSError("no /proc")) if str(f).startswith("/proc") else real_open(f, *a, **k))
+    out = ax.resources()
+    assert out["process_max_rss_bytes"] is None and out["load_average"] is None and out["memory"] is None
+    assert out["cpu_count"] == ax.os.cpu_count()

@@ -8,7 +8,6 @@ import json
 import logging
 import math
 import os
-import resource
 import threading
 from datetime import datetime, timezone
 from pathlib import Path
@@ -28,6 +27,11 @@ from backend.reports.pdf_export import write_report_files
 from backend.reports.report_generator import SECTION_IDS, build_comparison_report, build_experiment_report
 from backend.security import require_api_key
 from backend.vision.cv_engine import AnalysisConfig
+
+try:  # Unix only; on Windows the peak-memory metric is reported as not collected
+    import resource
+except ImportError:  # pragma: no cover - platform dependent
+    resource = None
 
 router = APIRouter()
 write = [Depends(require_api_key)]
@@ -412,7 +416,7 @@ def resources() -> dict:
         la = os.getloadavg()
         out["load_average"] = {"1m": la[0], "5m": la[1], "15m": la[2]}
         out["cpu_load_fraction_1m"] = la[0] / (os.cpu_count() or 1)
-    except OSError:
+    except (OSError, AttributeError):  # os.getloadavg does not exist on Windows
         out["load_average"] = None
     try:
         mem = {}
@@ -424,7 +428,7 @@ def resources() -> dict:
                          "used_fraction": 1 - mem["MemAvailable"] / mem["MemTotal"]}
     except (OSError, KeyError, ValueError):
         out["memory"] = None
-    out["process_max_rss_bytes"] = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss * 1024
+    out["process_max_rss_bytes"] = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss * 1024 if resource else None
     return out
 
 
