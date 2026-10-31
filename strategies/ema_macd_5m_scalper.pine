@@ -1,6 +1,11 @@
 // This Pine Script® code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
 //@version=5
-// EMA 20/50 + MACD 5-minute scalper with a 4H trend filter.
+// EMA 20/50 + MACD strategy with a 4H trend filter.
+//
+// Defaults are the BTCUSDT 15-minute preset chosen by tools/optimize_ema_macd.py
+// (selected on 2025 data, checked on unseen Jan-Oct 2026 data). Use it on a 15m chart.
+// The original 5m rules from the setup description are: HTF EMA 200, cross window 6,
+// pattern on, volume x1.2, reward:risk 2.
 //
 // Non-repainting by design:
 //   * Signals are evaluated on closed bars only (calc_on_every_tick = false) and fill at the NEXT bar's open.
@@ -16,7 +21,7 @@ strategy("EMA20/50 + MACD 5m Scalper", overlay = true,
 // ───────── Inputs ─────────
 grpT = "Trend filter"
 trendTF   = input.timeframe("240", "Higher timeframe", group = grpT)
-trendLen  = input.int(200, "HTF EMA length", minval = 1, group = grpT)
+trendLen  = input.int(100, "HTF EMA length", minval = 1, group = grpT)
 useLocal  = input.bool(false, "Also require price vs 5m EMA 200", group = grpT)
 
 grpE = "Entry trigger"
@@ -25,16 +30,16 @@ slowLen   = input.int(50, "Slow EMA", minval = 1, group = grpE)
 macdFast  = input.int(12, "MACD fast", group = grpE)
 macdSlow  = input.int(26, "MACD slow", group = grpE)
 macdSig   = input.int(9, "MACD signal", group = grpE)
-crossWin  = input.int(6, "EMA / MACD cross must be within N bars", minval = 0, group = grpE)
+crossWin  = input.int(12, "EMA / MACD cross must be within N bars", minval = 0, group = grpE)
 nearTol   = input.float(0.15, "Candle 'near EMAs' tolerance %", minval = 0, step = 0.05, group = grpE)
-needPat   = input.bool(true, "Require hammer / engulfing pattern", group = grpE)
+needPat   = input.bool(false, "Require hammer / engulfing pattern", group = grpE)
 volLen    = input.int(20, "Volume average length", minval = 1, group = grpE)
-volMult   = input.float(1.2, "Volume must exceed average ×", minval = 0, step = 0.1, group = grpE)
+volMult   = input.float(1.5, "Volume must exceed average ×", minval = 0, step = 0.1, group = grpE)
 
 grpR = "Risk"
 swingLen  = input.int(10, "Swing lookback for stop (bars)", minval = 2, group = grpR)
 slBuf     = input.float(0.05, "Stop buffer beyond swing %", minval = 0, step = 0.01, group = grpR)
-rr        = input.float(2.0, "Reward : risk", minval = 0.5, step = 0.1, group = grpR)
+rr        = input.float(3.0, "Reward : risk", minval = 0.5, step = 0.1, group = grpR)
 minRiskP  = input.float(0.25, "Skip if stop closer than %  (fees)", minval = 0, step = 0.05, group = grpR)
 maxRiskP  = input.float(1.5, "Skip if stop wider than %", minval = 0.1, step = 0.1, group = grpR)
 riskPct   = input.float(1.0, "Risk per trade % of equity", minval = 0.1, maxval = 5, step = 0.1, group = grpR)
