@@ -60,7 +60,8 @@ def dip_trades(raw1h, tf, rl, buy, crash_pct, cost):
             k += 1
         if px is None:
             break
-        out.append((T[j], xt, e, st, px))
+        if xt - T[j] <= pd.Timedelta(days=10):  # longer means the trade spans missing data: drop it
+            out.append((T[j], xt, e, st, px))
         i = k
     return out, cost
 

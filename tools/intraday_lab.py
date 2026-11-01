@@ -50,6 +50,8 @@ def run_trades(df, plans, cost):
                 break
         if px is None:
             px, xt = (O[last + 1] if last + 1 < len(O) else df.c.iloc[last]), T[min(last + 1, len(T) - 1)]
+        if xt - T[j] > pd.Timedelta(days=2):  # a day trade spanning missing data: drop it
+            continue
         risk = abs(e - st) / e
         out.append((T[j], xt, e, st, px, (dr * (px / e - 1) - cost) / risk))
     return out
