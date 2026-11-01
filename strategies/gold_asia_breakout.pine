@@ -1,0 +1,107 @@
+//@version=6
+// ─────────────────────────────────────────────────────────────────────────────
+// Gold Asia-Range Breakout – day trade with prop guard  (gold: XAUUSD or GC/MGC, run on the 1h chart)
+//
+//   Range : high/low of the hourly bars from 00:00 to 07:00 London time.
+//   Entry : the first hourly CLOSE above the range high (long) or below the range low (short) between
+//           07:00 and 14:00 London; market order at the next bar's open. One trade per day.
+//   Stop  : the middle of the range (attached to the order).   Exit: flat by 20:00 London.
+//
+// Part of the BTC Dip v3 + Gold Dip + intraday portfolio. Give each script its SHARE of the account's
+// limits (defaults here: 0.25% risk per trade, 1.25% of the max loss, 0.75% of the daily limit).
+//
+// Python test (Dukascopy XAUUSD hourly, costs included): about +0.065R per trade, ~17 trades a month;
+// at 1% risk about +10%/yr 2016-2022 and +13%/yr 2023-2026. The edge is thin: at 3x the modelled costs
+// it disappears, so trade it with micro contracts / tight spreads. Paper trade first.
+// ─────────────────────────────────────────────────────────────────────────────
+strategy("Gold Asia Breakout – prop guard", shorttitle = "Gold Asia BO", overlay = true,
+     initial_capital = 200000, pyramiding = 0,
+     commission_type = strategy.commission.percent, commission_value = 0.005,
+     slippage = 1, margin_long = 0, margin_short = 0)
+
+G_E = "Setup (London time)"
+rangeEnd  = input.int(7, "Range ends at hour", minval = 1, maxval = 12, group = G_E)
+entryEnd  = input.int(14, "No new entries from hour", minval = 8, maxval = 19, group = G_E)
+flatHour  = input.int(20, "Flat at hour", minval = 12, maxval = 23, group = G_E)
+allowShort = input.bool(true, "Also trade downside breakouts (short)", group = G_E)
+
+G_S = "Sizing & prop guard (this script's share of the account limits)"
+riskPct    = input.float(0.25, "Risk per trade (% of balance)", minval = 0.05, maxval = 3, step = 0.05, group = G_S)
+maxSizeX   = input.float(5.0, "Max position (x balance)", minval = 0.1, step = 0.5, group = G_S)
+useGuard   = input.bool(true, "Safety guard ON", group = G_S)
+maxLossPct = input.float(1.25, "Share of max loss from START balance (%)", minval = 0.25, step = 0.25, group = G_S)
+dailyPct   = input.float(0.75, "Share of daily loss limit (%)", minval = 0.25, step = 0.25, group = G_S)
+
+bool tfOK = timeframe.in_seconds() == 3600
+int  lh   = hour(time, "Europe/London")
+int  ld   = dayofmonth(time, "Europe/London")
+bool newLondonDay = ld != dayofmonth(time[1], "Europe/London")
+
+// ── Asia range ──
+var float rHi = na
+var float rLo = na
+var bool  tradedToday = false
+if newLondonDay
+    rHi := na
+    rLo := na
+    tradedToday := false
+if lh < rangeEnd
+    rHi := na(rHi) ? high : math.max(rHi, high)
+    rLo := na(rLo) ? low : math.min(rLo, low)
+float rMid = (rHi + rLo) / 2
+
+// ── accounting & guard ──
+float startBal = strategy.initial_capital
+float balance  = strategy.initial_capital + strategy.netprofit
+float failLine = startBal * (1 - maxLossPct / 100)
+var float dayOpen  = strategy.initial_capital
+var bool  dayHalt  = false
+var bool  hardHalt = false
+if dayofmonth(time, "UTC") != dayofmonth(time[1], "UTC")
+    dayOpen := balance
+    dayHalt := false
+float dayLimit = dayOpen * dailyPct / 100
+if useGuard and strategy.position_size != 0 and dayOpen - strategy.equity >= 0.8 * dayLimit
+    strategy.close_all(comment = "Guard: daily")
+    dayHalt := true
+if useGuard and strategy.position_size != 0 and strategy.equity - failLine <= startBal * maxLossPct / 100 * 0.2
+    strategy.close_all(comment = "Guard: max loss")
+    hardHalt := true
+
+// ── entry ──
+float pos = strategy.position_size
+bool inWindow = lh >= rangeEnd and lh < entryEnd   // signal bars that start 07:00-13:00 London
+bool upBreak  = not na(rHi) and close > rHi
+bool dnBreak  = allowShort and not na(rLo) and close < rLo
+bool sig = tfOK and inWindow and pos == 0 and not tradedToday and not dayHalt and not hardHalt and (upBreak or dnBreak)
+
+float riskCash = balance * riskPct / 100
+if useGuard
+    float dayRoom = dayLimit - math.max(dayOpen - balance, 0)
+    riskCash := math.min(riskCash, 0.5 * dayRoom, 0.5 * math.max(balance - failLine, 0))
+float stopDist = math.abs(close - rMid)
+float qty = stopDist > 0 and riskCash > balance * 0.0005 ? math.min(riskCash / stopDist, balance * maxSizeX / close) : 0.0
+
+var float stopPx = na
+if sig and qty > 0
+    tradedToday := true
+    stopPx := rMid
+    if upBreak
+        strategy.entry("BO", strategy.long, qty = qty, comment = "Asia BO long")
+    else
+        strategy.entry("BO", strategy.short, qty = qty, comment = "Asia BO short")
+    strategy.exit("Stop", "BO", stop = stopPx)
+    alert("GOLD ASIA BREAKOUT " + (upBreak ? "LONG" : "SHORT") + " at next open ~" + str.tostring(close, "#.##") +
+          " | qty " + str.tostring(qty, "#.###") + " | STOP " + str.tostring(stopPx, "#.##") + " | close by " + str.tostring(flatHour) + ":00 London",
+          alert.freq_once_per_bar_close)
+
+if strategy.position_size != 0
+    strategy.exit("Stop", "BO", stop = stopPx)
+    if lh >= flatHour - 1
+        strategy.close("BO", comment = "Flat (London evening)")
+
+plot(rHi, "Asia high", color = color.new(color.green, 0), style = plot.style_linebr)
+plot(rLo, "Asia low", color = color.new(color.red, 0), style = plot.style_linebr)
+plot(rMid, "Range middle (stop)", color = color.new(color.gray, 30), style = plot.style_linebr)
+if barstate.islast and not tfOK
+    label.new(bar_index, high, "Use the 1h chart", color = color.red, textcolor = color.white)

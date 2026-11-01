@@ -66,20 +66,24 @@ def dip_trades(raw1h, tf, rl, buy, crash_pct, cost):
 
 
 def trade_series(trades, cost, h1, idx):
-    """Hourly return and hourly low-return for 1% risk per trade (notional = 1% / stop distance)."""
+    """Hourly return and hourly low-return for 1% risk per trade (notional = 1% / stop distance).
+    Shorts are trades whose stop is above the entry; their adverse move is the hourly high."""
     r, lo = np.zeros(len(idx)), np.zeros(len(idx))
-    C, L = h1.c.reindex(idx).ffill().to_numpy(), h1.l.reindex(idx).ffill().to_numpy()
+    C, L, H = (h1[k].reindex(idx).ffill().to_numpy() for k in ("c", "l", "h"))
     for et, xt, e, st, px in trades:
         a, z = idx.searchsorted(et), idx.searchsorted(xt)
-        if a >= len(idx) or z <= a:
+        if a >= len(idx) or xt <= idx[0]:
             continue
-        n = 0.01 / ((e - st) / e)
+        z = max(z, a + 1)  # a trade always spans at least the hour it was entered in
+        dr = 1 if st < e else -1
+        n = 0.01 / (abs(e - st) / e)
         prev = e
         for h in range(a, min(z, len(idx))):
             last = h == min(z, len(idx)) - 1
             cur = px if last else C[h]
-            r[h] += n * (cur / prev - 1)
-            lo[h] += n * (max(min(L[h], cur), st) / prev - 1)
+            r[h] += n * dr * (cur / prev - 1)
+            adverse = max(min(L[h], cur), st) if dr == 1 else min(max(H[h], cur), st)
+            lo[h] += n * dr * (adverse / prev - 1)
             prev = cur
         r[a] -= n * cost
     return r, lo
