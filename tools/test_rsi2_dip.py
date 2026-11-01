@@ -30,7 +30,7 @@ def resample(df, tf):
 
 
 def backtest(df, tf, start, end, rsi_buy=10.0, ema_len=50, stop_mult=2.0, bars_2h=48, fee=0.075,
-             kill_dd=30.0, rsi_len=2, atr_len=14, signal=None):
+             kill_dd=30.0, rsi_len=2, atr_len=14, signal=None, stop_on_fill=False):
     max_bars = max(1, round(bars_2h * 7200 / pd.Timedelta(tf).total_seconds())) if bars_2h else 0
     c = df.c
     tr = pd.concat([df.h - df.l, (df.h - c.shift()).abs(), (df.l - c.shift()).abs()], axis=1).max(axis=1)
@@ -50,6 +50,8 @@ def backtest(df, tf, start, end, rsi_buy=10.0, ema_len=50, stop_mult=2.0, bars_2
             qty = eq * (1 - fee / 100) / entry
             eq_entry, entry_i, held, stop, worst = eq, i, 0, None, 0.0
             stop_pct = stop_mult * sig_atr / entry
+            if stop_on_fill:  # stop order attached to the entry, active from the fill bar
+                stop = entry - stop_mult * sig_atr
             pending_entry = False
         elif pending_exit and qty is not None:
             px = O[i]

@@ -1,27 +1,36 @@
 //@version=6
 // ─────────────────────────────────────────────────────────────────────────────
-// BTC Dip v3 – crash filter  (long-only, BINANCE:BTCUSDT, 2h chart)
+// BTC Dip v3 – crash filter + prop safety guard  (long-only, BINANCE:BTCUSDT, 2h chart)
 //
 //   BUY  at the next open when RSI(3) < 20 and close > EMA(50) on the 2h chart,
 //        UNLESS BTC is in a crash: yesterday's daily close is more than 15% below the daily close
-//        30 days earlier (then no new buys until it recovers above that line).
-//   EXIT with a stop 2 x ATR(14) below entry, or at the market after 4 days (48 bars on 2h).
+//        30 days earlier.
+//   EXIT with a stop 2 x ATR(14) below the signal close (attached to the order, so it is active from
+//        the moment the entry fills), or at the market after 4 days (48 bars on 2h).
 //
 // Sizing modes:
-//   Live    – each trade risks a fixed % of the account at the stop (default 1%).
-//   Prop    – each trade risks a share of the buffer above a static fail line, capped per trade and by
-//             what is left of today's daily limit (from the day's opening balance); stops at the target.
+//   Live – each trade risks a fixed % of the balance at the stop.
+//   Prop – (evaluation) each trade risks a share of the buffer above the static fail line, and
+//          trading stops once the profit target is reached.
 //
-// Python test on Binance BTCUSDT 2h (fees 0.06% per side), 1% risk per trade:
-//   yearly: 2020 +14.8%, 2021 +15.3%, 2022 -3.5%, 2023 +43.7%, 2024 +25.0%, 2025 +22.2%, 2026 +18.1% (to Oct 30)
-//   Mar 2020 – Oct 2026: about +20% a year, max drawdown ~8.5%, 207 trades, 44% winners
-//   on $50k: 2025 about +$11,100, 2026 (to Oct 30) about +$9,100
-//   Settings were picked on 2020-2023 results only; 2024-2026 was the out-of-sample check.
-// Prop mode (+10% / static -6% / 3% daily), attempts started weekly 2020-2025:
-//   33% of buffer: ~76% pass, ~22% fail, median ~100 days (attempts started 2024-25: ~95% pass, 0% fail)
-// Paper trade first. Past results do not guarantee future ones.
+// Prop safety guard (both modes, on by default) – built so the account never touches the limits:
+//   • a new trade may risk at most HALF of today's remaining daily-loss room and HALF of the room
+//     left above the max-loss line (so even a stop that fills twice as far away cannot breach);
+//     if that is less than 0.25% of the balance, the trade is skipped;
+//   • emergency exit: close everything and stop for the day if today's loss reaches 80% of the
+//     daily limit; close everything and stop for good if equity gets within 20% of the max-loss
+//     room of the fail line.
+//
+// Python test on Binance BTCUSDT 2h, fees 0.06%/side, stop active from the fill, 12-month windows
+// started every month Apr 2020 – Oct 2025 (67 windows):
+//   10% max / 5% daily (FTMO-style), 1.5% risk : median +34%/yr, 0 breaches, worst day used 62%
+//                                                 of the daily limit (77% if stops fill 50% worse)
+//   6% max / 3% daily (Breakout-style), 1% risk : median +22%/yr, 0 breaches with the guard
+//                                                 (3 of 67 windows breached WITHOUT the guard)
+// Settings were picked on 2020-2023 results only. Paper trade first. Past results do not
+// guarantee future ones; a guard lowers the risk of a breach, it cannot make it impossible.
 // ─────────────────────────────────────────────────────────────────────────────
-strategy("BTC Dip v3 – crash filter", shorttitle = "BTC Dip v3", overlay = true,
+strategy("BTC Dip v3 – crash filter + prop guard", shorttitle = "BTC Dip v3", overlay = true,
      initial_capital = 50000, pyramiding = 0,
      commission_type = strategy.commission.percent, commission_value = 0.06,
      slippage = 1, margin_long = 0, margin_short = 0)
@@ -41,16 +50,23 @@ stopMult = input.float(2.0, "Stop-loss (x ATR)", minval = 0.1, step = 0.1, group
 holdBars = input.int(48, "Time exit after N bars (48 = 4 days on 2h)", minval = 1, group = G_X)
 
 G_S = "Sizing"
-mode     = input.string("Live", "Sizing mode", options = ["Live", "Prop"], group = G_S)
-riskPct  = input.float(1.0, "Live: risk per trade (% of account)", minval = 0.1, maxval = 5, step = 0.1, group = G_S)
-maxSizeX = input.float(1.5, "Max position (x account / start balance)", minval = 0.1, step = 0.1, group = G_S)
+mode       = input.string("Live", "Sizing mode", options = ["Live", "Prop"], group = G_S,
+     tooltip = "Live = fixed % risk per trade (funded or own account). Prop = evaluation sizing from the buffer, stops at the target.")
+riskPct    = input.float(1.5, "Live: risk per trade (% of balance)", minval = 0.1, maxval = 5, step = 0.05, group = G_S,
+     tooltip = "1.5 for 10%/5% rules (FTMO-style). 0.75-1.0 for 6%/3% rules (Breakout-style). 2.0 only on your own money.")
+maxSizeX   = input.float(2.0, "Max position (x balance) – keep within the firm's leverage", minval = 0.1, step = 0.1, group = G_S)
+bufRiskPct = input.float(33, "Prop: risk per trade (% of buffer above the fail line)", minval = 1, maxval = 100, step = 1, group = G_S)
 
-G_P = "Prop rules (Prop mode only)"
-targetPct  = input.float(10, "Profit target (%)", minval = 0.5, step = 0.5, group = G_P)
-maxLossPct = input.float(6, "Max loss from START balance (%, static)", minval = 0.5, step = 0.5, group = G_P)
-dailyPct   = input.float(3, "Daily loss limit (% of the day's opening balance)", minval = 0.5, step = 0.5, group = G_P)
-bufRiskPct = input.float(33, "Risk per trade (% of buffer above the fail line)", minval = 1, maxval = 100, step = 1, group = G_P)
-tradeCap   = input.float(2.2, "Max loss per trade (% of balance)", minval = 0.1, step = 0.1, group = G_P)
+G_P = "Prop rules + safety guard"
+useGuard   = input.bool(true, "Safety guard ON (recommended)", group = G_P)
+maxLossPct = input.float(10, "Max loss from START balance (%, static)", minval = 0.5, step = 0.5, group = G_P)
+dailyPct   = input.float(5, "Daily loss limit (%)", minval = 0.5, step = 0.5, group = G_P)
+dayBasis   = input.string("Balance", "Daily limit measured from", options = ["Balance", "Equity"], group = G_P,
+     tooltip = "Balance = closed balance at the start of the day (FTMO, Breakout as reported). Equity = includes open profit (stricter).")
+targetPct  = input.float(10, "Profit target (%) – Prop mode only", minval = 0.5, step = 0.5, group = G_P)
+guardShare = input.float(50, "Guard: max share of remaining room one trade may risk (%)", minval = 10, maxval = 100, step = 5, group = G_P)
+dayStopAt  = input.float(80, "Guard: emergency exit at this % of the daily limit", minval = 30, maxval = 95, step = 5, group = G_P)
+maxStopAt  = input.float(80, "Guard: emergency exit at this % of the max loss", minval = 30, maxval = 95, step = 5, group = G_P)
 
 G_T = "Test period"
 startTime = input.time(timestamp("2025-01-01T00:00:00Z"), "Start date (trades only after this)", group = G_T)
@@ -61,7 +77,6 @@ float atrV = ta.atr(atrLen)
 float emaT = ta.ema(close, lenTrend)
 float rsiV = ta.rsi(close, rsiLen)
 
-// yesterday's daily close vs the daily close crashLen days before it (no lookahead)
 float drop30  = request.security(syminfo.tickerid, "D", close[1] / close[1 + crashLen] - 1, lookahead = barmerge.lookahead_on)
 bool  inCrash = useCrash and not na(drop30) and drop30 < -crashPct / 100
 
@@ -72,60 +87,67 @@ float failLine  = startBal * (1 - maxLossPct / 100)
 float targetBal = startBal * (1 + targetPct / 100)
 bool  propMode  = mode == "Prop"
 
-var float dayOpen = strategy.initial_capital
+var float dayOpen  = strategy.initial_capital
+var bool  dayHalt  = false
+var bool  hardHalt = false
+var bool  passed   = false
 if dayofmonth(time, "UTC") != dayofmonth(time[1], "UTC")
-    dayOpen := balance
-
-var bool passed = false
-var bool failed = false
+    dayOpen := dayBasis == "Equity" ? math.max(balance, strategy.equity) : balance
+    dayHalt := false
 if propMode and strategy.equity >= targetBal
     passed := true
-if propMode and (strategy.equity <= failLine or strategy.equity <= dayOpen * (1 - dailyPct / 100))
-    failed := true
+
+float dayLoss  = math.max(dayOpen - strategy.equity, 0)
+float dayLimit = dayOpen * dailyPct / 100
+float maxRoom  = math.max(strategy.equity - failLine, 0)
+
+// emergency exits
+if useGuard and strategy.position_size != 0 and dayLoss >= dayLimit * dayStopAt / 100
+    strategy.close_all(comment = "Guard: daily")
+    dayHalt := true
+if useGuard and strategy.position_size != 0 and strategy.equity - failLine <= startBal * maxLossPct / 100 * (1 - maxStopAt / 100)
+    strategy.close_all(comment = "Guard: max loss")
+    hardHalt := true
 
 // ═════════════════════════════ POSITION SIZE ══════════════════════════════════
 float stopDist = stopMult * atrV
-float riskCash = 0.0
-if propMode
-    float buffer  = math.max(balance - failLine, 0)
-    float dayLeft = dayOpen * (dailyPct - 0.2) / 100 - math.max(dayOpen - balance, 0)
-    riskCash := math.min(buffer * bufRiskPct / 100, balance * tradeCap / 100, dayLeft)
-else
-    riskCash := balance * riskPct / 100
-float sizeBase = propMode ? startBal : balance
-float qty = stopDist > 0 ? math.min(riskCash / stopDist, sizeBase * maxSizeX / close) : 0.0
+float riskCash = propMode ? math.max(balance - failLine, 0) * bufRiskPct / 100 : balance * riskPct / 100
+if useGuard
+    float dayRoom = dayLimit - math.max(dayOpen - balance, 0)
+    riskCash := math.min(riskCash, dayRoom * guardShare / 100, math.max(balance - failLine, 0) * guardShare / 100)
+bool  sizeOK = riskCash >= balance * 0.0025
+float qty    = stopDist > 0 and sizeOK ? math.min(riskCash / stopDist, balance * maxSizeX / close) : 0.0
 
 // ═════════════════════════════ ENTRY ══════════════════════════════════════════
-var float aE     = na
 var float stopPx = na
 var int   held   = 0
 float pos = strategy.position_size
 
-bool canTrade = tfOK and time >= startTime and not inCrash and not failed and not passed
+bool canTrade = tfOK and time >= startTime and not inCrash and not passed and not dayHalt and not hardHalt
 bool sig = canTrade and pos == 0 and qty > 0 and not na(atrV) and not na(rsiV) and rsiV < rsiBuy and close > emaT
 
 if sig
-    aE := atrV
+    stopPx := close - stopDist
+    held   := 0
     strategy.entry("Long", strategy.long, qty = qty, comment = "Dip buy")
+    strategy.exit("Stop", "Long", stop = stopPx)   // attached: active as soon as the entry fills
     alert("BTC DIP v3 BUY at next open ~" + str.tostring(close, "#.##") + " | qty " + str.tostring(qty, "#.####") +
-          " BTC | stop ~" + str.tostring(close - stopDist, "#.##") + " | exit after 4 days", alert.freq_once_per_bar_close)
+          " BTC | STOP " + str.tostring(stopPx, "#.##") + " (place it WITH the order) | risk " + str.tostring(qty * stopDist, "#,###") +
+          " | exit after 4 days", alert.freq_once_per_bar_close)
 
 // ═════════════════════════════ TRADE MANAGEMENT ═══════════════════════════════
 if pos > 0
-    if na(stopPx)
-        stopPx := strategy.position_avg_price - stopMult * aE
-        held   := 0
     held += 1
     strategy.exit("Stop", "Long", stop = stopPx)
     if held >= holdBars
         strategy.close("Long", comment = "Time exit")
-else
+else if not sig
     stopPx := na
     held   := 0
 
 // ═════════════════════════════ VISUALS ════════════════════════════════════════
 plot(emaT, "Trend EMA", color = color.new(color.orange, 0), linewidth = 2)
-plot(pos > 0 ? stopPx : na, "Stop", color = color.red, style = plot.style_linebr)
+plot(stopPx, "Stop", color = color.red, style = plot.style_linebr)
 bgcolor(sig ? color.new(color.green, 80) : inCrash ? color.new(color.red, 92) : na, title = "Signal / crash")
 
 if barstate.islast and not tfOK
@@ -135,22 +157,24 @@ float netPct = (strategy.equity - startBal) / startBal * 100
 int   nTr    = strategy.closedtrades
 float winPct = nTr > 0 ? strategy.wintrades / nTr * 100.0 : 0.0
 
-var table tb = table.new(position.top_right, 2, 8, bgcolor = color.new(color.black, 80))
+var table tb = table.new(position.top_right, 2, 9, bgcolor = color.new(color.black, 80))
 if barstate.islast
-    table.cell(tb, 0, 0, "Mode", text_color = color.white)
-    table.cell(tb, 1, 0, propMode ? (failed ? "PROP - FAILED" : passed ? "PROP - PASSED" : "PROP - in progress") : "LIVE " + str.tostring(riskPct, "#.#") + "% risk",
-         text_color = failed ? color.red : passed ? color.lime : color.yellow)
+    string st = hardHalt ? "HALTED (max-loss guard)" : dayHalt ? "PAUSED today (daily guard)" : passed ? "PROP TARGET REACHED" : propMode ? "PROP - evaluating" : "LIVE " + str.tostring(riskPct, "#.##") + "% risk"
+    table.cell(tb, 0, 0, "Status", text_color = color.white)
+    table.cell(tb, 1, 0, st, text_color = hardHalt or dayHalt ? color.red : passed ? color.lime : color.yellow)
     table.cell(tb, 0, 1, "Net profit", text_color = color.white)
     table.cell(tb, 1, 1, str.tostring(strategy.equity - startBal, "#,###") + " (" + str.tostring(netPct, "#.0") + "%)", text_color = netPct >= 0 ? color.lime : color.red)
     table.cell(tb, 0, 2, "Trades / win %", text_color = color.white)
     table.cell(tb, 1, 2, str.tostring(nTr) + " / " + str.tostring(winPct, "#") + "%", text_color = color.white)
-    table.cell(tb, 0, 3, "Max drawdown", text_color = color.white)
-    table.cell(tb, 1, 3, str.tostring(strategy.max_drawdown, "#,###"), text_color = color.white)
-    table.cell(tb, 0, 4, "Crash filter", text_color = color.white)
-    table.cell(tb, 1, 4, not useCrash ? "OFF" : inCrash ? "BLOCKED (" + str.tostring(drop30 * 100, "#.0") + "%)" : "OK (" + str.tostring(drop30 * 100, "#.0") + "%)", text_color = inCrash ? color.red : color.lime)
-    table.cell(tb, 0, 5, "RSI / trend", text_color = color.white)
-    table.cell(tb, 1, 5, str.tostring(rsiV, "#.0") + " / " + (close > emaT ? "UP" : "DOWN"), text_color = rsiV < rsiBuy and close > emaT ? color.lime : color.white)
-    table.cell(tb, 0, 6, "Next trade size", text_color = color.white)
-    table.cell(tb, 1, 6, str.tostring(qty, "#.####") + " BTC", text_color = color.white)
-    table.cell(tb, 0, 7, "Risk if stopped", text_color = color.white)
-    table.cell(tb, 1, 7, str.tostring(qty * stopDist, "#,###"), text_color = color.white)
+    table.cell(tb, 0, 3, "Daily limit used today", text_color = color.white)
+    table.cell(tb, 1, 3, str.tostring(dayLoss / dayLimit * 100, "#") + "% of " + str.tostring(dayLimit, "#,###"), text_color = dayLoss / dayLimit < 0.5 ? color.lime : color.orange)
+    table.cell(tb, 0, 4, "Room above max-loss line", text_color = color.white)
+    table.cell(tb, 1, 4, str.tostring(maxRoom, "#,###") + " (" + str.tostring(maxRoom / startBal * 100, "#.0") + "%)", text_color = maxRoom > startBal * maxLossPct / 200 ? color.lime : color.orange)
+    table.cell(tb, 0, 5, "Crash filter", text_color = color.white)
+    table.cell(tb, 1, 5, not useCrash ? "OFF" : inCrash ? "BLOCKED (" + str.tostring(drop30 * 100, "#.0") + "%)" : "OK (" + str.tostring(drop30 * 100, "#.0") + "%)", text_color = inCrash ? color.red : color.lime)
+    table.cell(tb, 0, 6, "RSI / trend", text_color = color.white)
+    table.cell(tb, 1, 6, str.tostring(rsiV, "#.0") + " / " + (close > emaT ? "UP" : "DOWN"), text_color = rsiV < rsiBuy and close > emaT ? color.lime : color.white)
+    table.cell(tb, 0, 7, "Next trade size", text_color = color.white)
+    table.cell(tb, 1, 7, sizeOK ? str.tostring(qty, "#.####") + " BTC" : "SKIP (no safe room)", text_color = sizeOK ? color.white : color.orange)
+    table.cell(tb, 0, 8, "Risk if stopped", text_color = color.white)
+    table.cell(tb, 1, 8, str.tostring(qty * stopDist, "#,###"), text_color = color.white)
