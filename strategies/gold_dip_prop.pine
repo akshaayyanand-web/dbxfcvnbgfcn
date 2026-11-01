@@ -7,9 +7,10 @@
 //   EXIT with a stop 2 x ATR(14) below the signal close (attached to the order), or after 96 bars.
 //
 // Designed to run NEXT TO "BTC Dip v3" on the same prop account. Give each script its SHARE of the
-// account's limits so they can never exceed them together. Full portfolio on a 10%/5% account:
-// BTC Dip v3 1.0% risk, 5.5 / 2.5 · this script 0.5% risk, 2.0 / 1.0 · Gold Asia Breakout 0.25%, 1.25 / 0.75
-// · NQ Intraday Momentum 0.25%, 1.25 / 0.75 (max-loss share / daily share).
+// account's DAILY limit so they cannot exceed it together. Full portfolio on a 10%/5% account
+// (risk per trade / daily share): BTC Dip v3 1.0% / 2.25 · this script 0.5% / 1.25 · Gold Asia Breakout
+// 0.25% / 0.5 · NQ Intraday Momentum 0.25% / 0.5 · Gold Intraday Momentum 0.25% / 0.5.
+// The max-loss input stays at the account's full 10% as a backstop.
 //
 // Python test (Dukascopy XAUUSD hourly, costs included), portfolio BTC v3 1% + this 0.5%, hourly
 // mark-to-market, 10% static / 5% daily rules, guard on, 67 twelve-month windows 2020-2025:
@@ -47,8 +48,8 @@ bufRiskPct = input.float(33, "Prop: risk per trade (% of buffer above the fail l
 
 G_P = "Prop rules + safety guard"
 useGuard   = input.bool(true, "Safety guard ON (recommended)", group = G_P)
-maxLossPct = input.float(2.0, "This script's share of the max loss from START balance (%)", minval = 0.5, step = 0.5, group = G_P)
-dailyPct   = input.float(1.0, "This script's share of the daily loss limit (%)", minval = 0.5, step = 0.5, group = G_P)
+maxLossPct = input.float(10, "This script's share of the max loss from START balance (%)", minval = 0.5, step = 0.5, group = G_P)
+dailyPct   = input.float(1.25, "This script's share of the daily loss limit (%)", minval = 0.5, step = 0.5, group = G_P)
 dayBasis   = input.string("Balance", "Daily limit measured from", options = ["Balance", "Equity"], group = G_P,
      tooltip = "Balance = closed balance at the start of the day (FTMO, Breakout as reported). Equity = includes open profit (stricter).")
 targetPct  = input.float(10, "Profit target (%) – Prop mode only", minval = 0.5, step = 0.5, group = G_P)

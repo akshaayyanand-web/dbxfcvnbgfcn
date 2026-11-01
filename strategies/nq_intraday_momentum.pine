@@ -9,7 +9,7 @@
 //   Always flat before the Topstep cut-off (15:10 CT = 16:10 NY), so it is Topstep-compliant.
 //
 // Part of the BTC Dip v3 + Gold Dip + intraday portfolio. Give each script its SHARE of the account's
-// limits (defaults here: 0.25% risk per trade, 1.25% of the max loss, 0.75% of the daily limit).
+// daily limit (defaults: 0.25% risk per trade, 0.5% daily share; max-loss input = the account's full limit as a backstop).
 //
 // Python test (Dukascopy Nasdaq-100 hourly, costs included): about +0.07R per trade, ~8 trades a month;
 // at 1% risk about +8%/yr 2016-2022 and +5%/yr 2023-2026 (2023 was -10%). Thin edge: keep costs low.
@@ -20,10 +20,12 @@ strategy("NQ Intraday Momentum – prop guard", shorttitle = "NQ Intraday Mom", 
      commission_type = strategy.commission.percent, commission_value = 0.006,
      slippage = 1, margin_long = 0, margin_short = 0)
 
-G_E = "Setup (New York time)"
-thrPct     = input.float(0.6, "Move needed by 11:00 vs previous 16:00 close (%)", minval = 0.1, step = 0.1, group = G_E)
-sigHour    = input.int(11, "Signal at (hour, NY)", minval = 10, maxval = 13, group = G_E)
-exitHour   = input.int(15, "Exit at (hour, NY)", minval = 12, maxval = 16, group = G_E)
+G_E = "Setup (session clock)"
+tz       = input.string("America/New_York", "Session time zone", options = ["America/New_York", "Europe/London"], group = G_E)
+refHour    = input.int(16, "Reference close: bar ending at hour", minval = 0, maxval = 23, group = G_E)
+thrPct     = input.float(0.6, "Move needed by the signal hour vs the reference close (%)", minval = 0.1, step = 0.1, group = G_E)
+sigHour    = input.int(11, "Signal at (hour)", minval = 1, maxval = 23, group = G_E)
+exitHour   = input.int(15, "Exit at (hour)", minval = 2, maxval = 23, group = G_E)
 atrMult    = input.float(1.5, "Stop (x ATR 24)", minval = 0.5, step = 0.1, group = G_E)
 allowShort = input.bool(true, "Also trade down days (short)", group = G_E)
 
@@ -31,16 +33,16 @@ G_S = "Sizing & prop guard (this script's share of the account limits)"
 riskPct    = input.float(0.25, "Risk per trade (% of balance)", minval = 0.05, maxval = 3, step = 0.05, group = G_S)
 maxSizeX   = input.float(3.0, "Max position (x balance)", minval = 0.1, step = 0.5, group = G_S)
 useGuard   = input.bool(true, "Safety guard ON", group = G_S)
-maxLossPct = input.float(1.25, "Share of max loss from START balance (%)", minval = 0.25, step = 0.25, group = G_S)
-dailyPct   = input.float(0.75, "Share of daily loss limit (%)", minval = 0.25, step = 0.25, group = G_S)
+maxLossPct = input.float(10, "Backstop: max loss from START balance (%) – the account limit", minval = 0.25, step = 0.25, group = G_S)
+dailyPct   = input.float(0.5, "Share of daily loss limit (%)", minval = 0.25, step = 0.25, group = G_S)
 
 bool  tfOK = timeframe.in_seconds() == 3600
-int   nh   = hour(time, "America/New_York")
+int   nh   = hour(time, tz)
 float atrV = ta.rma(ta.tr(true), 24)
 
-// reference: close of the bar that ends at 16:00 NY (bar starting 15:00) of the previous session
+// reference: close of the bar that ends at refHour (previous session)
 var float refClose = na
-if nh == 15
+if nh == (refHour + 23) % 24
     refClose := close
 
 // ── accounting & guard ──
@@ -80,15 +82,15 @@ if sig and qty > 0
     stopPx := close - dir * stopDist
     strategy.entry("IM", dir == 1 ? strategy.long : strategy.short, qty = qty, comment = dir == 1 ? "Mom long" : "Mom short")
     strategy.exit("Stop", "IM", stop = stopPx)
-    alert("NQ INTRADAY MOMENTUM " + (dir == 1 ? "LONG" : "SHORT") + " at 11:00 NY ~" + str.tostring(close, "#.##") +
-          " | qty " + str.tostring(qty, "#.###") + " | STOP " + str.tostring(stopPx, "#.##") + " | exit 15:00 NY",
+    alert(syminfo.ticker + " INTRADAY MOMENTUM " + (dir == 1 ? "LONG" : "SHORT") + " at the open ~" + str.tostring(close, "#.##") +
+          " | qty " + str.tostring(qty, "#.###") + " | STOP " + str.tostring(stopPx, "#.##") + " | exit " + str.tostring(exitHour) + ":00",
           alert.freq_once_per_bar_close)
 
 if strategy.position_size != 0
     strategy.exit("Stop", "IM", stop = stopPx)
     if nh >= exitHour - 1
-        strategy.close("IM", comment = "Exit 15:00 NY")
+        strategy.close("IM", comment = "Time exit")
 
-plot(refClose, "Previous 16:00 close", color = color.new(color.blue, 30), style = plot.style_stepline)
+plot(refClose, "Reference close", color = color.new(color.blue, 30), style = plot.style_stepline)
 if barstate.islast and not tfOK
     label.new(bar_index, high, "Use the 1h chart", color = color.red, textcolor = color.white)

@@ -8,7 +8,7 @@
 //   Stop  : the middle of the range (attached to the order).   Exit: flat by 20:00 London.
 //
 // Part of the BTC Dip v3 + Gold Dip + intraday portfolio. Give each script its SHARE of the account's
-// limits (defaults here: 0.25% risk per trade, 1.25% of the max loss, 0.75% of the daily limit).
+// daily limit (defaults: 0.25% risk per trade, 0.5% daily share; max-loss input = the account's full limit).
 //
 // Python test (Dukascopy XAUUSD hourly, costs included): about +0.065R per trade, ~17 trades a month;
 // at 1% risk about +10%/yr 2016-2022 and +13%/yr 2023-2026. The edge is thin: at 3x the modelled costs
@@ -29,8 +29,8 @@ G_S = "Sizing & prop guard (this script's share of the account limits)"
 riskPct    = input.float(0.25, "Risk per trade (% of balance)", minval = 0.05, maxval = 3, step = 0.05, group = G_S)
 maxSizeX   = input.float(5.0, "Max position (x balance)", minval = 0.1, step = 0.5, group = G_S)
 useGuard   = input.bool(true, "Safety guard ON", group = G_S)
-maxLossPct = input.float(1.25, "Share of max loss from START balance (%)", minval = 0.25, step = 0.25, group = G_S)
-dailyPct   = input.float(0.75, "Share of daily loss limit (%)", minval = 0.25, step = 0.25, group = G_S)
+maxLossPct = input.float(10, "Backstop: max loss from START balance (%) – the account limit", minval = 0.25, step = 0.25, group = G_S)
+dailyPct   = input.float(0.5, "Share of daily loss limit (%)", minval = 0.25, step = 0.25, group = G_S)
 
 bool tfOK = timeframe.in_seconds() == 3600
 int  lh   = hour(time, "Europe/London")
