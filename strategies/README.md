@@ -31,6 +31,15 @@ Results (one account, 10% / 5% rules, guard on):
 About 2–3 new trades per weekday: gold around the London open, Nasdaq around the New York open (09:30–11:30
 NY) and at 11:00 NY, BTC/gold dip signals at any time.
 
+## Only 1–2 indicators allowed on your TradingView plan?
+Use **`all_in_one_alerts.pine`** instead of the six scripts: one indicator on one **5-minute Nasdaq chart**
+(e.g. OANDA:NAS100USD – real-time on free plans) and **one alert** ("Any alert() function call").
+It runs all six strategies with the same rules (other symbols/timeframes are pulled in from closed bars,
+so nothing repaints) and messages every entry with direction, price, STOP, risk in $, size and exit
+time, plus a reminder when a time exit is due. Place the orders at your prop firm with the stop from
+the alert. It cannot see your fills or P&L, so apply the safety rule yourself: stop for the day at -4%,
+stop everything at -8% from the start.
+
 ## Optional add-ons (not in the main preset)
 `btc_ny_momentum.pine` and `eth_ny_momentum.pine` (crypto New York-session momentum) also held up out of
 sample, but with the main preset in place they add little and lower the evaluation pass rate. If you add
