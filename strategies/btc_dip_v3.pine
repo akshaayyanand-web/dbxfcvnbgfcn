@@ -27,6 +27,8 @@
 //                                                 of the daily limit (77% if stops fill 50% worse)
 //   6% max / 3% daily (Breakout-style), 1% risk : median +22%/yr, 0 breaches with the guard
 //                                                 (3 of 67 windows breached WITHOUT the guard)
+// Portfolio use with "Gold Dip – prop guard" on one 10%/5% account: risk 1.0%, max-loss share 6.5,
+// daily share 3.5 (gold script: 0.5%, 3.5, 1.5) – the two shares add up to the account's limits.
 // Settings were picked on 2020-2023 results only. Paper trade first. Past results do not
 // guarantee future ones; a guard lowers the risk of a breach, it cannot make it impossible.
 // ─────────────────────────────────────────────────────────────────────────────

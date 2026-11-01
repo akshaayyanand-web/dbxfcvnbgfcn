@@ -1,0 +1,167 @@
+//@version=6
+// ─────────────────────────────────────────────────────────────────────────────
+// Gold Dip – prop guard  (long-only, gold: OANDA/FX:XAUUSD, or COMEX:GC1! / MGC1!, run on the 1h chart)
+//
+//   BUY  at the next open when RSI(2) < 10 and close > EMA(50) on the 1h chart,
+//        unless gold is in a crash: yesterday's daily close is more than 8% below the close 30 days earlier.
+//   EXIT with a stop 2 x ATR(14) below the signal close (attached to the order), or after 96 bars.
+//
+// Designed to run NEXT TO "BTC Dip v3" on the same prop account. Give each script its SHARE of the
+// account's limits so the two together can never exceed them (defaults: this script 0.5% risk per trade,
+// 3.5% of the max loss and 1.5% of the daily limit; BTC Dip v3 1.0% risk, 6.5% max, 3.5% daily).
+//
+// Python test (Dukascopy XAUUSD hourly, costs included), portfolio BTC v3 1% + this 0.5%, hourly
+// mark-to-market, 10% static / 5% daily rules, guard on, 67 twelve-month windows 2020-2025:
+//   0 breaches, median year +31%, average +33%; calendar years 2020 +25%, 2021 +18%, 2022 +7%,
+//   2023 +37%, 2024 +52%, 2025 +58%, 2026 +20% (to Oct). Weights were picked on 2020-2022 windows only.
+// Gold alone at 1% risk: about +11%/yr 2016-2022 and +24%/yr 2023-2026 (a strong gold bull market).
+// Paper trade first. Past results do not guarantee future ones.
+// ─────────────────────────────────────────────────────────────────────────────
+strategy("Gold Dip – prop guard", shorttitle = "Gold Dip", overlay = true,
+     initial_capital = 50000, pyramiding = 0,
+     commission_type = strategy.commission.percent, commission_value = 0.01,
+     slippage = 1, margin_long = 0, margin_short = 0)
+
+// ═════════════════════════════ INPUTS ═════════════════════════════════════════
+G_E = "Entry"
+rsiLen   = input.int(2, "RSI length", minval = 1, group = G_E)
+rsiBuy   = input.float(10, "Buy when RSI is below", minval = 1, maxval = 50, step = 1, group = G_E)
+lenTrend = input.int(50, "Trend EMA length", minval = 2, group = G_E)
+useCrash = input.bool(true, "Crash filter: no buys after a big 30-day drop", group = G_E)
+crashPct = input.float(8, "Crash = daily close down more than this % vs 30 days earlier", minval = 1, step = 1, group = G_E)
+crashLen = input.int(30, "Crash lookback (days)", minval = 2, group = G_E)
+
+G_X = "Exits"
+atrLen   = input.int(14, "ATR length", minval = 1, group = G_X)
+stopMult = input.float(2.0, "Stop-loss (x ATR)", minval = 0.1, step = 0.1, group = G_X)
+holdBars = input.int(96, "Time exit after N bars (96 on the 1h chart)", minval = 1, group = G_X)
+
+G_S = "Sizing"
+mode       = input.string("Live", "Sizing mode", options = ["Live", "Prop"], group = G_S,
+     tooltip = "Live = fixed % risk per trade (funded or own account). Prop = evaluation sizing from the buffer, stops at the target.")
+riskPct    = input.float(0.5, "Live: risk per trade (% of balance)", minval = 0.1, maxval = 5, step = 0.05, group = G_S,
+     tooltip = "0.5 when running next to BTC Dip v3 at 1.0% on a 10%/5% account.")
+maxSizeX   = input.float(3.0, "Max position (x balance) – keep within the firm's leverage", minval = 0.1, step = 0.1, group = G_S)
+bufRiskPct = input.float(33, "Prop: risk per trade (% of buffer above the fail line)", minval = 1, maxval = 100, step = 1, group = G_S)
+
+G_P = "Prop rules + safety guard"
+useGuard   = input.bool(true, "Safety guard ON (recommended)", group = G_P)
+maxLossPct = input.float(3.5, "This script's share of the max loss from START balance (%)", minval = 0.5, step = 0.5, group = G_P)
+dailyPct   = input.float(1.5, "This script's share of the daily loss limit (%)", minval = 0.5, step = 0.5, group = G_P)
+dayBasis   = input.string("Balance", "Daily limit measured from", options = ["Balance", "Equity"], group = G_P,
+     tooltip = "Balance = closed balance at the start of the day (FTMO, Breakout as reported). Equity = includes open profit (stricter).")
+targetPct  = input.float(10, "Profit target (%) – Prop mode only", minval = 0.5, step = 0.5, group = G_P)
+guardShare = input.float(50, "Guard: max share of remaining room one trade may risk (%)", minval = 10, maxval = 100, step = 5, group = G_P)
+dayStopAt  = input.float(80, "Guard: emergency exit at this % of the daily limit", minval = 30, maxval = 95, step = 5, group = G_P)
+maxStopAt  = input.float(80, "Guard: emergency exit at this % of the max loss", minval = 30, maxval = 95, step = 5, group = G_P)
+
+G_T = "Test period"
+startTime = input.time(timestamp("2025-01-01T00:00:00Z"), "Start date (trades only after this)", group = G_T)
+
+// ═════════════════════════════ GUARDS & INDICATORS ════════════════════════════
+bool  tfOK = timeframe.in_seconds() == 3600
+float atrV = ta.atr(atrLen)
+float emaT = ta.ema(close, lenTrend)
+float rsiV = ta.rsi(close, rsiLen)
+
+float drop30  = request.security(syminfo.tickerid, "D", close[1] / close[1 + crashLen] - 1, lookahead = barmerge.lookahead_on)
+bool  inCrash = useCrash and not na(drop30) and drop30 < -crashPct / 100
+
+// ═════════════════════════════ ACCOUNTING ═════════════════════════════════════
+float startBal  = strategy.initial_capital
+float balance   = strategy.initial_capital + strategy.netprofit
+float failLine  = startBal * (1 - maxLossPct / 100)
+float targetBal = startBal * (1 + targetPct / 100)
+bool  propMode  = mode == "Prop"
+
+var float dayOpen  = strategy.initial_capital
+var bool  dayHalt  = false
+var bool  hardHalt = false
+var bool  passed   = false
+if dayofmonth(time, "UTC") != dayofmonth(time[1], "UTC")
+    dayOpen := dayBasis == "Equity" ? math.max(balance, strategy.equity) : balance
+    dayHalt := false
+if propMode and strategy.equity >= targetBal
+    passed := true
+
+float dayLoss  = math.max(dayOpen - strategy.equity, 0)
+float dayLimit = dayOpen * dailyPct / 100
+float maxRoom  = math.max(strategy.equity - failLine, 0)
+
+// emergency exits
+if useGuard and strategy.position_size != 0 and dayLoss >= dayLimit * dayStopAt / 100
+    strategy.close_all(comment = "Guard: daily")
+    dayHalt := true
+if useGuard and strategy.position_size != 0 and strategy.equity - failLine <= startBal * maxLossPct / 100 * (1 - maxStopAt / 100)
+    strategy.close_all(comment = "Guard: max loss")
+    hardHalt := true
+
+// ═════════════════════════════ POSITION SIZE ══════════════════════════════════
+float stopDist = stopMult * atrV
+float riskCash = propMode ? math.max(balance - failLine, 0) * bufRiskPct / 100 : balance * riskPct / 100
+if useGuard
+    float dayRoom = dayLimit - math.max(dayOpen - balance, 0)
+    riskCash := math.min(riskCash, dayRoom * guardShare / 100, math.max(balance - failLine, 0) * guardShare / 100)
+bool  sizeOK = riskCash >= balance * 0.0025
+float qty    = stopDist > 0 and sizeOK ? math.min(riskCash / stopDist, balance * maxSizeX / close) : 0.0
+
+// ═════════════════════════════ ENTRY ══════════════════════════════════════════
+var float stopPx = na
+var int   held   = 0
+float pos = strategy.position_size
+
+bool canTrade = tfOK and time >= startTime and not inCrash and not passed and not dayHalt and not hardHalt
+bool sig = canTrade and pos == 0 and qty > 0 and not na(atrV) and not na(rsiV) and rsiV < rsiBuy and close > emaT
+
+if sig
+    stopPx := close - stopDist
+    held   := 0
+    strategy.entry("Long", strategy.long, qty = qty, comment = "Dip buy")
+    strategy.exit("Stop", "Long", stop = stopPx)   // attached: active as soon as the entry fills
+    alert("GOLD DIP BUY at next open ~" + str.tostring(close, "#.##") + " | qty " + str.tostring(qty, "#.####") +
+          " | STOP " + str.tostring(stopPx, "#.##") + " (place it WITH the order) | risk " + str.tostring(qty * stopDist, "#,###") +
+          " | exit after 96 bars", alert.freq_once_per_bar_close)
+
+// ═════════════════════════════ TRADE MANAGEMENT ═══════════════════════════════
+if pos > 0
+    held += 1
+    strategy.exit("Stop", "Long", stop = stopPx)
+    if held >= holdBars
+        strategy.close("Long", comment = "Time exit")
+else if not sig
+    stopPx := na
+    held   := 0
+
+// ═════════════════════════════ VISUALS ════════════════════════════════════════
+plot(emaT, "Trend EMA", color = color.new(color.orange, 0), linewidth = 2)
+plot(stopPx, "Stop", color = color.red, style = plot.style_linebr)
+bgcolor(sig ? color.new(color.green, 80) : inCrash ? color.new(color.red, 92) : na, title = "Signal / crash")
+
+if barstate.islast and not tfOK
+    label.new(bar_index, high, "Use the 1h chart - trading is OFF on this timeframe", color = color.red, textcolor = color.white, style = label.style_label_down)
+
+float netPct = (strategy.equity - startBal) / startBal * 100
+int   nTr    = strategy.closedtrades
+float winPct = nTr > 0 ? strategy.wintrades / nTr * 100.0 : 0.0
+
+var table tb = table.new(position.top_right, 2, 9, bgcolor = color.new(color.black, 80))
+if barstate.islast
+    string st = hardHalt ? "HALTED (max-loss guard)" : dayHalt ? "PAUSED today (daily guard)" : passed ? "PROP TARGET REACHED" : propMode ? "PROP - evaluating" : "LIVE " + str.tostring(riskPct, "#.##") + "% risk"
+    table.cell(tb, 0, 0, "Status", text_color = color.white)
+    table.cell(tb, 1, 0, st, text_color = hardHalt or dayHalt ? color.red : passed ? color.lime : color.yellow)
+    table.cell(tb, 0, 1, "Net profit", text_color = color.white)
+    table.cell(tb, 1, 1, str.tostring(strategy.equity - startBal, "#,###") + " (" + str.tostring(netPct, "#.0") + "%)", text_color = netPct >= 0 ? color.lime : color.red)
+    table.cell(tb, 0, 2, "Trades / win %", text_color = color.white)
+    table.cell(tb, 1, 2, str.tostring(nTr) + " / " + str.tostring(winPct, "#") + "%", text_color = color.white)
+    table.cell(tb, 0, 3, "Daily limit used today", text_color = color.white)
+    table.cell(tb, 1, 3, str.tostring(dayLoss / dayLimit * 100, "#") + "% of " + str.tostring(dayLimit, "#,###"), text_color = dayLoss / dayLimit < 0.5 ? color.lime : color.orange)
+    table.cell(tb, 0, 4, "Room above max-loss line", text_color = color.white)
+    table.cell(tb, 1, 4, str.tostring(maxRoom, "#,###") + " (" + str.tostring(maxRoom / startBal * 100, "#.0") + "%)", text_color = maxRoom > startBal * maxLossPct / 200 ? color.lime : color.orange)
+    table.cell(tb, 0, 5, "Crash filter", text_color = color.white)
+    table.cell(tb, 1, 5, not useCrash ? "OFF" : inCrash ? "BLOCKED (" + str.tostring(drop30 * 100, "#.0") + "%)" : "OK (" + str.tostring(drop30 * 100, "#.0") + "%)", text_color = inCrash ? color.red : color.lime)
+    table.cell(tb, 0, 6, "RSI / trend", text_color = color.white)
+    table.cell(tb, 1, 6, str.tostring(rsiV, "#.0") + " / " + (close > emaT ? "UP" : "DOWN"), text_color = rsiV < rsiBuy and close > emaT ? color.lime : color.white)
+    table.cell(tb, 0, 7, "Next trade size", text_color = color.white)
+    table.cell(tb, 1, 7, sizeOK ? str.tostring(qty, "#.###") + " units" : "SKIP (no safe room)", text_color = sizeOK ? color.white : color.orange)
+    table.cell(tb, 0, 8, "Risk if stopped", text_color = color.white)
+    table.cell(tb, 1, 8, str.tostring(qty * stopDist, "#,###"), text_color = color.white)
