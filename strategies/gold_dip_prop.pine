@@ -49,11 +49,11 @@ bufRiskPct = input.float(33, "Prop: risk per trade (% of buffer above the fail l
 G_P = "Prop rules + safety guard"
 useGuard   = input.bool(true, "Safety guard ON (recommended)", group = G_P)
 maxLossPct = input.float(10, "This script's share of the max loss from START balance (%)", minval = 0.5, step = 0.5, group = G_P)
-dailyPct   = input.float(1.25, "This script's share of the daily loss limit (%)", minval = 0.5, step = 0.5, group = G_P)
+dailyPct   = input.float(0.9, "This script's share of the daily loss limit (%)", minval = 0.05, step = 0.05, group = G_P)
 dayBasis   = input.string("Balance", "Daily limit measured from", options = ["Balance", "Equity"], group = G_P,
      tooltip = "Balance = closed balance at the start of the day (FTMO, Breakout as reported). Equity = includes open profit (stricter).")
 targetPct  = input.float(10, "Profit target (%) – Prop mode only", minval = 0.5, step = 0.5, group = G_P)
-guardShare = input.float(50, "Guard: max share of remaining room one trade may risk (%)", minval = 10, maxval = 100, step = 5, group = G_P)
+guardShare = input.float(60, "Guard: max share of remaining room one trade may risk (%)", minval = 10, maxval = 100, step = 5, group = G_P)
 dayStopAt  = input.float(80, "Guard: emergency exit at this % of the daily limit", minval = 30, maxval = 95, step = 5, group = G_P)
 maxStopAt  = input.float(80, "Guard: emergency exit at this % of the max loss", minval = 30, maxval = 95, step = 5, group = G_P)
 

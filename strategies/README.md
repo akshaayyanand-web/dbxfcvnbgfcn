@@ -3,44 +3,42 @@
 All scripts are TradingView Pine v6 strategies. Each one attaches its stop to the entry order and has a
 safety guard that (1) sizes every trade inside the remaining daily / max-loss room and (2) closes its
 positions if 80% of its daily share is used. Set **Initial capital = your account size** in every script.
+The script defaults below already match the main preset.
 
 Tested in Python with hour-by-hour mark-to-market on one 10% static / 5% daily account (FTMO-style,
-daily limit measured from the day's opening balance), 2020 – Oct 2026. Weights were chosen on 2020-2022
-data only. Backtests overstate live results; paper trade all scripts together for 2–4 weeks first.
+daily limit from the day's opening balance), 2020 – Oct 2026. Weights were chosen on 2020-2022 windows
+only. Backtests overstate live results; paper trade all scripts together for 2–4 weeks first.
 
-## Preset 1 – Evaluation (highest pass rate)
-
-| Script | Chart | Risk / trade | Daily share | Guard share |
-|---|---|---|---|---|
-| `btc_dip_v3.pine` | BINANCE:BTCUSDT 2h | 1.0% | 2.25 | 50 |
-| `gold_dip_prop.pine` | XAUUSD or GC/MGC 1h | 0.5% | 1.25 | 50 |
-| `gold_asia_breakout.pine` | XAUUSD or GC/MGC 1h | 0.25% | 0.5 | 50 |
-| `nq_intraday_momentum.pine` | NQ/MNQ 1h | 0.25% | 0.5 | 50 |
-| `gold_intraday_momentum.pine` | XAUUSD or GC/MGC 1h | 0.25% | 0.5 | 50 |
-
-FTMO-style 2-step (+10% then +5%): ~89% passed, 0% breached, median ~3.8 months (the rest were halted by the
-guard or still running). Funded year: median +42%, average +43%, 0 breaches in 67 windows.
-
-## Preset 2 – Funded account (more income)
+## Main preset (evaluation AND funded)
 
 | Script | Chart | Risk / trade | Daily share | Guard share |
 |---|---|---|---|---|
-| `btc_dip_v3.pine` | BINANCE:BTCUSDT 2h | 1.0% | 1.65 | 60 |
-| `gold_dip_prop.pine` | XAUUSD or GC/MGC 1h | 0.5% | 0.85 | 60 |
-| `gold_asia_breakout.pine` | XAUUSD or GC/MGC 1h | 0.25% | 0.4 | 60 |
-| `nq_intraday_momentum.pine` | NQ/MNQ 1h | 0.25% | 0.4 | 60 |
-| `gold_intraday_momentum.pine` | XAUUSD or GC/MGC 1h | 0.25% | 0.4 | 60 |
-| `btc_ny_momentum.pine` | BINANCE:BTCUSDT 1h | 0.5% | 0.85 | 60 |
-| `eth_ny_momentum.pine` | BINANCE:ETHUSDT 1h | 0.25% | 0.45 | 60 |
+| `btc_dip_v3.pine` | BINANCE:BTCUSDT 2h | 1.0% | 1.8 | 60 |
+| `gold_dip_prop.pine` | XAUUSD or GC/MGC 1h | 0.5% | 0.9 | 60 |
+| `gold_asia_breakout.pine` | XAUUSD or GC/MGC 1h | 0.25% | 0.45 | 60 |
+| `nq_intraday_momentum.pine` | NQ/MNQ 1h | 0.25% | 0.45 | 60 |
+| `gold_intraday_momentum.pine` | XAUUSD or GC/MGC 1h | 0.25% | 0.45 | 60 |
+| `nq_orb_prop.pine` | NQ/MNQ **5-minute** | 0.5% | 0.95 | 60 |
 
-Funded year: median +49%, average +48%, 0 breaches in 67 windows. Calendar years 2020-2026:
-+74%, +40%, +12%, +59%, +58%, +68%, +44% (2026 to Oct).
+Daily shares add up to 5%; every max-loss input stays at the account's full 10% as a backstop.
 
-In both presets the daily shares add up to 5% and every script's max-loss input stays at the account's full
-10% as a backstop.
+Results (one account, 10% / 5% rules, guard on):
+- FTMO-style 2-step (+10% then +5%): ~93% passed, 0% breached, median ~3.4 months.
+- Funded year (67 rolling 12-month windows): median +57%, average +54%, 0 breaches.
+- Calendar years: 2020 +37%, 2021 +58%, 2022 +22%, 2023 +45%, 2024 +71%, 2025 +90%, 2026 +32% (to Oct).
+- Max drawdown 2020-2026: 13.3%.
+
+About 2–3 new trades per weekday: gold around the London open, Nasdaq around the New York open (09:30–11:30
+NY) and at 11:00 NY, BTC/gold dip signals at any time.
+
+## Optional add-ons (not in the main preset)
+`btc_ny_momentum.pine` and `eth_ny_momentum.pine` (crypto New York-session momentum) also held up out of
+sample, but with the main preset in place they add little and lower the evaluation pass rate. If you add
+them, shrink the other daily shares so the total stays at 5%.
 
 ## Before buying an evaluation
-- Confirm the firm allows holding BTC and gold positions overnight and over weekends (swing scripts hold for
-  days), allows crypto CFDs (preset 2) and measures the daily limit from the opening balance.
-- Topstep does not allow overnight positions: only `nq_intraday_momentum.pine` is Topstep-compliant.
+- Confirm the firm allows holding BTC and gold positions overnight and over weekends (the dip scripts hold
+  for days) and measures the daily limit from the opening balance.
+- Topstep does not allow overnight positions: only `nq_intraday_momentum.pine` and `nq_orb_prop.pine` are
+  Topstep-compliant.
 - The intraday edges are thin (~0.05–0.10R per trade): use micro contracts / tight spreads.

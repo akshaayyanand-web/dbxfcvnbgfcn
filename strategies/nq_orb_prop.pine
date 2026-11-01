@@ -1,0 +1,108 @@
+//@version=6
+// ─────────────────────────────────────────────────────────────────────────────
+// Nasdaq Opening-Range Breakout – day trade with prop guard  (NQ1! / MNQ1! or NAS100 CFD, 5-minute chart)
+//
+//   Range : high/low of the first 15 minutes after the 09:30 New York open (09:30-09:45).
+//   Entry : the first 5-minute CLOSE above the range high (long) or below the range low (short) between
+//           09:45 and 11:30 New York; market order at the next bar's open. One trade per day.
+//   Stop  : the other side of the range (attached).  Target: 2 x risk.  Otherwise flat at 15:55 New York
+//           (inside Topstep's 15:10 CT cut-off, so it is Topstep-compliant).
+//
+// Python test (Dukascopy Nasdaq-100 1-minute data 2019-2026, costs included): ~18-19 trades a month,
+// 45% winners, about +0.05R per trade; at 1% risk about +10%/yr 2019-2022 and +11%/yr 2023-2026.
+// Portfolio weight 0.5% risk per trade. Thin edge: keep costs low (micro contracts). Paper trade first.
+// ─────────────────────────────────────────────────────────────────────────────
+strategy("NQ Opening-Range Breakout – prop guard", shorttitle = "NQ ORB", overlay = true,
+     initial_capital = 200000, pyramiding = 0,
+     commission_type = strategy.commission.percent, commission_value = 0.006,
+     slippage = 1, margin_long = 0, margin_short = 0)
+
+G_E = "Setup (New York time)"
+orMinutes  = input.int(15, "Opening range length (minutes after 09:30)", options = [5, 15, 30], group = G_E)
+lastEntryH = input.int(11, "Last entry hour", minval = 10, maxval = 14, group = G_E)
+lastEntryM = input.int(30, "Last entry minute", minval = 0, maxval = 55, step = 5, group = G_E)
+targetR    = input.float(2.0, "Target (x risk, 0 = none)", minval = 0, step = 0.5, group = G_E)
+allowShort = input.bool(true, "Also trade downside breakouts (short)", group = G_E)
+
+G_S = "Sizing & prop guard (this script's share of the account limits)"
+riskPct    = input.float(0.5, "Risk per trade (% of balance)", minval = 0.05, maxval = 3, step = 0.05, group = G_S)
+maxSizeX   = input.float(5.0, "Max position (x balance)", minval = 0.1, step = 0.5, group = G_S)
+useGuard   = input.bool(true, "Safety guard ON", group = G_S)
+maxLossPct = input.float(10, "Backstop: max loss from START balance (%) – the account limit", minval = 0.25, step = 0.25, group = G_S)
+dailyPct   = input.float(0.95, "Share of daily loss limit (%)", minval = 0.05, step = 0.05, group = G_S)
+guardShare = input.float(60, "Guard: max share of remaining room one trade may risk (%)", minval = 10, maxval = 100, step = 5, group = G_S)
+
+bool tfOK = timeframe.in_seconds() == 300
+int  nyMin = hour(time, "America/New_York") * 60 + minute(time, "America/New_York")
+bool newNyDay = dayofmonth(time, "America/New_York") != dayofmonth(time[1], "America/New_York")
+int  orStart = 9 * 60 + 30
+int  orEnd   = orStart + orMinutes
+int  lastEnt = lastEntryH * 60 + lastEntryM
+int  flatMin = 15 * 60 + 55
+
+// ── opening range ──
+var float orHi = na
+var float orLo = na
+var bool  tradedToday = false
+if newNyDay
+    orHi := na
+    orLo := na
+    tradedToday := false
+if nyMin >= orStart and nyMin < orEnd
+    orHi := na(orHi) ? high : math.max(orHi, high)
+    orLo := na(orLo) ? low : math.min(orLo, low)
+
+// ── accounting & guard ──
+float startBal = strategy.initial_capital
+float balance  = strategy.initial_capital + strategy.netprofit
+float failLine = startBal * (1 - maxLossPct / 100)
+var float dayOpen  = strategy.initial_capital
+var bool  dayHalt  = false
+var bool  hardHalt = false
+if dayofmonth(time, "UTC") != dayofmonth(time[1], "UTC")
+    dayOpen := balance
+    dayHalt := false
+float dayLimit = dayOpen * dailyPct / 100
+if useGuard and strategy.position_size != 0 and dayOpen - strategy.equity >= 0.8 * dayLimit
+    strategy.close_all(comment = "Guard: daily")
+    dayHalt := true
+if useGuard and strategy.position_size != 0 and strategy.equity - failLine <= startBal * maxLossPct / 100 * 0.2
+    strategy.close_all(comment = "Guard: max loss")
+    hardHalt := true
+
+// ── entry on a 5-minute close outside the range ──
+float pos = strategy.position_size
+bool inWindow = nyMin >= orEnd and nyMin < lastEnt
+bool upBreak  = not na(orHi) and close > orHi
+bool dnBreak  = allowShort and not na(orLo) and close < orLo
+bool sig = tfOK and inWindow and pos == 0 and not tradedToday and not dayHalt and not hardHalt and (upBreak or dnBreak)
+
+float riskCash = balance * riskPct / 100
+if useGuard
+    float dayRoom = dayLimit - math.max(dayOpen - balance, 0)
+    riskCash := math.min(riskCash, dayRoom * guardShare / 100, math.max(balance - failLine, 0) * guardShare / 100)
+float stopPx0  = upBreak ? orLo : orHi
+float stopDist = math.abs(close - stopPx0)
+float qty = stopDist > 0 and riskCash > balance * 0.0005 ? math.min(riskCash / stopDist, balance * maxSizeX / close) : 0.0
+
+var float stopPx = na
+var float tgtPx  = na
+if sig and qty > 0
+    tradedToday := true
+    stopPx := stopPx0
+    tgtPx  := targetR > 0 ? close + (upBreak ? 1 : -1) * targetR * stopDist : na
+    strategy.entry("ORB", upBreak ? strategy.long : strategy.short, qty = qty, comment = upBreak ? "ORB long" : "ORB short")
+    strategy.exit("Exit", "ORB", stop = stopPx, limit = tgtPx)
+    alert("NQ ORB " + (upBreak ? "LONG" : "SHORT") + " at next open ~" + str.tostring(close, "#.##") + " | qty " + str.tostring(qty, "#.##") +
+          " | STOP " + str.tostring(stopPx, "#.##") + (na(tgtPx) ? "" : " | TARGET " + str.tostring(tgtPx, "#.##")) + " | flat by 15:55 NY",
+          alert.freq_once_per_bar_close)
+
+if strategy.position_size != 0
+    strategy.exit("Exit", "ORB", stop = stopPx, limit = tgtPx)
+    if nyMin >= flatMin - 5
+        strategy.close("ORB", comment = "Flat 15:55 NY")
+
+plot(orHi, "OR high", color = color.new(color.green, 0), style = plot.style_linebr)
+plot(orLo, "OR low", color = color.new(color.red, 0), style = plot.style_linebr)
+if barstate.islast and not tfOK
+    label.new(bar_index, high, "Use the 5-minute chart", color = color.red, textcolor = color.white)

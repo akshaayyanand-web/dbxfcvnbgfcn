@@ -27,10 +27,9 @@
 //                                                 of the daily limit (77% if stops fill 50% worse)
 //   6% max / 3% daily (Breakout-style), 1% risk : median +22%/yr, 0 breaches with the guard
 //                                                 (3 of 67 windows breached WITHOUT the guard)
-// Portfolio use on one 10%/5% account – risk per trade / daily-loss share (shares add up to 5%):
-//   BTC Dip v3 1.0% / 2.25 · Gold Dip 0.5% / 1.25 · Gold Asia Breakout 0.25% / 0.5
-//   · NQ Intraday Momentum 0.25% / 0.5 · Gold Intraday Momentum 0.25% / 0.5
-//   Each script's max-loss input stays at the account's full 10% as a backstop.
+// Portfolio use: see strategies/README.md (main preset: BTC Dip v3 1.0% risk / 1.8 daily share,
+//   Gold Dip 0.5% / 0.9, Gold Asia Breakout 0.25% / 0.45, NQ Intraday Momentum 0.25% / 0.45,
+//   Gold Intraday Momentum 0.25% / 0.45, NQ Opening-Range Breakout 0.5% / 0.95; guard share 60).
 // Settings were picked on 2020-2023 results only. Paper trade first. Past results do not
 // guarantee future ones; a guard lowers the risk of a breach, it cannot make it impossible.
 // ─────────────────────────────────────────────────────────────────────────────
@@ -64,11 +63,11 @@ bufRiskPct = input.float(33, "Prop: risk per trade (% of buffer above the fail l
 G_P = "Prop rules + safety guard"
 useGuard   = input.bool(true, "Safety guard ON (recommended)", group = G_P)
 maxLossPct = input.float(10, "Max loss from START balance (%, static)", minval = 0.5, step = 0.5, group = G_P)
-dailyPct   = input.float(2.25, "Daily loss limit (%)", minval = 0.5, step = 0.5, group = G_P)
+dailyPct   = input.float(1.8, "Daily loss limit (%)", minval = 0.05, step = 0.05, group = G_P)
 dayBasis   = input.string("Balance", "Daily limit measured from", options = ["Balance", "Equity"], group = G_P,
      tooltip = "Balance = closed balance at the start of the day (FTMO, Breakout as reported). Equity = includes open profit (stricter).")
 targetPct  = input.float(10, "Profit target (%) – Prop mode only", minval = 0.5, step = 0.5, group = G_P)
-guardShare = input.float(50, "Guard: max share of remaining room one trade may risk (%)", minval = 10, maxval = 100, step = 5, group = G_P)
+guardShare = input.float(60, "Guard: max share of remaining room one trade may risk (%)", minval = 10, maxval = 100, step = 5, group = G_P)
 dayStopAt  = input.float(80, "Guard: emergency exit at this % of the daily limit", minval = 30, maxval = 95, step = 5, group = G_P)
 maxStopAt  = input.float(80, "Guard: emergency exit at this % of the max loss", minval = 30, maxval = 95, step = 5, group = G_P)
 
