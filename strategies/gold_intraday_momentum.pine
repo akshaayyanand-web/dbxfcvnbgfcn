@@ -30,6 +30,7 @@ maxSizeX   = input.float(3.0, "Max position (x balance)", minval = 0.1, step = 0
 useGuard   = input.bool(true, "Safety guard ON", group = G_S)
 maxLossPct = input.float(10, "Backstop: max loss from START balance (%) – the account limit", minval = 0.25, step = 0.25, group = G_S)
 dailyPct   = input.float(0.5, "Share of daily loss limit (%)", minval = 0.25, step = 0.25, group = G_S)
+guardShare = input.float(50, "Guard: max share of remaining room one trade may risk (%)", minval = 10, maxval = 100, step = 5, group = G_S)
 
 bool  tfOK = timeframe.in_seconds() == 3600
 int   nh   = hour(time, tz)
@@ -68,7 +69,7 @@ bool sig = tfOK and atSignal and pos == 0 and dir != 0 and not dayHalt and not h
 float riskCash = balance * riskPct / 100
 if useGuard
     float dayRoom = dayLimit - math.max(dayOpen - balance, 0)
-    riskCash := math.min(riskCash, 0.5 * dayRoom, 0.5 * math.max(balance - failLine, 0))
+    riskCash := math.min(riskCash, dayRoom * guardShare / 100, math.max(balance - failLine, 0) * guardShare / 100)
 float stopDist = atrMult * atrV
 float qty = stopDist > 0 and riskCash > balance * 0.0005 ? math.min(riskCash / stopDist, balance * maxSizeX / close) : 0.0
 
