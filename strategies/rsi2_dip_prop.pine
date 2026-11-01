@@ -1,0 +1,139 @@
+//@version=6
+// ─────────────────────────────────────────────────────────────────────────────
+// RSI2 Dip – Prop Mode  (long-only, BINANCE:BTCUSDT, 2h chart)
+//
+// Same entries and exits as "RSI2 Dip Aggressive v2":
+//   BUY  when RSI(2) < 10 and close > EMA(50); stop 2 x ATR(14) below entry; time exit after 4 days.
+//
+// Only the position SIZE changes, for prop evaluations with a STATIC max loss (e.g. Breakout Classic):
+//   • Each trade risks a share of the buffer left above the fail line (start balance − max loss %).
+//     Profits grow the buffer, so size grows as you get ahead and shrinks if you fall back.
+//   • A single stop-out can never cost more than the per-trade cap (default 2.2%), and new trades are
+//     sized so today's total loss stays under the daily limit.
+//   • Position is capped at a multiple of the start balance (default 1.5x).
+//   • Trading stops once the profit target is reached.
+//
+// Python test on Binance BTCUSDT 2h, one attempt started every week Apr 2020 – Oct 2025, rules
+// target +10% / static max loss 6% / daily loss 3%:
+//   default 50% fixed size ......... ~75% pass, median ~194 days
+//   this Prop Mode (25% of buffer) .. ~69% pass, median ~93 days  (worst start year 2021: ~21%)
+// Paper trade first. Past results do not guarantee future ones.
+// ─────────────────────────────────────────────────────────────────────────────
+strategy("RSI2 Dip – Prop Mode", shorttitle = "RSI2 Dip Prop", overlay = true,
+     initial_capital = 50000, pyramiding = 0,
+     commission_type = strategy.commission.percent, commission_value = 0.075,
+     slippage = 1, margin_long = 0, margin_short = 0)
+
+// ═════════════════════════════ INPUTS ═════════════════════════════════════════
+G_E = "Entry"
+rsiLen   = input.int(2, "RSI length", minval = 1, group = G_E)
+rsiBuy   = input.float(10, "Buy when RSI is below", minval = 1, maxval = 50, step = 1, group = G_E)
+lenTrend = input.int(50, "Trend filter EMA length", minval = 2, group = G_E)
+
+G_X = "Exits"
+atrLen    = input.int(14, "ATR length", minval = 1, group = G_X)
+stopMult  = input.float(2.0, "Stop-loss (x ATR)", minval = 0.1, step = 0.1, group = G_X)
+maxBars2h = input.int(48, "Exit after N bars (on 2h chart; auto-halved on 4h, 0 = off)", minval = 0, group = G_X)
+
+G_P = "Prop rules (set these to your firm's numbers)"
+targetPct  = input.float(10, "Profit target (%)", minval = 0.5, step = 0.5, group = G_P)
+maxLossPct = input.float(6, "Max loss from START balance (%, static)", minval = 0.5, step = 0.5, group = G_P)
+dailyPct   = input.float(3, "Daily loss limit (%)", minval = 0.5, step = 0.5, group = G_P)
+stopAtTgt  = input.bool(true, "Stop trading once the target is reached", group = G_P)
+
+G_S = "Sizing"
+bufRiskPct = input.float(25, "Risk per trade (% of buffer above the fail line)", minval = 1, maxval = 100, step = 1, group = G_S)
+tradeCap   = input.float(2.2, "Max loss per trade (% of balance)", minval = 0.1, step = 0.1, group = G_S)
+maxSizeX   = input.float(1.5, "Max position (x start balance)", minval = 0.1, step = 0.1, group = G_S)
+
+G_T = "Test period"
+startTime = input.time(timestamp("2025-02-01T00:00:00Z"), "Start date (trades only after this)", group = G_T)
+
+// ═════════════════════════════ TIMEFRAME GUARD ════════════════════════════════
+int  tfSec   = timeframe.in_seconds()
+bool tfOK    = tfSec == 7200 or tfSec == 14400
+int  maxBars = maxBars2h > 0 ? math.max(1, int(math.round(maxBars2h * 7200.0 / tfSec))) : 0
+
+// ═════════════════════════════ INDICATORS ═════════════════════════════════════
+float atrV = ta.atr(atrLen)
+float emaT = ta.ema(close, lenTrend)
+float rsiV = ta.rsi(close, rsiLen)
+
+// ═════════════════════════════ PROP ACCOUNTING ════════════════════════════════
+float startBal  = strategy.initial_capital
+float failLine  = startBal * (1 - maxLossPct / 100)
+float targetBal = startBal * (1 + targetPct / 100)
+
+var float dayOpen = strategy.initial_capital
+bool newDay = dayofmonth(time, "UTC") != dayofmonth(time[1], "UTC")
+if newDay
+    dayOpen := strategy.equity
+
+var bool passed = false
+var bool failed = false
+if strategy.equity >= targetBal
+    passed := true
+if strategy.equity <= failLine or strategy.equity <= dayOpen * (1 - dailyPct / 100)
+    failed := true
+
+// ═════════════════════════════ POSITION SIZE ══════════════════════════════════
+float stopDist   = stopMult * atrV
+float buffer     = math.max(strategy.equity - failLine, 0)
+float dayLeft    = dayOpen * (dailyPct - 0.2) / 100 - math.max(dayOpen - strategy.equity, 0)
+float riskCash   = math.min(buffer * bufRiskPct / 100, strategy.equity * tradeCap / 100, dayLeft)
+float qtyRisk    = stopDist > 0 ? riskCash / stopDist : 0.0
+float qty        = math.min(qtyRisk, startBal * maxSizeX / close)
+
+// ═════════════════════════════ STATE ══════════════════════════════════════════
+var float aE     = na
+var float stopPx = na
+var int   held   = 0
+float pos = strategy.position_size
+
+// ═════════════════════════════ ENTRY ══════════════════════════════════════════
+bool canTrade = tfOK and time >= startTime and not failed and not (stopAtTgt and passed)
+bool sig = canTrade and pos == 0 and qty > 0 and not na(atrV) and not na(emaT) and not na(rsiV) and rsiV < rsiBuy and close > emaT
+
+if sig
+    aE := atrV
+    strategy.entry("Long", strategy.long, qty = qty, comment = "Dip buy")
+    alert("RSI2 Dip PROP BUY " + syminfo.ticker + " qty " + str.tostring(qty, "#.####"), alert.freq_once_per_bar_close)
+
+// ═════════════════════════════ TRADE MANAGEMENT ═══════════════════════════════
+if pos > 0
+    if na(stopPx)
+        stopPx := strategy.position_avg_price - stopMult * aE
+        held   := 0
+    held += 1
+    strategy.exit("Stop", "Long", stop = stopPx)
+    if maxBars > 0 and held >= maxBars
+        strategy.close("Long", comment = "Time exit")
+else
+    stopPx := na
+    held   := 0
+
+// ═════════════════════════════ VISUALS ════════════════════════════════════════
+plot(emaT, "Trend EMA", color = color.new(color.orange, 0), linewidth = 2)
+plot(pos > 0 ? stopPx : na, "Stop", color = color.red, style = plot.style_linebr)
+bgcolor(sig ? color.new(color.green, 80) : na)
+
+if barstate.islast and not tfOK
+    label.new(bar_index, high, "Switch to a 2h chart - trading is OFF on this timeframe", color = color.red, textcolor = color.white, style = label.style_label_down)
+
+var table t = table.new(position.top_right, 2, 7, bgcolor = color.new(color.black, 80))
+if barstate.islast
+    float progress = (strategy.equity - startBal) / (targetBal - startBal) * 100
+    table.cell(t, 0, 0, "Status", text_color = color.white)
+    table.cell(t, 1, 0, failed ? "FAILED" : passed ? "PASSED" : "IN PROGRESS", text_color = failed ? color.red : passed ? color.lime : color.yellow)
+    table.cell(t, 0, 1, "Balance", text_color = color.white)
+    table.cell(t, 1, 1, str.tostring(strategy.equity, "#,###"), text_color = color.white)
+    table.cell(t, 0, 2, "To target", text_color = color.white)
+    table.cell(t, 1, 2, str.tostring(progress, "#") + "%", text_color = color.white)
+    table.cell(t, 0, 3, "Buffer above fail line", text_color = color.white)
+    table.cell(t, 1, 3, str.tostring(buffer, "#,###"), text_color = buffer > startBal * 0.03 ? color.lime : color.orange)
+    table.cell(t, 0, 4, "Next trade size", text_color = color.white)
+    table.cell(t, 1, 4, str.tostring(qty * close / startBal, "#.##") + "x", text_color = color.white)
+    table.cell(t, 0, 5, "Risk if stopped", text_color = color.white)
+    table.cell(t, 1, 5, str.tostring(qty * stopDist, "#,###"), text_color = color.white)
+    table.cell(t, 0, 6, "Trend / RSI", text_color = color.white)
+    table.cell(t, 1, 6, (close > emaT ? "UP" : "DOWN") + " / " + str.tostring(rsiV, "#.0"), text_color = close > emaT and rsiV < rsiBuy ? color.lime : color.white)

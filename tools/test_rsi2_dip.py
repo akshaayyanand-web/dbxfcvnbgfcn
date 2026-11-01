@@ -49,11 +49,12 @@ def backtest(df, tf, start, end, rsi_buy=10.0, ema_len=50, stop_mult=2.0, bars_2
             entry = O[i]
             qty = eq * (1 - fee / 100) / entry
             eq_entry, entry_i, held, stop, worst = eq, i, 0, None, 0.0
+            stop_pct = stop_mult * sig_atr / entry
             pending_entry = False
         elif pending_exit and qty is not None:
             px = O[i]
             eq = qty * px * (1 - fee / 100)
-            trades.append((t[entry_i], eq / eq_entry - 1, "time", worst))
+            trades.append((t[entry_i], eq / eq_entry - 1, "time", worst, stop_pct))
             qty, pending_exit = None, False
         if qty is not None:
             # deepest open loss of the trade (floating P&L, capped at the stop once it is active)
@@ -61,7 +62,7 @@ def backtest(df, tf, start, end, rsi_buy=10.0, ema_len=50, stop_mult=2.0, bars_2
             if stop is not None and L[i] <= stop:
                 px = min(O[i], stop)
                 eq = qty * px * (1 - fee / 100)
-                trades.append((t[entry_i], eq / eq_entry - 1, "stop", worst))
+                trades.append((t[entry_i], eq / eq_entry - 1, "stop", worst, stop_pct))
                 qty = None
             else:
                 if stop is None:
@@ -76,7 +77,7 @@ def backtest(df, tf, start, end, rsi_buy=10.0, ema_len=50, stop_mult=2.0, bars_2
         if qty is None and not pending_entry and sig[i] and not np.isnan(A[i]) and not (kill_dd and dd >= kill_dd):
             pending_entry, sig_atr = True, A[i]
     final = qty * C[hi - 1] if qty is not None else eq
-    tr_df = pd.DataFrame(trades, columns=["entry", "ret", "exit", "worst"])
+    tr_df = pd.DataFrame(trades, columns=["entry", "ret", "exit", "worst", "stop_pct"])
     return final, max_dd, tr_df
 
 
