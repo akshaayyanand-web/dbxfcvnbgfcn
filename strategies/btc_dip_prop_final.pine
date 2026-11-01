@@ -1,0 +1,215 @@
+//@version=6
+// ─────────────────────────────────────────────────────────────────────────────
+// BTC Dip – Prop Final  (long-only, BINANCE:BTCUSDT, run on the 1h chart)
+//
+// Two dip signals on one chart, one position at a time:
+//   • 1h signal: RSI(3) < 20 and close > EMA(50) on the 1h candle.
+//   • 2h signal: the same rule on completed 2h candles (built inside the script from the 1h bars that
+//     close at even UTC hours, so it cannot repaint).
+//   • Daily filter: only while yesterday's daily close is above its 200-day SMA.
+// Entry: LIMIT buy at the signal candle's close. It must fill within the next candle of the signal's
+//   timeframe (1 bar for 1h, 2 bars for 2h), otherwise it is cancelled.
+// Exit: stop 2 x ATR(14) of the signal timeframe below entry, or at the market after 96 hours.
+//   No take-profit (testing showed take-profits, break-even and trailing stops all lowered pass rates).
+//
+// Prop Mode sizing (static max loss from the START balance, daily limit from the day's opening
+// BALANCE): each trade risks a share of the buffer above the fail line, capped per trade, by what is
+// left of today's daily limit, and by a maximum position size. Trading stops at the profit target.
+//
+// Python test on Binance BTCUSDT, rules +10% / static -6% / daily -3%, attempts started weekly:
+//   33% buffer (default) : starts 2020-23 -> ~22% pass in 30d, ~44% in 90d, ~70% in 1y, ~1% fail
+//                          starts 2024-25 -> ~14% in 30d, ~27% in 90d, ~29% in 1y, ~5% fail
+//   50% buffer / 2.5% / 2x: slightly faster (~25% / 17% in 30d) with ~2% / 7% fail
+// The daily filter blocks all trading while BTC is below its 200-day SMA (much of 2025-26), so
+// attempts can sit idle for weeks. Check that your firm measures the daily limit from the opening
+// BALANCE: with an equity-based daily limit the fail rate is far higher. PAPER TRADE FIRST.
+// ─────────────────────────────────────────────────────────────────────────────
+strategy("BTC Dip – Prop Final", shorttitle = "BTC Dip Prop", overlay = true,
+     initial_capital = 50000, pyramiding = 0,
+     commission_type = strategy.commission.percent, commission_value = 0.04,
+     slippage = 0, margin_long = 0, margin_short = 0, calc_on_every_tick = false)
+
+// ═════════════════════════════ INPUTS ═════════════════════════════════════════
+G_E = "Signals"
+use1h    = input.bool(true, "Use 1h signal", group = G_E)
+use2h    = input.bool(true, "Use 2h signal", group = G_E)
+rsiLen   = input.int(3, "RSI length", minval = 1, group = G_E)
+rsiBuy   = input.float(20, "Buy when RSI is below", minval = 1, maxval = 50, step = 1, group = G_E)
+emaLen   = input.int(50, "Trend EMA length", minval = 2, group = G_E)
+useDaily = input.bool(true, "Only trade while daily close > 200-day SMA", group = G_E)
+lenDaily = input.int(200, "Daily SMA length", minval = 2, group = G_E)
+
+G_X = "Orders & exits"
+useLimit = input.bool(true, "Limit entry at the signal close (else market)", group = G_X)
+atrLen   = input.int(14, "ATR length", minval = 1, group = G_X)
+stopMult = input.float(2.0, "Stop-loss (x ATR of the signal timeframe)", minval = 0.1, step = 0.1, group = G_X)
+holdH    = input.int(96, "Time exit after N hours", minval = 1, group = G_X)
+
+G_P = "Prop rules (set to your firm's numbers)"
+targetPct  = input.float(10, "Profit target (%)", minval = 0.5, step = 0.5, group = G_P)
+maxLossPct = input.float(6, "Max loss from START balance (%, static)", minval = 0.5, step = 0.5, group = G_P)
+dailyPct   = input.float(3, "Daily loss limit (% of the day's opening balance)", minval = 0.5, step = 0.5, group = G_P)
+stopAtTgt  = input.bool(true, "Stop trading once the target is reached", group = G_P)
+
+G_S = "Sizing"
+bufRiskPct = input.float(33, "Risk per trade (% of buffer above the fail line)", minval = 1, maxval = 100, step = 1, group = G_S,
+     tooltip = "33 = safest tested setting. 50 (with 2.5% cap and 2x max) is slightly faster but fails more often.")
+tradeCap   = input.float(2.2, "Max loss per trade (% of balance)", minval = 0.1, step = 0.1, group = G_S)
+maxSizeX   = input.float(1.5, "Max position (x start balance)", minval = 0.1, step = 0.1, group = G_S)
+
+G_T = "Test period"
+startTime = input.time(timestamp("2025-02-01T00:00:00Z"), "Start date (trades only after this)", group = G_T)
+
+// ═════════════════════════════ TIMEFRAME GUARD ════════════════════════════════
+bool tfOK = timeframe.in_seconds() == 3600
+
+// ═════════════════════════════ 1h INDICATORS ══════════════════════════════════
+float rsi1 = ta.rsi(close, rsiLen)
+float ema1 = ta.ema(close, emaLen)
+float atr1 = ta.atr(atrLen)
+
+// ═════════════════════════════ 2h CANDLES BUILT FROM 1h BARS ══════════════════
+// Binance 2h candles start at even UTC hours; a 1h bar that closes at an even hour completes one.
+var float h2High  = na
+var float h2Low   = na
+var float h2Prev  = na
+var float h2Atr   = na
+var float h2Gain  = na
+var float h2Loss  = na
+var float h2Ema   = na
+var float h2Rsi   = na
+var int   h2Count = 0
+
+bool is2hStart = hour(time, "UTC") % 2 == 0
+bool is2hClose = hour(time_close, "UTC") % 2 == 0
+if is2hStart or na(h2High)
+    h2High := high
+    h2Low  := low
+else
+    h2High := math.max(h2High, high)
+    h2Low  := math.min(h2Low, low)
+
+if is2hClose
+    float c2  = close
+    float tr2 = na(h2Prev) ? h2High - h2Low : math.max(h2High - h2Low, math.abs(h2High - h2Prev), math.abs(h2Low - h2Prev))
+    h2Atr := na(h2Atr) ? tr2 : h2Atr + (tr2 - h2Atr) / atrLen
+    h2Ema := na(h2Ema) ? c2 : h2Ema + 2.0 / (emaLen + 1) * (c2 - h2Ema)
+    if not na(h2Prev)
+        float ch = c2 - h2Prev
+        h2Gain := na(h2Gain) ? math.max(ch, 0) : h2Gain + (math.max(ch, 0) - h2Gain) / rsiLen
+        h2Loss := na(h2Loss) ? math.max(-ch, 0) : h2Loss + (math.max(-ch, 0) - h2Loss) / rsiLen
+        h2Rsi  := h2Loss == 0 ? 100.0 : 100.0 - 100.0 / (1.0 + h2Gain / h2Loss)
+    h2Prev  := c2
+    h2Count += 1
+
+// ═════════════════════════════ DAILY FILTER (no lookahead) ════════════════════
+bool dailyUp  = request.security(syminfo.tickerid, "D", close[1] > ta.sma(close, lenDaily)[1], lookahead = barmerge.lookahead_on)
+bool regimeOK = not useDaily or dailyUp
+
+// ═════════════════════════════ SIGNALS ════════════════════════════════════════
+bool sig1h = use1h and not na(rsi1) and not na(atr1) and rsi1 < rsiBuy and close > ema1
+bool sig2h = use2h and is2hClose and h2Count > emaLen and not na(h2Rsi) and h2Rsi < rsiBuy and close > h2Ema
+
+// ═════════════════════════════ PROP ACCOUNTING (balance based) ════════════════
+float startBal  = strategy.initial_capital
+float balance   = strategy.initial_capital + strategy.netprofit
+float failLine  = startBal * (1 - maxLossPct / 100)
+float targetBal = startBal * (1 + targetPct / 100)
+
+var float dayOpen = strategy.initial_capital
+if dayofmonth(time, "UTC") != dayofmonth(time[1], "UTC")
+    dayOpen := balance
+
+var bool passed = false
+var bool failed = false
+if strategy.equity >= targetBal
+    passed := true
+if strategy.equity <= failLine or strategy.equity <= dayOpen * (1 - dailyPct / 100)
+    failed := true
+
+// ═════════════════════════════ ORDER STATE ════════════════════════════════════
+var int   pendBars = 0       // bars left for a resting limit order
+var float pendAtr  = na      // ATR of the signal timeframe, for the stop
+var float stopPx   = na
+var int   heldH    = 0
+var string pendTf  = ""
+float pos = strategy.position_size
+
+// resting limit order: cancel once its window has passed without a fill
+if pendBars > 0 and pos == 0
+    pendBars -= 1
+    if pendBars == 0
+        strategy.cancel("Long")
+if pos > 0
+    pendBars := 0
+
+// ═════════════════════════════ NEW ENTRY ══════════════════════════════════════
+bool canTrade = tfOK and time >= startTime and regimeOK and not failed and not (stopAtTgt and passed)
+if canTrade and pos == 0 and pendBars == 0 and (sig1h or sig2h)
+    bool  from1h   = sig1h
+    float sigAtr   = from1h ? atr1 : h2Atr
+    float stopDist = stopMult * sigAtr
+    float buffer   = math.max(balance - failLine, 0)
+    float dayLeft  = dayOpen * (dailyPct - 0.2) / 100 - math.max(dayOpen - balance, 0)
+    float riskCash = math.min(buffer * bufRiskPct / 100, balance * tradeCap / 100, dayLeft)
+    float qty      = stopDist > 0 ? math.min(riskCash / stopDist, startBal * maxSizeX / close) : 0.0
+    if qty > 0
+        pendAtr := sigAtr
+        pendTf  := from1h ? "1h" : "2h"
+        if useLimit
+            strategy.entry("Long", strategy.long, qty = qty, limit = close, comment = "Dip " + pendTf)
+            pendBars := from1h ? 1 : 2
+        else
+            strategy.entry("Long", strategy.long, qty = qty, comment = "Dip " + pendTf)
+            pendBars := 1
+        alert("BTC DIP " + pendTf + (useLimit ? " LIMIT BUY @ " : " MARKET BUY ~") + str.tostring(close, "#.##") +
+              " | qty " + str.tostring(qty, "#.####") + " BTC | stop ~" + str.tostring(close - stopDist, "#.##") +
+              " | cancel if not filled within " + (from1h ? "1 hour" : "2 hours") + " | exit after " + str.tostring(holdH) + "h",
+              alert.freq_once_per_bar_close)
+
+// ═════════════════════════════ TRADE MANAGEMENT ═══════════════════════════════
+if pos > 0
+    if na(stopPx)
+        stopPx := strategy.position_avg_price - stopMult * pendAtr
+        heldH  := 0
+    heldH += 1
+    strategy.exit("Stop", "Long", stop = stopPx)
+    if heldH >= holdH
+        strategy.close("Long", comment = "Time exit")
+else
+    stopPx := na
+    heldH  := 0
+
+// ═════════════════════════════ VISUALS ════════════════════════════════════════
+plot(ema1, "EMA 50 (1h)", color = color.new(color.orange, 0), linewidth = 1)
+plot(h2Ema, "EMA 50 (2h)", color = color.new(color.purple, 0), linewidth = 1, style = plot.style_stepline)
+plot(pos > 0 ? stopPx : na, "Stop", color = color.red, style = plot.style_linebr)
+plotshape(canTrade and sig1h, "1h dip", shape.triangleup, location.belowbar, color.new(color.teal, 0), size = size.tiny)
+plotshape(canTrade and sig2h, "2h dip", shape.triangleup, location.belowbar, color.new(color.blue, 0), size = size.small)
+bgcolor(useDaily and not dailyUp ? color.new(color.gray, 90) : na, title = "Daily filter blocked")
+
+if barstate.islast and not tfOK
+    label.new(bar_index, high, "Use the 1h chart - trading is OFF on this timeframe", color = color.red, textcolor = color.white, style = label.style_label_down)
+
+var table t = table.new(position.top_right, 2, 9, bgcolor = color.new(color.black, 80))
+if barstate.islast
+    float buf      = math.max(balance - failLine, 0)
+    float progress = (strategy.equity - startBal) / (targetBal - startBal) * 100
+    table.cell(t, 0, 0, "Status", text_color = color.white)
+    table.cell(t, 1, 0, failed ? "FAILED" : passed ? "PASSED" : "IN PROGRESS", text_color = failed ? color.red : passed ? color.lime : color.yellow)
+    table.cell(t, 0, 1, "Balance / equity", text_color = color.white)
+    table.cell(t, 1, 1, str.tostring(balance, "#,###") + " / " + str.tostring(strategy.equity, "#,###"), text_color = color.white)
+    table.cell(t, 0, 2, "To target", text_color = color.white)
+    table.cell(t, 1, 2, str.tostring(progress, "#") + "%", text_color = color.white)
+    table.cell(t, 0, 3, "Buffer above fail line", text_color = color.white)
+    table.cell(t, 1, 3, str.tostring(buf, "#,###"), text_color = buf > startBal * 0.03 ? color.lime : color.orange)
+    table.cell(t, 0, 4, "Today's loss room", text_color = color.white)
+    table.cell(t, 1, 4, str.tostring(dayOpen * dailyPct / 100 - math.max(dayOpen - strategy.equity, 0), "#,###"), text_color = color.white)
+    table.cell(t, 0, 5, "Daily filter", text_color = color.white)
+    table.cell(t, 1, 5, not useDaily ? "OFF" : dailyUp ? "ON - can trade" : "BLOCKED (below 200d)", text_color = regimeOK ? color.lime : color.red)
+    table.cell(t, 0, 6, "1h RSI / trend", text_color = color.white)
+    table.cell(t, 1, 6, str.tostring(rsi1, "#.0") + " / " + (close > ema1 ? "UP" : "DOWN"), text_color = sig1h ? color.lime : color.white)
+    table.cell(t, 0, 7, "2h RSI / trend", text_color = color.white)
+    table.cell(t, 1, 7, str.tostring(h2Rsi, "#.0") + " / " + (close > h2Ema ? "UP" : "DOWN"), text_color = color.white)
+    table.cell(t, 0, 8, "Position", text_color = color.white)
+    table.cell(t, 1, 8, pos > 0 ? "LONG " + str.tostring(heldH) + "h, stop " + str.tostring(stopPx, "#") : pendBars > 0 ? "LIMIT ORDER WAITING" : "FLAT", text_color = color.white)
