@@ -1,11 +1,12 @@
 //@version=6
 // ─────────────────────────────────────────────────────────────────────────────
-// RSI2 Dip – Prop Mode  (long-only, BINANCE:BTCUSDT, 2h chart)
+// RSI Dip – Prop Mode v2  (long-only, BINANCE:BTCUSDT, 2h chart)
 //
-// Same entries and exits as "RSI2 Dip Aggressive v2":
-//   BUY  when RSI(2) < 10 and close > EMA(50); stop 2 x ATR(14) below entry; time exit after 4 days.
+// Tuned version of "RSI2 Dip Aggressive v2":
+//   BUY  when RSI(3) < 20 and close > EMA(50) on the 2h chart, ONLY while yesterday's daily close is
+//        above its 200-day SMA (daily trend filter); stop 2 x ATR(14) below entry; time exit after 4 days.
 //
-// Only the position SIZE changes, for prop evaluations with a STATIC max loss (e.g. Breakout Classic):
+// Position sizing for prop evaluations with a STATIC max loss (e.g. Breakout Classic):
 //   • Each trade risks a share of the buffer left above the fail line (start balance − max loss %).
 //     Profits grow the buffer, so size grows as you get ahead and shrinks if you fall back.
 //   • A single stop-out can never cost more than the per-trade cap (default 2.2%), and new trades are
@@ -14,21 +15,25 @@
 //   • Trading stops once the profit target is reached.
 //
 // Python test on Binance BTCUSDT 2h, one attempt started every week Apr 2020 – Oct 2025, rules
-// target +10% / static max loss 6% / daily loss 3%:
-//   default 50% fixed size ......... ~75% pass, median ~194 days
-//   this Prop Mode (25% of buffer) .. ~69% pass, median ~93 days  (worst start year 2021: ~21%)
+// target +10% / static max loss 6% / daily loss 3%, no time limit:
+//   original v2 (RSI2<10, no filter, 50% size) ....... ~75% pass, ~18% fail, median ~194 days
+//   this v2 (RSI3<20 + daily filter, 33% of buffer) .. ~95% pass,  ~2% fail, median ~162 days
+//   (chosen on 2020-2023 data, held up on 2024-2025; worst start year ~88%)
+// The daily filter means NO trades while BTC is below its 200-day SMA – expect idle weeks.
 // Paper trade first. Past results do not guarantee future ones.
 // ─────────────────────────────────────────────────────────────────────────────
-strategy("RSI2 Dip – Prop Mode", shorttitle = "RSI2 Dip Prop", overlay = true,
+strategy("RSI Dip – Prop Mode v2", shorttitle = "RSI Dip Prop v2", overlay = true,
      initial_capital = 50000, pyramiding = 0,
      commission_type = strategy.commission.percent, commission_value = 0.075,
      slippage = 1, margin_long = 0, margin_short = 0)
 
 // ═════════════════════════════ INPUTS ═════════════════════════════════════════
 G_E = "Entry"
-rsiLen   = input.int(2, "RSI length", minval = 1, group = G_E)
-rsiBuy   = input.float(10, "Buy when RSI is below", minval = 1, maxval = 50, step = 1, group = G_E)
+rsiLen   = input.int(3, "RSI length", minval = 1, group = G_E)
+rsiBuy   = input.float(20, "Buy when RSI is below", minval = 1, maxval = 50, step = 1, group = G_E)
 lenTrend = input.int(50, "Trend filter EMA length", minval = 2, group = G_E)
+useDaily = input.bool(true, "Only trade while daily close > 200-day SMA", group = G_E)
+lenDaily = input.int(200, "Daily SMA length", minval = 2, group = G_E)
 
 G_X = "Exits"
 atrLen    = input.int(14, "ATR length", minval = 1, group = G_X)
@@ -42,7 +47,7 @@ dailyPct   = input.float(3, "Daily loss limit (%)", minval = 0.5, step = 0.5, gr
 stopAtTgt  = input.bool(true, "Stop trading once the target is reached", group = G_P)
 
 G_S = "Sizing"
-bufRiskPct = input.float(25, "Risk per trade (% of buffer above the fail line)", minval = 1, maxval = 100, step = 1, group = G_S)
+bufRiskPct = input.float(33, "Risk per trade (% of buffer above the fail line)", minval = 1, maxval = 100, step = 1, group = G_S)
 tradeCap   = input.float(2.2, "Max loss per trade (% of balance)", minval = 0.1, step = 0.1, group = G_S)
 maxSizeX   = input.float(1.5, "Max position (x start balance)", minval = 0.1, step = 0.1, group = G_S)
 
@@ -58,6 +63,9 @@ int  maxBars = maxBars2h > 0 ? math.max(1, int(math.round(maxBars2h * 7200.0 / t
 float atrV = ta.atr(atrLen)
 float emaT = ta.ema(close, lenTrend)
 float rsiV = ta.rsi(close, rsiLen)
+// yesterday's completed daily bar only (no lookahead): close[1] vs SMA[1] on the daily chart
+bool dailyUp = request.security(syminfo.tickerid, "D", close[1] > ta.sma(close, lenDaily)[1], lookahead = barmerge.lookahead_on)
+bool regimeOK = not useDaily or dailyUp
 
 // ═════════════════════════════ PROP ACCOUNTING ════════════════════════════════
 float startBal  = strategy.initial_capital
@@ -92,7 +100,7 @@ float pos = strategy.position_size
 
 // ═════════════════════════════ ENTRY ══════════════════════════════════════════
 bool canTrade = tfOK and time >= startTime and not failed and not (stopAtTgt and passed)
-bool sig = canTrade and pos == 0 and qty > 0 and not na(atrV) and not na(emaT) and not na(rsiV) and rsiV < rsiBuy and close > emaT
+bool sig = canTrade and regimeOK and pos == 0 and qty > 0 and not na(atrV) and not na(emaT) and not na(rsiV) and rsiV < rsiBuy and close > emaT
 
 if sig
     aE := atrV
@@ -120,7 +128,7 @@ bgcolor(sig ? color.new(color.green, 80) : na)
 if barstate.islast and not tfOK
     label.new(bar_index, high, "Switch to a 2h chart - trading is OFF on this timeframe", color = color.red, textcolor = color.white, style = label.style_label_down)
 
-var table t = table.new(position.top_right, 2, 7, bgcolor = color.new(color.black, 80))
+var table t = table.new(position.top_right, 2, 8, bgcolor = color.new(color.black, 80))
 if barstate.islast
     float progress = (strategy.equity - startBal) / (targetBal - startBal) * 100
     table.cell(t, 0, 0, "Status", text_color = color.white)
@@ -137,3 +145,5 @@ if barstate.islast
     table.cell(t, 1, 5, str.tostring(qty * stopDist, "#,###"), text_color = color.white)
     table.cell(t, 0, 6, "Trend / RSI", text_color = color.white)
     table.cell(t, 1, 6, (close > emaT ? "UP" : "DOWN") + " / " + str.tostring(rsiV, "#.0"), text_color = close > emaT and rsiV < rsiBuy ? color.lime : color.white)
+    table.cell(t, 0, 7, "Daily filter", text_color = color.white)
+    table.cell(t, 1, 7, not useDaily ? "OFF" : dailyUp ? "ON - can trade" : "BLOCKED (below 200d)", text_color = regimeOK ? color.lime : color.red)
