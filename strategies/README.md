@@ -95,3 +95,7 @@ basket, a hard stop and a take-profit that tightens as levels fill.
 - **New candidates** (`tools/cook1_candidates.py`, 1% risk, needed to be positive in both 2020-22 and 2023-26):
   S&P 500 intraday momentum (+7%/yr in 2020-22, then -1 to -2%/yr), Dow momentum (negative), silver
   Asia breakout (+9% then -9%), silver London momentum (mixed), BTC / ETH dip grid (negative). None passed.
+- **Round 2** (`tools/cook2_candidates.py`): daily RSI-2 dips on S&P / Nasdaq / Dow / Russell are positive in both
+  halves but tiny (+0.2 to +1.2%/yr at 1% risk, few trades). Adding them changes nothing (same pass rate and
+  speed, +1-3% funded). Gold opening-range breakout: 5 of 6 variants lose; the one winner (08:20 NY, 30 min,
+  +5.7%/yr) caused 10% breaches in the portfolio. Nasdaq gap fade: +4-5%/yr in 2020-22, negative since 2023.
