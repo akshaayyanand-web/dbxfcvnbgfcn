@@ -35,17 +35,18 @@
   (2 for FTMO-style servers) and `InpServerUsesUSDST`.
 
 ## Passing faster (optional)
-`InpRiskMultiplier` scales every trade's risk. Simulated FTMO-style 2-step, attempts started weekly 2020-2025:
+`InpRiskMultiplier` scales every trade's risk. Simulated FTMO-style 2-step, attempts started weekly 2020-2025,
+**all eight EAs**, multiplier in phase 1 only:
 
-| Phase 1 multiplier | Passed | Breached | Halted by guard | Median time to funded | Funded within 2 months |
+| Phase 1 multiplier | Passed | Breached | Halted by guard | Median time to funded | Funded within 3 months |
 |---|---|---|---|---|---|
-| 1.0 (default) | 93% | 0% | 7% | ~101 days | 24% |
-| **1.25** | **88%** | **0%** | 12% | **~83 days** | 29% |
-| 1.5 | 80% | 5% | 14% | ~70 days | 35% |
-| 2.0 | 64% | 14% | 22% | ~50 days | 37% |
+| **1.0 (default)** | **93%** | **0%** | 7% | **~88 days** | 48% |
+| 1.25 | 86% | 2% | 13% | ~69 days | 55% |
+| 1.5 | 78% | 4% | 18% | ~62 days | 57% |
 
-Use 1.25 in **phase 1** only (set it in every EA), go back to 1.0 for phase 2 and the funded account.
-Above 1.25 the extra speed costs real breaches.
+With the six core EAs only, 1.25 was breach-free (88% pass, ~83 days). With all eight, 1.0 is already about as
+fast (~88 days) with 0 breaches, so keep 1.0. Use 1.25 in phase 1 only if you accept ~2% breach risk for
+~3 weeks of speed, and go back to 1.0 for phase 2 and the funded account.
 
 ## Notes
 - MT5 only trades while it is running: keep the PC on or use a Windows VPS.
