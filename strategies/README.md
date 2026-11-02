@@ -99,3 +99,6 @@ basket, a hard stop and a take-profit that tightens as levels fill.
   halves but tiny (+0.2 to +1.2%/yr at 1% risk, few trades). Adding them changes nothing (same pass rate and
   speed, +1-3% funded). Gold opening-range breakout: 5 of 6 variants lose; the one winner (08:20 NY, 30 min,
   +5.7%/yr) caused 10% breaches in the portfolio. Nasdaq gap fade: +4-5%/yr in 2020-22, negative since 2023.
+- **Kavach on forex (EURUSD, AUDCAD M15, 2019-2026)**: 0 of 64 settings profitable at normal costs. AUDCAD does
+  mean-revert (52/64 profitable with zero costs), but even at very tight prop costs (0.8 pip AUDCAD, 0.5 pip
+  EURUSD all-in) the best setting is about 0%/yr, and none were positive in both halves.
