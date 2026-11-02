@@ -139,3 +139,4 @@ Worst days for the 8 EAs (no guard, measured on equity, which is stricter than F
 limit, and the account guard (stop for the day at 4%, or 3% in phase-1 fast mode) is what keeps it safe. This
 is why every extra strategy, even a small uncorrelated one, created breaches. **Don't raise risk above the
 tested settings, and don't run other EAs or manual trades on the same account.**
+- **Profit lock on BTC Dip / Gold Dip** (`tools/profit_lock_test.py`; move the stop to +0.5-2R once a trade is +2-4R): the worst day stayed at -5.0% in 4 of 5 versions (the BTC flash crash blew through the locked stop). The one version that cut it to -4.1% (lock +1R at +2R) cost Gold Dip 8%/yr and the funded median fell from +74% to +58% (2023-25). Others added 1-3% breaches. Rejected; the blocked add-ons stay blocked.
