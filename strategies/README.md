@@ -141,3 +141,14 @@ is why every extra strategy, even a small uncorrelated one, created breaches. **
 tested settings, and don't run other EAs or manual trades on the same account.**
 - **Profit lock on BTC Dip / Gold Dip** (`tools/profit_lock_test.py`; move the stop to +0.5-2R once a trade is +2-4R): the worst day stayed at -5.0% in 4 of 5 versions (the BTC flash crash blew through the locked stop). The one version that cut it to -4.1% (lock +1R at +2R) cost Gold Dip 8%/yr and the funded median fell from +74% to +58% (2023-25). Others added 1-3% breaches. Rejected; the blocked add-ons stay blocked.
 - **S&P 500 opening-range breakout** (`tools/cook4_spx_orb.py`, S&P 1-minute data 2019-2026, 16 versions): profitable on its own in both halves (e.g. 30-min range, 3R target: +15%/yr then +8%/yr at 1% risk), but ~0.5 correlated with the Nasdaq ORB. Added to the 8 EAs it lowered the pass rate (98→86-96% / 87→68-85%), cut the 2023-25 funded median from +74% to +44-69%, and several versions caused breaches. Rejected.
+- **Swapping a "weak" EA for a stronger reject** (`tools/swap_test.py`): e.g. NQ dip grid → silver dip looked better
+  on 2020-22 (93 vs 101 days), but 2023-25 was the same (72 vs 73 days, +73% vs +74%). Removing Gold Asia breakout
+  caused 11% breaches. Its small returns come on the days the others lose. No swap.
+- **The big strategy list** (`tools/cook9_strategy_list.py`; 126 versions on gold, Nasdaq, S&P, BTC, silver: MA crosses,
+  Supertrend, Heikin Ashi, triple EMA, RSI/Bollinger/Stochastic/CCI/Keltner/MACD divergence, Bollinger squeeze,
+  engulfing, pin bars, yesterday high/low rejection, weekly sweep, weekly-open reversion, SMT divergence, Asian
+  sweep / Judas swing, Silver Bullet FVG, post-news 15-min, VWAP reversion): only 11 were positive in both halves,
+  and only 3 made more than +2%/yr in both. **Every ICT/SMC-style rule lost money**: Silver Bullet -16%/yr, Judas
+  swing -13%, pin bars -19%, yesterday high/low rejection -15%, SMT divergence -64%. The best was gold triple EMA
+  (+5% then +22%/yr, 34% drawdown); added to the 8 EAs it was faster but caused 10% breaches. S&P Bollinger
+  bounce and S&P Stochastic (both with trend) changed nothing out of sample. None added.
