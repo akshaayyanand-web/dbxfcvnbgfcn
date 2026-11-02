@@ -59,6 +59,7 @@ Tested in `tools/martingale_sizing_test.py` (sizing up after losses on the six s
 - On the six scripts: x2 after each loss (up to 1-2-4-8) → 2-step pass 32%, 54% breached, 62/67 funded years
   breached. x1.5 → 57% pass, 20% breached. Scaled down until it stops breaching, it gives the same result as
   flat sizing at the same average risk (100% pass but ~210 days, +24%/yr = flat at 0.5x). It adds nothing.
-- Grid martingale: lost money on every market and setting (median year -3% to -170% of the start balance).
+- Grid martingale: lost money on almost every market and setting (median year down to -170% of the start
+  balance). The best case was silver with a trend filter (+14% median year), and it still passed only 38%.
   Pass rates were 0–38%, mostly under 10%, with breaches of up to 95% when the basket stop was past the 10% limit.
 Keep flat sizing.
