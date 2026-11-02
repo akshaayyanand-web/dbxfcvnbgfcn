@@ -87,3 +87,11 @@ basket, a hard stop and a take-profit that tightens as levels fill.
 - Loss caps and bigger wins (`tools/dipgrid_exits.py`): tighter stops, early cuts and fewer levels all made it
   worse. Trailing 1.5 ATR once price is back at its mean made it better: Nasdaq +7.7%, S&P +11.1%, gold +8.1%/yr
   at 2% worst case, 2016-2026. Nasdaq + S&P at 0.5% each became the two MT5 dip-grid EAs (see the upgrade above).
+
+## Also tested against the 8-EA setup (rejected)
+- **Different exits on BTC Dip / Gold Dip** (`tools/dip_exit_variants.py`): exiting at the mean or trailing
+  cut the yearly return from +19.9% (BTC) / +18.1% (gold) to between -1% and +8%. Their profit comes from dips
+  that turn into multi-day rallies, and the 4-day time exit already lets those run. Keep the time exits.
+- **New candidates** (`tools/cook1_candidates.py`, 1% risk, needed to be positive in both 2020-22 and 2023-26):
+  S&P 500 intraday momentum (+7%/yr in 2020-22, then -1 to -2%/yr), Dow momentum (negative), silver
+  Asia breakout (+9% then -9%), silver London momentum (mixed), BTC / ETH dip grid (negative). None passed.
