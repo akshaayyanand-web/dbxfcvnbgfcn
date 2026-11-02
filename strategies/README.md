@@ -128,3 +128,14 @@ basket, a hard stop and a take-profit that tightens as levels fill.
   not as a performance filter.
 - **Kavach loss caps / win-focused exits on forex** (`tools/kavach_exits.py`, 450 settings each on EURUSD and AUDCAD M15): every setting lost money; the best was -6.5%/yr (AUDCAD) and -7.8%/yr (EURUSD). Kavach is rejected on every market tested.
 - **Pairs trading** (`tools/cook6_pairs.py`; Nasdaq/S&P, gold/silver, BTC/ETH, S&P/Dow, Nasdaq/Russell; fade a 2-2.5 sigma spread over 5 or 20 days): truly uncorrelated with the 8 EAs (0.03-0.12), but every pair lost money over the full period (-1.7 to -52%/yr at 1% risk). These spreads trend more than they snap back. None added.
+- **Round 8** (`tools/cook7_trend_breakouts.py`): Donchian trend following (20/10 and 55/20 day, long + short) lost
+  money on 6 of 7 markets. Volatility breakout made +11-16%/yr in 2020-22 but faded to ~0-5% since 2023. NR7
+  breakouts made +0-3%/yr. Every add-on that was positive in both halves still caused ~8-12% breaches in 2020-22. None added.
+
+## Safety margin of the 8 EAs (`tools/worst_days_check.py`)
+Worst days for the 8 EAs (no guard, measured on equity, which is stricter than FTMO's balance-based daily rule):
+2021-09-07 -4.98% (BTC flash crash; BTC Dip gave back open profit and was stopped), 2024-11-25 -4.64% (Gold Dip),
+2020-09-02 -4.49%, 2024-03-12 -4.38%. So on a few days a year-plus apart the account gets close to the 5% daily
+limit, and the account guard (stop for the day at 4%, or 3% in phase-1 fast mode) is what keeps it safe. This
+is why every extra strategy, even a small uncorrelated one, created breaches. **Don't raise risk above the
+tested settings, and don't run other EAs or manual trades on the same account.**
