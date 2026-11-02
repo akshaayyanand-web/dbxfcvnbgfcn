@@ -63,3 +63,16 @@ Tested in `tools/martingale_sizing_test.py` (sizing up after losses on the six s
   balance). The best case was silver with a trend filter (+14% median year), and it still passed only 38%.
   Pass rates were 0–38%, mostly under 10%, with breaches of up to 95% when the basket stop was past the 10% limit.
 Keep flat sizing.
+
+## "Kavach Grid" (tested from its sales-page description, rejected)
+Replica in `tools/kavach_grid_replica.py`: a Z-score fade on M15 with a 3-test trend gate, a frozen grid
+basket, a hard stop and a take-profit that tightens as levels fill.
+- Gold and Nasdaq M15 2019-2026: **0 of 64 settings profitable, even with zero costs**. The best was
+  -4%/yr with a 98% win rate and a 35% drawdown. The trend gate halves the losses but doesn't remove them.
+- Bigger take-profits (`tools/kavach_bigger_tp.py`, 1-12 ATR): the win rate falls as fast as the wins grow,
+  so the result stays at zero or below.
+- Hybrid with what worked here (`tools/kavach_dip_hybrid.py`): long-only dips above the 200 EMA on Nasdaq H1,
+  3 levels, exit when price is back at its 20-bar mean, 48h time exit. About +5%/yr at 2% worst case per
+  basket, positive in both 2019-22 and 2023-26, 12-17% drawdown. As a 7th script
+  (`tools/kavach_portfolio_addon.py`) it is uncorrelated (≈0) but only adds +1-3% to the funded median, and
+  it doesn't change the pass rate (93%) or the time to pass (~100 days). Not added to the preset.
