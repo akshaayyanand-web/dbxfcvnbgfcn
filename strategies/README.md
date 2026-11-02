@@ -114,3 +114,9 @@ basket, a hard stop and a take-profit that tightens as levels fill.
   lifted the 2020-22 funded median from +54% to +65%, but did nothing on 2023-25 (+74% vs +73%), so that gain
   was curve-fitting. Every strategy is profitable per trade in both halves; the losses are random, not a fixable
   pattern. No filters added.
+- **Portfolio risk overlays** (`tools/cook5_risk_overlays.py`): volatility targeting that also sizes **up** in calm
+  markets caused 8-10% breaches in 2020-22 (it was large going into the crash). Down-only volatility targeting was
+  breach-free but slower (108 vs 101 days, 85 vs 73 on 2023-25) and earned less (funded +63% vs +74% on 2023-25).
+  Equity-curve filters (pause or halve a strategy after a losing 30/60/90 days) made everything worse: pass
+  rates down to 44-98%, the time to pass up to 2x, funded returns roughly halved. These strategies tend to
+  recover right after a bad stretch, so pausing them skips the rebound. None added.
