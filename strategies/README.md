@@ -127,3 +127,4 @@ basket, a hard stop and a take-profit that tightens as levels fill.
   so the EAs now carry a 2-minute compliance block (`InpNewsBlockMin`) for funded-account news rules,
   not as a performance filter.
 - **Kavach loss caps / win-focused exits on forex** (`tools/kavach_exits.py`, 450 settings each on EURUSD and AUDCAD M15): every setting lost money; the best was -6.5%/yr (AUDCAD) and -7.8%/yr (EURUSD). Kavach is rejected on every market tested.
+- **Pairs trading** (`tools/cook6_pairs.py`; Nasdaq/S&P, gold/silver, BTC/ETH, S&P/Dow, Nasdaq/Russell; fade a 2-2.5 sigma spread over 5 or 20 days): truly uncorrelated with the 8 EAs (0.03-0.12), but every pair lost money over the full period (-1.7 to -52%/yr at 1% risk). These spreads trend more than they snap back. None added.
