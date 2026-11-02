@@ -67,8 +67,19 @@ bool MyPosition(ulong &ticket, long &type, datetime &openTime)
      }
    return false;
   }
+void DeleteMyOrders()
+  {
+   for(int i = OrdersTotal() - 1; i >= 0; i--)
+     {
+      ulong tk = OrderGetTicket(i);
+      if(tk == 0) continue;
+      if(OrderGetString(ORDER_SYMBOL) != _Symbol || OrderGetInteger(ORDER_MAGIC) != InpMagic) continue;
+      if(!trade.OrderDelete(tk)) Print("pending order delete failed ", trade.ResultRetcode());
+     }
+  }
 void CloseMine(string why)
   {
+   DeleteMyOrders();
    ulong tk; long tp; datetime ot;
    while(MyPosition(tk, tp, ot))
      {

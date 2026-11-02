@@ -1,4 +1,4 @@
-"""Generate the six MT5 Expert Advisors in strategies/mt5/ from one shared code block.
+"""Generate the MT5 Expert Advisors (six core + two dip grids) in strategies/mt5/ from one shared code block.
 
 Each EA is self-contained (no include files): common time-zone, sizing and account-guard code plus the
 strategy's own OnNewBar() logic. Run: python3 tools/make_mt5.py
@@ -64,8 +64,19 @@ bool MyPosition(ulong &ticket, long &type, datetime &openTime)
      }
    return false;
   }
+void DeleteMyOrders()
+  {
+   for(int i = OrdersTotal() - 1; i >= 0; i--)
+     {
+      ulong tk = OrderGetTicket(i);
+      if(tk == 0) continue;
+      if(OrderGetString(ORDER_SYMBOL) != _Symbol || OrderGetInteger(ORDER_MAGIC) != InpMagic) continue;
+      if(!trade.OrderDelete(tk)) Print("pending order delete failed ", trade.ResultRetcode());
+     }
+  }
 void CloseMine(string why)
   {
+   DeleteMyOrders();
    ulong tk; long tp; datetime ot;
    while(MyPosition(tk, tp, ot))
      {
@@ -351,6 +362,104 @@ void OnNewBar()
   }
 '''),
 }
+GRID_BODY = r'''
+input double InpZ        = 2.0;   // Buy when price is this many standard deviations below its 20-bar mean
+input int    InpLevels   = 3;     // Grid levels (1 market entry + limit orders), equal size
+input double InpSpacing  = 1.0;   // Level spacing (x ATR 14); hard stop one spacing below the last level
+input double InpTrailATR = 1.5;   // Once back at the mean: trail the stop this many ATRs under the close
+input int    InpHoldBars = 120;   // Time exit (bars)
+int cooldown = 0;
+string GV(string k) { return "DG_" + IntegerToString(InpMagic) + "_" + _Symbol + "_" + k; }
+int MyPositions(double &avg)
+  {
+   int n = 0; double vol = 0; avg = 0;
+   for(int i = PositionsTotal() - 1; i >= 0; i--)
+     {
+      ulong tk = PositionGetTicket(i);
+      if(tk == 0) continue;
+      if(PositionGetString(POSITION_SYMBOL) != _Symbol || PositionGetInteger(POSITION_MAGIC) != InpMagic) continue;
+      double v = PositionGetDouble(POSITION_VOLUME); avg += v * PositionGetDouble(POSITION_PRICE_OPEN); vol += v; n++;
+     }
+   if(vol > 0) avg /= vol;
+   return n;
+  }
+void RaiseStops(double sl)
+  {
+   sl = NormalizeDouble(sl, _Digits);
+   for(int i = PositionsTotal() - 1; i >= 0; i--)
+     {
+      ulong tk = PositionGetTicket(i);
+      if(tk == 0) continue;
+      if(PositionGetString(POSITION_SYMBOL) != _Symbol || PositionGetInteger(POSITION_MAGIC) != InpMagic) continue;
+      double cur = PositionGetDouble(POSITION_SL);
+      if(cur > 0 && sl <= cur + _Point) continue;           // only ever tighten
+      if(!trade.PositionModify(tk, sl, PositionGetDouble(POSITION_TP))) Print("trail modify failed ", trade.ResultRetcode());
+     }
+  }
+double ZScore(int shift)
+  {
+   double c[]; ArraySetAsSeries(c, true);
+   if(CopyClose(_Symbol, _Period, shift, 20, c) < 20) return EMPTY_VALUE;
+   double m = 0, v = 0;
+   for(int i = 0; i < 20; i++) m += c[i];
+   m /= 20;
+   for(int i = 0; i < 20; i++) v += (c[i] - m) * (c[i] - m);
+   double sd = MathSqrt(v / 19);
+   return sd > 0 ? (c[0] - m) / sd : EMPTY_VALUE;
+  }
+void ResetBasket() { GlobalVariableDel(GV("T0")); GlobalVariableDel(GV("A0")); GlobalVariableDel(GV("TR")); }
+void OnNewBar()
+  {
+   double avg; int n = MyPositions(avg);
+   if(n == 0)
+     {
+      if(GlobalVariableCheck(GV("T0"))) { DeleteMyOrders(); ResetBasket(); cooldown = 3; return; }   // basket just ended
+      if(cooldown > 0) { cooldown--; return; }
+      double c1 = iClose(_Symbol, _Period, 1), z = ZScore(1), ema = Ema(200, 1), a0 = AtrRma(14, 1);
+      if(z == EMPTY_VALUE || ema == EMPTY_VALUE || a0 == EMPTY_VALUE || a0 <= 0) return;
+      if(z > -InpZ || c1 <= ema) return;                    // only dips, only while above the 200 EMA
+      double e0 = SymbolInfoDouble(_Symbol, SYMBOL_ASK);
+      double sl = e0 - InpLevels * InpSpacing * a0, sumDist = 0;
+      for(int k = 0; k < InpLevels; k++) sumDist += (e0 - k * InpSpacing * a0) - sl;
+      double lots = LotsFor(RiskMoney(), sumDist, ORDER_TYPE_BUY, e0);   // the whole basket loses RiskMoney at the stop
+      if(lots <= 0) { Print("Dip grid: size below minimum for the allowed risk, skipped"); return; }
+      if(!trade.Buy(lots, _Symbol, 0, NormalizeDouble(sl, _Digits), 0, "Dip grid L1")) { Print("Dip grid: entry failed ", trade.ResultRetcode()); return; }
+      for(int k = 1; k < InpLevels; k++)
+         if(!trade.BuyLimit(lots, NormalizeDouble(e0 - k * InpSpacing * a0, _Digits), _Symbol, NormalizeDouble(sl, _Digits), 0, ORDER_TIME_GTC, 0, "Dip grid L" + IntegerToString(k + 1)))
+            Print("Dip grid: limit order failed ", trade.ResultRetcode());
+      GlobalVariableSet(GV("T0"), (double)iTime(_Symbol, _Period, 0)); GlobalVariableSet(GV("A0"), a0); GlobalVariableSet(GV("TR"), 0);
+      return;
+     }
+   if(!GlobalVariableCheck(GV("T0"))) { GlobalVariableSet(GV("T0"), (double)iTime(_Symbol, _Period, 1)); GlobalVariableSet(GV("A0"), AtrRma(14, 1)); GlobalVariableSet(GV("TR"), 0); }
+   datetime t0 = (datetime)GlobalVariableGet(GV("T0")); double a = GlobalVariableGet(GV("A0"));
+   if(iBarShift(_Symbol, _Period, t0) > InpHoldBars) { CloseMine("Dip grid time exit"); return; }
+   bool trail = GlobalVariableGet(GV("TR")) > 0;
+   double z1 = ZScore(1);
+   if(!trail && z1 != EMPTY_VALUE && z1 >= 0) { trail = true; GlobalVariableSet(GV("TR"), 1); DeleteMyOrders(); }   // back at the mean: no more adds
+   if(trail)
+     {
+      double sl = MathMax(iClose(_Symbol, _Period, 1) - InpTrailATR * a, avg);
+      if(sl >= SymbolInfoDouble(_Symbol, SYMBOL_BID) - SymbolInfoInteger(_Symbol, SYMBOL_TRADE_STOPS_LEVEL) * _Point) { CloseMine("Dip grid trail exit"); return; }
+      RaiseStops(sl);
+     }
+  }
+'''
+
+
+def grid_ea(title, chart, magic, risk, note):
+    return dict(tf="PERIOD_H1", magic=magic, risk=risk, header=f'''//+------------------------------------------------------------------+
+//| {title} – MT5 EA. Chart: {chart}, H1
+//| Long-only dip grid: when price closes 2 standard deviations below its 20-bar mean while above the
+//| 200 EMA, buy at market and place 2 equal buy-limits 1 and 2 x ATR(14) lower. Every position has the
+//| same hard stop 3 x ATR below the first entry, sized so the FULL basket loses InpRiskPct at the stop.
+//| Once price is back at its mean: cancel the limits and trail the stop 1.5 x ATR under the close
+//| (never below break-even). Time exit after 120 bars.
+//| {note}
+//+------------------------------------------------------------------+''', body=GRID_BODY)
+
+
+EAS["NQ_Dip_Grid.mq5"] = grid_ea("Nasdaq Dip Grid", "US100 / NAS100 / USTEC", 1107, 0.5, "Portfolio risk: 0.5% per basket (worst case). Python 2016-2026: ~+1.9%/yr at 0.5% on its own (+7.7%/yr at 2% worst case).")
+EAS["SPX_Dip_Grid.mq5"] = grid_ea("S&P 500 Dip Grid", "US500 / SPX500", 1108, 0.5, "Portfolio risk: 0.5% per basket (worst case). Python 2016-2026: ~+2.8%/yr at 0.5% on its own (+11%/yr at 2% worst case).")
 
 if __name__ == "__main__":
     out = os.path.join(os.path.dirname(__file__), "..", "strategies", "mt5")

@@ -22,6 +22,14 @@ only. Backtests overstate live results; paper trade all scripts together for 2â€
 
 Daily shares add up to 5%; every max-loss input stays at the account's full 10% as a backstop.
 
+**Upgrade (MT5 only): add the two dip grids** `NQ_Dip_Grid.mq5` and `SPX_Dip_Grid.mq5` (H1, 0.5% per basket
+worst case; see `mt5/README.md`). Same test, with the six above:
+- 2-step: 93% passed, 0% breached, median **~88 days** (was ~101).
+- Funded year: median +60%, average +64%, 0/67 breaches. Max drawdown 15.9% (was 13.3%).
+- Calendar years: 2020 +52%, 2021 +69%, 2022 +21%, 2023 +55%, 2024 +77%, 2025 +104%, 2026 +31% (to Oct).
+- A gold version, or 0.75% per basket, caused breaches (5% of evaluations), so it is left out.
+- Caveat: the same rules lost money on the Dow and Russell, so the edge is real but thin. Demo it first.
+
 Results (one account, 10% / 5% rules, guard on):
 - FTMO-style 2-step (+10% then +5%): ~93% passed, 0% breached, median ~3.4 months.
 - Funded year (67 rolling 12-month windows): median +57%, average +54%, 0 breaches.
@@ -75,4 +83,7 @@ basket, a hard stop and a take-profit that tightens as levels fill.
   3 levels, exit when price is back at its 20-bar mean, 48h time exit. About +5%/yr at 2% worst case per
   basket, positive in both 2019-22 and 2023-26, 12-17% drawdown. As a 7th script
   (`tools/kavach_portfolio_addon.py`) it is uncorrelated (â‰ˆ0) but only adds +1-3% to the funded median, and
-  it doesn't change the pass rate (93%) or the time to pass (~100 days). Not added to the preset.
+  it doesn't change the pass rate (93%) or the time to pass (~100 days).
+- Loss caps and bigger wins (`tools/dipgrid_exits.py`): tighter stops, early cuts and fewer levels all made it
+  worse. Trailing 1.5 ATR once price is back at its mean made it better: Nasdaq +7.7%, S&P +11.1%, gold +8.1%/yr
+  at 2% worst case, 2016-2026. Nasdaq + S&P at 0.5% each became the two MT5 dip-grid EAs (see the upgrade above).
