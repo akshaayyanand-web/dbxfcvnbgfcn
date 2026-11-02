@@ -102,3 +102,8 @@ basket, a hard stop and a take-profit that tightens as levels fill.
 - **Kavach on forex (EURUSD, AUDCAD M15, 2019-2026)**: 0 of 64 settings profitable at normal costs. AUDCAD does
   mean-revert (52/64 profitable with zero costs), but even at very tight prop costs (0.8 pip AUDCAD, 0.5 pip
   EURUSD all-in) the best setting is about 0%/yr, and none were positive in both halves.
+- **Round 3** (`tools/cook3_candidates.py`): short "rally fades" in downtrends (BTC, gold, Nasdaq, S&P) all lose,
+  -1 to -11%/yr. The dip rules on new markets (ETH, SOL, S&P, Nasdaq, silver, oil, ...) are often profitable
+  alone (silver 1h +11%/yr, Nasdaq 1h +10%/yr), but adding them to the 8 EAs causes **~10% breaches in 2020-22**,
+  even at 0.25% risk. Every long dip loses on the same crash days (March 2020, 2022), so more of them
+  stacks the risk on one day. Only oil and Russell were breach-free, and they add nothing. None added.
