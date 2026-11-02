@@ -107,3 +107,10 @@ basket, a hard stop and a take-profit that tightens as levels fill.
   alone (silver 1h +11%/yr, Nasdaq 1h +10%/yr), but adding them to the 8 EAs causes **~10% breaches in 2020-22**,
   even at 0.25% risk. Every long dip loses on the same crash days (March 2020, 2022), so more of them
   stacks the risk on one day. Only oil and Russell were breach-free, and they add nothing. None added.
+- **Losing-trade autopsy** (`tools/loser_autopsy.py`): every trade of the 8 EAs was tagged with the conditions at
+  entry (volatility regime, 200-day trend, 1-day and 5-day move, distance from the 20-day high, BTC/Nasdaq
+  volatility, weekday, hour). "Bad conditions" were picked on 2020-22 only and checked on 2023-26. Only 5 were
+  found (about what chance alone produces), and 4 of them turned profitable on the unseen data. Blocking them
+  lifted the 2020-22 funded median from +54% to +65%, but did nothing on 2023-25 (+74% vs +73%), so that gain
+  was curve-fitting. Every strategy is profitable per trade in both halves; the losses are random, not a fixable
+  pattern. No filters added.
