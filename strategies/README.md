@@ -51,3 +51,14 @@ them, shrink the other daily shares so the total stays at 5%.
 - Topstep does not allow overnight positions: only `nq_intraday_momentum.pine` and `nq_orb_prop.pine` are
   Topstep-compliant.
 - The intraday edges are thin (~0.05–0.10R per trade): use micro contracts / tight spreads.
+
+## Martingale (tested, rejected)
+Tested in `tools/martingale_sizing_test.py` (sizing up after losses on the six scripts) and
+`tools/grid_martingale_test.py` (classic grid EA: add 2x size every 1–2 ATR against you, close the basket
+1 ATR past the average, on 12 markets: gold, silver, Nasdaq, S&P, Dow, Russell, oil, BTC, ETH, SOL, XRP, DOGE).
+- On the six scripts: x2 after each loss (up to 1-2-4-8) → 2-step pass 32%, 54% breached, 62/67 funded years
+  breached. x1.5 → 57% pass, 20% breached. Scaled down until it stops breaching, it gives the same result as
+  flat sizing at the same average risk (100% pass but ~210 days, +24%/yr = flat at 0.5x). It adds nothing.
+- Grid martingale: lost money on every market and setting (median year -3% to -170% of the start balance).
+  Pass rates were 0–38%, mostly under 10%, with breaches of up to 95% when the basket stop was past the 10% limit.
+Keep flat sizing.
