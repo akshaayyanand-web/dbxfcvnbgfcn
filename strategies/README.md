@@ -126,3 +126,4 @@ basket, a hard stop and a take-profit that tightens as levels fill.
   funded +59% / +71% vs +74%, and slower). Only ~6 trades in 6.7 years opened or closed within 2 minutes of news,
   so the EAs now carry a 2-minute compliance block (`InpNewsBlockMin`) for funded-account news rules,
   not as a performance filter.
+- **Kavach loss caps / win-focused exits on forex** (`tools/kavach_exits.py`, 450 settings each on EURUSD and AUDCAD M15): every setting lost money; the best was -6.5%/yr (AUDCAD) and -7.8%/yr (EURUSD). Kavach is rejected on every market tested.
