@@ -120,3 +120,9 @@ basket, a hard stop and a take-profit that tightens as levels fill.
   Equity-curve filters (pause or halve a strategy after a losing 30/60/90 days) made everything worse: pass
   rates down to 44-98%, the time to pass up to 2x, funded returns roughly halved. These strategies tend to
   recover right after a bad stretch, so pausing them skips the rebound. None added.
+- **News filters** (`tools/news_filter_test.py`; 65 Fed decisions from federalreserve.gov, 94 jobs reports and
+  94 CPI releases dated from the 8:30 ET volume spike): trades near news are **profitable** on average. Blocking
+  entries 1h around news changed nothing; blocking news days or the 24h before news made things worse (2023-25
+  funded +59% / +71% vs +74%, and slower). Only ~6 trades in 6.7 years opened or closed within 2 minutes of news,
+  so the EAs now carry a 2-minute compliance block (`InpNewsBlockMin`) for funded-account news rules,
+  not as a performance filter.

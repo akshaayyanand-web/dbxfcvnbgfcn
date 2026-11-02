@@ -24,6 +24,7 @@ input double InpRiskMultiplier   = 1.0;    // Evaluation boost: 1.25 in phase 1 
 input bool   InpAutoServerOffset = true;   // Live: detect the server's GMT offset automatically
 input int    InpServerGMTOffset  = 2;      // Tester: server GMT offset in winter (FTMO-style servers: 2)
 input bool   InpServerUsesUSDST  = true;   // Tester: server shifts +1h with US daylight saving (FTMO-style)
+input int    InpNewsBlockMin     = 2;      // No NEW trades this many minutes before/after high-impact USD news (0 = off)
 
 //--- time helpers -------------------------------------------------------------
 datetime MakeDate(int y, int m, int d) { MqlDateTime s; ZeroMemory(s); s.year = y; s.mon = m; s.day = d; return StructToTime(s); }
@@ -110,6 +111,19 @@ bool GuardBlocks()
      { GlobalVariableSet(dayHalt, 1); CloseMine("Guard (daily)"); return true; }
    return false;
   }
+bool NewsBlocked()   // uses MT5's built-in economic calendar (live only; the Strategy Tester has no calendar)
+  {
+   if(InpNewsBlockMin <= 0 || MQLInfoInteger(MQL_TESTER)) return false;
+   datetime now = TimeTradeServer();
+   MqlCalendarValue vals[];
+   if(CalendarValueHistory(vals, now - InpNewsBlockMin * 60, now + InpNewsBlockMin * 60, NULL, "USD") <= 0) return false;
+   for(int i = 0; i < ArraySize(vals); i++)
+     {
+      MqlCalendarEvent e;
+      if(CalendarEventById(vals[i].event_id, e) && e.importance == CALENDAR_IMPORTANCE_HIGH) return true;
+     }
+   return false;
+  }
 double RiskMoney()
   {
    double bal = AccountInfoDouble(ACCOUNT_BALANCE), eq = AccountInfoDouble(ACCOUNT_EQUITY);
@@ -137,6 +151,7 @@ double LotsFor(double riskMoney, double stopDist, ENUM_ORDER_TYPE type, double p
   }
 bool OpenTrade(int dir, double stopPrice, double tpPrice, string tag)
   {
+   if(NewsBlocked()) { Print(tag, ": high-impact news within ", InpNewsBlockMin, " min, skipped"); return false; }
    double price = dir == 1 ? SymbolInfoDouble(_Symbol, SYMBOL_ASK) : SymbolInfoDouble(_Symbol, SYMBOL_BID);
    double dist = MathAbs(price - stopPrice);
    if(dir * (price - stopPrice) <= 0) { Print(tag, ": price already beyond the stop, skipped"); return false; }
@@ -257,6 +272,7 @@ void OnNewBar()
       double c1 = iClose(_Symbol, _Period, 1), z = ZScore(1), ema = Ema(200, 1), a0 = AtrRma(14, 1);
       if(z == EMPTY_VALUE || ema == EMPTY_VALUE || a0 == EMPTY_VALUE || a0 <= 0) return;
       if(z > -InpZ || c1 <= ema) return;                    // only dips, only while above the 200 EMA
+      if(NewsBlocked()) { Print("Dip grid: high-impact news within ", InpNewsBlockMin, " min, skipped"); return; }
       double e0 = SymbolInfoDouble(_Symbol, SYMBOL_ASK);
       double sl = e0 - InpLevels * InpSpacing * a0, sumDist = 0;
       for(int k = 0; k < InpLevels; k++) sumDist += (e0 - k * InpSpacing * a0) - sl;

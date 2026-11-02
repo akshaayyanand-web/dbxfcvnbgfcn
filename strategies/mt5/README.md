@@ -30,6 +30,10 @@
   `InpDailyStopPct` (4%) on the day, every EA closes its trades and stops for the day; if the account is
   down `InpMaxStopPct` (8%) from the start, every EA closes and stops for good. New trades are sized so
   they risk at most 60% of the room left before those lines.
+- **News rule (funded accounts):** `InpNewsBlockMin` (default 2) stops any EA opening a new trade within
+  2 minutes of a high-impact USD event (CPI, jobs report, Fed, ...), using MT5's built-in economic calendar.
+  It only works live, since the Strategy Tester has no calendar. Set it to 0 to switch it off, or match it to
+  your firm's rule. Stops can still be hit during news; check how your firm treats that.
 - Session times (London / New York) are computed from the server time with daylight-saving rules.
   Live, the server offset is detected automatically; in the Strategy Tester set `InpServerGMTOffset`
   (2 for FTMO-style servers) and `InpServerUsesUSDST`.
