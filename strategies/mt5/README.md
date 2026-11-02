@@ -11,12 +11,64 @@
 | `NQ_Dip_Grid.mq5` | US100 / NAS100 / USTEC | H1 | 0.5% per basket | 1107 |
 | `SPX_Dip_Grid.mq5` | US500 / SPX500 | H1 | 0.5% per basket | 1108 |
 
-## Install
-1. MT5 → File → Open Data Folder → `MQL5/Experts/` → copy the eight `.mq5` files there.
-2. Open MetaEditor (F4), open each file, press **Compile** (F7). Send any compile error back.
-3. In MT5 open **eight charts** (gold three times, Nasdaq three times – one chart per EA), set each chart's timeframe as above,
-   drag the EA onto it, tick **Allow Algo Trading**, and press the **Algo Trading** button in the toolbar.
-4. In every EA's inputs set **InpAccountSize = your account's starting balance**. Leave the other inputs.
+## Step 1 – Get MT5 and a demo account
+- Use the MT5 that your prop firm gives you (FTMO, The5ers, etc. each have a download plus free-trial/demo logins),
+  or install MT5 from metatrader5.com and open a demo account with any broker that has **gold, US100, US500 and BTC**.
+- Check the symbol names in **Market Watch** (Ctrl+M → right-click → *Show All*): e.g. `XAUUSD`, `US100.cash`,
+  `US500.cash`, `BTCUSD`. Any name works; the EAs trade whatever chart they're attached to.
+
+## Step 2 – Install the EAs
+1. MT5 → **File → Open Data Folder** → open `MQL5` → `Experts`. Copy the eight `.mq5` files into it.
+2. Press **F4** (MetaEditor). In the Navigator on the left, open each file under *Experts* and press **F7** (Compile).
+   The bottom panel must say `0 errors`. If it shows errors, screenshot them and send them back.
+3. Back in MT5, right-click **Expert Advisors** in the Navigator → **Refresh**. The eight EAs appear.
+
+## Step 3 – Run them live (demo first)
+1. Open **eight charts** (File → New Chart): gold ×3, US100 ×3, US500 ×1, BTC ×1. Set each chart's timeframe
+   from the table above (the M5 one is `NQ_Opening_Range`; BTC is H2).
+2. Drag one EA onto each chart. In the window that opens:
+   - **Common** tab: tick **Allow Algo Trading**.
+   - **Inputs** tab: set `InpAccountSize` = your account's starting balance (e.g. 100000). Leave the rest.
+3. Press the **Algo Trading** button in the top toolbar (it turns green). Each chart shows a small hat icon
+   top-right. If the icon is grey, algo trading is off.
+4. Check the **Experts** tab (Ctrl+T → Experts) for start-up messages or warnings ("attach this EA to a … chart"
+   means the timeframe is wrong).
+5. Save the setup: **File → Profiles → Save As…** so all 8 charts reopen together.
+6. MT5 only trades while it's open: keep the PC on 24/5 or use a Windows VPS (many prop firms give one free).
+
+## Step 4 – Backtest one EA yourself
+1. Press **Ctrl+R** (Strategy Tester). Choose **Expert**: e.g. `Gold_Dip`.
+2. **Symbol** = the chart's symbol, **Timeframe** = from the table, **Date**: Custom, e.g. 2020-01-01 to today.
+3. **Modelling**: *1 minute OHLC* (fast, good enough) or *Every tick based on real ticks* (slow, most accurate).
+4. **Deposit** = the same as `InpAccountSize` (e.g. 100000 USD). **Leverage** = your firm's (e.g. 1:30 or 1:100).
+5. **Inputs** tab (bottom): set `InpAccountSize` = the deposit. For the session-based EAs (Asia breakout, both
+   momentum EAs, Opening Range), set `InpServerGMTOffset` to your broker's winter GMT offset (FTMO and most
+   EU brokers: 2) and `InpServerUsesUSDST = true` if their clock shifts with US daylight saving (most do).
+   Everything else stays as it is.
+6. Press **Start**. Use the **Backtest**, **Graph** and **Trades** tabs for results. Tick *Visual mode* to watch it trade.
+7. The first run downloads history and can take a while. If a symbol has little history (common for BTC and
+   indices on some brokers), the test only covers what the broker has.
+
+**What each EA should roughly show on its own** (Python test 2020 – Oct 2026, at the default risk; MT5 will differ a
+little because of broker prices, spreads and compounding):
+
+| EA | Risk | Trades / month | Win rate | Per year | Max DD | 2022 | 2024 | 2025 |
+|---|---|---|---|---|---|---|---|---|
+| BTC_Dip_v3 | 1.0% | 2.7 | 44% | +19.9% | 9.7% | -1.4% | +23.9% | +21.5% |
+| Gold_Dip | 0.5% | 6.5 | 25% | +9.1% | 13.4% | +8.6% | +19.5% | +25.5% |
+| Gold_Asia_Breakout | 0.25% | 28 | 36% | +3.2% | 9.2% | +0.7% | +0.8% | +3.0% |
+| Gold_Intraday_Momentum | 0.25% | 8.3 | 37% | +2.9% | 5.3% | +1.4% | -2.0% | +3.1% |
+| NQ_Intraday_Momentum | 0.25% | 15 | 52% | +2.4% | 6.1% | +2.2% | +5.8% | -1.5% |
+| NQ_Opening_Range | 0.5% | 22 | 46% | +6.9% | 14.8% | +9.5% | +7.6% | +14.3% |
+| NQ_Dip_Grid | 0.5% | 6.5 | 65% | +1.9% | 7.2% | -2.2% | +4.8% | +8.3% |
+| SPX_Dip_Grid | 0.5% | 6.4 | 67% | +3.3% | 8.0% | +1.7% | -1.5% | -1.0% |
+
+Individually most look small. The ~+60%/yr comes from running all eight together on one account, because
+they rarely lose on the same days. A losing year for one EA is normal (see the columns).
+
+**Limits of MT5's tester:** it runs one EA at a time, so it can't reproduce the combined portfolio or the shared
+account guard (each test has its own). The news block is also off in the tester (no calendar). To see the
+combined result, run all eight on a demo account, which is the real test anyway.
 
 ## What every EA does
 - Enters on the close of the signal bar with the **stop (and the ORB target) on the order**.
