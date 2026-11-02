@@ -27,6 +27,19 @@
   Live, the server offset is detected automatically; in the Strategy Tester set `InpServerGMTOffset`
   (2 for FTMO-style servers) and `InpServerUsesUSDST`.
 
+## Passing faster (optional)
+`InpRiskMultiplier` scales every trade's risk. Simulated FTMO-style 2-step, attempts started weekly 2020-2025:
+
+| Phase 1 multiplier | Passed | Breached | Halted by guard | Median time to funded | Funded within 2 months |
+|---|---|---|---|---|---|
+| 1.0 (default) | 93% | 0% | 7% | ~101 days | 24% |
+| **1.25** | **88%** | **0%** | 12% | **~83 days** | 29% |
+| 1.5 | 80% | 5% | 14% | ~70 days | 35% |
+| 2.0 | 64% | 14% | 22% | ~50 days | 37% |
+
+Use 1.25 in **phase 1** only (set it in all six EAs), go back to 1.0 for phase 2 and the funded account.
+Above 1.25 the extra speed costs real breaches.
+
 ## Notes
 - MT5 only trades while it is running: keep the PC on or use a Windows VPS.
 - Check your prop firm allows EAs and holding BTC / gold over nights and weekends.

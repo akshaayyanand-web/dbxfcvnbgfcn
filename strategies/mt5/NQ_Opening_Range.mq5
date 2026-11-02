@@ -17,6 +17,7 @@ input double InpAccountSize      = 200000; // Starting balance of the prop accou
 input double InpDailyStopPct     = 4.0;    // ACCOUNT guard: stop for the day at this loss (% of start; firm limit 5)
 input double InpMaxStopPct       = 8.0;    // ACCOUNT guard: stop everything at this loss from start (firm limit 10)
 input double InpGuardShare       = 60;     // A trade may risk at most this % of the remaining daily / max room
+input double InpRiskMultiplier   = 1.0;    // Evaluation boost: 1.25 in phase 1 passes ~3 weeks faster (see README)
 input bool   InpAutoServerOffset = true;   // Live: detect the server's GMT offset automatically
 input int    InpServerGMTOffset  = 2;      // Tester: server GMT offset in winter (FTMO-style servers: 2)
 input bool   InpServerUsesUSDST  = true;   // Tester: server shifts +1h with US daylight saving (FTMO-style)
@@ -98,7 +99,7 @@ bool GuardBlocks()
 double RiskMoney()
   {
    double bal = AccountInfoDouble(ACCOUNT_BALANCE), eq = AccountInfoDouble(ACCOUNT_EQUITY);
-   double r = bal * InpRiskPct / 100;
+   double r = bal * InpRiskPct * InpRiskMultiplier / 100;
    double dayRoom = InpAccountSize * InpDailyStopPct / 100 - MathMax(0, DayStartBalance() - eq);
    double maxRoom = eq - InpAccountSize * (1 - InpMaxStopPct / 100);
    r = MathMin(r, MathMin(dayRoom, maxRoom) * InpGuardShare / 100);
