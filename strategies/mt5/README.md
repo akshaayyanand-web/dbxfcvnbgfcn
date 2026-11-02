@@ -35,18 +35,22 @@
   (2 for FTMO-style servers) and `InpServerUsesUSDST`.
 
 ## Passing faster (optional)
-`InpRiskMultiplier` scales every trade's risk. Simulated FTMO-style 2-step, attempts started weekly 2020-2025,
-**all eight EAs**, multiplier in phase 1 only:
+Simulated FTMO-style 2-step with **all eight EAs**, attempts started weekly. Settings were picked on 2020-22
+starts and checked on 2023-25 starts. Phase 2 and the funded account always run at the defaults.
 
-| Phase 1 multiplier | Passed | Breached | Halted by guard | Median time to funded | Funded within 3 months |
-|---|---|---|---|---|---|
-| **1.0 (default)** | **93%** | **0%** | 7% | **~88 days** | 48% |
-| 1.25 | 86% | 2% | 13% | ~69 days | 55% |
-| 1.5 | 78% | 4% | 18% | ~62 days | 57% |
+| Phase 1 settings | Pass (2020-22 / 2023-25) | Breached | Median days to funded | Funded within 3 months |
+|---|---|---|---|---|
+| Default: `InpRiskMultiplier 1.0`, `InpDailyStopPct 4.0` | 98% / 87% | 0% / 0% | 101 / 73 | 41% / 55% |
+| **Fast: `InpRiskMultiplier 1.25`, `InpDailyStopPct 3.0`** | **91% / 82%** | **0% / 0%** | **83 / 58** | **49% / 63%** |
+| 1.25 with the normal 4% daily stop | 89% / 82% | 3% / 1% | 86 / 57 | 47% / 63% |
+| Faster: 1.5 with a 3% daily stop | 85% / 76% | 0% / 1% | 73 / 52 | 53% / 64% |
 
-With the six core EAs only, 1.25 was breach-free (88% pass, ~83 days). With all eight, 1.0 is already about as
-fast (~88 days) with 0 breaches, so keep 1.0. Use 1.25 in phase 1 only if you accept ~2% breach risk for
-~3 weeks of speed, and go back to 1.0 for phase 2 and the funded account.
+**Recommended for phase 1:** set `InpRiskMultiplier = 1.25` and `InpDailyStopPct = 3.0` in **every EA**. That's
+about 2.5-3 weeks faster with no breaches, for ~5 points of pass rate (more attempts halted by the 8% guard).
+Then set both back (`1.0` and `4.0`) for phase 2 and the funded account.
+
+Also tested and rejected: boosting only some strategies, "house money" (boost once up 3-5%), and boosts
+with a brake at -2/-3%. All were slower or caused 1-12% breaches.
 
 ## Notes
 - MT5 only trades while it is running: keep the PC on or use a Windows VPS.
