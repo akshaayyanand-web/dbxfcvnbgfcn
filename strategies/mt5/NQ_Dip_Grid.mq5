@@ -125,12 +125,20 @@ bool NewsBlocked()   // uses MT5's built-in economic calendar (live only; the St
      }
    return false;
   }
+bool gSpreadRetry = false;   // set when an entry waits for the spread to normalise (retried on later ticks, up to 15 minutes)
 bool SpreadTooWide(double stopDist, string tag)
   {
    if(InpMaxSpreadPct <= 0 || stopDist <= 0) return false;
    double spread = SymbolInfoDouble(_Symbol, SYMBOL_ASK) - SymbolInfoDouble(_Symbol, SYMBOL_BID);
    if(spread <= InpMaxSpreadPct / 100.0 * stopDist) return false;
-   Print(tag, ": spread ", DoubleToString(spread, _Digits), " is over ", InpMaxSpreadPct, "% of the stop distance ", DoubleToString(stopDist, _Digits), ", skipped");
+   static datetime lastWarn = 0;
+   if(TimeCurrent() - lastWarn > 300)
+     {
+      Print(tag, ": spread ", DoubleToString(spread, _Digits), " is over ", InpMaxSpreadPct, "% of the stop distance ",
+            DoubleToString(stopDist, _Digits), ", waiting up to 15 min for it to normalise");
+      lastWarn = TimeCurrent();
+     }
+   gSpreadRetry = true;
    return true;
   }
 double RiskMoney()
@@ -221,8 +229,14 @@ void OnTick()
    bool blocked = GuardBlocks();
    static datetime lastBar = 0;
    datetime b0 = iTime(_Symbol, _Period, 0);
-   if(b0 == lastBar) return;
+   if(b0 == lastBar)
+     {
+      // an entry was held back by a wide spread: try again on later ticks of the same bar (max 15 minutes)
+      if(gSpreadRetry && !blocked && _Period == REQUIRED_TF && TimeCurrent() - b0 < 15 * 60) { gSpreadRetry = false; OnNewBar(); }
+      return;
+     }
    lastBar = b0;
+   gSpreadRetry = false;
    if(blocked || _Period != REQUIRED_TF) return;
    OnNewBar();
   }

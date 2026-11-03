@@ -86,10 +86,12 @@ combined result, run all eight on a demo account, which is the real test anyway.
   2 minutes of a high-impact USD event (CPI, jobs report, Fed, ...), using MT5's built-in economic calendar.
   It only works live, since the Strategy Tester has no calendar. Set it to 0 to switch it off, or match it to
   your firm's rule. Stops can still be hit during news; check how your firm treats that.
-- **Spread filter:** `InpMaxSpreadPct` (default 15) skips a new trade when the current spread is more than 15% of
-  that trade's stop distance (for the dip grids, of one grid spacing). Normal spreads are far below that. It only
-  blocks moments when the spread blows out (daily rollover around 17:00 New York, thin markets, news), where an
-  entry would cost much more than the backtest assumed. The Experts tab logs every skip. Set 0 to switch it off.
+- **Spread filter:** `InpMaxSpreadPct` (default 15). If the spread is more than 15% of a new trade's stop distance
+  (for the dip grids, of one grid spacing), the EA **waits** and retries on every tick for up to 15 minutes, entering
+  as soon as the spread is normal again. Only after that does it skip. This matters most at the daily reopen
+  (18:00 New York), when Gold Dip and the BTC/index dips often trigger and spreads are briefly very wide. Those
+  trades are good ones (Gold Dip's rollover-hour trades averaged +1.15R), so waiting keeps them but at a normal
+  spread. The intraday EAs never trade in that window. Waits are logged in the Experts tab. Set 0 to switch it off.
 - Session times (London / New York) are computed from the server time with daylight-saving rules.
   Live, the server offset is detected automatically; in the Strategy Tester set `InpServerGMTOffset`
   (2 for FTMO-style servers) and `InpServerUsesUSDST`.
