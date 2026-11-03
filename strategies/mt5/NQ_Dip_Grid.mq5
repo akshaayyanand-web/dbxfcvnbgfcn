@@ -25,6 +25,7 @@ input bool   InpAutoServerOffset = true;   // Live: detect the server's GMT offs
 input int    InpServerGMTOffset  = 2;      // Tester: server GMT offset in winter (FTMO-style servers: 2)
 input bool   InpServerUsesUSDST  = true;   // Tester: server shifts +1h with US daylight saving (FTMO-style)
 input int    InpNewsBlockMin     = 2;      // No NEW trades this many minutes before/after high-impact USD news (0 = off)
+input double InpMaxSpreadPct     = 15;     // Skip a trade if the current spread is more than this % of its stop distance (0 = off)
 
 //--- time helpers -------------------------------------------------------------
 datetime MakeDate(int y, int m, int d) { MqlDateTime s; ZeroMemory(s); s.year = y; s.mon = m; s.day = d; return StructToTime(s); }
@@ -124,6 +125,14 @@ bool NewsBlocked()   // uses MT5's built-in economic calendar (live only; the St
      }
    return false;
   }
+bool SpreadTooWide(double stopDist, string tag)
+  {
+   if(InpMaxSpreadPct <= 0 || stopDist <= 0) return false;
+   double spread = SymbolInfoDouble(_Symbol, SYMBOL_ASK) - SymbolInfoDouble(_Symbol, SYMBOL_BID);
+   if(spread <= InpMaxSpreadPct / 100.0 * stopDist) return false;
+   Print(tag, ": spread ", DoubleToString(spread, _Digits), " is over ", InpMaxSpreadPct, "% of the stop distance ", DoubleToString(stopDist, _Digits), ", skipped");
+   return true;
+  }
 double RiskMoney()
   {
    double bal = AccountInfoDouble(ACCOUNT_BALANCE), eq = AccountInfoDouble(ACCOUNT_EQUITY);
@@ -155,6 +164,7 @@ bool OpenTrade(int dir, double stopPrice, double tpPrice, string tag)
    double price = dir == 1 ? SymbolInfoDouble(_Symbol, SYMBOL_ASK) : SymbolInfoDouble(_Symbol, SYMBOL_BID);
    double dist = MathAbs(price - stopPrice);
    if(dir * (price - stopPrice) <= 0) { Print(tag, ": price already beyond the stop, skipped"); return false; }
+   if(SpreadTooWide(dist, tag)) return false;
    double lots = LotsFor(RiskMoney(), dist, dir == 1 ? ORDER_TYPE_BUY : ORDER_TYPE_SELL, price);
    if(lots <= 0) { Print(tag, ": size below minimum for the allowed risk, skipped"); return false; }
    double sl = NormalizeDouble(stopPrice, _Digits), tp = tpPrice > 0 ? NormalizeDouble(tpPrice, _Digits) : 0;
@@ -275,6 +285,7 @@ void OnNewBar()
       if(NewsBlocked()) { Print("Dip grid: high-impact news within ", InpNewsBlockMin, " min, skipped"); return; }
       double e0 = SymbolInfoDouble(_Symbol, SYMBOL_ASK);
       double sl = e0 - InpLevels * InpSpacing * a0, sumDist = 0;
+      if(SpreadTooWide(InpSpacing * a0, "Dip grid")) return;                 // compared with one grid spacing
       for(int k = 0; k < InpLevels; k++) sumDist += (e0 - k * InpSpacing * a0) - sl;
       double lots = LotsFor(RiskMoney(), sumDist, ORDER_TYPE_BUY, e0);   // the whole basket loses RiskMoney at the stop
       if(lots <= 0) { Print("Dip grid: size below minimum for the allowed risk, skipped"); return; }
