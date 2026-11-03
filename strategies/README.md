@@ -22,14 +22,18 @@ only. Backtests overstate live results; paper trade all scripts together for 2â€
 
 Daily shares add up to 5%; every max-loss input stays at the account's full 10% as a backstop.
 
-**Upgrade (MT5 only): add the two dip grids** `NQ_Dip_Grid.mq5` and `SPX_Dip_Grid.mq5` (H1, 0.5% per basket
-worst case; see `mt5/README.md`). Same test, with the six above:
-- 2-step: 93% passed, 0% breached, median **~88 days** (was ~101).
-- Funded year: median +60%, average +64%, 0/67 breaches. Max drawdown 15.9% (was 13.3%).
-- Calendar years: 2020 +52%, 2021 +69%, 2022 +21%, 2023 +55%, 2024 +77%, 2025 +104%, 2026 +31% (to Oct).
-- A gold version, or 0.75% per basket, caused breaches (5% of evaluations), so it is left out.
-- Caveat: the same rules lost money on the Dow and Russell, so the edge is real but thin. Demo it first.
+**Current MT5 set (8 EAs, every one 10%+/yr at 1% risk):** BTC_Dip_v3 1.0%, Gold_Dip 0.5%, NQ_Opening_Range 0.5%,
+Gold_Asia_Breakout 0.25%, Gold_Intraday_Momentum 0.25%, NQ_Dip_2h 0.25%, SPX_Dip_1h 0.25%, Oil_Dip_1h 0.15% (see
+`mt5/README.md`). It replaced NQ Intraday Momentum and the two dip grids (below 10%/yr) after a 2,292-version dip
+search (`tools/dip_search.py`, `tools/replace_test*.py`). Same test:
+- 2-step: **94% passed, 0% breached**, median **~84 days** (2020-22 starts 95%, 2023-25 starts 92%).
+- Funded year: median **+72%**, average +64%, 0/67 breaches. Max drawdown **13.7%**.
+- Calendar years: 2020 +47%, 2021 +75%, 2022 +13%, 2023 +68%, 2024 +78%, 2025 +100%, 2026 +38% (to Oct).
+- Caveat: the three new EAs were chosen using the whole 2020-2026 history (both halves had to be 10%+/yr and
+  neighbouring settings had to work too), so live results will likely be lower. Demo first.
+- Longer-hold upgrades of BTC Dip / Gold Dip (6-day holds, +30%/yr alone) caused 13-15% breaches together and were rejected.
 
+Older results for reference (TradingView six-script preset):
 Results (one account, 10% / 5% rules, guard on):
 - FTMO-style 2-step (+10% then +5%): ~93% passed, 0% breached, median ~3.4 months.
 - Funded year (67 rolling 12-month windows): median +57%, average +54%, 0 breaches.

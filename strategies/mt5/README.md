@@ -6,14 +6,17 @@
 | `Gold_Dip.mq5` | XAUUSD | H1 | 0.5% | 1102 |
 | `Gold_Asia_Breakout.mq5` | XAUUSD | H1 | 0.25% | 1103 |
 | `Gold_Intraday_Momentum.mq5` | XAUUSD | H1 | 0.25% | 1104 |
-| `NQ_Intraday_Momentum.mq5` | US100 / NAS100 / USTEC | H1 | 0.25% | 1105 |
 | `NQ_Opening_Range.mq5` | US100 / NAS100 / USTEC | M5 | 0.5% | 1106 |
-| `NQ_Dip_Grid.mq5` | US100 / NAS100 / USTEC | H1 | 0.5% per basket | 1107 |
-| `SPX_Dip_Grid.mq5` | US500 / SPX500 | H1 | 0.5% per basket | 1108 |
+| `NQ_Dip_2h.mq5` | US100 / NAS100 / USTEC | **H2** | 0.25% | 1109 |
+| `SPX_Dip_1h.mq5` | US500 / SPX500 | H1 | 0.25% | 1110 |
+| `Oil_Dip_1h.mq5` | WTI / USOIL / XTIUSD (RoboForex: search "WTI" or "OIL") | H1 | 0.15% | 1111 |
+
+Every EA makes 10%+ a year at 1% risk (2020-2026). The older `NQ_Intraday_Momentum`, `NQ_Dip_Grid` and `SPX_Dip_Grid`
+(below 10%) were replaced and are kept in `retired/` for reference. Don't run them together with the new set.
 
 ## Step 1 – Get MT5 and a demo account
 - Use the MT5 that your prop firm gives you (FTMO, The5ers, etc. each have a download plus free-trial/demo logins),
-  or install MT5 from metatrader5.com and open a demo account with any broker that has **gold, US100, US500 and BTC**.
+  or install MT5 from metatrader5.com and open a demo account with any broker that has **gold, US100, US500, oil (WTI) and BTC**.
 - Check the symbol names in **Market Watch** (Ctrl+M → right-click → *Show All*): e.g. `XAUUSD`, `US100.cash`,
   `US500.cash`, `BTCUSD`. Any name works; the EAs trade whatever chart they're attached to.
 
@@ -24,8 +27,8 @@
 3. Back in MT5, right-click **Expert Advisors** in the Navigator → **Refresh**. The eight EAs appear.
 
 ## Step 3 – Run them live (demo first)
-1. Open **eight charts** (File → New Chart): gold ×3, US100 ×3, US500 ×1, BTC ×1. Set each chart's timeframe
-   from the table above (the M5 one is `NQ_Opening_Range`; BTC is H2).
+1. Open **eight charts** (File → New Chart): gold ×3, US100 ×2, US500 ×1, oil ×1, BTC ×1. Set each chart's timeframe
+   from the table above (`NQ_Opening_Range` is M5; `BTC_Dip_v3` and `NQ_Dip_2h` are H2).
 2. Drag one EA onto each chart. In the window that opens:
    - **Common** tab: tick **Allow Algo Trading**.
    - **Inputs** tab: set `InpAccountSize` = your account's starting balance (e.g. 100000). Leave the rest.
@@ -52,18 +55,18 @@
 **What each EA should roughly show on its own** (Python test 2020 – Oct 2026, at the default risk; MT5 will differ a
 little because of broker prices, spreads and compounding):
 
-| EA | Risk | Trades / month | Win rate | Per year | Max DD | 2022 | 2024 | 2025 |
+| EA | Risk | Trades / month | Per year (at that risk) | Per year at 1% risk | Max DD | 2022 | 2024 | 2025 |
 |---|---|---|---|---|---|---|---|---|
-| BTC_Dip_v3 | 1.0% | 2.7 | 44% | +19.9% | 9.7% | -1.4% | +23.9% | +21.5% |
-| Gold_Dip | 0.5% | 6.5 | 25% | +9.1% | 13.4% | +8.6% | +19.5% | +25.5% |
-| Gold_Asia_Breakout | 0.25% | 28 | 36% | +3.2% | 9.2% | +0.7% | +0.8% | +3.0% |
-| Gold_Intraday_Momentum | 0.25% | 8.3 | 37% | +2.9% | 5.3% | +1.4% | -2.0% | +3.1% |
-| NQ_Intraday_Momentum | 0.25% | 15 | 52% | +2.4% | 6.1% | +2.2% | +5.8% | -1.5% |
-| NQ_Opening_Range | 0.5% | 22 | 46% | +6.9% | 14.8% | +9.5% | +7.6% | +14.3% |
-| NQ_Dip_Grid | 0.5% | 6.5 | 65% | +1.9% | 7.2% | -2.2% | +4.8% | +8.3% |
-| SPX_Dip_Grid | 0.5% | 6.4 | 67% | +3.3% | 8.0% | +1.7% | -1.5% | -1.0% |
+| BTC_Dip_v3 | 1.0% | 2.7 | +19.9% | +19.9% | 9.7% | -1.4% | +23.9% | +21.5% |
+| Gold_Dip | 0.5% | 6.5 | +9.1% | +18.1% | 13.4% | +8.6% | +19.5% | +25.5% |
+| NQ_Opening_Range | 0.5% | 22 | +6.9% | +13.8% | 14.8% | +9.4% | +7.6% | +14.3% |
+| Gold_Asia_Breakout | 0.25% | 28 | +3.2% | +12.8% | 9.2% | +0.7% | +0.8% | +3.0% |
+| Gold_Intraday_Momentum | 0.25% | 8.3 | +2.9% | +11.8% | 5.3% | +1.4% | -2.0% | +3.1% |
+| NQ_Dip_2h | 0.25% | 4.4 | +3.3% | +13.4% | 4.9% | -2.3% | +2.6% | +0.8% |
+| SPX_Dip_1h | 0.25% | 8.9 | +2.9% | +11.7% | 8.0% | -3.0% | +6.9% | 0.0% |
+| Oil_Dip_1h | 0.15% | 4.7 | +2.2% | +14.9% | 4.7% | +0.1% | +0.6% | +3.3% |
 
-Individually most look small. The ~+60%/yr comes from running all eight together on one account, because
+Individually most look small. The ~+65-70%/yr comes from running all eight together on one account, because
 they rarely lose on the same days. A losing year for one EA is normal (see the columns).
 
 **Limits of MT5's tester:** it runs one EA at a time, so it can't reproduce the combined portfolio or the shared
@@ -73,11 +76,8 @@ combined result, run all eight on a demo account, which is the real test anyway.
 ## What every EA does
 - Enters on the close of the signal bar with the **stop (and the ORB target) on the order**.
 - Time exits are automatic (4 days / 96 bars for the dip EAs, session closes for the day trades).
-- **Dip grids** (`NQ_Dip_Grid`, `SPX_Dip_Grid`): buy when price closes 2 standard deviations below its 20-bar
-  mean while above the 200 EMA, plus 2 equal buy-limits 1 and 2 ATR lower. All three share one hard stop
-  3 ATR below the first entry, sized so the **whole basket** loses 0.5% at the stop. Once price is back at
-  its mean, the limits are cancelled and the stop trails 1.5 ATR under the close (never below
-  break-even). Time exit after 120 bars. These are equal-size levels, not martingale.
+- **Dip EAs** (BTC, Gold, NQ 2h, S&P 1h, Oil 1h): buy a sharp short-term drop (low RSI) while price is above its
+  trend EMA, skip after a crash (big 30-day fall), stop 2 x ATR on the order, and exit after a fixed number of bars.
 - **Account-level guard (shared by all EAs through MT5 global variables):** if the account is down
   `InpDailyStopPct` (4%) on the day, every EA closes its trades and stops for the day; if the account is
   down `InpMaxStopPct` (8%) from the start, every EA closes and stops for good. New trades are sized so
@@ -97,22 +97,19 @@ combined result, run all eight on a demo account, which is the real test anyway.
   (2 for FTMO-style servers) and `InpServerUsesUSDST`.
 
 ## Passing faster (optional)
-Simulated FTMO-style 2-step with **all eight EAs**, attempts started weekly. Settings were picked on 2020-22
-starts and checked on 2023-25 starts. Phase 2 and the funded account always run at the defaults.
+Simulated FTMO-style 2-step with **the eight EAs above**, attempts started weekly 2020-2025. Phase 2 and the funded
+account always run at the defaults.
 
-| Phase 1 settings | Pass (2020-22 / 2023-25) | Breached | Median days to funded | Funded within 3 months |
+| Phase 1 settings | Pass | Breached | Median days to funded | Funded within 90 days |
 |---|---|---|---|---|
-| Default: `InpRiskMultiplier 1.0`, `InpDailyStopPct 4.0` | 98% / 87% | 0% / 0% | 101 / 73 | 41% / 55% |
-| **Fast: `InpRiskMultiplier 1.25`, `InpDailyStopPct 3.0`** | **91% / 82%** | **0% / 0%** | **83 / 58** | **49% / 63%** |
-| 1.25 with the normal 4% daily stop | 89% / 82% | 3% / 1% | 86 / 57 | 47% / 63% |
-| Faster: 1.5 with a 3% daily stop | 85% / 76% | 0% / 1% | 73 / 52 | 53% / 64% |
+| **Default: `InpRiskMultiplier 1.0`, `InpDailyStopPct 4.0`** | **94%** | **0%** | **84** | 51% |
+| `InpRiskMultiplier 1.25`, `InpDailyStopPct 3.0` | 83% | 1.4% | 68 | 58% |
+| `InpRiskMultiplier 1.25`, `InpDailyStopPct 4.0` | 79% | 5.7% | 64 | 55% |
+| `InpRiskMultiplier 1.5`, `InpDailyStopPct 3.0` | 76% | 0.4% | 56 | 58% |
 
-**Recommended for phase 1:** set `InpRiskMultiplier = 1.25` and `InpDailyStopPct = 3.0` in **every EA**. That's
-about 2.5-3 weeks faster with no breaches, for ~5 points of pass rate (more attempts halted by the 8% guard).
-Then set both back (`1.0` and `4.0`) for phase 2 and the funded account.
-
-Also tested and rejected: boosting only some strategies, "house money" (boost once up 3-5%), and boosts
-with a brake at -2/-3%. All were slower or caused 1-12% breaches.
+**Recommended: keep the defaults (1.0 and 4.0) in every phase.** With this set the default is already ~84 days, and
+every boost costs pass rate (more attempts halted at -8%) and adds a small breach risk. If you boost anyway, use a
+3% daily stop, in phase 1 only.
 
 ## Notes
 - MT5 only trades while it is running: keep the PC on or use a Windows VPS.
