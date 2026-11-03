@@ -43,14 +43,21 @@ Results (one account, 10% / 5% rules, guard on):
 About 2–3 new trades per weekday: gold around the London open, Nasdaq around the New York open (09:30–11:30
 NY) and at 11:00 NY, BTC/gold dip signals at any time.
 
-## Only 1–2 indicators allowed on your TradingView plan?
-Use **`all_in_one_alerts.pine`**: one indicator on one **5-minute Nasdaq chart** (e.g. OANDA:NAS100USD, real-time on
-free plans) and **one alert** ("Any alert() function call"). It runs **the same 8 strategies as the MT5 EAs** (BTC Dip v3,
-Gold Dip, Gold Asia Breakout, Gold Intraday Momentum, NQ Opening Range, NQ Dip 2h, S&P Dip 1h, Oil Dip 1h). Other
-symbols and timeframes are pulled in from closed bars, so nothing repaints. Every entry is messaged with direction,
-price, STOP, risk in $, size and how it exits, plus a message when a time exit is due. A status table on the chart
-shows which strategies are in a trade. Place the orders yourself with the stop from the alert. It can't see your
-fills or P&L, so apply the safety rule yourself: stop for the day at -4%, stop everything at -8% from the start.
+## TradingView: all 8 strategies in one indicator, with a paper account
+**`all_in_one_alerts.pine`**: one indicator on one **5-minute Nasdaq chart** (OANDA:NAS100USD, real-time on free plans)
+and **one alert** ("Any alert() function call"). It runs **the same 8 strategies as the MT5 EAs** and includes:
+- **A paper (dummy) account** that starts at "Paper account start": every signal opens a virtual position sized by
+  risk %, closed at its stop, target or time exit. The table shows balance, equity, today's P&L and every open
+  position with its P&L and stop.
+- **An account guard**: down 4% on the day (from that day's starting balance, daily reset at midnight Prague by
+  default, like most EU prop firms) closes all paper positions, sends a "CLOSE ALL" alert and blocks new trades
+  until the reset. Down 8% from the start closes everything and stops for good.
+- **A news block**: no new trades 13:55-14:10 New York on Fed decision days (2026-2027 dates included, editable).
+  CPI and jobs reports are at 08:30 NY, when none of the strategies can enter. A "Pause new trades" switch blocks
+  entries by hand.
+- **No spread filter**: TradingView has no live spread data, so that one exists only in the MT5 EAs.
+Each alert lists the entries, exits (with paper P&L), skipped trades and guard actions, so you can copy the trades
+onto TradingView Paper Trading or a broker demo by hand.
 
 ## Optional add-ons (not in the main preset)
 `btc_ny_momentum.pine` and `eth_ny_momentum.pine` (crypto New York-session momentum) also held up out of
