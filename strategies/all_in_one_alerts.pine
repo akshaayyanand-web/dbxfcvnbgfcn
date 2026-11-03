@@ -1,50 +1,51 @@
 //@version=6
 // ─────────────────────────────────────────────────────────────────────────────
-// Prop Portfolio – All-in-One Alerts  (ONE indicator, ONE alert, for all six strategies)
+// Prop Portfolio – All-in-One Alerts (8 strategies)  –  ONE indicator, ONE alert, same rules as the 8 MT5 EAs
 //
-// Put it on a 5-MINUTE Nasdaq chart (e.g. OANDA:NAS100USD or CAPITALCOM:US100 – real-time on free plans;
-// CME NQ1!/MNQ1! data is delayed on free plans). Then create ONE alert:
-//   Condition: "Prop Portfolio – All-in-One Alerts" → "Any alert() function call".
+// Put it on a 5-MINUTE Nasdaq chart (e.g. OANDA:NAS100USD or CAPITALCOM:US100 – real-time on free plans).
+// Create ONE alert:  Condition = "Prop Portfolio – All-in-One Alerts (8)" → "Any alert() function call".
 //
-// It sends a message for every ENTRY (direction, approximate price, STOP, target / exit time, size) and
-// every TIME EXIT of these strategies (same rules as the individual scripts in this folder):
-//   1  BTC Dip v3          BTCUSDT 2h   RSI(3)<20 & close>EMA50, no buys after a >15% 30-day drop,
-//                                       stop 2xATR14, exit after 48 bars (4 days)          risk 1.0%
-//   2  Gold Dip            gold 1h      RSI(2)<10 & close>EMA50, no buys after a >8% 30-day drop,
-//                                       stop 2xATR14, exit after 96 bars                    risk 0.5%
-//   3  Gold Asia Breakout  gold 1h      break of the 00-07 London range 07-14 London, stop range middle,
-//                                       flat 20:00 London                                   risk 0.25%
-//   4  Gold Intraday Mom.  gold 1h      >0.6% move 17:00→09:00 London, stop 1xATR24, exit 16:00 London   0.25%
-//   5  NQ Intraday Mom.    Nasdaq 1h    >0.6% move 16:00→11:00 New York, stop 1.5xATR24, exit 15:00 NY  0.25%
-//   6  NQ Opening Range    Nasdaq 5m    15-min range after 09:30 NY, entries until 11:30, stop other side,
-//                                       target 2R, flat 15:55 NY                            risk 0.5%
+// It messages every ENTRY (direction, approx. price, STOP, risk in $, size, how/when it exits) and every TIME EXIT:
+//   1  BTC Dip v3          BTC 2h      RSI(3)<20 & close>EMA50, no buys after a >15% 30-day drop, stop 2xATR14, exit after 48 bars   1.0%
+//   2  Gold Dip            gold 1h     RSI(2)<10 & close>EMA50, no buys after a >8% 30-day drop,  stop 2xATR14, exit after 96 bars   0.5%
+//   3  Gold Asia Breakout  gold 1h     break of the 00-07 London range from 07-14 London, stop range middle, flat 20:00 London     0.25%
+//   4  Gold Intraday Mom.  gold 1h     >0.6% move 17:00→09:00 London, trade that way, stop 1xATR24, exit 16:00 London              0.25%
+//   5  NQ Opening Range    Nasdaq 5m   15-min range after 09:30 NY, entries until 11:30, stop other side, target 2R, flat 15:55   0.5%
+//   6  NQ Dip 2h           Nasdaq 2h   RSI(2)<25 & close>EMA50, no buys after a >8% 30-day drop,  stop 2xATR14, exit after 48 bars   0.25%
+//   7  S&P Dip 1h          S&P 1h      RSI(2)<15 & close>EMA200, no buys after a >8% 30-day drop, stop 2xATR14, exit after 48 bars   0.25%
+//   8  Oil Dip 1h          WTI oil 1h  RSI(2)<25 & close>EMA50, no buys after a >15% 30-day drop, stop 2xATR14, exit after 144 bars  0.15%
 //
-// Signals from other symbols / timeframes use only CLOSED bars (no repainting); they arrive on the first
-// 5-minute bar after that bar closes. Sizes assume the account size below; the indicator cannot see your
-// fills or P&L, so follow the prop safety rule yourself: if the account is down 4% on the day, stop for
-// the day; if it is down 8% from the start, stop everything.
+// Signals from other symbols / timeframes use only CLOSED bars (no repainting) and arrive on the first 5-minute bar
+// after that bar closes. The indicator can't see your fills or P&L, so apply the safety rule yourself:
+// down 4% on the day → stop for the day; down 8% from the start → stop everything. Don't trade within 2 minutes of
+// high-impact news if your firm forbids it, and skip an entry if the spread is unusually wide.
 // ─────────────────────────────────────────────────────────────────────────────
-indicator("Prop Portfolio – All-in-One Alerts", shorttitle = "Prop Alerts", overlay = true, max_labels_count = 200)
+indicator("Prop Portfolio – All-in-One Alerts (8)", shorttitle = "Prop Alerts 8", overlay = true, max_labels_count = 200)
 
 G0 = "Account & symbols"
-acct    = input.float(200000, "Account size", minval = 1000, group = G0)
+acct    = input.float(100000, "Account size", minval = 1000, group = G0)
 btcSym  = input.symbol("BINANCE:BTCUSDT", "BTC symbol", group = G0)
 goldSym = input.symbol("OANDA:XAUUSD", "Gold symbol", group = G0)
-nqSym   = input.symbol("OANDA:NAS100USD", "Nasdaq symbol for the 1h momentum signal", group = G0)
+nqSym   = input.symbol("OANDA:NAS100USD", "Nasdaq symbol (for NQ Dip 2h)", group = G0)
+spxSym  = input.symbol("OANDA:SPX500USD", "S&P 500 symbol", group = G0)
+oilSym  = input.symbol("OANDA:WTICOUSD", "WTI oil symbol", group = G0)
 G1 = "Risk per trade (% of account)"
-rBtc   = input.float(1.0, "1 BTC Dip v3", step = 0.05, group = G1)
-rGdip  = input.float(0.5, "2 Gold Dip", step = 0.05, group = G1)
+rBtc   = input.float(1.0,  "1 BTC Dip v3", step = 0.05, group = G1)
+rGdip  = input.float(0.5,  "2 Gold Dip", step = 0.05, group = G1)
 rGasia = input.float(0.25, "3 Gold Asia Breakout", step = 0.05, group = G1)
 rGmom  = input.float(0.25, "4 Gold Intraday Momentum", step = 0.05, group = G1)
-rNqmom = input.float(0.25, "5 NQ Intraday Momentum", step = 0.05, group = G1)
-rOrb   = input.float(0.5, "6 NQ Opening Range Breakout", step = 0.05, group = G1)
+rOrb   = input.float(0.5,  "5 NQ Opening Range", step = 0.05, group = G1)
+rNqDip = input.float(0.25, "6 NQ Dip 2h", step = 0.05, group = G1)
+rSpx   = input.float(0.25, "7 S&P Dip 1h", step = 0.05, group = G1)
+rOil   = input.float(0.15, "8 Oil Dip 1h", step = 0.05, group = G1)
+showTable = input.bool(true, "Show status table", group = G0)
 
-// ───────────────────────── strategy engines (run in their own symbol / timeframe) ─────────────────────────
-// each returns the PREVIOUS (closed) bar's values: [signal dir, price, stop, time-exit flag, bar time]
+// ───────────────────────── strategy engines (each runs on its own symbol / timeframe) ─────────────────────────
+// each returns the PREVIOUS (closed) bar's values: [signal dir, price, stop, time-exit flag, bar time, in trade]
 
-f_dip(int rsiLen, float rsiBuy, float crashPct, int maxBars) =>
+f_dip(int rsiLen, float rsiBuy, int emaLen, float crashPct, int maxBars) =>
     float r = ta.rsi(close, rsiLen)
-    float e = ta.ema(close, 50)
+    float e = ta.ema(close, emaLen)
     float a = ta.atr(14)
     float d30 = request.security(syminfo.tickerid, "D", close[1] / close[31] - 1, lookahead = barmerge.lookahead_on)
     var bool  inPos = false
@@ -64,7 +65,7 @@ f_dip(int rsiLen, float rsiBuy, float crashPct, int maxBars) =>
         inPos := true
         stp := close - 2 * a
         held := 0
-    [sig[1], close[1], stp[1], tex[1], time[1]]
+    [sig[1], close[1], stp[1], tex[1], time[1], inPos[1]]
 
 f_range_bo(string tz, int rEnd, int wEnd, int flatH) =>
     int lh = hour(time, tz)
@@ -97,7 +98,7 @@ f_range_bo(string tz, int rEnd, int wEnd, int flatH) =>
             inPos := true
             dir := sig
             stp := (hi + lo) / 2
-    [sig[1], close[1], stp[1], tex[1], time[1]]
+    [sig[1], close[1], stp[1], tex[1], time[1], inPos[1]]
 
 f_mom(string tz, int refH, int sigH, int exitH, float thr, float atrMult) =>
     int lh = hour(time, tz)
@@ -123,13 +124,15 @@ f_mom(string tz, int refH, int sigH, int exitH, float thr, float atrMult) =>
             inPos := true
             dir := sig
             stp := close - sig * atrMult * a
-    [sig[1], close[1], stp[1], tex[1], time[1]]
+    [sig[1], close[1], stp[1], tex[1], time[1], inPos[1]]
 
-[bS, bP, bSt, bX, bT] = request.security(btcSym, "120", f_dip(3, 20, 0.15, 48), lookahead = barmerge.lookahead_on)
-[gS, gP, gSt, gX, gT] = request.security(goldSym, "60", f_dip(2, 10, 0.08, 96), lookahead = barmerge.lookahead_on)
-[aS, aP, aSt, aX, aT] = request.security(goldSym, "60", f_range_bo("Europe/London", 7, 14, 20), lookahead = barmerge.lookahead_on)
-[mS, mP, mSt, mX, mT] = request.security(goldSym, "60", f_mom("Europe/London", 17, 9, 16, 0.006, 1.0), lookahead = barmerge.lookahead_on)
-[nS, nP, nSt, nX, nT] = request.security(nqSym, "60", f_mom("America/New_York", 16, 11, 15, 0.006, 1.5), lookahead = barmerge.lookahead_on)
+[bS, bP, bSt, bX, bT, bIn] = request.security(btcSym,  "120", f_dip(3, 20, 50, 0.15, 48),  lookahead = barmerge.lookahead_on)
+[gS, gP, gSt, gX, gT, gIn] = request.security(goldSym, "60",  f_dip(2, 10, 50, 0.08, 96),  lookahead = barmerge.lookahead_on)
+[aS, aP, aSt, aX, aT, aIn] = request.security(goldSym, "60",  f_range_bo("Europe/London", 7, 14, 20), lookahead = barmerge.lookahead_on)
+[mS, mP, mSt, mX, mT, mIn] = request.security(goldSym, "60",  f_mom("Europe/London", 17, 9, 16, 0.006, 1.0), lookahead = barmerge.lookahead_on)
+[qS, qP, qSt, qX, qT, qIn] = request.security(nqSym,   "120", f_dip(2, 25, 50, 0.08, 48),  lookahead = barmerge.lookahead_on)
+[sS, sP, sSt, sX, sT, sIn] = request.security(spxSym,  "60",  f_dip(2, 15, 200, 0.08, 48), lookahead = barmerge.lookahead_on)
+[oS2, oP, oSt, oX2, oT, oIn] = request.security(oilSym, "60", f_dip(2, 25, 50, 0.15, 144), lookahead = barmerge.lookahead_on)
 
 // ───────────────────────── NQ opening-range breakout on this 5-minute chart ─────────────────────────
 int  nyMin = hour(time, "America/New_York") * 60 + minute(time, "America/New_York")
@@ -148,76 +151,103 @@ if nyNewDay
 if nyMin >= 570 and nyMin < 585
     orHi := na(orHi) ? high : math.max(orHi, high)
     orLo := na(orLo) ? low : math.min(orLo, low)
-int  oS = 0
-bool oX = false
+int  rS = 0
+bool rX = false
 if orIn
     if (orDir == 1 and (low <= orStp or high >= orTgt)) or (orDir == -1 and (high >= orStp or low <= orTgt))
         orIn := false
     else if nyMin >= 950
         orIn := false
-        oX := true
+        rX := true
 if not orIn and not orTraded and nyMin >= 585 and nyMin < 690 and not na(orHi) and barstate.isconfirmed
-    oS := close > orHi ? 1 : close < orLo ? -1 : 0
-    if oS != 0
+    rS := close > orHi ? 1 : close < orLo ? -1 : 0
+    if rS != 0
         orTraded := true
         orIn := true
-        orDir := oS
-        orStp := oS == 1 ? orLo : orHi
-        orTgt := close + oS * 2 * math.abs(close - orStp)
+        orDir := rS
+        orStp := rS == 1 ? orLo : orHi
+        orTgt := close + rS * 2 * math.abs(close - orStp)
 
 // ───────────────────────── alerts ─────────────────────────
 f_side(int d) => d == 1 ? "BUY" : "SELL"
 f_money(float x) => "$" + str.tostring(x, "#,###")
-
-f_entry(string name, int d, float px, float st, float riskPct, string extra, string sizing) =>
+f_entry(string name, int d, float px, float st, float riskPct, string extra) =>
     float risk = acct * riskPct / 100
     float dist = math.abs(px - st)
     float units = dist > 0 ? risk / dist : 0
     name + " | " + f_side(d) + " ~" + str.tostring(px, "#.##") + " | STOP " + str.tostring(st, "#.##") + " | risk " + f_money(risk) +
-         " | size " + str.tostring(units, "#.####") + " units" + sizing + " | " + extra
+         " | size " + str.tostring(units, "#.####") + " units (1 unit = 1 BTC / 1 oz / 1 index point / 1 barrel; convert to your broker's lots) | " + extra
 
 var int lastB = 0
 var int lastG = 0
 var int lastA = 0
 var int lastM = 0
-var int lastN = 0
+var int lastQ = 0
+var int lastS = 0
+var int lastO = 0
 f_new(int t, int last) => t != last and t > 0
 
 if bS == 1 and f_new(bT, lastB)
-    alert(f_entry("1 BTC DIP v3", 1, bP, bSt, rBtc, "exit after 4 days if not stopped", ""), alert.freq_once_per_bar)
+    alert(f_entry("1 BTC DIP v3", 1, bP, bSt, rBtc, "time exit after 48 x 2h bars (4 days) if not stopped"), alert.freq_once_per_bar)
 if bX and f_new(bT, lastB)
     alert("1 BTC DIP v3 | TIME EXIT: close the BTC position now", alert.freq_once_per_bar)
 lastB := bT
 if gS == 1 and f_new(gT, lastG)
-    alert(f_entry("2 GOLD DIP", 1, gP, gSt, rGdip, "exit after 96 hourly bars if not stopped", " (MGC = units/10, GC = units/100)"), alert.freq_once_per_bar)
+    alert(f_entry("2 GOLD DIP", 1, gP, gSt, rGdip, "time exit after 96 hourly bars if not stopped"), alert.freq_once_per_bar)
 if gX and f_new(gT, lastG)
     alert("2 GOLD DIP | TIME EXIT: close the gold dip position now", alert.freq_once_per_bar)
 lastG := gT
 if aS != 0 and f_new(aT, lastA)
-    alert(f_entry("3 GOLD ASIA BREAKOUT", aS, aP, aSt, rGasia, "flat by 20:00 London", " (MGC = units/10, GC = units/100)"), alert.freq_once_per_bar)
+    alert(f_entry("3 GOLD ASIA BREAKOUT", aS, aP, aSt, rGasia, "flat by 20:00 London"), alert.freq_once_per_bar)
 if aX and f_new(aT, lastA)
     alert("3 GOLD ASIA BREAKOUT | TIME EXIT: close it now (20:00 London)", alert.freq_once_per_bar)
 lastA := aT
 if mS != 0 and f_new(mT, lastM)
-    alert(f_entry("4 GOLD INTRADAY MOMENTUM", mS, mP, mSt, rGmom, "exit 16:00 London", " (MGC = units/10, GC = units/100)"), alert.freq_once_per_bar)
+    alert(f_entry("4 GOLD INTRADAY MOMENTUM", mS, mP, mSt, rGmom, "exit 16:00 London"), alert.freq_once_per_bar)
 if mX and f_new(mT, lastM)
     alert("4 GOLD INTRADAY MOMENTUM | TIME EXIT: close it now (16:00 London)", alert.freq_once_per_bar)
 lastM := mT
-if nS != 0 and f_new(nT, lastN)
-    alert(f_entry("5 NQ INTRADAY MOMENTUM", nS, nP, nSt, rNqmom, "exit 15:00 New York", " (MNQ contracts = units/2, NQ = units/20)"), alert.freq_once_per_bar)
-if nX and f_new(nT, lastN)
-    alert("5 NQ INTRADAY MOMENTUM | TIME EXIT: close it now (15:00 New York)", alert.freq_once_per_bar)
-lastN := nT
-if oS != 0
-    alert(f_entry("6 NQ OPENING RANGE", oS, close, orStp, rOrb, "TARGET " + str.tostring(orTgt, "#.##") + ", flat by 15:55 New York",
-         " (MNQ contracts = units/2, NQ = units/20)"), alert.freq_once_per_bar_close)
-if oX
-    alert("6 NQ OPENING RANGE | TIME EXIT: close it now (15:55 New York)", alert.freq_once_per_bar_close)
+if rS != 0
+    alert(f_entry("5 NQ OPENING RANGE", rS, close, orStp, rOrb, "TARGET " + str.tostring(orTgt, "#.##") + ", flat by 15:55 New York"), alert.freq_once_per_bar_close)
+if rX
+    alert("5 NQ OPENING RANGE | TIME EXIT: close it now (15:55 New York)", alert.freq_once_per_bar_close)
+if qS == 1 and f_new(qT, lastQ)
+    alert(f_entry("6 NQ DIP 2h", 1, qP, qSt, rNqDip, "time exit after 48 x 2h bars (4 days) if not stopped"), alert.freq_once_per_bar)
+if qX and f_new(qT, lastQ)
+    alert("6 NQ DIP 2h | TIME EXIT: close the Nasdaq dip position now", alert.freq_once_per_bar)
+lastQ := qT
+if sS == 1 and f_new(sT, lastS)
+    alert(f_entry("7 S&P DIP 1h", 1, sP, sSt, rSpx, "time exit after 48 hourly bars if not stopped"), alert.freq_once_per_bar)
+if sX and f_new(sT, lastS)
+    alert("7 S&P DIP 1h | TIME EXIT: close the S&P dip position now", alert.freq_once_per_bar)
+lastS := sT
+if oS2 == 1 and f_new(oT, lastO)
+    alert(f_entry("8 OIL DIP 1h", 1, oP, oSt, rOil, "time exit after 144 hourly bars (6 days) if not stopped"), alert.freq_once_per_bar)
+if oX2 and f_new(oT, lastO)
+    alert("8 OIL DIP 1h | TIME EXIT: close the oil dip position now", alert.freq_once_per_bar)
+lastO := oT
 
-// ───────────────────────── chart markers ─────────────────────────
+// ───────────────────────── chart: ORB lines + status table ─────────────────────────
 plot(orHi, "OR high", color = color.new(color.green, 0), style = plot.style_linebr)
 plot(orLo, "OR low", color = color.new(color.red, 0), style = plot.style_linebr)
-plotshape(oS == 1, "ORB long", shape.triangleup, location.belowbar, color.green, size = size.small)
-plotshape(oS == -1, "ORB short", shape.triangledown, location.abovebar, color.red, size = size.small)
+plotshape(rS == 1, "ORB long", shape.triangleup, location.belowbar, color.green, size = size.small)
+plotshape(rS == -1, "ORB short", shape.triangledown, location.abovebar, color.red, size = size.small)
+var table tb = table.new(position.top_right, 3, 9, bgcolor = color.new(color.black, 20), border_width = 1)
+f_row(int row, string name, bool inTrade, float st, float riskPct) =>
+    table.cell(tb, 0, row, name, text_color = color.white, text_size = size.small)
+    table.cell(tb, 1, row, inTrade ? "IN TRADE" : "flat", text_color = inTrade ? color.lime : color.gray, text_size = size.small)
+    table.cell(tb, 2, row, inTrade and not na(st) ? "stop " + str.tostring(st, "#.##") : str.tostring(riskPct) + "% risk", text_color = color.silver, text_size = size.small)
+if showTable and barstate.islast
+    table.cell(tb, 0, 0, "Strategy", text_color = color.yellow, text_size = size.small)
+    table.cell(tb, 1, 0, "Status", text_color = color.yellow, text_size = size.small)
+    table.cell(tb, 2, 0, "Stop / risk", text_color = color.yellow, text_size = size.small)
+    f_row(1, "1 BTC Dip v3", bIn, bSt, rBtc)
+    f_row(2, "2 Gold Dip", gIn, gSt, rGdip)
+    f_row(3, "3 Gold Asia BO", aIn, aSt, rGasia)
+    f_row(4, "4 Gold Momentum", mIn, mSt, rGmom)
+    f_row(5, "5 NQ Opening Range", orIn, orStp, rOrb)
+    f_row(6, "6 NQ Dip 2h", qIn, qSt, rNqDip)
+    f_row(7, "7 S&P Dip 1h", sIn, sSt, rSpx)
+    f_row(8, "8 Oil Dip 1h", oIn, oSt, rOil)
 if timeframe.in_seconds() != 300 and barstate.islast
     label.new(bar_index, high, "Use a 5-minute Nasdaq chart", color = color.red, textcolor = color.white)

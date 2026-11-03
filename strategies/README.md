@@ -44,13 +44,13 @@ About 2–3 new trades per weekday: gold around the London open, Nasdaq around t
 NY) and at 11:00 NY, BTC/gold dip signals at any time.
 
 ## Only 1–2 indicators allowed on your TradingView plan?
-Use **`all_in_one_alerts.pine`** instead of the six scripts: one indicator on one **5-minute Nasdaq chart**
-(e.g. OANDA:NAS100USD – real-time on free plans) and **one alert** ("Any alert() function call").
-It runs all six strategies with the same rules (other symbols/timeframes are pulled in from closed bars,
-so nothing repaints) and messages every entry with direction, price, STOP, risk in $, size and exit
-time, plus a reminder when a time exit is due. Place the orders at your prop firm with the stop from
-the alert. It cannot see your fills or P&L, so apply the safety rule yourself: stop for the day at -4%,
-stop everything at -8% from the start.
+Use **`all_in_one_alerts.pine`**: one indicator on one **5-minute Nasdaq chart** (e.g. OANDA:NAS100USD, real-time on
+free plans) and **one alert** ("Any alert() function call"). It runs **the same 8 strategies as the MT5 EAs** (BTC Dip v3,
+Gold Dip, Gold Asia Breakout, Gold Intraday Momentum, NQ Opening Range, NQ Dip 2h, S&P Dip 1h, Oil Dip 1h). Other
+symbols and timeframes are pulled in from closed bars, so nothing repaints. Every entry is messaged with direction,
+price, STOP, risk in $, size and how it exits, plus a message when a time exit is due. A status table on the chart
+shows which strategies are in a trade. Place the orders yourself with the stop from the alert. It can't see your
+fills or P&L, so apply the safety rule yourself: stop for the day at -4%, stop everything at -8% from the start.
 
 ## Optional add-ons (not in the main preset)
 `btc_ny_momentum.pine` and `eth_ny_momentum.pine` (crypto New York-session momentum) also held up out of
