@@ -173,3 +173,4 @@ Monte Carlo (2,000 reshuffled histories in 20-day blocks so crash clusters stay 
 the realistic pass rate, not the 93% from the single history. **Costs matter most:** use the cheapest account
 (raw spread + commission / ECN, or a prop firm with tight spreads), and check that spreads are near the table in
 `mt5/README.md` before going live.
+- **Time-of-day momentum search** (`tools/momentum_search.py`; 2,880 versions on gold London/NY, Nasdaq, S&P, silver London/NY, oil, BTC, ETH; signal hour, exit, threshold, stop, long-only or both): 16 versions made 10%+/yr in both halves, **0 made 15%+**, and none had stable neighbouring settings (they were isolated lucky spots). The current Gold Intraday Momentum stays.
