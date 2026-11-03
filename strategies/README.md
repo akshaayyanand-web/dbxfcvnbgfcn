@@ -152,3 +152,20 @@ tested settings, and don't run other EAs or manual trades on the same account.**
   swing -13%, pin bars -19%, yesterday high/low rejection -15%, SMT divergence -64%. The best was gold triple EMA
   (+5% then +22%/yr, 34% drawdown); added to the 8 EAs it was faster but caused 10% breaches. S&P Bollinger
   bounce and S&P Stochastic (both with trend) changed nothing out of sample. None added.
+
+## Stress test of the 8 EAs (`tools/stress_test.py`)
+Same 2-step test with higher trading costs than assumed (spread + commission per trade):
+
+| Costs | 2-step pass | Breached | Median days | Funded year (median) | Per year (simple) |
+|---|---|---|---|---|---|
+| As tested | 93% | 0% | 88 | +60% | +50% |
+| x1.5 | 90% | 0% | 92 | +53% | +45% |
+| x2 | 86% | 0% | 100 | +47% | +41% |
+| x3 | 70% | 7% | 97 | +34% | +32% |
+| Intraday EAs x3, rest normal | 83% | 0% | 100 | +44% | +39% |
+
+Monte Carlo (2,000 reshuffled histories in 20-day blocks so crash clusters stay together): **86% pass, 0.4% breach**,
+13.6% halted by the guard, median ~95 days at normal costs; at double costs 73% pass, 4.8% breach. Treat ~85% as
+the realistic pass rate, not the 93% from the single history. **Costs matter most:** use the cheapest account
+(raw spread + commission / ECN, or a prop firm with tight spreads), and check that spreads are near the table in
+`mt5/README.md` before going live.
