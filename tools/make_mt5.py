@@ -500,10 +500,44 @@ def grid_ea(title, chart, magic, risk, note):
 EAS["NQ_Dip_Grid.mq5"] = grid_ea("Nasdaq Dip Grid", "US100 / NAS100 / USTEC", 1107, 0.5, "Portfolio risk: 0.5% per basket (worst case). Python 2016-2026: ~+1.9%/yr at 0.5% on its own (+7.7%/yr at 2% worst case).")
 EAS["SPX_Dip_Grid.mq5"] = grid_ea("S&P 500 Dip Grid", "US500 / SPX500", 1108, 0.5, "Portfolio risk: 0.5% per basket (worst case). Python 2016-2026: ~+2.8%/yr at 0.5% on its own (+11%/yr at 2% worst case).")
 
+def dip_ea(title, chart, tf, magic, risk, rsi_len, buy, ema_len, hold_bars, crash, note):
+    return dict(tf=tf, magic=magic, risk=risk, header=f"""//+------------------------------------------------------------------+
+//| {title} – MT5 EA. Chart: {chart}, {tf.replace('PERIOD_', '')}
+//| Buy when RSI({rsi_len}) < {buy} and close > EMA({ema_len}), unless the daily close is >{int(crash * 100)}% below the close
+//| 30 days earlier. Stop 2 x ATR(14) below the signal close (on the order). Exit after {hold_bars} bars.
+//| {note}
+//+------------------------------------------------------------------+""", body=f"""
+void OnNewBar()
+  {{
+   ulong tk; long tp; datetime ot;
+   if(MyPosition(tk, tp, ot))
+     {{
+      if(iBarShift(_Symbol, _Period, ot) >= {hold_bars}) CloseMine("Time exit ({hold_bars} bars)");
+      return;
+     }}
+   double c1 = iClose(_Symbol, _Period, 1), rsi = Rsi({rsi_len}, 1), ema = Ema({ema_len}, 1), atr = AtrRma(14, 1);
+   if(rsi == EMPTY_VALUE || ema == EMPTY_VALUE || atr == EMPTY_VALUE) return;
+   double d30 = iClose(_Symbol, PERIOD_D1, 1) / iClose(_Symbol, PERIOD_D1, 31) - 1;
+   if(d30 < -{crash}) return;                                  // crash filter
+   if(rsi < {buy} && c1 > ema) OpenTrade(1, c1 - 2 * atr, 0, "{title}");
+  }}
+""")
+
+
+RETIRED = {"NQ_Dip_Grid.mq5": EAS.pop("NQ_Dip_Grid.mq5"), "SPX_Dip_Grid.mq5": EAS.pop("SPX_Dip_Grid.mq5"),
+           "NQ_Intraday_Momentum.mq5": EAS.pop("NQ_Intraday_Momentum.mq5")}
+EAS["NQ_Dip_2h.mq5"] = dip_ea("NQ Dip 2h", "US100 / NAS100 / USTEC", "PERIOD_H2", 1109, 0.25, 2, 25, 50, 48, 0.08,
+                              "Portfolio risk: 0.25% per trade. Python 2020-2026 at 1% risk: +12.3%/yr (2020-22), +14.4%/yr (2023-26).")
+EAS["SPX_Dip_1h.mq5"] = dip_ea("S&P Dip 1h", "US500 / SPX500", "PERIOD_H1", 1110, 0.25, 2, 15, 200, 48, 0.08,
+                               "Portfolio risk: 0.25% per trade. Python 2020-2026 at 1% risk: +10.5%/yr (2020-22), +12.6%/yr (2023-26).")
+EAS["Oil_Dip_1h.mq5"] = dip_ea("Oil Dip 1h", "WTI / USOIL / XTIUSD", "PERIOD_H1", 1111, 0.15, 2, 25, 50, 144, 0.15,
+                               "Portfolio risk: 0.15% per trade. Python 2020-2026 at 1% risk: +14.1%/yr (2020-22), +15.5%/yr (2023-26).")
+
 if __name__ == "__main__":
     out = os.path.join(os.path.dirname(__file__), "..", "strategies", "mt5")
     os.makedirs(out, exist_ok=True)
-    for name, e in EAS.items():
+    os.makedirs(os.path.join(out, "retired"), exist_ok=True)
+    for name, e in list(EAS.items()) + [("retired/" + k, v) for k, v in RETIRED.items()]:
         src = (e["header"] + "\n#property version \"1.00\"\n"
                f"#define REQUIRED_TF {e['tf']}\n"
                f"input double InpRiskPct = {e['risk']};    // Risk per trade (% of balance)\n"
