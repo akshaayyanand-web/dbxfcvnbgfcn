@@ -11,7 +11,7 @@
 // Paper trade first.
 // ─────────────────────────────────────────────────────────────────────────────
 strategy("Gold Intraday Momentum – prop guard", shorttitle = "Gold Intraday Mom", overlay = true,
-     initial_capital = 200000, pyramiding = 0,
+     initial_capital = 100000, pyramiding = 0,
      commission_type = strategy.commission.percent, commission_value = 0.005,
      slippage = 1, margin_long = 0, margin_short = 0)
 

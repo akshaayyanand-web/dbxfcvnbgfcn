@@ -43,6 +43,21 @@ Results (one account, 10% / 5% rules, guard on):
 About 2–3 new trades per weekday: gold around the London open, Nasdaq around the New York open (09:30–11:30
 NY) and at 11:00 NY, BTC/gold dip signals at any time.
 
+## TradingView backtests of each strategy
+One Pine **strategy** per EA, for TradingView's Strategy Tester (defaults: $100,000, Live mode at the portfolio risk,
+trades from 2020-01-01; TradingView only loads as much history as your plan allows):
+
+| # | Script | Chart |
+|---|---|---|
+| 1 | `btc_dip_v3.pine` | BINANCE:BTCUSDT 2h |
+| 2 | `gold_dip_prop.pine` | OANDA:XAUUSD 1h |
+| 3 | `gold_asia_breakout.pine` | OANDA:XAUUSD 1h |
+| 4 | `gold_intraday_momentum.pine` | OANDA:XAUUSD 1h |
+| 5 | `nq_orb_prop.pine` | OANDA:NAS100USD 5m |
+| 6 | `nq_dip_2h.pine` | OANDA:NAS100USD 2h |
+| 7 | `spx_dip_1h.pine` | OANDA:SPX500USD 1h |
+| 8 | `oil_dip_1h.pine` | OANDA:WTICOUSD 1h |
+
 ## TradingView: all 8 strategies in one indicator, with a paper account
 **`all_in_one_alerts.pine`**: one indicator on one **5-minute Nasdaq chart** (OANDA:NAS100USD, real-time on free plans)
 and **one alert** ("Any alert() function call"). It runs **the same 8 strategies as the MT5 EAs** and includes:

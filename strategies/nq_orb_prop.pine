@@ -13,7 +13,7 @@
 // Portfolio weight 0.5% risk per trade. Thin edge: keep costs low (micro contracts). Paper trade first.
 // ─────────────────────────────────────────────────────────────────────────────
 strategy("NQ Opening-Range Breakout – prop guard", shorttitle = "NQ ORB", overlay = true,
-     initial_capital = 200000, pyramiding = 0,
+     initial_capital = 100000, pyramiding = 0,
      commission_type = strategy.commission.percent, commission_value = 0.006,
      slippage = 1, margin_long = 0, margin_short = 0)
 

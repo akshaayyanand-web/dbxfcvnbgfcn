@@ -34,7 +34,7 @@
 // guarantee future ones; a guard lowers the risk of a breach, it cannot make it impossible.
 // ─────────────────────────────────────────────────────────────────────────────
 strategy("BTC Dip v3 – crash filter + prop guard", shorttitle = "BTC Dip v3", overlay = true,
-     initial_capital = 50000, pyramiding = 0,
+     initial_capital = 100000, pyramiding = 0,
      commission_type = strategy.commission.percent, commission_value = 0.06,
      slippage = 1, margin_long = 0, margin_short = 0)
 
@@ -55,7 +55,7 @@ holdBars = input.int(48, "Time exit after N bars (48 = 4 days on 2h)", minval = 
 G_S = "Sizing"
 mode       = input.string("Live", "Sizing mode", options = ["Live", "Prop"], group = G_S,
      tooltip = "Live = fixed % risk per trade (funded or own account). Prop = evaluation sizing from the buffer, stops at the target.")
-riskPct    = input.float(1.5, "Live: risk per trade (% of balance)", minval = 0.1, maxval = 5, step = 0.05, group = G_S,
+riskPct    = input.float(1.0, "Live: risk per trade (% of balance)", minval = 0.1, maxval = 5, step = 0.05, group = G_S,
      tooltip = "1.5 for 10%/5% rules (FTMO-style). 0.75-1.0 for 6%/3% rules (Breakout-style). 2.0 only on your own money.")
 maxSizeX   = input.float(2.0, "Max position (x balance) – keep within the firm's leverage", minval = 0.1, step = 0.1, group = G_S)
 bufRiskPct = input.float(33, "Prop: risk per trade (% of buffer above the fail line)", minval = 1, maxval = 100, step = 1, group = G_S)
@@ -72,7 +72,7 @@ dayStopAt  = input.float(80, "Guard: emergency exit at this % of the daily limit
 maxStopAt  = input.float(80, "Guard: emergency exit at this % of the max loss", minval = 30, maxval = 95, step = 5, group = G_P)
 
 G_T = "Test period"
-startTime = input.time(timestamp("2025-01-01T00:00:00Z"), "Start date (trades only after this)", group = G_T)
+startTime = input.time(timestamp("2020-01-01T00:00:00Z"), "Start date (trades only after this)", group = G_T)
 
 // ═════════════════════════════ GUARDS & INDICATORS ════════════════════════════
 bool  tfOK = timeframe.in_seconds() == 7200
