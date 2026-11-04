@@ -52,7 +52,7 @@ tradeCap   = input.float(2.2, "Max loss per trade (% of balance)", minval = 0.1,
 maxSizeX   = input.float(1.5, "Max position (x start balance)", minval = 0.1, step = 0.1, group = G_S)
 
 G_T = "Test period"
-startTime = input.time(timestamp("UTC", 2025, 2, 1, 0, 0), "Start date (trades only after this)", group = G_T)
+startTime = input.time(timestamp("01 Feb 2025 00:00 +0000"), "Start date (trades only after this)", group = G_T)
 
 // ═════════════════════════════ TIMEFRAME GUARD ════════════════════════════════
 int  tfSec   = timeframe.in_seconds()
