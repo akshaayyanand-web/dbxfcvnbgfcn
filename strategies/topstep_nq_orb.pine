@@ -13,6 +13,8 @@
 //   • Maximum Loss Limit $2,000, trailing the highest END-OF-DAY balance (trading day ends 17:00 CT), and never
 //     above the starting balance. Guard: no new trades once the account is within the guard buffer of that line.
 //   • Daily loss guard: no new trades after the day's loss reaches the daily limit input.
+// FAST PLAN (pass in ~1-2 months, expect 1-2 resets): run this at $400 risk together with topstep_es_orb.pine
+//   and topstep_gold_mom.pine, each at $400. SAFE PLAN: this script alone at $150.
 // Python test (Nasdaq-100 1-minute data 2020-2026, $150 risk, $1.60 fees per micro round trip, weekly Combine starts):
 //   passed 86% of 2020-22 starts and 100% of 2023-25 starts, 0% hit the trailing max loss, median ~8-9 months.
 //   Bigger risk is faster but fails far more (at $250 about 1 in 3 failed). A backtest, not a promise.
@@ -35,6 +37,7 @@ G_S = "Sizing (MNQ micro contracts)"
 riskUsd    = input.float(150, "Risk per trade ($)", minval = 20, step = 10, group = G_S)
 mnqPoint   = input.float(2.0, "Dollars per point per contract (MNQ = 2, NQ = 20)", minval = 0.5, step = 0.5, group = G_S)
 maxContr   = input.int(10, "Max contracts", minval = 1, group = G_S)
+cname      = input.string("MNQ", "Contract name (for alerts)", group = G_S)
 
 G_T = "Topstep Combine rules"
 acct       = input.float(50000, "Starting balance", minval = 1000, step = 1000, group = G_T)
@@ -116,9 +119,9 @@ if sig and contr > 0
     tradedToday := true
     stopPx := stopPx0
     tgtPx  := targetR > 0 ? close + (upBreak ? 1 : -1) * targetR * stopPts : na
-    strategy.entry("ORB", upBreak ? strategy.long : strategy.short, qty = qty, comment = (upBreak ? "Long " : "Short ") + str.tostring(contr) + " MNQ")
+    strategy.entry("ORB", upBreak ? strategy.long : strategy.short, qty = qty, comment = (upBreak ? "Long " : "Short ") + str.tostring(contr) + " " + cname)
     strategy.exit("Exit", "ORB", stop = stopPx, limit = tgtPx)
-    alert("TOPSTEP NQ ORB " + (upBreak ? "BUY " : "SELL ") + str.tostring(contr) + " MNQ at next open ~" + str.tostring(close, "#.##") +
+    alert("TOPSTEP NQ ORB " + (upBreak ? "BUY " : "SELL ") + str.tostring(contr) + " " + cname + " at next open ~" + str.tostring(close, "#.##") +
           " | STOP " + str.tostring(stopPx, "#.##") + (na(tgtPx) ? "" : " | TARGET " + str.tostring(tgtPx, "#.##")) +
           " | risk ~$" + str.tostring(contr * oneRisk, "#") + " | flat by 15:55 NY (14:55 CT)", alert.freq_once_per_bar_close)
 
@@ -126,7 +129,7 @@ if strategy.position_size != 0
     strategy.exit("Exit", "ORB", stop = stopPx, limit = tgtPx)
     if nyMin >= flatMin - 5
         strategy.close("ORB", comment = "Flat 15:55 NY")
-        alert("TOPSTEP NQ ORB | FLAT: close the MNQ position now (15:55 NY)", alert.freq_once_per_bar_close)
+        alert("TOPSTEP NQ ORB | FLAT: close the " + cname + " position now (15:55 NY)", alert.freq_once_per_bar_close)
 
 // ── chart ──
 plot(orHi, "OR high", color = color.new(color.green, 0), style = plot.style_linebr)
@@ -146,7 +149,7 @@ if barstate.islastconfirmedhistory or barstate.isrealtime
     table.cell(tb, 0, 4, "Today", text_color = color.white)
     table.cell(tb, 1, 4, "$" + str.tostring(dayPnl, "#,###"), text_color = dayPnl >= 0 ? color.lime : color.red)
     table.cell(tb, 0, 5, "Next trade size", text_color = color.white)
-    table.cell(tb, 1, 5, str.tostring(contr) + " MNQ (risk ~$" + str.tostring(contr * oneRisk, "#") + ")", text_color = color.white)
+    table.cell(tb, 1, 5, str.tostring(contr) + " " + cname + " (risk ~$" + str.tostring(contr * oneRisk, "#") + ")", text_color = color.white)
     table.cell(tb, 0, 6, "Trades", text_color = color.white)
     table.cell(tb, 1, 6, str.tostring(strategy.closedtrades), text_color = color.white)
 if (barstate.islastconfirmedhistory or barstate.isrealtime) and not tfOK
