@@ -128,7 +128,7 @@ plot(emaT, "Trend EMA", color = color.new(color.orange, 0), linewidth = 2)
 plot(stopPx, "Stop", color = color.red, style = plot.style_linebr)
 bgcolor(sig ? color.new(color.green, 80) : inCrash ? color.new(color.red, 92) : na, title = "Signal / crash")
 
-if barstate.islast and not tfOK
+if (barstate.islastconfirmedhistory or barstate.isrealtime) and not tfOK
     label.new(bar_index, high, "Use the 2h chart - trading is OFF on this timeframe", color = color.red, textcolor = color.white, style = label.style_label_down)
 
 float netPct = (strategy.equity - startBal) / startBal * 100
@@ -136,7 +136,7 @@ int   nTr    = strategy.closedtrades
 float winPct = nTr > 0 ? strategy.wintrades / nTr * 100.0 : 0.0
 
 var table tb = table.new(position.top_right, 2, 9, bgcolor = color.new(color.black, 80))
-if barstate.islast
+if (barstate.islastconfirmedhistory or barstate.isrealtime)
     string st = hardHalt ? "HALTED (max-loss guard)" : dayHalt ? "PAUSED today (daily guard)" : passed ? "PROP TARGET REACHED" : propMode ? "PROP - evaluating" : "LIVE " + str.tostring(riskPct, "#.##") + "% risk"
     table.cell(tb, 0, 0, "Status", text_color = color.white)
     table.cell(tb, 1, 0, st, text_color = hardHalt or dayHalt ? color.red : passed ? color.lime : color.yellow)

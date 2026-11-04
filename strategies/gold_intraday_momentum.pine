@@ -88,5 +88,5 @@ if strategy.position_size != 0
         strategy.close("IM", comment = "Time exit")
 
 plot(refClose, "Reference close", color = color.new(color.blue, 30), style = plot.style_stepline)
-if barstate.islast and not tfOK
+if (barstate.islastconfirmedhistory or barstate.isrealtime) and not tfOK
     label.new(bar_index, high, "Use the 1h chart", color = color.red, textcolor = color.white)

@@ -104,5 +104,5 @@ if strategy.position_size != 0
 
 plot(orHi, "OR high", color = color.new(color.green, 0), style = plot.style_linebr)
 plot(orLo, "OR low", color = color.new(color.red, 0), style = plot.style_linebr)
-if barstate.islast and not tfOK
+if (barstate.islastconfirmedhistory or barstate.isrealtime) and not tfOK
     label.new(bar_index, high, "Use the 5-minute chart", color = color.red, textcolor = color.white)
