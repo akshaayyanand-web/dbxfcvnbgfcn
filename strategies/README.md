@@ -241,3 +241,18 @@ Breakout Classic 1-Step: +10% target, 6% static max loss, 3% daily loss; crypto 
 
 Crypto moves too much for a 3% daily / 6% max limit. Safe means 7-10 months; anything faster breaches often.
 The FTMO $10K 2-Step (Swing) with the 8 EAs is the better cheap option.
+
+## FTMO 1-Step vs 2-Step with the 8 EAs (`tools/ftmo_1step_vs_2step.py`)
+1-Step as reported for 2026: +10%, 3% daily loss, 10% max loss trailing the highest end-of-day balance (stops at the
+start balance), best day at most 50% of positive-day profit. Risk multiplier = `InpRiskMultiplier` on all 8 EAs.
+
+| Challenge | Risk | Pass | Breached | Stopped by guard | Median days | Funded within 60 / 90 days | Funded year (median) | Funded years breached |
+|---|---|---|---|---|---|---|---|---|
+| **2-Step** | **1.0** | **94%** | **0%** | 6% | **84** | 30% / 51% | **+72%** | **0/67** |
+| 2-Step fast | 1.25 (+3% daily stop) | 83% | 1.4% | 16% | 68 | 36% / 58% | +72% | 0/67 |
+| 1-Step | 0.5 | 100% | 0% | 0% | 114 | 17% / 33% | +31% | 5/67 |
+| 1-Step | 0.6 | 91% | 6% | 4% | 93 | 25% / 43% | +27% | 39/67 |
+| 1-Step | 1.0 | 64% | 18% | 18% | 44 | 42% / 57% | +13% | 56/67 |
+
+The 1-Step's 3% daily limit and trailing max loss force the risk down to half, so it passes slower and earns about
+half as much once funded. Use the 2-Step.
