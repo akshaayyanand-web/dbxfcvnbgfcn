@@ -228,3 +228,16 @@ The intraday edges are thin (~+0.05R per trade) next to a $2,000 trailing limit,
 avoid failing. The FTMO-style 8-EA set (multi-day holds allowed) passes faster with a higher pass rate.
 `topstep_nq_orb.pine` sizes in whole MNQ contracts and tracks the target, the trailing Maximum Loss line, the
 consistency rule and a daily loss guard on the chart. Check Topstep's current rules in their Help Center first.
+
+## Breakout (crypto-only prop firm) – tested, poor fit
+Breakout Classic 1-Step: +10% target, 6% static max loss, 3% daily loss; crypto only, and bots may not be allowed
+(trade the alerts by hand). Simulation (`tools/breakout_sim.py`, guard on, evaluations started weekly Oct 2020 – Sep 2025):
+
+| Setup | Risk per trade | Pass (2020-22 / 2023-25) | Breached | Median days |
+|---|---|---|---|---|
+| BTC Dip v3 only | 0.75% | 97% / 100% | 0% / 0% | ~220-290 |
+| BTC Dip v3 only | 1.0% | 60% / 99% | 25% / 0% | ~145-185 |
+| BTC + ETH (+ SOL) dips | 0.5-1.25% | 16-54% | 9-63% | 6-70 |
+
+Crypto moves too much for a 3% daily / 6% max limit. Safe means 7-10 months; anything faster breaches often.
+The FTMO $10K 2-Step (Swing) with the 8 EAs is the better cheap option.
