@@ -197,3 +197,22 @@ the realistic pass rate, not the 93% from the single history. **Costs matter mos
 `mt5/README.md` before going live.
 - **Time-of-day momentum search** (`tools/momentum_search.py`; 2,880 versions on gold London/NY, Nasdaq, S&P, silver London/NY, oil, BTC, ETH; signal hour, exit, threshold, stop, long-only or both): 16 versions made 10%+/yr in both halves, **0 made 15%+**, and none had stable neighbouring settings (they were isolated lucky spots). The current Gold Intraday Momentum stays.
 - **Breakout family search** (`tools/breakout_search.py`; 1,600 versions of 1h range breakouts on 7 markets and 5m opening ranges on Nasdaq, S&P and gold): 31 made 10%+/yr in both halves, 2 made 15%+ (both NQ opening-range variants). Inside the 8-EA account (`tools/replace_test3.py`): NQ ORB with a 3R target and entries until 13:00 dropped the 2020-22 pass rate to 86%. The 2R/13:00 version was a dead heat with the current EA (94.0% vs 93.6% pass, same speed and profit). Hold-to-close caused 6% breaches. S&P 60-min ORB instead of S&P Dip 1h cut the 2023-25 funded median from +83% to +64%. No change.
+
+## Topstep ($50K Trading Combine)
+Topstep only allows futures, positions must be flat by 15:10 CT, the $2,000 Maximum Loss Limit trails the highest
+end-of-day balance, the target is $3,000 with a best-day consistency rule, and it doesn't use MT5 (bots only via its
+API from your own computer, not a VPS). So the multi-day dip EAs are out. Simulation (`tools/topstep_sim.py`, whole
+micro contracts, ~$1.60 fees per micro round trip, Combine started every week 2020-2025):
+
+| Setup | Pass (2020-22 / 2023-25 starts) | Hit max loss | Median time |
+|---|---|---|---|
+| **NQ Opening Range only, $150 risk/trade (`topstep_nq_orb.pine`)** | **86% / 100%** | **0% / 0%** | ~8-9 months |
+| NQ ORB only, $200 risk | 74% / 99% | 26% / 0% | 5-9 months |
+| NQ ORB + Gold Momentum + ES ORB, $150 | 93% / 74% | 7% / 26% | ~5 months |
+| NQ ORB + NQ Mom + Gold Mom + Gold Asia, $150 | 46% / 42% | 54% / 58% | 2-3 months |
+| Any set at $250+ per trade | 20-50% | 50-80% | 2-5 weeks |
+
+The intraday edges are thin (~+0.05R per trade) next to a $2,000 trailing limit, so Topstep is slow if you want to
+avoid failing. The FTMO-style 8-EA set (multi-day holds allowed) passes faster with a higher pass rate.
+`topstep_nq_orb.pine` sizes in whole MNQ contracts and tracks the target, the trailing Maximum Loss line, the
+consistency rule and a daily loss guard on the chart. Check Topstep's current rules in their Help Center first.

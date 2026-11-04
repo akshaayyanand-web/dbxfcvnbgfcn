@@ -1,0 +1,153 @@
+//@version=6
+// ─────────────────────────────────────────────────────────────────────────────
+// Topstep NQ Opening Range – $50K Trading Combine edition  (MNQ micro contracts; 5-minute chart)
+//
+// Chart: OANDA:NAS100USD (real-time on free plans) or CME_MINI:MNQ1! / CME_MINI:NQ1!, 5 minutes.
+//   Range : high/low of 09:30-09:45 New York.  Entry: first 5-minute close above / below it until 11:30 NY,
+//           at the next bar's open. One trade per day.  Stop: other side of the range.  Target: 2R.
+//   Flat  : 15:55 New York = 14:55 CT, before Topstep's 15:10 CT cut-off. No overnight positions, futures only.
+// Sizing in WHOLE MNQ contracts ($2 per Nasdaq point): contracts = risk $ / (stop points x $2), rounded down;
+//   1 contract if that rounds to 0 but 1 contract risks at most 1.5 x the risk $; otherwise the trade is skipped.
+// Topstep rules tracked on the chart (check the current numbers in Topstep's Help Center before you buy):
+//   • Profit target $3,000 and consistency: best day must be at most 50% of total profit → shows PASSED, stops trading.
+//   • Maximum Loss Limit $2,000, trailing the highest END-OF-DAY balance (trading day ends 17:00 CT), and never
+//     above the starting balance. Guard: no new trades once the account is within the guard buffer of that line.
+//   • Daily loss guard: no new trades after the day's loss reaches the daily limit input.
+// Python test (Nasdaq-100 1-minute data 2020-2026, $150 risk, $1.60 fees per micro round trip, weekly Combine starts):
+//   passed 86% of 2020-22 starts and 100% of 2023-25 starts, 0% hit the trailing max loss, median ~8-9 months.
+//   Bigger risk is faster but fails far more (at $250 about 1 in 3 failed). A backtest, not a promise.
+// Topstep does not use MT5. Trade the alerts by hand on TopstepX, or automate only from your own computer
+// (Topstep bans VPS / cloud-hosted bots).
+// ─────────────────────────────────────────────────────────────────────────────
+strategy("Topstep NQ Opening Range (MNQ)", shorttitle = "Topstep NQ ORB", overlay = true,
+     initial_capital = 50000, pyramiding = 0,
+     commission_type = strategy.commission.cash_per_contract, commission_value = 0.4,
+     slippage = 1, margin_long = 0, margin_short = 0)
+
+G_E = "Setup (New York time)"
+orMinutes  = input.int(15, "Opening range length (minutes after 09:30)", options = [5, 15, 30], group = G_E)
+lastEntryH = input.int(11, "Last entry hour", minval = 10, maxval = 14, group = G_E)
+lastEntryM = input.int(30, "Last entry minute", minval = 0, maxval = 55, step = 5, group = G_E)
+targetR    = input.float(2.0, "Target (x risk, 0 = none)", minval = 0, step = 0.5, group = G_E)
+allowShort = input.bool(true, "Also trade downside breakouts (short)", group = G_E)
+
+G_S = "Sizing (MNQ micro contracts)"
+riskUsd    = input.float(150, "Risk per trade ($)", minval = 20, step = 10, group = G_S)
+mnqPoint   = input.float(2.0, "Dollars per point per contract (MNQ = 2, NQ = 20)", minval = 0.5, step = 0.5, group = G_S)
+maxContr   = input.int(10, "Max contracts", minval = 1, group = G_S)
+
+G_T = "Topstep Combine rules"
+acct       = input.float(50000, "Starting balance", minval = 1000, step = 1000, group = G_T)
+targetUsd  = input.float(3000, "Profit target ($)", minval = 100, step = 100, group = G_T)
+mllUsd     = input.float(2000, "Maximum Loss Limit ($, trailing end-of-day)", minval = 100, step = 100, group = G_T)
+consPct    = input.float(50, "Consistency: best day at most this % of total profit", minval = 10, maxval = 100, step = 5, group = G_T)
+dllUsd     = input.float(1000, "Daily loss guard ($, no new trades after this loss today)", minval = 50, step = 50, group = G_T)
+bufferUsd  = input.float(300, "Guard buffer above the Maximum Loss line ($)", minval = 0, step = 50, group = G_T)
+stopAtPass = input.bool(true, "Stop trading once the Combine is passed", group = G_T)
+
+bool tfOK = timeframe.in_seconds() == 300
+int  nyMin = hour(time, "America/New_York") * 60 + minute(time, "America/New_York")
+bool newNyDay = dayofmonth(time, "America/New_York") != dayofmonth(time[1], "America/New_York")
+int  orStart = 9 * 60 + 30
+int  orEnd   = orStart + orMinutes
+int  lastEnt = lastEntryH * 60 + lastEntryM
+int  flatMin = 15 * 60 + 55
+
+// ── opening range ──
+var float orHi = na
+var float orLo = na
+var bool  tradedToday = false
+if newNyDay
+    orHi := na
+    orLo := na
+    tradedToday := false
+if nyMin >= orStart and nyMin < orEnd
+    orHi := na(orHi) ? high : math.max(orHi, high)
+    orLo := na(orLo) ? low : math.min(orLo, low)
+
+// ── Topstep account tracking (trading day ends 17:00 Chicago) ──
+float profitNow = strategy.netprofit
+float balance   = acct + profitNow
+int   ctShift   = hour(time, "America/Chicago") >= 17 ? 1 : 0
+int   tDay      = dayofyear(time, "America/Chicago") + ctShift
+bool  newTDay   = tDay != tDay[1]
+var float dayStartBal = acct
+var float eodHigh     = acct
+var float bestDay     = 0.0
+var bool  passed      = false
+var bool  failed      = false
+if newTDay
+    float lastDay = balance - dayStartBal
+    bestDay := math.max(bestDay, lastDay)
+    eodHigh := math.max(eodHigh, balance)
+    dayStartBal := balance
+    float prof = balance - acct
+    if prof >= targetUsd and bestDay <= consPct / 100 * prof
+        passed := true
+float mllLine = math.min(acct, eodHigh - mllUsd)
+if strategy.equity <= mllLine
+    failed := true
+float dayPnl = strategy.equity - dayStartBal
+bool  guardStop = strategy.equity - mllLine <= bufferUsd or dayPnl <= -dllUsd
+if strategy.position_size != 0 and strategy.equity - mllLine <= bufferUsd * 0.5
+    strategy.close_all(comment = "Guard: near Maximum Loss Limit")
+
+// ── entry ──
+float pos = strategy.position_size
+bool inWindow = nyMin >= orEnd and nyMin < lastEnt
+bool upBreak  = not na(orHi) and close > orHi
+bool dnBreak  = allowShort and not na(orLo) and close < orLo
+bool blocked  = failed or guardStop or (stopAtPass and passed)
+bool sig = tfOK and inWindow and pos == 0 and not tradedToday and not blocked and (upBreak or dnBreak)
+
+float stopPx0  = upBreak ? orLo : orHi
+float stopPts  = math.abs(close - stopPx0)
+float oneRisk  = stopPts * mnqPoint
+int   contr    = oneRisk > 0 ? int(math.floor(riskUsd / oneRisk)) : 0
+if contr == 0 and oneRisk > 0 and oneRisk <= 1.5 * riskUsd
+    contr := 1
+contr := math.min(contr, maxContr)
+// strategy quantity in chart units so that P&L equals MNQ P&L on any Nasdaq chart
+float qty = contr * mnqPoint / syminfo.pointvalue
+
+var float stopPx = na
+var float tgtPx  = na
+if sig and contr > 0
+    tradedToday := true
+    stopPx := stopPx0
+    tgtPx  := targetR > 0 ? close + (upBreak ? 1 : -1) * targetR * stopPts : na
+    strategy.entry("ORB", upBreak ? strategy.long : strategy.short, qty = qty, comment = (upBreak ? "Long " : "Short ") + str.tostring(contr) + " MNQ")
+    strategy.exit("Exit", "ORB", stop = stopPx, limit = tgtPx)
+    alert("TOPSTEP NQ ORB " + (upBreak ? "BUY " : "SELL ") + str.tostring(contr) + " MNQ at next open ~" + str.tostring(close, "#.##") +
+          " | STOP " + str.tostring(stopPx, "#.##") + (na(tgtPx) ? "" : " | TARGET " + str.tostring(tgtPx, "#.##")) +
+          " | risk ~$" + str.tostring(contr * oneRisk, "#") + " | flat by 15:55 NY (14:55 CT)", alert.freq_once_per_bar_close)
+
+if strategy.position_size != 0
+    strategy.exit("Exit", "ORB", stop = stopPx, limit = tgtPx)
+    if nyMin >= flatMin - 5
+        strategy.close("ORB", comment = "Flat 15:55 NY")
+        alert("TOPSTEP NQ ORB | FLAT: close the MNQ position now (15:55 NY)", alert.freq_once_per_bar_close)
+
+// ── chart ──
+plot(orHi, "OR high", color = color.new(color.green, 0), style = plot.style_linebr)
+plot(orLo, "OR low", color = color.new(color.red, 0), style = plot.style_linebr)
+var table tb = table.new(position.top_right, 2, 7, bgcolor = color.new(color.black, 20))
+if barstate.islastconfirmedhistory or barstate.isrealtime
+    float prof = balance - acct
+    string status = failed ? "FAILED (hit Maximum Loss)" : passed ? "PASSED – stop trading" : guardStop ? "Guard: no new trades" : "Trading"
+    table.cell(tb, 0, 0, "Status", text_color = color.white)
+    table.cell(tb, 1, 0, status, text_color = failed ? color.red : passed ? color.lime : guardStop ? color.orange : color.white)
+    table.cell(tb, 0, 1, "Profit / target", text_color = color.white)
+    table.cell(tb, 1, 1, "$" + str.tostring(prof, "#,###") + " / $" + str.tostring(targetUsd, "#,###"), text_color = prof >= 0 ? color.lime : color.red)
+    table.cell(tb, 0, 2, "Max Loss line", text_color = color.white)
+    table.cell(tb, 1, 2, "$" + str.tostring(mllLine, "#,###") + "  (room $" + str.tostring(strategy.equity - mllLine, "#,###") + ")", text_color = strategy.equity - mllLine > 1000 ? color.lime : color.orange)
+    table.cell(tb, 0, 3, "Best day / consistency", text_color = color.white)
+    table.cell(tb, 1, 3, "$" + str.tostring(bestDay, "#,###") + (prof > 0 ? " = " + str.tostring(bestDay / prof * 100, "#") + "% of profit" : ""), text_color = prof > 0 and bestDay > consPct / 100 * prof ? color.orange : color.white)
+    table.cell(tb, 0, 4, "Today", text_color = color.white)
+    table.cell(tb, 1, 4, "$" + str.tostring(dayPnl, "#,###"), text_color = dayPnl >= 0 ? color.lime : color.red)
+    table.cell(tb, 0, 5, "Next trade size", text_color = color.white)
+    table.cell(tb, 1, 5, str.tostring(contr) + " MNQ (risk ~$" + str.tostring(contr * oneRisk, "#") + ")", text_color = color.white)
+    table.cell(tb, 0, 6, "Trades", text_color = color.white)
+    table.cell(tb, 1, 6, str.tostring(strategy.closedtrades), text_color = color.white)
+if (barstate.islastconfirmedhistory or barstate.isrealtime) and not tfOK
+    label.new(bar_index, high, "Use the 5-minute chart", color = color.red, textcolor = color.white)
