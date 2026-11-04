@@ -10,8 +10,11 @@
 | `NQ_Dip_2h.mq5` | US100 / NAS100 / USTEC | **H2** | 0.25% | 1109 |
 | `SPX_Dip_1h.mq5` | US500 / SPX500 | H1 | 0.25% | 1110 |
 | `Oil_Dip_1h.mq5` | WTI / USOIL / XTIUSD (RoboForex: search "WTI" or "OIL") | H1 | 0.15% | 1111 |
+| `NQ_Breakout_15m.mq5` (optional 9th) | US100 / NAS100 / USTEC | **M15** | 0.1% | 1112 |
 
-Every EA makes 10%+ a year at 1% risk (2020-2026). The older `NQ_Intraday_Momentum`, `NQ_Dip_Grid` and `SPX_Dip_Grid`
+Every EA makes 10%+ a year at 1% risk (2020-2026). **Optional 9th EA, `NQ_Breakout_15m`**: about one extra trade per
+weekday at 0.1% risk. With it the 2-step pass rate is ~89% instead of ~94% (0 breaches either way), the median time
+is a bit shorter, and the funded year is higher (+59% / +93% vs +53% / +83% for 2020-22 / 2023-25 starts). The older `NQ_Intraday_Momentum`, `NQ_Dip_Grid` and `SPX_Dip_Grid`
 (below 10%) were replaced and are kept in `retired/` for reference. Don't run them together with the new set.
 
 ## Step 1 – Get MT5 and a demo account

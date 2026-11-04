@@ -256,3 +256,12 @@ start balance), best day at most 50% of positive-day profit. Risk multiplier = `
 
 The 1-Step's 3% daily limit and trailing max loss force the risk down to half, so it passes slower and earns about
 half as much once funded. Use the 2-Step.
+
+## Low-timeframe (5m / 15m) search (`tools/lowtf_search.py`, `tools/lowtf_portfolio.py`)
+408 versions of dip buying, session breakouts and big-candle follow/fade on 5m and 15m gold, Nasdaq and S&P.
+- 5m dip buying looked strong (+38-46%/yr at 1%) but collapsed at double costs (+9-10%/yr) and caused 5-14%
+  breaches inside the account. Rejected. Big-candle strategies lost money.
+- Nasdaq morning breakouts (20/50-bar high/low with the 200/800 EMA, stop 1 ATR, flat at the close) held up:
+  15m +44% / +48%/yr at 1% risk, +27%/yr at double costs. Replacing NQ ORB with it lowered the pass rate.
+  **Added as an optional 9th EA at 0.1% risk** (`NQ_Breakout_15m.mq5`): pass ~89% (vs ~94%), 0 breaches,
+  funded year +59% / +93% (vs +53% / +83%), about 22 trades a month.

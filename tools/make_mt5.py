@@ -533,6 +533,37 @@ EAS["SPX_Dip_1h.mq5"] = dip_ea("S&P Dip 1h", "US500 / SPX500", "PERIOD_H1", 1110
 EAS["Oil_Dip_1h.mq5"] = dip_ea("Oil Dip 1h", "WTI / USOIL / XTIUSD", "PERIOD_H1", 1111, 0.15, 2, 25, 50, 144, 0.15,
                                "Portfolio risk: 0.15% per trade. Python 2020-2026 at 1% risk: +14.1%/yr (2020-22), +15.5%/yr (2023-26).")
 
+EAS["NQ_Breakout_15m.mq5"] = dict(tf="PERIOD_M15", magic=1112, risk=0.1, header="""//+------------------------------------------------------------------+
+//| NQ Breakout 15m – MT5 EA. Chart: US100 / NAS100 / USTEC, M15 (New York clock)
+//| Between 09:30 and 12:00 New York: a 15-minute close above the highest high of the previous 20 bars while
+//| above EMA(200) -> buy; a close below the lowest low of the previous 20 bars while below EMA(200) -> sell.
+//| Stop 1 x ATR(14) on the order, no target: flat at 15:50 New York. Several trades a day are possible.
+//| Portfolio risk: 0.1% per trade (about 1 trade per weekday). Python 2019-2026 at 1% risk: about +44%/yr
+//| (2019-22) and +48%/yr (2023-26); +27%/yr with double costs. Thin, cost-sensitive edge: low spreads only.
+//+------------------------------------------------------------------+""", body="""
+void OnNewBar()
+  {
+   ulong tk; long tp; datetime ot;
+   datetime n0 = ToNY(iTime(_Symbol, _Period, 0)), n1 = ToNY(iTime(_Symbol, _Period, 1));
+   if(MyPosition(tk, tp, ot))
+     {
+      if(MinuteOfDay(n0) >= 950 || DayKey(n0) != DayKey(ToNY(ot))) CloseMine("Flat 15:50 New York");
+      return;
+     }
+   int m1 = MinuteOfDay(n1);
+   if(m1 < 570 || m1 >= 720) return;                         // signal bar inside 09:30-12:00 New York
+   double c1 = iClose(_Symbol, _Period, 1), ema = Ema(200, 1), atr = AtrRma(14, 1);
+   if(ema == EMPTY_VALUE || atr == EMPTY_VALUE || atr <= 0) return;
+   int hiIdx = iHighest(_Symbol, _Period, MODE_HIGH, 20, 2), loIdx = iLowest(_Symbol, _Period, MODE_LOW, 20, 2);
+   if(hiIdx < 0 || loIdx < 0) return;
+   double hi = iHigh(_Symbol, _Period, hiIdx), lo = iLow(_Symbol, _Period, loIdx);
+   int dir = (c1 > hi && c1 > ema) ? 1 : ((c1 < lo && c1 < ema) ? -1 : 0);
+   if(dir == 0) return;
+   double price = dir == 1 ? SymbolInfoDouble(_Symbol, SYMBOL_ASK) : SymbolInfoDouble(_Symbol, SYMBOL_BID);
+   OpenTrade(dir, price - dir * atr, 0, "NQ Breakout 15m");
+  }
+""")
+
 if __name__ == "__main__":
     out = os.path.join(os.path.dirname(__file__), "..", "strategies", "mt5")
     os.makedirs(out, exist_ok=True)
