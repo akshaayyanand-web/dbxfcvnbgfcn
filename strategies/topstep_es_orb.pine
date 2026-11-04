@@ -13,7 +13,7 @@
 //   • Maximum Loss Limit $2,000, trailing the highest END-OF-DAY balance (trading day ends 17:00 CT), and never
 //     above the starting balance. Guard: no new trades once the account is within the guard buffer of that line.
 //   • Daily loss guard: no new trades after the day's loss reaches the daily limit input.
-// Part of the FAST PLAN: run with topstep_nq_orb.pine and topstep_gold_mom.pine, each at $400 risk.
+// Part of the FAST PLAN: run with topstep_nq_orb.pine, topstep_gold_mom.pine and topstep_nq_mom.pine, each at $400 risk.
 // Python test of the 3-strategy fast plan at $400 each (S&P / Nasdaq 1-minute data, gold hourly, 2020-2026, resetting after
 //   a fail): funded within 1 month 37%, within 2 months 75%, within 3 months 96%; median 1 reset. A backtest, not a promise.
 // Topstep does not use MT5. Trade the alerts by hand on TopstepX, or automate only from your own computer

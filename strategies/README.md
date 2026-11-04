@@ -213,10 +213,16 @@ micro contracts, ~$1.60 fees per micro round trip, Combine started every week 20
 | Any set at $250+ per trade | 20-50% | 50-80% | 2-5 weeks |
 
 **Fast plan (pass in about 1-2 months, accepting resets):** `topstep_nq_orb.pine` + `topstep_es_orb.pine` +
-`topstep_gold_mom.pine`, each at **$400 risk per trade**. Restarting after every fail (`tools/topstep_fast.py`):
-funded within 1 month 37%, within 2 months 75%, within 3 months 96%, median ~27 trading days, median 1 reset
-(average 1.6). Going to $500 or adding more strategies doesn't make it meaningfully faster and needs more resets.
-After passing, drop back to ~$150 per trade on the funded account (same $2,000 trailing limit).
+`topstep_gold_mom.pine` + `topstep_nq_mom.pine`, each at **$400 risk per trade**. Picked from 267 combinations of 8
+intraday strategies (`tools/topstep_cook.py`) on 2020-22 Combine starts, restarting after every fail:
+
+| Starts | Funded within 1 month | 2 months | 3 months | Median trading days | Avg resets |
+|---|---|---|---|---|---|
+| 2020-22 (picked here) | 47% | 85% | 99% | 22 | 1.6 |
+| 2023-25 (unseen) | 40% | 81% | 93% | 26 | 1.7 |
+
+The 3-strategy version without NQ momentum: 32% / 73% / 97% on 2023-25. After passing, drop to ~$150 per trade on
+the funded account (same $2,000 trailing limit).
 
 The intraday edges are thin (~+0.05R per trade) next to a $2,000 trailing limit, so Topstep is slow if you want to
 avoid failing. The FTMO-style 8-EA set (multi-day holds allowed) passes faster with a higher pass rate.

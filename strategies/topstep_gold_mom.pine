@@ -10,7 +10,7 @@
 //   1 contract if that rounds to 0 but 1 contract risks at most 1.5 x the risk $; otherwise the trade is skipped.
 // Topstep rules tracked on the chart (profit target, trailing end-of-day Maximum Loss Limit, consistency, daily loss
 //   guard), as in topstep_nq_orb.pine. The tracker only sees THIS script's trades: watch the real account on TopstepX.
-// Part of the FAST PLAN: run with topstep_nq_orb.pine and topstep_es_orb.pine, each at $400 risk.
+// Part of the FAST PLAN: run with topstep_nq_orb.pine, topstep_es_orb.pine and topstep_nq_mom.pine, each at $400 risk.
 // Python test of the fast plan (2020-2026, resetting after a fail): funded within 1 month 37%, within 2 months 75%,
 //   within 3 months 96%; median 1 reset. A backtest, not a promise.
 // ─────────────────────────────────────────────────────────────────────────────
