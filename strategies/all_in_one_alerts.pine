@@ -26,7 +26,7 @@ indicator("Prop Portfolio – All-in-One + Paper (8)", shorttitle = "Prop 8 + Pa
 
 G0 = "Account & symbols"
 acct       = input.float(100000, "Account size (start balance)", minval = 1000, group = G0)
-paperStart = input.time(timestamp("2026-11-03 00:00 +0000"), "Paper account start", group = G0)
+paperStart = input.time(timestamp("UTC", 2026, 11, 3, 0, 0), "Paper account start", group = G0)
 btcSym  = input.symbol("BINANCE:BTCUSDT", "BTC symbol", group = G0)
 goldSym = input.symbol("OANDA:XAUUSD", "Gold symbol", group = G0)
 nqSym   = input.symbol("OANDA:NAS100USD", "Nasdaq symbol (NQ Dip 2h)", group = G0)

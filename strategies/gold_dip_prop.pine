@@ -58,7 +58,7 @@ dayStopAt  = input.float(80, "Guard: emergency exit at this % of the daily limit
 maxStopAt  = input.float(80, "Guard: emergency exit at this % of the max loss", minval = 30, maxval = 95, step = 5, group = G_P)
 
 G_T = "Test period"
-startTime = input.time(timestamp("2020-01-01T00:00:00Z"), "Start date (trades only after this)", group = G_T)
+startTime = input.time(timestamp("UTC", 2020, 1, 1, 0, 0), "Start date (trades only after this)", group = G_T)
 
 // ═════════════════════════════ GUARDS & INDICATORS ════════════════════════════
 bool  tfOK = timeframe.in_seconds() == 3600
