@@ -265,3 +265,7 @@ half as much once funded. Use the 2-Step.
   15m +44% / +48%/yr at 1% risk, +27%/yr at double costs. Replacing NQ ORB with it lowered the pass rate.
   **Added as an optional 9th EA at 0.1% risk** (`NQ_Breakout_15m.mq5`): pass ~89% (vs ~94%), 0 breaches,
   funded year +59% / +93% (vs +53% / +83%), about 22 trades a month.
+- **Risk-weight optimiser for the 9 EAs** (`tools/risk_weight_optimiser.py`; 200 random mixes of 0.5-1.5x each EA's
+  risk, picked on 2020-22, checked on 2023-25): the best 2020-22 mixes landed at the same place on 2023-25 as the
+  current weights (pass 89-92% vs 91%, 0 breaches, 69-92 days vs 76, funded +66% to +97% vs +93%), and one
+  "optimised" mix breached 21 of 33 funded years on 2023-25. The current weights stay; further tuning is noise.
