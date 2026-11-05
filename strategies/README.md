@@ -285,4 +285,10 @@ Goal: pass faster while keeping 93%+ pass and 0 breaches. Picked on 2020-22 star
   old defaults at 1.5x, 2x and 3x costs (2x: 80% / 87% pass vs 79% / 84%).
 - NQ_Breakout_15m at 0.1% on top caused 0.6% breaches, so it is now 0.05% (93% / 96% pass, 0 breaches, +64% / +97% funded).
 - Not done: anything above these defaults. 1.1x more already breaches.
+- **Follow-ups on top of the fast preset** (`tools/fast_preset_addons_test.py`, `tools/fast_preset_halt_test.py`, 234 settings):
+  - New dip markets with the room cap (ETH, SOL, silver 1h, slower 144h gold/BTC dips, 0.1-0.3%, BTC 0.5-0.75%): only
+    5 of 198 kept 93%+ / 0 breaches on 2020-22. On 2023-25, silver and the slow BTC dip breached in 9-12 of 33 funded
+    years, and ETH lowered the pass rate (89-93%). None added.
+  - Daily stop at 2.5-4% instead of 4%: no change. Phase 2 at 1.25x: 1.4-9% breaches. Phase 2 at 0.75x: 98% / 96%
+    pass but 10 days slower. Another +10-20% on everything: breaches. The fast preset stays as it is.
 
