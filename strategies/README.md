@@ -22,9 +22,10 @@ only. Backtests overstate live results; paper trade all scripts together for 2â€
 
 Daily shares add up to 5%; every max-loss input stays at the account's full 10% as a backstop.
 
-**Current MT5 set (8 EAs, every one 10%+/yr at 1% risk):** BTC_Dip_v3 1.0%, Gold_Dip 0.5%, NQ_Opening_Range 0.5%,
-Gold_Asia_Breakout 0.25%, Gold_Intraday_Momentum 0.25%, NQ_Dip_2h 0.25%, SPX_Dip_1h 0.25%, Oil_Dip_1h 0.15% (see
-`mt5/README.md`). It replaced NQ Intraday Momentum and the two dip grids (below 10%/yr) after a 2,292-version dip
+**Current MT5 set (8 EAs, every one 10%+/yr at 1% risk), fast preset since Nov 2026:** BTC_Dip_v3 0.75%,
+Gold_Dip 0.625%, NQ_Opening_Range 0.625%, Gold_Asia_Breakout / Gold_Intraday_Momentum / NQ_Dip_2h / SPX_Dip_1h 0.3125%,
+Oil_Dip_1h 0.1875%, max-loss stop -9.5% and a room cap (see "Fast preset" below and `mt5/README.md`). The figures in
+this paragraph are for the earlier defaults (BTC 1.0%, Gold_Dip and ORB 0.5%, the next four 0.25%, oil 0.15%, stop -8%). It replaced NQ Intraday Momentum and the two dip grids (below 10%/yr) after a 2,292-version dip
 search (`tools/dip_search.py`, `tools/replace_test*.py`). Same test:
 - 2-step: **94% passed, 0% breached**, median **~84 days** (2020-22 starts 95%, 2023-25 starts 92%).
 - Funded year: median **+72%**, average +64%, 0/67 breaches. Max drawdown **13.7%**.
@@ -269,3 +270,19 @@ half as much once funded. Use the 2-Step.
   risk, picked on 2020-22, checked on 2023-25): the best 2020-22 mixes landed at the same place on 2023-25 as the
   current weights (pass 89-92% vs 91%, 0 breaches, 69-92 days vs 76, funded +66% to +97% vs +93%), and one
   "optimised" mix breached 21 of 33 funded years on 2023-25. The current weights stay; further tuning is noise.
+
+## Fast preset: room cap + rebalanced risk (`tools/fast_preset_test.py`, Nov 2026)
+Goal: pass faster while keeping 93%+ pass and 0 breaches. Picked on 2020-22 starts, checked on 2023-25.
+- **Boosting after a profit cushion, a phase-2-only boost, CPPI sizing, flat 1.1-1.25x** (252 settings): all breached
+  (best 92% pass, 2.8% breached). With the old defaults the account is right at the edge.
+- **Why they breach:** two patterns. (1) The account is already ~7% down and a 2.5% day (mostly BTC) pushes it past 10%.
+  (2) On 7 Sep 2021, BTC gapped through its stop in one hour (about -1.7R) while the account was already down on the day.
+- **Fix:** a room cap that shrinks size between -7% and -10% (day-start balance), the hard stop moved from -8% to -9.5%,
+  BTC trimmed to 0.75%, and the other seven EAs +25%. Of 480 settings, this one kept 0 breaches and 93%+ pass in both
+  halves, and its neighbours (cap 3-8%, stop -9 to -9.5%) did too.
+- **Result** (an attempt started every day): pass 96% / 95% (was 94% / 91%), median 80 / 70 days (was 89 / 77), funded
+  within 60 days 31% / 39% (was 26% / 35%), funded year +58% / +91% (was +53% / +83%), 0 breaches. It also beats the
+  old defaults at 1.5x, 2x and 3x costs (2x: 80% / 87% pass vs 79% / 84%).
+- NQ_Breakout_15m at 0.1% on top caused 0.6% breaches, so it is now 0.05% (93% / 96% pass, 0 breaches, +64% / +97% funded).
+- Not done: anything above these defaults. 1.1x more already breaches.
+

@@ -2,19 +2,24 @@
 
 | EA file | Chart (symbol names vary by broker) | Timeframe | Risk / trade | Magic |
 |---|---|---|---|---|
-| `BTC_Dip_v3.mq5` | BTCUSD | H2 | 1.0% | 1101 |
-| `Gold_Dip.mq5` | XAUUSD | H1 | 0.5% | 1102 |
-| `Gold_Asia_Breakout.mq5` | XAUUSD | H1 | 0.25% | 1103 |
-| `Gold_Intraday_Momentum.mq5` | XAUUSD | H1 | 0.25% | 1104 |
-| `NQ_Opening_Range.mq5` | US100 / NAS100 / USTEC | M5 | 0.5% | 1106 |
-| `NQ_Dip_2h.mq5` | US100 / NAS100 / USTEC | **H2** | 0.25% | 1109 |
-| `SPX_Dip_1h.mq5` | US500 / SPX500 | H1 | 0.25% | 1110 |
-| `Oil_Dip_1h.mq5` | WTI / USOIL / XTIUSD (RoboForex: search "WTI" or "OIL") | H1 | 0.15% | 1111 |
-| `NQ_Breakout_15m.mq5` (optional 9th) | US100 / NAS100 / USTEC | **M15** | 0.1% | 1112 |
+| `BTC_Dip_v3.mq5` | BTCUSD | H2 | 0.75% | 1101 |
+| `Gold_Dip.mq5` | XAUUSD | H1 | 0.625% | 1102 |
+| `Gold_Asia_Breakout.mq5` | XAUUSD | H1 | 0.3125% | 1103 |
+| `Gold_Intraday_Momentum.mq5` | XAUUSD | H1 | 0.3125% | 1104 |
+| `NQ_Opening_Range.mq5` | US100 / NAS100 / USTEC | M5 | 0.625% | 1106 |
+| `NQ_Dip_2h.mq5` | US100 / NAS100 / USTEC | **H2** | 0.3125% | 1109 |
+| `SPX_Dip_1h.mq5` | US500 / SPX500 | H1 | 0.3125% | 1110 |
+| `Oil_Dip_1h.mq5` | WTI / USOIL / XTIUSD (RoboForex: search "WTI" or "OIL") | H1 | 0.1875% | 1111 |
+| `NQ_Breakout_15m.mq5` (optional 9th) | US100 / NAS100 / USTEC | **M15** | 0.05% | 1112 |
 
-Every EA makes 10%+ a year at 1% risk (2020-2026). **Optional 9th EA, `NQ_Breakout_15m`**: about one extra trade per
-weekday at 0.1% risk. With it the 2-step pass rate is ~89% instead of ~94% (0 breaches either way), the median time
-is a bit shorter, and the funded year is higher (+59% / +93% vs +53% / +83% for 2020-22 / 2023-25 starts). The older `NQ_Intraday_Momentum`, `NQ_Dip_Grid` and `SPX_Dip_Grid`
+Every EA makes 10%+ a year at 1% risk (2020-2026). **The defaults are the "fast preset" (Nov 2026)**: BTC trimmed to
+0.75%, every other EA +25%, the max-loss stop moved from -8% to -9.5%, and a new **room cap** (`InpRoomCapPct` 3) that
+shrinks every new trade once the day starts more than 7% down (full size at -7%, 0 at -10%). Compared with the old
+defaults (simulated 2-step, an attempt started every day 2020-2025): pass **96% / 95%** (was 94% / 91%), 0 breaches,
+median **80 / 70 days** (was 89 / 77), funded year **+58% / +91%** (was +53% / +83%), for 2020-22 / 2023-25 starts.
+If you already run the EAs, re-copy all files and re-attach them so the new defaults load (MT5 keeps old input values).
+**Optional 9th EA, `NQ_Breakout_15m`**: about one extra trade per weekday, now at **0.05%** risk (0.1% caused
+breaches with the fast preset). With it: pass 93% / 96%, 0 breaches, median 78 / 71 days, funded +64% / +97%. The older `NQ_Intraday_Momentum`, `NQ_Dip_Grid` and `SPX_Dip_Grid`
 (below 10%) were replaced and are kept in `retired/` for reference. Don't run them together with the new set.
 
 ## Step 1 – Get MT5 and a demo account
@@ -55,21 +60,21 @@ is a bit shorter, and the funded year is higher (+59% / +93% vs +53% / +83% for 
 7. The first run downloads history and can take a while. If a symbol has little history (common for BTC and
    indices on some brokers), the test only covers what the broker has.
 
-**What each EA should roughly show on its own** (Python test 2020 – Oct 2026, at the default risk; MT5 will differ a
+**What each EA should roughly show on its own** (Python test 2020 – Oct 2026, at the default risk, room cap not included; MT5 will differ a
 little because of broker prices, spreads and compounding):
 
 | EA | Risk | Trades / month | Per year (at that risk) | Per year at 1% risk | Max DD | 2022 | 2024 | 2025 |
 |---|---|---|---|---|---|---|---|---|
-| BTC_Dip_v3 | 1.0% | 2.7 | +19.9% | +19.9% | 9.7% | -1.4% | +23.9% | +21.5% |
-| Gold_Dip | 0.5% | 6.5 | +9.1% | +18.1% | 13.4% | +8.6% | +19.5% | +25.5% |
-| NQ_Opening_Range | 0.5% | 22 | +6.9% | +13.8% | 14.8% | +9.4% | +7.6% | +14.3% |
-| Gold_Asia_Breakout | 0.25% | 28 | +3.2% | +12.8% | 9.2% | +0.7% | +0.8% | +3.0% |
-| Gold_Intraday_Momentum | 0.25% | 8.3 | +2.9% | +11.8% | 5.3% | +1.4% | -2.0% | +3.1% |
-| NQ_Dip_2h | 0.25% | 4.4 | +3.3% | +13.4% | 4.9% | -2.3% | +2.6% | +0.8% |
-| SPX_Dip_1h | 0.25% | 8.9 | +2.9% | +11.7% | 8.0% | -3.0% | +6.9% | 0.0% |
-| Oil_Dip_1h | 0.15% | 4.7 | +2.2% | +14.9% | 4.7% | +0.1% | +0.6% | +3.3% |
+| BTC_Dip_v3 | 0.75% | 2.7 | +14.9% | +19.9% | 7.3% | -1.0% | +17.9% | +16.1% |
+| Gold_Dip | 0.625% | 6.5 | +11.4% | +18.1% | 16.8% | +10.8% | +24.4% | +31.9% |
+| NQ_Opening_Range | 0.625% | 22 | +8.6% | +13.8% | 18.5% | +11.8% | +9.5% | +17.9% |
+| Gold_Asia_Breakout | 0.3125% | 28 | +4.0% | +12.8% | 11.5% | +0.9% | +1.0% | +3.8% |
+| Gold_Intraday_Momentum | 0.3125% | 8.3 | +3.6% | +11.8% | 6.6% | +1.8% | -2.5% | +3.9% |
+| NQ_Dip_2h | 0.3125% | 4.4 | +4.1% | +13.4% | 6.1% | -2.9% | +3.2% | +1.0% |
+| SPX_Dip_1h | 0.3125% | 8.9 | +3.6% | +11.7% | 10.0% | -3.8% | +8.6% | 0.0% |
+| Oil_Dip_1h | 0.1875% | 4.7 | +2.8% | +14.9% | 5.9% | +0.1% | +0.8% | +4.1% |
 
-Individually most look small. The ~+65-70%/yr comes from running all eight together on one account, because
+Individually most look small. The ~+70%/yr comes from running all eight together on one account, because
 they rarely lose on the same days. A losing year for one EA is normal (see the columns).
 
 **Limits of MT5's tester:** it runs one EA at a time, so it can't reproduce the combined portfolio or the shared
@@ -83,8 +88,12 @@ combined result, run all eight on a demo account, which is the real test anyway.
   trend EMA, skip after a crash (big 30-day fall), stop 2 x ATR on the order, and exit after a fixed number of bars.
 - **Account-level guard (shared by all EAs through MT5 global variables):** if the account is down
   `InpDailyStopPct` (4%) on the day, every EA closes its trades and stops for the day; if the account is
-  down `InpMaxStopPct` (8%) from the start, every EA closes and stops for good. New trades are sized so
+  down `InpMaxStopPct` (9.5%) from the start, every EA closes and stops for good. New trades are sized so
   they risk at most 60% of the room left before those lines.
+- **Room cap** (`InpRoomCapPct` 3, `InpFirmMaxLossPct` 10): when the day starts more than 7% below the starting
+  balance, every new trade is shrunk in proportion to the room left before the firm's 10% line (e.g. 2/3 size at
+  -8%, 1/3 at -9%). This is what lets the account recover from a bad stretch instead of breaching. If your firm's
+  max loss isn't 10%, set `InpFirmMaxLossPct` to it and `InpMaxStopPct` to 0.5 below it.
 - **News rule (funded accounts):** `InpNewsBlockMin` (default 2) stops any EA opening a new trade within
   2 minutes of a high-impact USD event (CPI, jobs report, Fed, ...), using MT5's built-in economic calendar.
   It only works live, since the Strategy Tester has no calendar. Set it to 0 to switch it off, or match it to
@@ -99,20 +108,24 @@ combined result, run all eight on a demo account, which is the real test anyway.
   Live, the server offset is detected automatically; in the Strategy Tester set `InpServerGMTOffset`
   (2 for FTMO-style servers) and `InpServerUsesUSDST`.
 
-## Passing faster (optional)
-Simulated FTMO-style 2-step with **the eight EAs above**, attempts started weekly 2020-2025. Phase 2 and the funded
-account always run at the defaults.
+## Passing faster
+The defaults are already the fastest setup that kept 93%+ pass and 0 breaches in every test (`tools/fast_preset_test.py`).
+Simulated FTMO-style 2-step, an attempt started **every day** 2020-2025; phase 2 and funded use the same settings.
 
-| Phase 1 settings | Pass | Breached | Median days to funded | Funded within 90 days |
-|---|---|---|---|---|
-| **Default: `InpRiskMultiplier 1.0`, `InpDailyStopPct 4.0`** | **94%** | **0%** | **84** | 51% |
-| `InpRiskMultiplier 1.25`, `InpDailyStopPct 3.0` | 83% | 1.4% | 68 | 58% |
-| `InpRiskMultiplier 1.25`, `InpDailyStopPct 4.0` | 79% | 5.7% | 64 | 55% |
-| `InpRiskMultiplier 1.5`, `InpDailyStopPct 3.0` | 76% | 0.4% | 56 | 58% |
+| Setup | Pass (2020-22 / 2023-25) | Breached | Median days to funded | Funded within 60 days | Funded year |
+|---|---|---|---|---|---|
+| Old defaults (BTC 1%, others as before, stop -8%) | 94% / 91% | 0% | 89 / 77 | 26% / 35% | +53% / +83% |
+| Old defaults + room cap, stop -9.5% | 98% / 94% | 0% | 90 / 78 | 26% / 35% | +53% / +83% |
+| **New defaults (fast preset)** | **96% / 95%** | **0%** | **80 / 70** | **31% / 39%** | **+58% / +91%** |
+| Fast preset with double costs | 80% / 87% | 0.2% / 0% | 83 / 76 | 24% / 33% | +44% / +71% |
+| Old defaults with double costs | 79% / 84% | 0.3% / 0% | 92 / 84 | 22% / 29% | +38% / +67% |
 
-**Recommended: keep the defaults (1.0 and 4.0) in every phase.** With this set the default is already ~84 days, and
-every boost costs pass rate (more attempts halted at -8%) and adds a small breach risk. If you boost anyway, use a
-3% daily stop, in phase 1 only.
+Full history with the new defaults: 2020 +50%, 2021 +88%, 2022 +16%, 2023 +58%, 2024 +82%, 2025 +114%,
+2026 +37% (to Oct); funded-year median +77%, 0/67 breaches.
+
+**Don't raise `InpRiskMultiplier` above 1.0.** Going from these defaults to 1.1x already caused 3% breaches, and
+1.5x caused 7-17%. Every breach came from days like 7 Sep 2021, when BTC gapped through its stop in one hour while
+the account was already down on the day.
 
 ## Notes
 - MT5 only trades while it is running: keep the PC on or use a Windows VPS.

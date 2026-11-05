@@ -18,9 +18,11 @@ CTrade trade;
 //--- common inputs
 input double InpAccountSize      = 200000; // Starting balance of the prop account
 input double InpDailyStopPct     = 4.0;    // ACCOUNT guard: stop for the day at this loss (% of start; firm limit 5)
-input double InpMaxStopPct       = 8.0;    // ACCOUNT guard: stop everything at this loss from start (firm limit 10)
+input double InpMaxStopPct       = 9.5;    // ACCOUNT guard: stop everything at this loss from start (firm limit 10)
+input double InpRoomCapPct       = 3.0;    // Room cap: size shrinks to 0 as the day-start balance nears the firm limit (full size above -7%; 0 = off)
+input double InpFirmMaxLossPct   = 10.0;   // The firm's max-loss limit (% of start) used by the room cap
 input double InpGuardShare       = 60;     // A trade may risk at most this % of the remaining daily / max room
-input double InpRiskMultiplier   = 1.0;    // Evaluation boost: 1.25 in phase 1 passes ~3 weeks faster (see README)
+input double InpRiskMultiplier   = 1.0;    // Keep 1.0: the default risks are already the tested fast preset (see README)
 input bool   InpAutoServerOffset = true;   // Live: detect the server's GMT offset automatically
 input int    InpServerGMTOffset  = 2;      // Tester: server GMT offset in winter (FTMO-style servers: 2)
 input bool   InpServerUsesUSDST  = true;   // Tester: server shifts +1h with US daylight saving (FTMO-style)
@@ -148,6 +150,11 @@ double RiskMoney()
    double dayRoom = InpAccountSize * InpDailyStopPct / 100 - MathMax(0, DayStartBalance() - eq);
    double maxRoom = eq - InpAccountSize * (1 - InpMaxStopPct / 100);
    r = MathMin(r, MathMin(dayRoom, maxRoom) * InpGuardShare / 100);
+   if(InpRoomCapPct > 0)      // room cap: full size until the day starts 7% down, then shrink linearly to 0 at the firm limit
+     {
+      double room = DayStartBalance() - InpAccountSize * (1 - InpFirmMaxLossPct / 100);
+      r *= MathMax(0, MathMin(1, room / (InpAccountSize * InpRoomCapPct / 100)));
+     }
    return MathMax(r, 0);
   }
 double LotsFor(double riskMoney, double stopDist, ENUM_ORDER_TYPE type, double price)

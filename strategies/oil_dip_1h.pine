@@ -30,7 +30,7 @@ holdBars = input.int(144, "Time exit after N bars", minval = 1, group = G_X)
 G_S = "Sizing"
 mode       = input.string("Live", "Sizing mode", options = ["Live", "Prop"], group = G_S,
      tooltip = "Live = fixed % risk per trade (funded or own account). Prop = evaluation sizing from the buffer, stops at the target.")
-riskPct    = input.float(0.15, "Live: risk per trade (% of balance)", minval = 0.1, maxval = 5, step = 0.05, group = G_S,
+riskPct    = input.float(0.1875, "Live: risk per trade (% of balance)", minval = 0.1, maxval = 5, step = 0.0125, group = G_S,
      tooltip = "0.5 when running next to BTC Dip v3 at 1.0% on a 10%/5% account.")
 maxSizeX   = input.float(3.0, "Max position (x balance) – keep within the firm's leverage", minval = 0.1, step = 0.1, group = G_S)
 bufRiskPct = input.float(33, "Prop: risk per trade (% of buffer above the fail line)", minval = 1, maxval = 100, step = 1, group = G_S)

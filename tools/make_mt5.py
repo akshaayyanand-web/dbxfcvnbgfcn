@@ -12,9 +12,11 @@ CTrade trade;
 //--- common inputs
 input double InpAccountSize      = 200000; // Starting balance of the prop account
 input double InpDailyStopPct     = 4.0;    // ACCOUNT guard: stop for the day at this loss (% of start; firm limit 5)
-input double InpMaxStopPct       = 8.0;    // ACCOUNT guard: stop everything at this loss from start (firm limit 10)
+input double InpMaxStopPct       = 9.5;    // ACCOUNT guard: stop everything at this loss from start (firm limit 10)
+input double InpRoomCapPct       = 3.0;    // Room cap: size shrinks to 0 as the day-start balance nears the firm limit (full size above -7%; 0 = off)
+input double InpFirmMaxLossPct   = 10.0;   // The firm's max-loss limit (% of start) used by the room cap
 input double InpGuardShare       = 60;     // A trade may risk at most this % of the remaining daily / max room
-input double InpRiskMultiplier   = 1.0;    // Evaluation boost: 1.25 in phase 1 passes ~3 weeks faster (see README)
+input double InpRiskMultiplier   = 1.0;    // Keep 1.0: the default risks are already the tested fast preset (see README)
 input bool   InpAutoServerOffset = true;   // Live: detect the server's GMT offset automatically
 input int    InpServerGMTOffset  = 2;      // Tester: server GMT offset in winter (FTMO-style servers: 2)
 input bool   InpServerUsesUSDST  = true;   // Tester: server shifts +1h with US daylight saving (FTMO-style)
@@ -142,6 +144,11 @@ double RiskMoney()
    double dayRoom = InpAccountSize * InpDailyStopPct / 100 - MathMax(0, DayStartBalance() - eq);
    double maxRoom = eq - InpAccountSize * (1 - InpMaxStopPct / 100);
    r = MathMin(r, MathMin(dayRoom, maxRoom) * InpGuardShare / 100);
+   if(InpRoomCapPct > 0)      // room cap: full size until the day starts 7% down, then shrink linearly to 0 at the firm limit
+     {
+      double room = DayStartBalance() - InpAccountSize * (1 - InpFirmMaxLossPct / 100);
+      r *= MathMax(0, MathMin(1, room / (InpAccountSize * InpRoomCapPct / 100)));
+     }
    return MathMax(r, 0);
   }
 double LotsFor(double riskMoney, double stopDist, ENUM_ORDER_TYPE type, double price)
@@ -237,11 +244,11 @@ void OnTick()
 '''
 
 EAS = {
-"BTC_Dip_v3.mq5": dict(tf="PERIOD_H2", magic=1101, risk=1.0, header='''//+------------------------------------------------------------------+
+"BTC_Dip_v3.mq5": dict(tf="PERIOD_H2", magic=1101, risk=0.75, header='''//+------------------------------------------------------------------+
 //| BTC Dip v3 – MT5 EA. Chart: BTCUSD (or your broker's BTC symbol), H2
 //| Buy when RSI(3) < 20 and close > EMA(50), unless the daily close is >15% below the close 30 days
 //| earlier. Stop 2 x ATR(14) below the signal close (on the order). Exit after 48 H2 bars (4 days).
-//| Portfolio risk: 1.0% per trade.  Python test 2020-2026: ~+20%/yr at 1% risk on its own.
+//| Portfolio risk: 0.75% per trade.  Python test 2020-2026: ~+20%/yr at 1% risk on its own.
 //+------------------------------------------------------------------+''', body='''
 void OnNewBar()
   {
@@ -258,11 +265,11 @@ void OnNewBar()
    if(rsi < 20 && c1 > ema) OpenTrade(1, c1 - 2 * atr, 0, "BTC Dip v3");
   }
 '''),
-"Gold_Dip.mq5": dict(tf="PERIOD_H1", magic=1102, risk=0.5, header='''//+------------------------------------------------------------------+
+"Gold_Dip.mq5": dict(tf="PERIOD_H1", magic=1102, risk=0.625, header='''//+------------------------------------------------------------------+
 //| Gold Dip – MT5 EA. Chart: XAUUSD, H1
 //| Buy when RSI(2) < 10 and close > EMA(50), unless the daily close is >8% below the close 30 days
 //| earlier. Stop 2 x ATR(14) below the signal close (on the order). Exit after 96 H1 bars.
-//| Portfolio risk: 0.5% per trade.
+//| Portfolio risk: 0.625% per trade.
 //+------------------------------------------------------------------+''', body='''
 void OnNewBar()
   {
@@ -279,11 +286,11 @@ void OnNewBar()
    if(rsi < 10 && c1 > ema) OpenTrade(1, c1 - 2 * atr, 0, "Gold Dip");
   }
 '''),
-"Gold_Asia_Breakout.mq5": dict(tf="PERIOD_H1", magic=1103, risk=0.25, header='''//+------------------------------------------------------------------+
+"Gold_Asia_Breakout.mq5": dict(tf="PERIOD_H1", magic=1103, risk=0.3125, header='''//+------------------------------------------------------------------+
 //| Gold Asia-Range Breakout – MT5 EA. Chart: XAUUSD, H1 (London clock)
 //| Range = 00:00-07:00 London. First H1 close above / below it between 07:00 and 14:00 London -> buy /
 //| sell, stop at the range middle (on the order). One trade per day. Flat at 20:00 London.
-//| Portfolio risk: 0.25% per trade.
+//| Portfolio risk: 0.3125% per trade.
 //+------------------------------------------------------------------+''', body='''
 int lastTradeDay = 0;
 void OnNewBar()
@@ -311,11 +318,11 @@ void OnNewBar()
    if(OpenTrade(dir, mid, 0, "Gold Asia BO") || !gSpreadRetry) lastTradeDay = day;
   }
 '''),
-"Gold_Intraday_Momentum.mq5": dict(tf="PERIOD_H1", magic=1104, risk=0.25, header='''//+------------------------------------------------------------------+
+"Gold_Intraday_Momentum.mq5": dict(tf="PERIOD_H1", magic=1104, risk=0.3125, header='''//+------------------------------------------------------------------+
 //| Gold Intraday Momentum – MT5 EA. Chart: XAUUSD, H1 (London clock)
 //| Reference = close of the H1 bar ending 17:00 London (previous day). At 09:00 London, if gold moved
 //| more than 0.6% from it, trade in that direction; stop 1.0 x ATR(24); exit 16:00 London.
-//| Portfolio risk: 0.25% per trade.
+//| Portfolio risk: 0.3125% per trade.
 //+------------------------------------------------------------------+''', body='''
 void OnNewBar()
   {
@@ -363,11 +370,11 @@ void OnNewBar()
    if(dir != 0) OpenTrade(dir, c1 - dir * 1.5 * atr, 0, "NQ Intraday Mom");
   }
 '''),
-"NQ_Opening_Range.mq5": dict(tf="PERIOD_M5", magic=1106, risk=0.5, header='''//+------------------------------------------------------------------+
+"NQ_Opening_Range.mq5": dict(tf="PERIOD_M5", magic=1106, risk=0.625, header='''//+------------------------------------------------------------------+
 //| Nasdaq Opening-Range Breakout – MT5 EA. Chart: US100 / NAS100 / USTEC, M5 (New York clock)
 //| Range = 09:30-09:45 New York. First M5 close outside it until 11:30 New York -> buy / sell, stop at the
 //| other side of the range, target 2 x risk (both on the order). One trade per day. Flat at 15:55 NY.
-//| Portfolio risk: 0.5% per trade.
+//| Portfolio risk: 0.625% per trade.
 //+------------------------------------------------------------------+''', body='''
 int lastTradeDay = 0;
 void OnNewBar()
@@ -526,19 +533,19 @@ void OnNewBar()
 
 RETIRED = {"NQ_Dip_Grid.mq5": EAS.pop("NQ_Dip_Grid.mq5"), "SPX_Dip_Grid.mq5": EAS.pop("SPX_Dip_Grid.mq5"),
            "NQ_Intraday_Momentum.mq5": EAS.pop("NQ_Intraday_Momentum.mq5")}
-EAS["NQ_Dip_2h.mq5"] = dip_ea("NQ Dip 2h", "US100 / NAS100 / USTEC", "PERIOD_H2", 1109, 0.25, 2, 25, 50, 48, 0.08,
-                              "Portfolio risk: 0.25% per trade. Python 2020-2026 at 1% risk: +12.3%/yr (2020-22), +14.4%/yr (2023-26).")
-EAS["SPX_Dip_1h.mq5"] = dip_ea("S&P Dip 1h", "US500 / SPX500", "PERIOD_H1", 1110, 0.25, 2, 15, 200, 48, 0.08,
-                               "Portfolio risk: 0.25% per trade. Python 2020-2026 at 1% risk: +10.5%/yr (2020-22), +12.6%/yr (2023-26).")
-EAS["Oil_Dip_1h.mq5"] = dip_ea("Oil Dip 1h", "WTI / USOIL / XTIUSD", "PERIOD_H1", 1111, 0.15, 2, 25, 50, 144, 0.15,
-                               "Portfolio risk: 0.15% per trade. Python 2020-2026 at 1% risk: +14.1%/yr (2020-22), +15.5%/yr (2023-26).")
+EAS["NQ_Dip_2h.mq5"] = dip_ea("NQ Dip 2h", "US100 / NAS100 / USTEC", "PERIOD_H2", 1109, 0.3125, 2, 25, 50, 48, 0.08,
+                              "Portfolio risk: 0.3125% per trade. Python 2020-2026 at 1% risk: +12.3%/yr (2020-22), +14.4%/yr (2023-26).")
+EAS["SPX_Dip_1h.mq5"] = dip_ea("S&P Dip 1h", "US500 / SPX500", "PERIOD_H1", 1110, 0.3125, 2, 15, 200, 48, 0.08,
+                               "Portfolio risk: 0.3125% per trade. Python 2020-2026 at 1% risk: +10.5%/yr (2020-22), +12.6%/yr (2023-26).")
+EAS["Oil_Dip_1h.mq5"] = dip_ea("Oil Dip 1h", "WTI / USOIL / XTIUSD", "PERIOD_H1", 1111, 0.1875, 2, 25, 50, 144, 0.15,
+                               "Portfolio risk: 0.1875% per trade. Python 2020-2026 at 1% risk: +14.1%/yr (2020-22), +15.5%/yr (2023-26).")
 
-EAS["NQ_Breakout_15m.mq5"] = dict(tf="PERIOD_M15", magic=1112, risk=0.1, header="""//+------------------------------------------------------------------+
+EAS["NQ_Breakout_15m.mq5"] = dict(tf="PERIOD_M15", magic=1112, risk=0.05, header="""//+------------------------------------------------------------------+
 //| NQ Breakout 15m – MT5 EA. Chart: US100 / NAS100 / USTEC, M15 (New York clock)
 //| Between 09:30 and 12:00 New York: a 15-minute close above the highest high of the previous 20 bars while
 //| above EMA(200) -> buy; a close below the lowest low of the previous 20 bars while below EMA(200) -> sell.
 //| Stop 1 x ATR(14) on the order, no target: flat at 15:50 New York. Several trades a day are possible.
-//| Portfolio risk: 0.1% per trade (about 1 trade per weekday). Python 2019-2026 at 1% risk: about +44%/yr
+//| Portfolio risk: 0.05% per trade (about 1 trade per weekday; 0.1% caused breaches with the fast preset). Python 2019-2026 at 1% risk: about +44%/yr
 //| (2019-22) and +48%/yr (2023-26); +27%/yr with double costs. Thin, cost-sensitive edge: low spreads only.
 //+------------------------------------------------------------------+""", body="""
 void OnNewBar()
