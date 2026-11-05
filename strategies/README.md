@@ -292,3 +292,19 @@ Goal: pass faster while keeping 93%+ pass and 0 breaches. Picked on 2020-22 star
   - Daily stop at 2.5-4% instead of 4%: no change. Phase 2 at 1.25x: 1.4-9% breaches. Phase 2 at 0.75x: 98% / 96%
     pass but 10 days slower. Another +10-20% on everything: breaches. The fast preset stays as it is.
 
+## New strategy families, Nov 2026 (5m data 2019-2026, at 1% risk, costs and swaps included)
+- **Calendar effects** (`tools/calendar_edges_test.py`, 44 versions):
+  - Index overnight drift (16:00 to 09:30, with trend / after-down-day filters): -9 to +2%/yr once swaps are paid.
+  - Turn of the month (S&P +3.8% / +0.6%) and pre-FOMC drift (+1%): about 1 trade a month, too small.
+  - Gold Asia/London long: +2% in 2019-22, +24% in 2023-26. That is the 2023-26 gold rally, not an edge.
+  - None added.
+- **News reactions** (`tools/news_reaction_test.py`, 524 versions; 94 CPI, 94 NFP, 65 FOMC; entry 5-30 min after):
+  - Following the first move loses on every market.
+  - Fading Nasdaq after CPI/NFP makes about +0.2R a trade, but at ~1 trade a month that is only +1.5-4.5%/yr.
+  - None added.
+- **Failed breakouts (turtle soup on the previous day's high/low) and VWAP snap-backs** (`tools/reversal_test.py`, 72
+  versions): -4 to +4%/yr, negative at double costs. Intraday fades don't work on these markets; breakouts do.
+- **S&P 5m morning breakout** (`tools/spx_breakout_addon_test.py`): 8 neighbouring versions made 15-45%/yr in both
+  halves. Added as the optional funded-account EA `SPX_Breakout_5m` at 0.1% (funded +71% / +98% vs +58% / +91%,
+  0 breaches; evaluation pass 93% vs 95%).
+

@@ -11,6 +11,7 @@
 | `SPX_Dip_1h.mq5` | US500 / SPX500 | H1 | 0.3125% | 1110 |
 | `Oil_Dip_1h.mq5` | WTI / USOIL / XTIUSD (RoboForex: search "WTI" or "OIL") | H1 | 0.1875% | 1111 |
 | `NQ_Breakout_15m.mq5` (optional 9th) | US100 / NAS100 / USTEC | **M15** | 0.05% | 1112 |
+| `SPX_Breakout_5m.mq5` (optional, funded account) | US500 / SPX500 | M5 | 0.1% | 1113 |
 
 Every EA makes 10%+ a year at 1% risk (2020-2026). **The defaults are the "fast preset" (Nov 2026)**: BTC trimmed to
 0.75%, every other EA +25%, the max-loss stop moved from -8% to -9.5%, and a new **room cap** (`InpRoomCapPct` 3) that
@@ -19,7 +20,13 @@ defaults (simulated 2-step, an attempt started every day 2020-2025): pass **96% 
 median **80 / 70 days** (was 89 / 77), funded year **+58% / +91%** (was +53% / +83%), for 2020-22 / 2023-25 starts.
 If you already run the EAs, re-copy all files and re-attach them so the new defaults load (MT5 keeps old input values).
 **Optional 9th EA, `NQ_Breakout_15m`**: about one extra trade per weekday, now at **0.05%** risk (0.1% caused
-breaches with the fast preset). With it: pass 93% / 96%, 0 breaches, median 78 / 71 days, funded +64% / +97%. The older `NQ_Intraday_Momentum`, `NQ_Dip_Grid` and `SPX_Dip_Grid`
+breaches with the fast preset). With it: pass 93% / 96%, 0 breaches, median 78 / 71 days, funded +64% / +97%.
+**Optional funded-account add-on, `SPX_Breakout_5m`** (Nov 2026, `tools/spx_breakout_addon_test.py`): the S&P version of
+the morning breakout (50-bar high/low, EMA200, 2 ATR stop, flat 15:50 NY), ~26 trades a month at 0.1%. On its own
+it made +47%/yr (2019-22) and +20%/yr (2023-26) at 1% risk, and +15%/yr at double costs. Next to the 8 EAs:
+funded year **+71% / +98%** (vs +58% / +91%), 0 breaches, also at double costs. In the evaluation the pass rate is
+93% instead of 95-96% and it's only ~2 days faster, so add it once funded. Don't run it at more than 0.1%:
+at 0.15-0.2% the pass rate falls to 83-90%. The older `NQ_Intraday_Momentum`, `NQ_Dip_Grid` and `SPX_Dip_Grid`
 (below 10%) were replaced and are kept in `retired/` for reference. Don't run them together with the new set.
 
 ## Step 1 – Get MT5 and a demo account

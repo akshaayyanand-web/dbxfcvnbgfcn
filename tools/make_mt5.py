@@ -571,6 +571,38 @@ void OnNewBar()
   }
 """)
 
+EAS["SPX_Breakout_5m.mq5"] = dict(tf="PERIOD_M5", magic=1113, risk=0.1, header="""//+------------------------------------------------------------------+
+//| SPX Breakout 5m – MT5 EA. Chart: US500 / SPX500, M5 (New York clock). OPTIONAL funded-account add-on.
+//| Between 09:30 and 12:00 New York: a 5-minute close above the highest high of the previous 50 bars while
+//| above EMA(200) -> buy; a close below the lowest low of the previous 50 bars while below EMA(200) -> sell.
+//| Stop 2 x ATR(14) on the order, no target: flat at 15:50 New York. Several trades a day are possible.
+//| Portfolio risk: 0.1% per trade (~26 trades a month). Python 2019-2026 at 1% risk: +47%/yr (2019-22),
+//| +20%/yr (2023-26), +15%/yr with double costs. With the fast preset: funded year +71% / +98% instead of
+//| +58% / +91%, 0 breaches; evaluation pass 93% instead of 95%, so it is meant for the funded account.
+//+------------------------------------------------------------------+""", body="""
+void OnNewBar()
+  {
+   ulong tk; long tp; datetime ot;
+   datetime n0 = ToNY(iTime(_Symbol, _Period, 0)), n1 = ToNY(iTime(_Symbol, _Period, 1));
+   if(MyPosition(tk, tp, ot))
+     {
+      if(MinuteOfDay(n0) >= 950 || DayKey(n0) != DayKey(ToNY(ot))) CloseMine("Flat 15:50 New York");
+      return;
+     }
+   int m1 = MinuteOfDay(n1);
+   if(m1 < 570 || m1 >= 720) return;                         // signal bar inside 09:30-12:00 New York
+   double c1 = iClose(_Symbol, _Period, 1), ema = Ema(200, 1), atr = AtrRma(14, 1);
+   if(ema == EMPTY_VALUE || atr == EMPTY_VALUE || atr <= 0) return;
+   int hiIdx = iHighest(_Symbol, _Period, MODE_HIGH, 50, 2), loIdx = iLowest(_Symbol, _Period, MODE_LOW, 50, 2);
+   if(hiIdx < 0 || loIdx < 0) return;
+   double hi = iHigh(_Symbol, _Period, hiIdx), lo = iLow(_Symbol, _Period, loIdx);
+   int dir = (c1 > hi && c1 > ema) ? 1 : ((c1 < lo && c1 < ema) ? -1 : 0);
+   if(dir == 0) return;
+   double price = dir == 1 ? SymbolInfoDouble(_Symbol, SYMBOL_ASK) : SymbolInfoDouble(_Symbol, SYMBOL_BID);
+   OpenTrade(dir, price - dir * 2 * atr, 0, "SPX Breakout 5m");
+  }
+""")
+
 if __name__ == "__main__":
     out = os.path.join(os.path.dirname(__file__), "..", "strategies", "mt5")
     os.makedirs(out, exist_ok=True)
