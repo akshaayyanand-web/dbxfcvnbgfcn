@@ -123,7 +123,21 @@ Simulated FTMO-style 2-step, an attempt started **every day** 2020-2025; phase 2
 Full history with the new defaults: 2020 +50%, 2021 +88%, 2022 +16%, 2023 +58%, 2024 +82%, 2025 +114%,
 2026 +37% (to Oct); funded-year median +77%, 0/67 breaches.
 
-**Don't raise `InpRiskMultiplier` above 1.0.** Going from these defaults to 1.1x already caused 3% breaches, and
+**Turbo (optional, evaluation only): `InpRiskMultiplier` 1.5 and `InpDailyStopPct` 2.5 on every EA.** No new files
+needed. Tested in `tools/turbo_preset_test.py` (attempt every 3 days, 2020-22 / 2023-25 starts):
+
+| Setup | Pass | Breached | Median days (passers) | Funded within 30 days | within 45 days |
+|---|---|---|---|---|---|
+| Default (fast preset) | 95% / 95% | 0% | 79 / 70 | 9% / 10% | 21% / 27% |
+| 1.5x phase 1 only (phase 2 at 0.5x), daily 2.5 | 79% / 87% | 2% / 2% | 68 / 61 | 13% / 14% | 25% / 31% |
+| **Turbo: 1.5x both phases, daily 2.5** | **53% / 71%** | **12% / 9%** | **37 / 37** | **21% / 28%** | **33% / 40%** |
+| 2x both phases, daily 2.5 | 53% / 51% | 22% / 20% | 23 / 22 | 36% / 36% | 42% / 43% |
+| 2.5x both phases, daily 2.5 | 41% / 39% | 44% / 44% | 15 / 14 | 36% / 34% | 39% / 37% |
+
+No setting reached 70-80% pass **and** a ~30-day median: about 35% of attempts funded within 30 days is the ceiling,
+and getting there costs half the attempts. Once funded, set every EA back to 1.0 and 4.0.
+
+**Outside turbo, don't raise `InpRiskMultiplier` above 1.0.** Going from these defaults to 1.1x already caused 3% breaches, and
 1.5x caused 7-17%. Every breach came from days like 7 Sep 2021, when BTC gapped through its stop in one hour while
 the account was already down on the day.
 
