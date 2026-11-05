@@ -571,6 +571,45 @@ void OnNewBar()
   }
 """)
 
+EAS["BTC_Weekend_Gap.mq5"] = dict(tf="PERIOD_H1", magic=1114, risk=0.5, header="""//+------------------------------------------------------------------+
+//| BTC Weekend Gap – MT5 EA. Chart: BTCUSD (your broker's BTC symbol), H1. Needs BTC to trade at weekends.
+//| CME bitcoin futures close Friday 16:00 Chicago (17:00 New York) and reopen Sunday 17:00 Chicago (18:00 NY)
+//| while spot keeps trading. At the Sunday reopen, if BTC has moved more than 2% since Friday's close, trade
+//| IN the direction of that weekend move (the popular "gap fill" fade loses money; the follow-through wins).
+//| Stop 1.5 x ATR(14) on the order, exit after 48 H1 bars. About 1-2 trades a month.
+//| Portfolio risk: 0.5% per trade. Python 2020-2026 at 1% risk: +19%/yr (2020-22), +8%/yr (2023-26), 34% winners,
+//| average +0.87R. With the 8 EAs: 2-step pass 94% / 97%, 0 breaches, median 70 / 66 days, funded +84% / +95%.
+//+------------------------------------------------------------------+""", body="""
+int lastGapWeek = 0;
+void OnNewBar()
+  {
+   ulong tk; long tp; datetime ot;
+   if(MyPosition(tk, tp, ot))
+     {
+      if(iBarShift(_Symbol, _Period, ot) >= 48) CloseMine("Time exit (48h)");
+      return;
+     }
+   datetime n0 = ToNY(iTime(_Symbol, _Period, 0)); MqlDateTime s0; TimeToStruct(n0, s0);
+   if(s0.day_of_week != 0 || s0.hour < 18 || s0.hour > 19) return;      // Sunday 18:00-19:59 New York (CME reopen)
+   int wk = DayKey(n0);
+   if(wk == lastGapWeek) return;
+   double friClose = 0;
+   for(int k = 1; k < 120; k++)                                          // close of the Friday 16:00-17:00 NY bar
+     {
+      MqlDateTime s; TimeToStruct(ToNY(iTime(_Symbol, _Period, k)), s);
+      if(s.day_of_week == 5 && s.hour == 16) { friClose = iClose(_Symbol, _Period, k); break; }
+      if(s.day_of_week == 4) break;
+     }
+   if(friClose <= 0) { lastGapWeek = wk; return; }
+   double bid = SymbolInfoDouble(_Symbol, SYMBOL_BID), gap = bid / friClose - 1, atr = AtrRma(14, 1);
+   if(atr == EMPTY_VALUE || atr <= 0) return;
+   if(MathAbs(gap) < 0.02) { lastGapWeek = wk; return; }
+   int dir = gap > 0 ? 1 : -1;
+   double price = dir == 1 ? SymbolInfoDouble(_Symbol, SYMBOL_ASK) : bid;
+   if(OpenTrade(dir, price - dir * 1.5 * atr, 0, "BTC Weekend Gap") || !gSpreadRetry) lastGapWeek = wk;
+  }
+""")
+
 EAS["SPX_Breakout_5m.mq5"] = dict(tf="PERIOD_M5", magic=1113, risk=0.1, header="""//+------------------------------------------------------------------+
 //| SPX Breakout 5m – MT5 EA. Chart: US500 / SPX500, M5 (New York clock). OPTIONAL funded-account add-on.
 //| Between 09:30 and 12:00 New York: a 5-minute close above the highest high of the previous 50 bars while

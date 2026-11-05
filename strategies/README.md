@@ -307,4 +307,13 @@ Goal: pass faster while keeping 93%+ pass and 0 breaches. Picked on 2020-22 star
 - **S&P 5m morning breakout** (`tools/spx_breakout_addon_test.py`): 8 neighbouring versions made 15-45%/yr in both
   halves. Added as the optional funded-account EA `SPX_Breakout_5m` at 0.1% (funded +71% / +98% vs +58% / +91%,
   0 breaches; evaluation pass 93% vs 95%).
+- **Crypto timing** (`tools/crypto_timing_test.py`, 72 versions, BTC/ETH 1h 2020-2026):
+  - US / Asia / Europe session drift loses (-1 to -13%/yr).
+  - "CME gap fill" (fade the weekend move) loses.
+  - **Following the weekend move works on BTC**: gap >2%, 1.5 ATR stop, 48h hold made +19% / +8%/yr at 1% risk, and
+    every neighbouring BTC version was positive in both halves. Added as the 9th core EA `BTC_Weekend_Gap` at 0.5%
+    (`tools/btc_weekend_gap_test.py`): pass 94% / 97%, 0 breaches, 70 / 66 days, funded +84% / +95% (vs 96% / 95%,
+    80 / 70 days, +58% / +91%). Caveat: it lost in 2025 (-3.4%) and 2026 so far (-2.4%) at 0.5%.
+- **Breakouts in other sessions** (`tools/session_breakout_test.py`, 192 versions): London, NY afternoon and Asia breakouts
+  lose on Nasdaq, S&P and gold. Gold breakouts lose in every session. The edge exists only in the US morning on US indices.
 

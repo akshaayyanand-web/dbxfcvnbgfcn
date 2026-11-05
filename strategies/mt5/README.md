@@ -10,8 +10,29 @@
 | `NQ_Dip_2h.mq5` | US100 / NAS100 / USTEC | **H2** | 0.3125% | 1109 |
 | `SPX_Dip_1h.mq5` | US500 / SPX500 | H1 | 0.3125% | 1110 |
 | `Oil_Dip_1h.mq5` | WTI / USOIL / XTIUSD (RoboForex: search "WTI" or "OIL") | H1 | 0.1875% | 1111 |
-| `NQ_Breakout_15m.mq5` (optional 9th) | US100 / NAS100 / USTEC | **M15** | 0.05% | 1112 |
+| `BTC_Weekend_Gap.mq5` (**9th core EA, Nov 2026**) | BTCUSD (must trade at weekends) | H1 | 0.5% | 1114 |
+| `NQ_Breakout_15m.mq5` (optional) | US100 / NAS100 / USTEC | **M15** | 0.05% | 1112 |
 | `SPX_Breakout_5m.mq5` (optional, funded account) | US500 / SPX500 | M5 | 0.1% | 1113 |
+
+**New 9th core EA, `BTC_Weekend_Gap`** (`tools/btc_weekend_gap_test.py`). CME bitcoin futures close from Friday 17:00 to
+Sunday 18:00 New York, but spot BTC keeps trading. When BTC has moved more than 2% over that weekend, the EA trades
+**in the direction of the move** at the Sunday reopen, with a 1.5 ATR stop and a 48h exit. About 1-2 trades a month.
+The popular "CME gap fill" idea (trading back toward Friday's close) **loses** money. The follow-through wins: 34%
+winners, average +0.87R, correlation with the other 8 EAs 0.03. Added to the 8 EAs (fast preset, attempt started every day 2020-2025):
+
+| | 8 EAs | **9 EAs with BTC_Weekend_Gap** |
+|---|---|---|
+| 2-step pass (2020-22 / 2023-25 starts) | 96% / 95% | 94% / **97%** |
+| Breached | 0% | 0.1% / 0% |
+| Median days to funded | 80 / 70 | **70 / 66** |
+| Funded within 60 days | 31% / 39% | **38% / 45%** |
+| Funded year (median) | +58% / +91% | **+84% / +95%**, 0 breaches |
+| Costs x2: pass / days / funded | 80% / 87%, 83 / 76 d, +44% / +71% | 82% / 89%, 70 / 70 d, +66% / +77% |
+| Max drawdown 2020-2026 | 15.1% | 13.3% |
+
+On its own at 0.5%: 2020 +5.5%, 2021 +12.4%, 2022 +14.2%, 2023 +11.9%, 2024 +5.8%, **2025 -3.4%, 2026 -2.4%** (to Oct).
+The last two years were losing, so watch it. If it keeps losing through 2027, remove it. Your broker must quote BTC at
+weekends (FTMO does), and the EA needs its own BTCUSD H1 chart, separate from BTC_Dip_v3 (H2).
 
 Every EA makes 10%+ a year at 1% risk (2020-2026). **The defaults are the "fast preset" (Nov 2026)**: BTC trimmed to
 0.75%, every other EA +25%, the max-loss stop moved from -8% to -9.5%, and a new **room cap** (`InpRoomCapPct` 3) that
@@ -36,13 +57,13 @@ at 0.15-0.2% the pass rate falls to 83-90%. The older `NQ_Intraday_Momentum`, `N
   `US500.cash`, `BTCUSD`. Any name works; the EAs trade whatever chart they're attached to.
 
 ## Step 2 – Install the EAs
-1. MT5 → **File → Open Data Folder** → open `MQL5` → `Experts`. Copy the eight `.mq5` files into it.
+1. MT5 → **File → Open Data Folder** → open `MQL5` → `Experts`. Copy the nine core `.mq5` files into it (plus any optional ones).
 2. Press **F4** (MetaEditor). In the Navigator on the left, open each file under *Experts* and press **F7** (Compile).
    The bottom panel must say `0 errors`. If it shows errors, screenshot them and send them back.
-3. Back in MT5, right-click **Expert Advisors** in the Navigator → **Refresh**. The eight EAs appear.
+3. Back in MT5, right-click **Expert Advisors** in the Navigator → **Refresh**. The EAs appear.
 
 ## Step 3 – Run them live (demo first)
-1. Open **eight charts** (File → New Chart): gold ×3, US100 ×2, US500 ×1, oil ×1, BTC ×1. Set each chart's timeframe
+1. Open **nine charts** (File → New Chart): gold ×3, US100 ×2, US500 ×1, oil ×1, BTC ×2 (H2 for BTC_Dip_v3, H1 for BTC_Weekend_Gap). Set each chart's timeframe
    from the table above (`NQ_Opening_Range` is M5; `BTC_Dip_v3` and `NQ_Dip_2h` are H2).
 2. Drag one EA onto each chart. In the window that opens:
    - **Common** tab: tick **Allow Algo Trading**.
