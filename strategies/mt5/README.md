@@ -11,8 +11,27 @@
 | `SPX_Dip_1h.mq5` | US500 / SPX500 | H1 | 0.3125% | 1110 |
 | `Oil_Dip_1h.mq5` | WTI / USOIL / XTIUSD (RoboForex: search "WTI" or "OIL") | H1 | 0.1875% | 1111 |
 | `BTC_Weekend_Gap.mq5` (**9th core EA, Nov 2026**) | BTCUSD (must trade at weekends) | H1 | 0.5% | 1114 |
+| `DAX_Opening_Range.mq5` (**10th core EA, Nov 2026**) | GER40 / DE40 / DAX40 | **M15** | 0.2% | 1115 |
 | `NQ_Breakout_15m.mq5` (optional) | US100 / NAS100 / USTEC | **M15** | 0.05% | 1112 |
 | `SPX_Breakout_5m.mq5` (optional, funded account) | US500 / SPX500 | M5 | 0.1% | 1113 |
+
+**New 10th core EA, `DAX_Opening_Range`** (`tools/dax_test.py`, `tools/dax_addon_test.py`, DAX 1m data 2021-2026).
+It takes the 09:00-09:30 Frankfurt range, then the first 15-minute close beyond it between 09:30 and 12:00, in the
+direction of the daily EMA(50). Stop at the middle of the range, no target, flat at 17:25 Frankfurt. About 11 trades
+a month, at 03:30-11:25 New York time, when the other EAs are mostly quiet (correlation 0.06). On its own at 1% risk it made
++42%/yr (2021-22) and +29%/yr (2023-26), and +28%/yr at double costs. 64 of 184 DAX versions were 10%+/yr in both
+halves; Frankfurt breakouts are the strongest new market found. DAX dips were mixed and are not used.
+
+| | 9 core EAs | **10 core EAs (with DAX)** |
+|---|---|---|
+| 2-step pass (2020-22 / 2023-25 starts) | 94% / 97% | **95% / 97%** |
+| Breached | 0.1% / 0% | 0.1% / 0% |
+| Median days to funded | 70 / 66 | **68 / 60** |
+| Funded within 60 days | 38% / 45% | **40% / 49%** |
+| Funded year (median) | +84% / +95% | **+93% / +109%**, 0 breaches |
+
+Keep it at 0.2%: at 0.25% the pass rate falls to 92% / 95% with 0.6% breaches. It needs a GER40 M15 chart; the EA
+converts the server clock to Frankfurt time itself, using the same EU/UK daylight-saving rule. (The 2020 tests run without DAX, since the data starts in 2021.)
 
 **New 9th core EA, `BTC_Weekend_Gap`** (`tools/btc_weekend_gap_test.py`). CME bitcoin futures close from Friday 17:00 to
 Sunday 18:00 New York, but spot BTC keeps trading. When BTC has moved more than 2% over that weekend, the EA trades
@@ -57,13 +76,13 @@ at 0.15-0.2% the pass rate falls to 83-90%. The older `NQ_Intraday_Momentum`, `N
   `US500.cash`, `BTCUSD`. Any name works; the EAs trade whatever chart they're attached to.
 
 ## Step 2 – Install the EAs
-1. MT5 → **File → Open Data Folder** → open `MQL5` → `Experts`. Copy the nine core `.mq5` files into it (plus any optional ones).
+1. MT5 → **File → Open Data Folder** → open `MQL5` → `Experts`. Copy the ten core `.mq5` files into it (plus any optional ones).
 2. Press **F4** (MetaEditor). In the Navigator on the left, open each file under *Experts* and press **F7** (Compile).
    The bottom panel must say `0 errors`. If it shows errors, screenshot them and send them back.
 3. Back in MT5, right-click **Expert Advisors** in the Navigator → **Refresh**. The EAs appear.
 
 ## Step 3 – Run them live (demo first)
-1. Open **nine charts** (File → New Chart): gold ×3, US100 ×2, US500 ×1, oil ×1, BTC ×2 (H2 for BTC_Dip_v3, H1 for BTC_Weekend_Gap). Set each chart's timeframe
+1. Open **ten charts** (File → New Chart): gold ×3, US100 ×2, US500 ×1, oil ×1, BTC ×2 (H2 for BTC_Dip_v3, H1 for BTC_Weekend_Gap), GER40 ×1 (M15). Set each chart's timeframe
    from the table above (`NQ_Opening_Range` is M5; `BTC_Dip_v3` and `NQ_Dip_2h` are H2).
 2. Drag one EA onto each chart. In the window that opens:
    - **Common** tab: tick **Allow Algo Trading**.

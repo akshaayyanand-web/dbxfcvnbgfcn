@@ -571,6 +571,58 @@ void OnNewBar()
   }
 """)
 
+EAS["DAX_Opening_Range.mq5"] = dict(tf="PERIOD_M15", magic=1115, risk=0.2, header="""//+------------------------------------------------------------------+
+//| DAX Opening Range – MT5 EA. Chart: GER40 / DE40 / DAX40 (your broker's DAX symbol), M15 (Frankfurt clock)
+//| Range = high/low of 09:00-09:30 Frankfurt. From 09:30 to 12:00, the first 15-minute close above the range
+//| while above the EMA(50) of daily closes (up to yesterday) -> buy; below the range and below that EMA -> sell.
+//| Stop at the middle of the range (on the order), no target, flat at 17:25 Frankfurt. One trade per day.
+//| Portfolio risk: 0.2% per trade, ~11 trades a month. Python 2021-2026 at 1% risk: +42%/yr (2021-22),
+//| +29%/yr (2023-26), +28%/yr with double costs. With the 9 core EAs: pass 95% / 97%, median 68 / 60 days. Trades 03:30-11:25 New York, when the other EAs are quiet.
+//+------------------------------------------------------------------+""", body="""
+datetime ToFrankfurt(datetime s) { datetime u = ToUTC(s); return u + (IsUKDST(u) ? 7200 : 3600); }   // EU and UK switch DST together
+double EmaD1(int len)       // EMA(len) of daily closes up to yesterday
+  {
+   int n = MathMin(iBars(_Symbol, PERIOD_D1) - 1, 5 * len);
+   if(n < 2 * len) return EMPTY_VALUE;
+   double a = 2.0 / (len + 1), e = iClose(_Symbol, PERIOD_D1, n);
+   for(int k = n - 1; k >= 1; k--) e = a * iClose(_Symbol, PERIOD_D1, k) + (1 - a) * e;
+   return e;
+  }
+int lastTradeDay = 0;
+void OnNewBar()
+  {
+   ulong tk; long tp; datetime ot;
+   datetime f0 = ToFrankfurt(iTime(_Symbol, _Period, 0)), f1 = ToFrankfurt(iTime(_Symbol, _Period, 1));
+   if(MyPosition(tk, tp, ot))
+     {
+      if(MinuteOfDay(f0) >= 1045 || DayKey(f0) != DayKey(ToFrankfurt(ot))) CloseMine("Flat 17:25 Frankfurt");
+      return;
+     }
+   int m1 = MinuteOfDay(f1), day = DayKey(f1);
+   if(m1 < 570 || m1 >= 720 || day == lastTradeDay || DayKey(f0) != day) return;   // signal bar 09:30-12:00 Frankfurt
+   double hi = -1, lo = -1;
+   for(int k = 1; k < 60; k++)
+     {
+      datetime fk = ToFrankfurt(iTime(_Symbol, _Period, k));
+      if(DayKey(fk) != day) break;
+      int mk = MinuteOfDay(fk);
+      if(mk >= 540 && mk < 570)
+        {
+         double h = iHigh(_Symbol, _Period, k), l = iLow(_Symbol, _Period, k);
+         hi = hi < 0 ? h : MathMax(hi, h); lo = lo < 0 ? l : MathMin(lo, l);
+        }
+     }
+   if(hi <= 0 || lo <= 0 || hi <= lo) return;
+   double c1 = iClose(_Symbol, _Period, 1), ema = EmaD1(50);
+   if(ema == EMPTY_VALUE) return;
+   int dir = 0;
+   if(c1 > hi && c1 > ema) dir = 1;
+   if(c1 < lo && c1 < ema) dir = -1;
+   if(dir == 0) return;
+   if(OpenTrade(dir, (hi + lo) / 2, 0, "DAX Opening Range") || !gSpreadRetry) lastTradeDay = day;
+  }
+""")
+
 EAS["BTC_Weekend_Gap.mq5"] = dict(tf="PERIOD_H1", magic=1114, risk=0.5, header="""//+------------------------------------------------------------------+
 //| BTC Weekend Gap – MT5 EA. Chart: BTCUSD (your broker's BTC symbol), H1. Needs BTC to trade at weekends.
 //| CME bitcoin futures close Friday 16:00 Chicago (17:00 New York) and reopen Sunday 17:00 Chicago (18:00 NY)

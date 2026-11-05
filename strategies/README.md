@@ -316,4 +316,9 @@ Goal: pass faster while keeping 93%+ pass and 0 breaches. Picked on 2020-22 star
     80 / 70 days, +58% / +91%). Caveat: it lost in 2025 (-3.4%) and 2026 so far (-2.4%) at 0.5%.
 - **Breakouts in other sessions** (`tools/session_breakout_test.py`, 192 versions): London, NY afternoon and Asia breakouts
   lose on Nasdaq, S&P and gold. Gold breakouts lose in every session. The edge exists only in the US morning on US indices.
+- **DAX (Germany 40), Frankfurt session** (`tools/dax_test.py`, 184 versions, 1m data 2021-2026, ~6% of days missing from the
+  data feed): opening-range and morning breakouts are strong (64 versions 10%+/yr in both halves). Dips are mixed.
+  `DAX_Opening_Range` (30-min range, EMA50 trend, mid-range stop) was added as the 10th core EA at 0.2% (`tools/dax_addon_test.py`):
+  pass 95% / 97%, 68 / 60 days, funded +93% / +109% (vs 94% / 97%, 70 / 66, +84% / +95%). The DAX 20/50-bar breakouts
+  breached in funded years and were not used.
 
