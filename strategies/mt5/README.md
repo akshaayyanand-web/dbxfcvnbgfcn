@@ -131,8 +131,15 @@ needed. Tested in `tools/turbo_preset_test.py` (attempt every 3 days, 2020-22 / 
 | Default (fast preset) | 95% / 95% | 0% | 79 / 70 | 9% / 10% | 21% / 27% |
 | 1.5x phase 1 only (phase 2 at 0.5x), daily 2.5 | 79% / 87% | 2% / 2% | 68 / 61 | 13% / 14% | 25% / 31% |
 | **Turbo: 1.5x both phases, daily 2.5** | **53% / 71%** | **12% / 9%** | **37 / 37** | **21% / 28%** | **33% / 40%** |
+| **Safer turbo (below)** | **57% / 74%** | **2% / 3%** | **40 / 41** | **18% / 23%** | **32% / 40%** |
 | 2x both phases, daily 2.5 | 53% / 51% | 22% / 20% | 23 / 22 | 36% / 36% | 42% / 43% |
 | 2.5x both phases, daily 2.5 | 41% / 39% | 44% / 44% | 15 / 14 | 36% / 34% | 39% / 37% |
+
+**Safer turbo** (`tools/turbo_safer_test.py`, best of 432 settings with a median of 42 days or less, picked on 2020-22):
+on every EA set `InpDailyStopPct` 3.0 and `InpRoomCapPct` 5. Phase 1: `InpRiskMultiplier` 1.5. Phase 2: `InpRiskMultiplier`
+1.125. It is about as fast as Turbo, and breaches fall from ~10% to ~2-3%: size starts shrinking at -5% instead of -7%,
+and Phase 2 (only +5% needed) runs a bit smaller. Neighbouring settings (daily 2-3%, room cap 3-5%) gave 55-57% / 59-75% pass with 0.6-3.4% breaches.
+Boosting BTC less than the others, or easing off near the Phase 1 target, didn't help.
 
 No setting reached 70-80% pass **and** a ~30-day median: about 35% of attempts funded within 30 days is the ceiling,
 and getting there costs half the attempts. Once funded, set every EA back to 1.0 and 4.0.
