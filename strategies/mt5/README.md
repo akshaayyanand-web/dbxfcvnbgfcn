@@ -10,10 +10,17 @@
 | `NQ_Dip_2h.mq5` | US100 / NAS100 / USTEC | **H2** | 0.3125% | 1109 |
 | `SPX_Dip_1h.mq5` | US500 / SPX500 | H1 | 0.3125% | 1110 |
 | `Oil_Dip_1h.mq5` | WTI / USOIL / XTIUSD (RoboForex: search "WTI" or "OIL") | H1 | 0.1875% | 1111 |
-| `BTC_Weekend_Gap.mq5` (**9th core EA, Nov 2026**) | BTCUSD (must trade at weekends) | H1 | 0.5% | 1114 |
+| `BTC_Weekend_Gap.mq5` (core, **on probation**) | BTCUSD (must trade at weekends) | H1 | 0.25% | 1114 |
 | `DAX_Opening_Range.mq5` (**10th core EA, Nov 2026**) | GER40 / DE40 / DAX40 | **M15** | 0.2% | 1115 |
 | `NQ_Breakout_15m.mq5` (optional) | US100 / NAS100 / USTEC | **M15** | 0.05% | 1112 |
 | `SPX_Breakout_5m.mq5` (optional, funded account) | US500 / SPX500 | M5 | 0.1% | 1113 |
+
+**`BTC_Weekend_Gap` halved to 0.25% (6 Nov 2026), on probation** (`tools/altcoin_gap_test.py`, `tools/recent_period_check.py`).
+Following the weekend move lost money in **2025 and 2026 on every coin tested** (BTC -6.5 / -4.9 R a year, ETH -13 / -7,
+XRP -25 / -2, SOL, BNB, ADA, DOGE, LINK, LTC all negative). The effect seems to have changed. With the 10 core EAs, on starts
+from mid-2024 to 2025, pass rates are 100% with or without it and it still saves ~2-4 days (59 vs 63), but calendar 2025 / 2026
+are better without it (+140% / +38% vs +131% / +34%). At 0.25% it keeps most of the evaluation speed (61.9 vs 59.6 days on
+2023-25 starts, 96% pass) and halves the cost if the edge is gone. If it is still losing by mid-2027, set `InpRiskPct` to 0.
 
 **New 10th core EA, `DAX_Opening_Range`** (`tools/dax_test.py`, `tools/dax_addon_test.py`, DAX 1m data 2021-2026).
 It takes the 09:00-09:30 Frankfurt range, then the first 15-minute close beyond it between 09:30 and 12:00, in the

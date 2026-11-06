@@ -623,13 +623,14 @@ void OnNewBar()
   }
 """)
 
-EAS["BTC_Weekend_Gap.mq5"] = dict(tf="PERIOD_H1", magic=1114, risk=0.5, header="""//+------------------------------------------------------------------+
+EAS["BTC_Weekend_Gap.mq5"] = dict(tf="PERIOD_H1", magic=1114, risk=0.25, header="""//+------------------------------------------------------------------+
 //| BTC Weekend Gap – MT5 EA. Chart: BTCUSD (your broker's BTC symbol), H1. Needs BTC to trade at weekends.
 //| CME bitcoin futures close Friday 16:00 Chicago (17:00 New York) and reopen Sunday 17:00 Chicago (18:00 NY)
 //| while spot keeps trading. At the Sunday reopen, if BTC has moved more than 2% since Friday's close, trade
 //| IN the direction of that weekend move (the popular "gap fill" fade loses money; the follow-through wins).
 //| Stop 1.5 x ATR(14) on the order, exit after 48 H1 bars. About 1-2 trades a month.
-//| Portfolio risk: 0.5% per trade. Python 2020-2026 at 1% risk: +19%/yr (2020-22), +8%/yr (2023-26), 34% winners,
+//| Portfolio risk: 0.25% per trade (halved Nov 2026: the weekend-gap effect lost money on every coin in 2025 and 2026).
+//| Python 2020-2026 at 1% risk: +19%/yr (2020-22), +8%/yr (2023-26), 34% winners,
 //| average +0.87R. With the 8 EAs: 2-step pass 94% / 97%, 0 breaches, median 70 / 66 days, funded +84% / +95%.
 //+------------------------------------------------------------------+""", body="""
 int lastGapWeek = 0;

@@ -332,4 +332,8 @@ Goal: pass faster while keeping 93%+ pass and 0 breaches. Picked on 2020-22 star
   - S&P: same picture as Nasdaq.
   - Gold at the London open: -12 to -50%/yr on 2023-26. At the NY open: about 0.
   - Gold's edge stays the dip rule. No changes.
+- **Forex at the London open** (`tools/world_index_test.py` with EURUSD, EURUSD_ASIA, AUDCAD; ~530 versions): London opening
+  range, Asian-range breakout and dips all lose or make under 4%/yr. FX at retail costs is not a fit.
+- **Weekend-gap follow on altcoins** (`tools/altcoin_gap_test.py`): only BTC worked overall, and every coin lost in 2025 and 2026.
+  `BTC_Weekend_Gap` was halved to 0.25% and put on probation (`tools/recent_period_check.py`).
 

@@ -1,4 +1,4 @@
-# Generic index ORB/breakout/dip lab. Run from the scratchpad: python world_lab.py SYMBOL (DEUIDXEUR, USATECHIDXUSD, USA500IDXUSD, XAUUSD, XAUUSD_NY, JPNIDXJPY, ...)
+# Generic index ORB/breakout/dip lab. Run from the scratchpad: python world_lab.py SYMBOL
 # DAX (Germany 40) strategies on the Frankfurt session: opening range breakout, morning breakout, dips.
 import sys, numpy as np, pandas as pd
 sys.path.insert(0, "/home/user/dbxfcvnbgfcn/tools")
@@ -9,11 +9,13 @@ CFG = {"JPNIDXJPY": ("Asia/Tokyo", 540, 690, 895, 0.0002), "HKGIDXHKD": ("Asia/H
        "GBRIDXGBP": ("Europe/London", 480, 660, 985, 0.00012), "AUSIDXAUD": ("Australia/Sydney", 600, 750, 955, 0.0002),
        "DEUIDXEUR": ("Europe/Berlin", 540, 720, 1045, 0.0001),
        "USATECHIDXUSD": ("America/New_York", 570, 720, 955, 0.00012), "USA500IDXUSD": ("America/New_York", 570, 720, 955, 0.0001),
-       "XAUUSD": ("Europe/London", 480, 660, 985, 0.0001), "XAUUSD_NY": ("America/New_York", 500, 690, 955, 0.0001)}
+       "XAUUSD": ("Europe/London", 480, 660, 985, 0.0001), "XAUUSD_NY": ("America/New_York", 500, 690, 955, 0.0001),
+       "EURUSD": ("Europe/London", 480, 660, 985, 0.00006), "EURUSD_ASIA": ("Europe/London", 0, 600, 985, 0.00006),
+       "AUDCAD": ("Europe/London", 480, 660, 985, 0.00009)}
 TZ, OPEN, WEND, FLAT, COST = CFG[SYM]
 parts = []
-if SYM.startswith("USA") or SYM.startswith("XAU"):
-    raw = load_csv(f"fut1m/{SYM.split('_')[0]}_1m.csv").loc["2019-03-01":]; parts = None
+if SYM.startswith("USA") or SYM.startswith("XAU") or SYM[:3] in ("EUR", "AUD"):
+    raw = load_csv((f"fx1m/" if SYM[:3] in ("EUR", "AUD") else "fut1m/") + f"{SYM.split('_')[0]}_1m.csv").loc["2019-03-01":]; parts = None
 for f in ([] if parts is None else sorted(glob.glob(f"world1m/{SYM}/*.csv") if SYM != "DEUIDXEUR" else glob.glob("eu1m/days/*.csv"))):
     t = open(f).read().strip()
     if t: parts.append(pd.read_csv(io.StringIO(t), header=None, names=["t", "o", "h", "l", "c", "v"]))
@@ -56,7 +58,7 @@ for tf in ("5min", "15min"):
     C = b.c.to_numpy(); H = b.h.to_numpy(); L = b.l.to_numpy(); atr = atr_of(b)
     dc = b.c.resample("1D").last().dropna(); ema_d = {n: dc.ewm(span=n, adjust=False).mean().shift(1).reindex(T.floor("D"), method="ffill").to_numpy() for n in (20, 50)}
     # opening range: first N minutes after 09:00 Frankfurt
-    for N in (15, 30, 60):
+    for N in ((420, 480) if SYM.endswith("ASIA") else (15, 30, 60)):
         if tf == "15min" and N == 15: continue
         inr = (fm >= OPEN) & (fm < OPEN + N)
         g = pd.DataFrame({"h": np.where(inr, H, np.nan), "l": np.where(inr, L, np.nan), "d": fday}).groupby("d").agg(h=("h", "max"), l=("l", "min"))
