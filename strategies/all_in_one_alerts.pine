@@ -44,7 +44,10 @@ rOil   = input.float(0.1875, "8 Oil Dip 1h", step = 0.0125, group = G1)
 G2 = "Guard & news"
 dailyStop = input.float(4.0, "Daily stop: close all at this loss from today's start (% of start balance)", step = 0.5, group = G2)
 maxStop   = input.float(9.5, "Max stop: stop for good at this loss from the start (%)", step = 0.5, group = G2)
-roomCap   = input.float(3.0, "Room cap: shrink size to 0 over the last X% before the 10% limit (0 = off)", step = 0.5, group = G2)
+roomCap   = input.float(7.0, "Room cap: shrink size to 0 over the last X% before the 10% limit (0 = off)", step = 0.5, group = G2)
+halfBelow = input.float(4.0, "Half size once a day starts this % below the start balance (0 = off)", step = 0.5, group = G2)
+halfUntil = input.float(2.0, "...and stay at half size until a day starts no more than this % below it", step = 0.5, group = G2)
+var bool halfMode = false
 resetTz   = input.string("Europe/Prague", "Daily reset time zone (midnight)", options = ["Europe/Prague", "America/New_York", "UTC", "Europe/London"], group = G2)
 fomcDays  = input.string("2026-01-28,2026-03-18,2026-04-29,2026-06-17,2026-07-29,2026-09-16,2026-10-28,2026-12-09,2027-01-27,2027-03-17,2027-04-28,2027-06-09,2027-07-28,2027-09-15,2027-10-27,2027-12-08",
                          "Fed decision days (YYYY-MM-DD, 14:00 New York)", group = G2)
@@ -250,6 +253,8 @@ f_vopen(int i, int d, float price, float stop, float riskPct, string exitTxt, bo
             float risk = array.get(st, 0) * riskPct / 100
             if roomCap > 0
                 risk *= math.max(0.0, math.min(1.0, (array.get(st, 1) - acct * 0.90) / (acct * roomCap / 100)))
+            if halfMode
+                risk *= 0.5
             if dist > 0
                 float units = risk / dist
                 array.set(vDir, i, d)
@@ -285,6 +290,11 @@ if active
         array.set(st, 1, array.get(st, 0))
         array.set(st, 2, 0.0)
         dayHalt := false
+        if halfBelow > 0
+            if array.get(st, 1) <= acct * (1 - halfBelow / 100)
+                halfMode := true
+            else if array.get(st, 1) >= acct * (1 - halfUntil / 100)
+                halfMode := false
     // 1) exits reported by the strategies
     if bEx and bT != lastB
         f_vclose(0, bXp, bX ? "time exit" : "stop")

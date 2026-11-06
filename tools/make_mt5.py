@@ -13,7 +13,9 @@ CTrade trade;
 input double InpAccountSize      = 200000; // Starting balance of the prop account
 input double InpDailyStopPct     = 4.0;    // ACCOUNT guard: stop for the day at this loss (% of start; firm limit 5)
 input double InpMaxStopPct       = 9.5;    // ACCOUNT guard: stop everything at this loss from start (firm limit 10)
-input double InpRoomCapPct       = 3.0;    // Room cap: size shrinks to 0 as the day-start balance nears the firm limit (full size above -7%; 0 = off)
+input double InpRoomCapPct       = 7.0;    // Room cap: size shrinks to 0 as the day-start balance nears the firm limit (full size above -3%; 0 = off)
+input double InpHalfBelowPct     = 4.0;    // Half size for all EAs once a day starts this % below the start balance (0 = off)
+input double InpHalfUntilPct     = 2.0;    // ...and stay at half size until a day starts no more than this % below it
 input double InpFirmMaxLossPct   = 10.0;   // The firm's max-loss limit (% of start) used by the room cap
 input double InpGuardShare       = 60;     // A trade may risk at most this % of the remaining daily / max room
 input double InpRiskMultiplier   = 1.0;    // Keep 1.0: the default risks are already the tested fast preset (see README)
@@ -144,10 +146,17 @@ double RiskMoney()
    double dayRoom = InpAccountSize * InpDailyStopPct / 100 - MathMax(0, DayStartBalance() - eq);
    double maxRoom = eq - InpAccountSize * (1 - InpMaxStopPct / 100);
    r = MathMin(r, MathMin(dayRoom, maxRoom) * InpGuardShare / 100);
-   if(InpRoomCapPct > 0)      // room cap: full size until the day starts 7% down, then shrink linearly to 0 at the firm limit
+   if(InpRoomCapPct > 0)      // room cap: full size until the day starts 3% down, then shrink linearly to 0 at the firm limit
      {
       double room = DayStartBalance() - InpAccountSize * (1 - InpFirmMaxLossPct / 100);
       r *= MathMax(0, MathMin(1, room / (InpAccountSize * InpRoomCapPct / 100)));
+     }
+   if(InpHalfBelowPct > 0)    // half-size mode, shared by all EAs: on below -4% (day start), off again above -2%
+     {
+      double dsb = DayStartBalance();
+      if(dsb <= InpAccountSize * (1 - InpHalfBelowPct / 100)) GlobalVariableSet("PP_HALF", 1);
+      else if(dsb >= InpAccountSize * (1 - InpHalfUntilPct / 100) && GlobalVariableCheck("PP_HALF")) GlobalVariableDel("PP_HALF");
+      if(GlobalVariableCheck("PP_HALF")) r *= 0.5;
      }
    return MathMax(r, 0);
   }

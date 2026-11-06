@@ -342,4 +342,8 @@ Goal: pass faster while keeping 93%+ pass and 0 breaches. Picked on 2020-22 star
 - **NQ_Opening_Range exits** (`tools/nq_orb_exit_test.py`): a 3R / 4R target or no target is +2-4%/yr better alone, but with
   the other 9 EAs it is within noise (about ±1 day, ±1% pass, ±3% funded). The DAX-style mid-range stop caused up to 4.6%
   breaches on Nasdaq. The current rules (other-side stop, 2R target) stay.
+- **Drawdown brake** (`tools/drawdown_brake_test.py`, Nov 2026): attempts started in late May / early June 2026 mostly stopped at
+  -9.5% (no breaches). Shrinking size from -3% (`InpRoomCapPct` 7) plus half size below -4% until back above -2% raised the
+  pass rate to 100% in 2020-22, 2023-25 and 2026 starts, cut attempts that ever reached -8% from 10-32% to 0-0.1%, and kept the
+  funded median (+81% / +109%). It is ~8-16 days slower on 2020-25 starts. It is now the default.
 

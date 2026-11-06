@@ -144,7 +144,22 @@ combined result, run all eight on a demo account, which is the real test anyway.
   `InpDailyStopPct` (4%) on the day, every EA closes its trades and stops for the day; if the account is
   down `InpMaxStopPct` (9.5%) from the start, every EA closes and stops for good. New trades are sized so
   they risk at most 60% of the room left before those lines.
-- **Room cap** (`InpRoomCapPct` 3, `InpFirmMaxLossPct` 10): when the day starts more than 7% below the starting
+- **Drawdown brake (Nov 2026 default): `InpRoomCapPct` 7, `InpHalfBelowPct` 4, `InpHalfUntilPct` 2.** Size starts shrinking
+  once the day starts 3% below the starting balance (full size at -3%, zero at -10%). In addition, all EAs trade at **half size**
+  once a day starts 4% down, until a day starts no more than 2% down again (shared through the `PP_HALF` global variable).
+  Tested (`tools/drawdown_brake_test.py`), with an attempt started every weekday:
+
+  | | Old brake (shrink below -7%) | **New brake** |
+  |---|---|---|
+  | 2-step pass (2020-22 / 2023-25 / 2026 starts) | 95% / 96% / 86% | **100% / 100% / 100%** |
+  | Attempts that ever fell below -8% | 10% / 11% / 32% | **0% / 0.1% / 0%** |
+  | Median days to funded | 72 / 62 / 57 | 89 / 70 / 53 |
+  | Funded year: median / worst (2023-25 starts) | +109% / -9.6% (stopped) | +109% / **+23%** |
+
+  It costs about 8-16 days of speed in 2020-25, but it removes almost every near-miss with the 10% line.
+  **When you start a new account, delete the old guard variables first:** in MT5 press **F3** (Global Variables) and delete
+  every `PP_...` entry. Otherwise a halt or half-size flag from the previous account carries over.
+- **Room cap details** (`InpRoomCapPct`, `InpFirmMaxLossPct` 10): when the day starts more than 7% below the starting
   balance, every new trade is shrunk in proportion to the room left before the firm's 10% line (e.g. 2/3 size at
   -8%, 1/3 at -9%). This is what lets the account recover from a bad stretch instead of breaching. If your firm's
   max loss isn't 10%, set `InpFirmMaxLossPct` to it and `InpMaxStopPct` to 0.5 below it.
@@ -190,7 +205,7 @@ needed. Tested in `tools/turbo_preset_test.py` (attempt every 3 days, 2020-22 / 
 | 2.5x both phases, daily 2.5 | 41% / 39% | 44% / 44% | 15 / 14 | 36% / 34% | 39% / 37% |
 
 **Safer turbo** (`tools/turbo_safer_test.py`, best of 432 settings with a median of 42 days or less, picked on 2020-22):
-on every EA set `InpDailyStopPct` 3.0 and `InpRoomCapPct` 5. Phase 1: `InpRiskMultiplier` 1.5. Phase 2: `InpRiskMultiplier`
+on every EA set `InpDailyStopPct` 3.0, `InpRoomCapPct` 5 and `InpHalfBelowPct` 0 (turbo was tested without the half-size mode). Phase 1: `InpRiskMultiplier` 1.5. Phase 2: `InpRiskMultiplier`
 1.125. It is about as fast as Turbo, and breaches fall from ~10% to ~2-3%: size starts shrinking at -5% instead of -7%,
 and Phase 2 (only +5% needed) runs a bit smaller. Neighbouring settings (daily 2-3%, room cap 3-5%) gave 55-57% / 59-75% pass with 0.6-3.4% breaches.
 Boosting BTC less than the others, or easing off near the Phase 1 target, didn't help.
