@@ -339,4 +339,7 @@ Goal: pass faster while keeping 93%+ pass and 0 breaches. Picked on 2020-22 star
 - **Europe-direction filter on US breakouts** (`tools/europe_confirmation_test.py`, 2021-2026): US morning breakouts taken
   only in the direction of the DAX's 09:00-15:25 Frankfurt move. Trades with Europe were better for NQ 5m and S&P 5m
   but worse for NQ 15m (0.12R vs 0.32R against). That is inconsistent, so it was not used.
+- **NQ_Opening_Range exits** (`tools/nq_orb_exit_test.py`): a 3R / 4R target or no target is +2-4%/yr better alone, but with
+  the other 9 EAs it is within noise (about ±1 day, ±1% pass, ±3% funded). The DAX-style mid-range stop caused up to 4.6%
+  breaches on Nasdaq. The current rules (other-side stop, 2R target) stay.
 
