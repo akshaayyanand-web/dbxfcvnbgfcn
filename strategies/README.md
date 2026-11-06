@@ -336,4 +336,7 @@ Goal: pass faster while keeping 93%+ pass and 0 breaches. Picked on 2020-22 star
   range, Asian-range breakout and dips all lose or make under 4%/yr. FX at retail costs is not a fit.
 - **Weekend-gap follow on altcoins** (`tools/altcoin_gap_test.py`): only BTC worked overall, and every coin lost in 2025 and 2026.
   `BTC_Weekend_Gap` was halved to 0.25% and put on probation (`tools/recent_period_check.py`).
+- **Europe-direction filter on US breakouts** (`tools/europe_confirmation_test.py`, 2021-2026): US morning breakouts taken
+  only in the direction of the DAX's 09:00-15:25 Frankfurt move. Trades with Europe were better for NQ 5m and S&P 5m
+  but worse for NQ 15m (0.12R vs 0.32R against). That is inconsistent, so it was not used.
 
