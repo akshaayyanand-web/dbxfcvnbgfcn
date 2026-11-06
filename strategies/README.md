@@ -321,4 +321,10 @@ Goal: pass faster while keeping 93%+ pass and 0 breaches. Picked on 2020-22 star
   `DAX_Opening_Range` (30-min range, EMA50 trend, mid-range stop) was added as the 10th core EA at 0.2% (`tools/dax_addon_test.py`):
   pass 95% / 97%, 68 / 60 days, funded +93% / +109% (vs 94% / 97%, 70 / 66, +84% / +95%). The DAX 20/50-bar breakouts
   breached in funded years and were not used.
+- **More DAX strategies** (`tools/dax_more_test.py`, 62 versions; `tools/dax_more_addon_test.py`):
+  - US-open breakout (15:30 Frankfurt), afternoon momentum and the 09:00 gap (follow or fade): about 0 or negative.
+  - Pre-market range (08:00-09:00): +34% / +38%/yr alone, but correlation 0.6 with the DAX ORB. Added on top it
+    caused 0.6-2.5% breaches and 12 funded-year breaches.
+  - ORB "second chance" (up to 2 trades a day): same result as the current ORB with twice the trades.
+  - The current `DAX_Opening_Range` stays as it is.
 
