@@ -1,4 +1,4 @@
-# Generic index ORB/breakout/dip lab. Run from the scratchpad: python world_lab.py SYMBOL
+# Generic index ORB/breakout/dip lab. Run from the scratchpad: python world_lab.py SYMBOL (DEUIDXEUR, USATECHIDXUSD, USA500IDXUSD, XAUUSD, XAUUSD_NY, JPNIDXJPY, ...)
 # DAX (Germany 40) strategies on the Frankfurt session: opening range breakout, morning breakout, dips.
 import sys, numpy as np, pandas as pd
 sys.path.insert(0, "/home/user/dbxfcvnbgfcn/tools")
@@ -7,13 +7,17 @@ import glob, io
 SYM = sys.argv[1]
 CFG = {"JPNIDXJPY": ("Asia/Tokyo", 540, 690, 895, 0.0002), "HKGIDXHKD": ("Asia/Hong_Kong", 570, 720, 955, 0.0003),
        "GBRIDXGBP": ("Europe/London", 480, 660, 985, 0.00012), "AUSIDXAUD": ("Australia/Sydney", 600, 750, 955, 0.0002),
-       "DEUIDXEUR": ("Europe/Berlin", 540, 720, 1045, 0.0001)}
+       "DEUIDXEUR": ("Europe/Berlin", 540, 720, 1045, 0.0001),
+       "USATECHIDXUSD": ("America/New_York", 570, 720, 955, 0.00012), "USA500IDXUSD": ("America/New_York", 570, 720, 955, 0.0001),
+       "XAUUSD": ("Europe/London", 480, 660, 985, 0.0001), "XAUUSD_NY": ("America/New_York", 500, 690, 955, 0.0001)}
 TZ, OPEN, WEND, FLAT, COST = CFG[SYM]
 parts = []
-for f in sorted(glob.glob(f"world1m/{SYM}/*.csv") if SYM != "DEUIDXEUR" else glob.glob("eu1m/days/*.csv")):
+if SYM.startswith("USA") or SYM.startswith("XAU"):
+    raw = load_csv(f"fut1m/{SYM.split('_')[0]}_1m.csv").loc["2019-03-01":]; parts = None
+for f in ([] if parts is None else sorted(glob.glob(f"world1m/{SYM}/*.csv") if SYM != "DEUIDXEUR" else glob.glob("eu1m/days/*.csv"))):
     t = open(f).read().strip()
     if t: parts.append(pd.read_csv(io.StringIO(t), header=None, names=["t", "o", "h", "l", "c", "v"]))
-raw = pd.concat(parts); raw["t"] = pd.to_datetime(raw.t, unit="s", utc=True); raw = raw.drop_duplicates("t").set_index("t").sort_index()
+if parts is not None: raw = pd.concat(parts); raw["t"] = pd.to_datetime(raw.t, unit="s", utc=True); raw = raw.drop_duplicates("t").set_index("t").sort_index() if parts is not None else raw
 print(SYM, len(raw), "rows", raw.index.normalize().nunique(), "days", flush=True)
 def bars(rule): return raw.resample(rule).agg(dict(o="first", h="max", l="min", c="last")).dropna().loc["2019-03-01":]
 def atr_of(b, n=14):

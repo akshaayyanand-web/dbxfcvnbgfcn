@@ -327,4 +327,9 @@ Goal: pass faster while keeping 93%+ pass and 0 breaches. Picked on 2020-22 star
     caused 0.6-2.5% breaches and 12 funded-year breaches.
   - ORB "second chance" (up to 2 trades a day): same result as the current ORB with twice the trades.
   - The current `DAX_Opening_Range` stays as it is.
+- **DAX-style opening range on other markets** (`tools/world_index_test.py`, 184 versions each):
+  - Nasdaq ORB with mid stop / no target / EMA50: median 0-5%/yr. Weaker than the current NQ ORB and the N-bar breakouts.
+  - S&P: same picture as Nasdaq.
+  - Gold at the London open: -12 to -50%/yr on 2023-26. At the NY open: about 0.
+  - Gold's edge stays the dip rule. No changes.
 
