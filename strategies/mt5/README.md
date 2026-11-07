@@ -6,7 +6,7 @@
 | `Gold_Dip.mq5` | XAUUSD | H1 | 0.625% | 1102 |
 | `Gold_Asia_Breakout.mq5` | XAUUSD | H1 | 0.3125% | 1103 |
 | `Gold_Intraday_Momentum.mq5` | XAUUSD | H1 | 0.3125% | 1104 |
-| `NQ_Opening_Range.mq5` | US100 / NAS100 / USTEC | M5 | 0.625% | 1106 |
+| `NQ_Opening_Range.mq5` | US100 / NAS100 / USTEC | M5 | 0.3125% | 1106 |
 | `NQ_Dip_2h.mq5` | US100 / NAS100 / USTEC | **H2** | 0.3125% | 1109 |
 | `SPX_Dip_1h.mq5` | US500 / SPX500 | H1 | 0.3125% | 1110 |
 | `Oil_Dip_1h.mq5` | WTI / USOIL / XTIUSD (RoboForex: search "WTI" or "OIL") | H1 | 0.1875% | 1111 |
@@ -14,6 +14,12 @@
 | `DAX_Opening_Range.mq5` (**10th core EA, Nov 2026**) | GER40 / DE40 / DAX40 | **M15** | 0.2% | 1115 |
 | `NQ_Breakout_15m.mq5` (optional) | US100 / NAS100 / USTEC | **M15** | 0.05% | 1112 |
 | `SPX_Breakout_5m.mq5` (optional, funded account) | US500 / SPX500 | M5 | 0.1% | 1113 |
+
+**`NQ_Opening_Range` halved to 0.3125% (7 Nov 2026)** (`tools/ea_ledger_test.py`, `tools/trim_weak_test.py`). It has the lowest
+long-run profit factor of the 10 (1.10, two losing years) and by far the largest win/loss churn (2026 on $200K: +$103k gross
+profit, -$116k gross loss). At half risk, with the drawdown brake: pass 100% / 100% / 100% (2020-22 / 2023-25 / 2026 starts),
+87 / 73 / 63 days (was 89 / 70 / 53), attempts that ever fell below -6% in 2026 12% (was 32%), 2026 +41% (was +36%), and a
+funded median of +84% (was +93%). To go back, set its `InpRiskPct` to 0.625.
 
 **`BTC_Weekend_Gap` halved to 0.25% (6 Nov 2026), on probation** (`tools/altcoin_gap_test.py`, `tools/recent_period_check.py`).
 Following the weekend move lost money in **2025 and 2026 on every coin tested** (BTC -6.5 / -4.9 R a year, ETH -13 / -7,

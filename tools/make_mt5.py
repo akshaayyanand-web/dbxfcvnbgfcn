@@ -379,11 +379,11 @@ void OnNewBar()
    if(dir != 0) OpenTrade(dir, c1 - dir * 1.5 * atr, 0, "NQ Intraday Mom");
   }
 '''),
-"NQ_Opening_Range.mq5": dict(tf="PERIOD_M5", magic=1106, risk=0.625, header='''//+------------------------------------------------------------------+
+"NQ_Opening_Range.mq5": dict(tf="PERIOD_M5", magic=1106, risk=0.3125, header='''//+------------------------------------------------------------------+
 //| Nasdaq Opening-Range Breakout – MT5 EA. Chart: US100 / NAS100 / USTEC, M5 (New York clock)
 //| Range = 09:30-09:45 New York. First M5 close outside it until 11:30 New York -> buy / sell, stop at the
 //| other side of the range, target 2 x risk (both on the order). One trade per day. Flat at 15:55 NY.
-//| Portfolio risk: 0.625% per trade.
+//| Portfolio risk: 0.3125% per trade (halved Nov 2026: lowest profit factor of the 10, PF 1.10, and the largest win/loss churn).
 //+------------------------------------------------------------------+''', body='''
 int lastTradeDay = 0;
 void OnNewBar()
