@@ -352,4 +352,8 @@ Goal: pass faster while keeping 93%+ pass and 0 breaches. Picked on 2020-22 star
   - The classic 5m dip scalp (TP 0.5-1 ATR, SL 1.5-3 ATR, 1:3 to 1:4) wins 72-81% of trades but loses heavily on Nasdaq,
     gold and DAX once spreads are paid (-24 to -280%/yr at 1% risk, ~100-140 trades a month).
   - A high win rate doesn't make a strategy profitable. Rejected.
+- **Breakeven and profit-lock stops** (`tools/breakeven_test.py`, on NQ ORB, DAX ORB, BTC Dip and Gold Dip): moving the stop to
+  entry at +0.5R / +1R, or locking +0.25-1R after +1-2R, cuts the average loss to about -0.5R or lifts the win rate to 50%+, but lowers
+  yearly profit in almost every case (e.g. DAX ORB +43% / +29% becomes +18-34% / +17-21%). The big winners first come back to entry
+  before they run. Current exits kept.
 
