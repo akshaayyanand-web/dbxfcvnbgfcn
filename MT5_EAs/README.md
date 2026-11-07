@@ -8,7 +8,7 @@ The **11 core EAs** to run together on one MT5 account. Download all 11 at once 
 | 2 | Gold_Dip | XAUUSD | H1 | 0.625% |
 | 3 | Gold_Asia_Breakout | XAUUSD | H1 | 0.3125% |
 | 4 | Gold_Intraday_Momentum | XAUUSD | H1 | 0.3125% |
-| 5 | NQ_Opening_Range | US100 / NAS100 | M5 | 0.3125% |
+| 5 | NQ_Opening_Range | US100 / NAS100 | M5 | 0.625% |
 | 6 | NQ_Dip_2h | US100 / NAS100 | H2 | 0.3125% |
 | 7 | SPX_Dip_1h | US500 / SPX500 | H1 | 0.3125% |
 | 8 | Oil_Dip_1h | WTI / USOIL | H1 | 0.1875% |

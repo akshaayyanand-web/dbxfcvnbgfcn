@@ -6,7 +6,7 @@
 | `Gold_Dip.mq5` | XAUUSD | H1 | 0.625% | 1102 |
 | `Gold_Asia_Breakout.mq5` | XAUUSD | H1 | 0.3125% | 1103 |
 | `Gold_Intraday_Momentum.mq5` | XAUUSD | H1 | 0.3125% | 1104 |
-| `NQ_Opening_Range.mq5` | US100 / NAS100 / USTEC | M5 | 0.3125% | 1106 |
+| `NQ_Opening_Range.mq5` | US100 / NAS100 / USTEC | M5 | 0.625% | 1106 |
 | `NQ_Dip_2h.mq5` | US100 / NAS100 / USTEC | **H2** | 0.3125% | 1109 |
 | `SPX_Dip_1h.mq5` | US500 / SPX500 | H1 | 0.3125% | 1110 |
 | `Oil_Dip_1h.mq5` | WTI / USOIL / XTIUSD (RoboForex: search "WTI" or "OIL") | H1 | 0.1875% | 1111 |
@@ -23,11 +23,11 @@ with the drawdown brake it fits at 0.2%: pass 100% / 100% / 100%, 0 breaches, 87
 - ETH and SOL dips caused 0.4-4% breaches.
 - SPX_Breakout_5m stays optional: it adds funded profit, but its 2023-26 edge is too cost-sensitive.
 
-**`NQ_Opening_Range` halved to 0.3125% (7 Nov 2026)** (`tools/ea_ledger_test.py`, `tools/trim_weak_test.py`). It has the lowest
+**Back at 0.625% (7 Nov 2026, your choice).** With `NQ_Breakout_15m` at 0.2% and the drawdown brake, the 11 EAs give: pass 100% / 100% / 100%, 0 breaches, 90 / 67 / 57 days, funded median +107%, 2026 +42.5% (`tools/readd_test.py`). Earlier test, for reference: ~~**`NQ_Opening_Range` halved to 0.3125% (7 Nov 2026)** (`tools/ea_ledger_test.py`, `tools/trim_weak_test.py`). It has the lowest
 long-run profit factor of the 10 (1.10, two losing years) and by far the largest win/loss churn (2026 on $200K: +$103k gross
 profit, -$116k gross loss). At half risk, with the drawdown brake: pass 100% / 100% / 100% (2020-22 / 2023-25 / 2026 starts),
 87 / 73 / 63 days (was 89 / 70 / 53), attempts that ever fell below -6% in 2026 12% (was 32%), 2026 +41% (was +36%), and a
-funded median of +84% (was +93%). To go back, set its `InpRiskPct` to 0.625.
+funded median of +84% (was +93%). To go back, set its `InpRiskPct` to 0.625.~~
 
 **`BTC_Weekend_Gap` halved to 0.25% (6 Nov 2026), on probation** (`tools/altcoin_gap_test.py`, `tools/recent_period_check.py`).
 Following the weekend move lost money in **2025 and 2026 on every coin tested** (BTC -6.5 / -4.9 R a year, ETH -13 / -7,
