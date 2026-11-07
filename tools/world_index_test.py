@@ -1,4 +1,4 @@
-# Generic index ORB/breakout/dip lab. Run from the scratchpad: python world_lab.py SYMBOL
+# Generic index ORB/breakout/dip lab. Run from the scratchpad: python world_lab.py SYMBOL (BTCUSDT/ETHUSDT use Binance 5m files in k5full/)
 # DAX (Germany 40) strategies on the Frankfurt session: opening range breakout, morning breakout, dips.
 import sys, numpy as np, pandas as pd
 sys.path.insert(0, "/home/user/dbxfcvnbgfcn/tools")
@@ -11,10 +11,19 @@ CFG = {"JPNIDXJPY": ("Asia/Tokyo", 540, 690, 895, 0.0002), "HKGIDXHKD": ("Asia/H
        "USATECHIDXUSD": ("America/New_York", 570, 720, 955, 0.00012), "USA500IDXUSD": ("America/New_York", 570, 720, 955, 0.0001),
        "XAUUSD": ("Europe/London", 480, 660, 985, 0.0001), "XAUUSD_NY": ("America/New_York", 500, 690, 955, 0.0001),
        "EURUSD": ("Europe/London", 480, 660, 985, 0.00006), "EURUSD_ASIA": ("Europe/London", 0, 600, 985, 0.00006),
-       "AUDCAD": ("Europe/London", 480, 660, 985, 0.00009)}
+       "AUDCAD": ("Europe/London", 480, 660, 985, 0.00009),
+       "BTCUSDT": ("America/New_York", 570, 720, 950, 0.0006), "ETHUSDT": ("America/New_York", 570, 720, 950, 0.0008),
+       "BTCUSDT_LDN": ("Europe/London", 480, 660, 985, 0.0006)}
 TZ, OPEN, WEND, FLAT, COST = CFG[SYM]
 parts = []
-if SYM.startswith("USA") or SYM.startswith("XAU") or SYM[:3] in ("EUR", "AUD"):
+if SYM.startswith(("BTC", "ETH")):
+    import glob as _g
+    _p = []
+    for _f in sorted(_g.glob(f"k5full/{SYM.split('_')[0]}-5m-*.csv")):
+        _d = pd.read_csv(_f, header=None, usecols=[0, 1, 2, 3, 4], names=["t", "o", "h", "l", "c"])
+        _d["t"] = np.where(_d.t > 1e14, _d.t // 1000, _d.t); _p.append(_d)
+    raw = pd.concat(_p); raw.index = pd.to_datetime(raw.t, unit="ms", utc=True); raw = raw.drop(columns="t"); raw = raw[~raw.index.duplicated()].sort_index(); parts = None
+elif SYM.startswith("USA") or SYM.startswith("XAU") or SYM[:3] in ("EUR", "AUD"):
     raw = load_csv((f"fx1m/" if SYM[:3] in ("EUR", "AUD") else "fut1m/") + f"{SYM.split('_')[0]}_1m.csv").loc["2019-03-01":]; parts = None
 for f in ([] if parts is None else sorted(glob.glob(f"world1m/{SYM}/*.csv") if SYM != "DEUIDXEUR" else glob.glob("eu1m/days/*.csv"))):
     t = open(f).read().strip()

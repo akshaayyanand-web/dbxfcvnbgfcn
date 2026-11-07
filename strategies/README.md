@@ -356,4 +356,11 @@ Goal: pass faster while keeping 93%+ pass and 0 breaches. Picked on 2020-22 star
   entry at +0.5R / +1R, or locking +0.25-1R after +1-2R, cuts the average loss to about -0.5R or lifts the win rate to 50%+, but lowers
   yearly profit in almost every case (e.g. DAX ORB +43% / +29% becomes +18-34% / +17-21%). The big winners first come back to entry
   before they run. Current exits kept.
+- **Crypto intraday** (`tools/world_index_test.py` with BTCUSDT / ETHUSDT, Binance 5m data 2020-2026, 184 versions each):
+  - BTC opening ranges and US-morning breakouts: -54% to +3%/yr on 2023-26. London-open versions: -6% to -164%/yr.
+  - ETH 15m breakout: +32% / +24%/yr, but -14%/yr at double costs.
+  - Rejected.
+- **ETH dips with the drawdown brake** (`tools/eth_dip_addon_test.py`): EMA200 / EMA50 versions at 0.1-0.2% speed passing up by
+  4-12 days and lift the funded median to +111-123%. But they breach on 0.1-1.9% of attempts: crash days hit the BTC and ETH dips
+  together (correlation 0.5). Rejected under the 0-breach rule.
 
