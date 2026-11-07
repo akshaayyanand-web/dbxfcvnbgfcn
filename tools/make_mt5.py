@@ -717,3 +717,17 @@ if __name__ == "__main__":
         with open(os.path.join(out, name), "w") as f:
             f.write(src)
         print("wrote", name)
+    # One clean download folder at the repo root: the 10 core EAs, the optional ones, and a zip of the core 10
+    import shutil, zipfile
+    CORE = ["BTC_Dip_v3", "Gold_Dip", "Gold_Asia_Breakout", "Gold_Intraday_Momentum", "NQ_Opening_Range", "NQ_Dip_2h",
+            "SPX_Dip_1h", "Oil_Dip_1h", "BTC_Weekend_Gap", "DAX_Opening_Range"]
+    OPTIONAL = ["NQ_Breakout_15m", "SPX_Breakout_5m"]
+    dl = os.path.join(os.path.dirname(__file__), "..", "MT5_EAs")
+    os.makedirs(os.path.join(dl, "optional"), exist_ok=True)
+    for n in CORE: shutil.copy(os.path.join(out, n + ".mq5"), os.path.join(dl, n + ".mq5"))
+    for n in OPTIONAL: shutil.copy(os.path.join(out, n + ".mq5"), os.path.join(dl, "optional", n + ".mq5"))
+    with zipfile.ZipFile(os.path.join(dl, "MT5_10_EAs.zip"), "w", zipfile.ZIP_DEFLATED) as z:
+        for n in CORE:
+            zi = zipfile.ZipInfo(n + ".mq5", date_time=(2026, 1, 1, 0, 0, 0)); zi.compress_type = zipfile.ZIP_DEFLATED
+            z.writestr(zi, open(os.path.join(out, n + ".mq5"), "rb").read())
+    print("wrote MT5_EAs/ (10 core + optional + zip)")
