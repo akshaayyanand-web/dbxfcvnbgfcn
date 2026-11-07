@@ -346,4 +346,10 @@ Goal: pass faster while keeping 93%+ pass and 0 breaches. Picked on 2020-22 star
   -9.5% (no breaches). Shrinking size from -3% (`InpRoomCapPct` 7) plus half size below -4% until back above -2% raised the
   pass rate to 100% in 2020-22, 2023-25 and 2026 starts, cut attempts that ever reached -8% from 10-32% to 0-0.1%, and kept the
   funded median (+81% / +109%). It is ~8-16 days slower on 2020-25 starts. It is now the default.
+- **Negative risk:reward** (`tools/negative_rr_test.py`): small take-profit, wider stop.
+  - On the DAX ORB entry, 0.25-0.5R targets win 68-80% of trades but make -10 to +2%/yr, against +43% / +29% with no target.
+  - On the NQ ORB, 0.25-0.75R targets make -4 to +4%/yr, against +10% / +12% at 2R.
+  - The classic 5m dip scalp (TP 0.5-1 ATR, SL 1.5-3 ATR, 1:3 to 1:4) wins 72-81% of trades but loses heavily on Nasdaq,
+    gold and DAX once spreads are paid (-24 to -280%/yr at 1% risk, ~100-140 trades a month).
+  - A high win rate doesn't make a strategy profitable. Rejected.
 
