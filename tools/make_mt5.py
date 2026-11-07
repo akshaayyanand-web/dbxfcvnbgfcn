@@ -549,12 +549,12 @@ EAS["SPX_Dip_1h.mq5"] = dip_ea("S&P Dip 1h", "US500 / SPX500", "PERIOD_H1", 1110
 EAS["Oil_Dip_1h.mq5"] = dip_ea("Oil Dip 1h", "WTI / USOIL / XTIUSD", "PERIOD_H1", 1111, 0.1875, 2, 25, 50, 144, 0.15,
                                "Portfolio risk: 0.1875% per trade. Python 2020-2026 at 1% risk: +14.1%/yr (2020-22), +15.5%/yr (2023-26).")
 
-EAS["NQ_Breakout_15m.mq5"] = dict(tf="PERIOD_M15", magic=1112, risk=0.05, header="""//+------------------------------------------------------------------+
+EAS["NQ_Breakout_15m.mq5"] = dict(tf="PERIOD_M15", magic=1112, risk=0.2, header="""//+------------------------------------------------------------------+
 //| NQ Breakout 15m – MT5 EA. Chart: US100 / NAS100 / USTEC, M15 (New York clock)
 //| Between 09:30 and 12:00 New York: a 15-minute close above the highest high of the previous 20 bars while
 //| above EMA(200) -> buy; a close below the lowest low of the previous 20 bars while below EMA(200) -> sell.
 //| Stop 1 x ATR(14) on the order, no target: flat at 15:50 New York. Several trades a day are possible.
-//| Portfolio risk: 0.05% per trade (about 1 trade per weekday; 0.1% caused breaches with the fast preset). Python 2019-2026 at 1% risk: about +44%/yr
+//| Portfolio risk: 0.2% per trade, core EA since 7 Nov 2026 (fits at 0.2% with the drawdown brake). About 1 trade per weekday. Python 2019-2026 at 1% risk: about +44%/yr
 //| (2019-22) and +48%/yr (2023-26); +27%/yr with double costs. Thin, cost-sensitive edge: low spreads only.
 //+------------------------------------------------------------------+""", body="""
 void OnNewBar()
@@ -720,14 +720,16 @@ if __name__ == "__main__":
     # One clean download folder at the repo root: the 10 core EAs, the optional ones, and a zip of the core 10
     import shutil, zipfile
     CORE = ["BTC_Dip_v3", "Gold_Dip", "Gold_Asia_Breakout", "Gold_Intraday_Momentum", "NQ_Opening_Range", "NQ_Dip_2h",
-            "SPX_Dip_1h", "Oil_Dip_1h", "BTC_Weekend_Gap", "DAX_Opening_Range"]
-    OPTIONAL = ["NQ_Breakout_15m", "SPX_Breakout_5m"]
+            "SPX_Dip_1h", "Oil_Dip_1h", "BTC_Weekend_Gap", "DAX_Opening_Range", "NQ_Breakout_15m"]
+    OPTIONAL = ["SPX_Breakout_5m"]
     dl = os.path.join(os.path.dirname(__file__), "..", "MT5_EAs")
     os.makedirs(os.path.join(dl, "optional"), exist_ok=True)
     for n in CORE: shutil.copy(os.path.join(out, n + ".mq5"), os.path.join(dl, n + ".mq5"))
     for n in OPTIONAL: shutil.copy(os.path.join(out, n + ".mq5"), os.path.join(dl, "optional", n + ".mq5"))
-    with zipfile.ZipFile(os.path.join(dl, "MT5_10_EAs.zip"), "w", zipfile.ZIP_DEFLATED) as z:
+    for old in ("MT5_10_EAs.zip", os.path.join("optional", "NQ_Breakout_15m.mq5")):
+        if os.path.exists(os.path.join(dl, old)): os.remove(os.path.join(dl, old))
+    with zipfile.ZipFile(os.path.join(dl, "MT5_11_EAs.zip"), "w", zipfile.ZIP_DEFLATED) as z:
         for n in CORE:
             zi = zipfile.ZipInfo(n + ".mq5", date_time=(2026, 1, 1, 0, 0, 0)); zi.compress_type = zipfile.ZIP_DEFLATED
             z.writestr(zi, open(os.path.join(out, n + ".mq5"), "rb").read())
-    print("wrote MT5_EAs/ (10 core + optional + zip)")
+    print("wrote MT5_EAs/ (11 core + optional + zip)")

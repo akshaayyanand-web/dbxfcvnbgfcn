@@ -3,12 +3,12 @@
 //| Between 09:30 and 12:00 New York: a 15-minute close above the highest high of the previous 20 bars while
 //| above EMA(200) -> buy; a close below the lowest low of the previous 20 bars while below EMA(200) -> sell.
 //| Stop 1 x ATR(14) on the order, no target: flat at 15:50 New York. Several trades a day are possible.
-//| Portfolio risk: 0.05% per trade (about 1 trade per weekday; 0.1% caused breaches with the fast preset). Python 2019-2026 at 1% risk: about +44%/yr
+//| Portfolio risk: 0.2% per trade, core EA since 7 Nov 2026 (fits at 0.2% with the drawdown brake). About 1 trade per weekday. Python 2019-2026 at 1% risk: about +44%/yr
 //| (2019-22) and +48%/yr (2023-26); +27%/yr with double costs. Thin, cost-sensitive edge: low spreads only.
 //+------------------------------------------------------------------+
 #property version "1.00"
 #define REQUIRED_TF PERIOD_M15
-input double InpRiskPct = 0.05;    // Risk per trade (% of balance)
+input double InpRiskPct = 0.2;    // Risk per trade (% of balance)
 input long   InpMagic   = 1112;   // Magic number (unique per EA)
 
 #include <Trade/Trade.mqh>
