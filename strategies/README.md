@@ -371,4 +371,9 @@ Goal: pass faster while keeping 93%+ pass and 0 breaches. Picked on 2020-22 star
   markets from one chart, about 5.3 trades a weekday. It is the same logic as the single EAs plus a Nasdaq 5m breakout at 0.05%
   (100% pass, 0 breaches, funded +119% together with the other 7 EAs). The NQ 5m breakout breached at 0.1% and above, and the DAX
   5m breakout breached on up to 17% of attempts (rejected).
+- **Variations of the best EAs** (`tools/variants_test.py`, `tools/variants_combo_test.py`; added one at a time to the 12 EAs at 0.05-0.15%):
+  - Safe alone at 0.05%: four DAX ORB versions (60-min range; 15- or 30-min range on 5m; EMA20 filter), BTC 1h dip and BTC 2h EMA200 dip.
+  - Not safe even alone: Gold Dip EMA200 versions (2.7-14% breaches), SPX 20-bar breakout (0.7%), and NQ 15m 50-bar breakout (2026 near-misses).
+  - Stacked together, the safe ones breached on 0.3-3.6% of attempts.
+  - One variant added as an optional EA: `BTC_Dip_EMA200_2h` (0.05%, ~3 days faster, funded +118%).
 

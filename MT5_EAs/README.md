@@ -52,3 +52,9 @@ Tested (`tools/pack_addon_test.py`): the pack plus those 7 single EAs is the sam
 That gives pass 100% / 100% / 100%, 0 breaches, a funded median of +119%, and 2026 at +46%.
 
 At 0.1% the NQ 5m breakout caused small breaches, so keep it at 0.05%. A DAX 5m breakout was rejected: it breached on up to 17% of attempts.
+
+## Option: one extra variant – `optional/BTC_Dip_EMA200_2h.mq5`
+A second BTC dip style (RSI(2) < 10 above the EMA200, 6-day hold) on its own **BTCUSD H2** chart at **0.05%**.
+With the 12 EAs: pass 100%, 0 breaches, ~3 days faster, funded +118% vs +116% (`tools/variants_test.py`).
+**Run at most one variant.** Stacking several variations of the best EAs (4 DAX ORB versions, 2 BTC dip versions) brought
+breaches back (0.3-3.6% of attempts), because they lose on the same days. Gold Dip variants breached even alone.
