@@ -400,4 +400,8 @@ Goal: pass faster while keeping 93%+ pass and 0 breaches. Picked on 2020-22 star
   - Gold: +6-8%/yr.
   - Indices, oil and silver: ~0-3%/yr.
   - Nothing reached 10%/yr in both halves. Rejected.
+- **Phase-2-only risk boost with the drawdown brake** (`tools/phase2_boost_test.py`, 12 EAs):
+  - 1.25x in Phase 2: 16-22% breaches. 1.5x: 10-17%. 2x: 28-42%.
+  - The brake stops slow slides toward -10%, but not a single bad day hitting the 5% daily limit.
+  - Phase 2 stays at 1.0x.
 
