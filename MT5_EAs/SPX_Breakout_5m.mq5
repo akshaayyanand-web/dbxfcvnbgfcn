@@ -1,5 +1,5 @@
 //+------------------------------------------------------------------+
-//| SPX Breakout 5m – MT5 EA. Chart: US500 / SPX500, M5 (New York clock). OPTIONAL funded-account add-on.
+//| SPX Breakout 5m – MT5 EA. Chart: US500 / SPX500, M5 (New York clock). Core EA #12 since 8 Nov 2026 (low spreads only).
 //| Between 09:30 and 12:00 New York: a 5-minute close above the highest high of the previous 50 bars while
 //| above EMA(200) -> buy; a close below the lowest low of the previous 50 bars while below EMA(200) -> sell.
 //| Stop 2 x ATR(14) on the order, no target: flat at 15:50 New York. Several trades a day are possible.

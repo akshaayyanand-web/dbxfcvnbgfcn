@@ -673,7 +673,7 @@ void OnNewBar()
 """)
 
 EAS["SPX_Breakout_5m.mq5"] = dict(tf="PERIOD_M5", magic=1113, risk=0.1, header="""//+------------------------------------------------------------------+
-//| SPX Breakout 5m – MT5 EA. Chart: US500 / SPX500, M5 (New York clock). OPTIONAL funded-account add-on.
+//| SPX Breakout 5m – MT5 EA. Chart: US500 / SPX500, M5 (New York clock). Core EA #12 since 8 Nov 2026 (low spreads only).
 //| Between 09:30 and 12:00 New York: a 5-minute close above the highest high of the previous 50 bars while
 //| above EMA(200) -> buy; a close below the lowest low of the previous 50 bars while below EMA(200) -> sell.
 //| Stop 2 x ATR(14) on the order, no target: flat at 15:50 New York. Several trades a day are possible.
@@ -720,16 +720,16 @@ if __name__ == "__main__":
     # One clean download folder at the repo root: the 10 core EAs, the optional ones, and a zip of the core 10
     import shutil, zipfile
     CORE = ["BTC_Dip_v3", "Gold_Dip", "Gold_Asia_Breakout", "Gold_Intraday_Momentum", "NQ_Opening_Range", "NQ_Dip_2h",
-            "SPX_Dip_1h", "Oil_Dip_1h", "BTC_Weekend_Gap", "DAX_Opening_Range", "NQ_Breakout_15m"]
-    OPTIONAL = ["SPX_Breakout_5m"]
+            "SPX_Dip_1h", "Oil_Dip_1h", "BTC_Weekend_Gap", "DAX_Opening_Range", "NQ_Breakout_15m", "SPX_Breakout_5m"]
+    OPTIONAL = []
     dl = os.path.join(os.path.dirname(__file__), "..", "MT5_EAs")
     os.makedirs(os.path.join(dl, "optional"), exist_ok=True)
     for n in CORE: shutil.copy(os.path.join(out, n + ".mq5"), os.path.join(dl, n + ".mq5"))
     for n in OPTIONAL: shutil.copy(os.path.join(out, n + ".mq5"), os.path.join(dl, "optional", n + ".mq5"))
-    for old in ("MT5_10_EAs.zip", os.path.join("optional", "NQ_Breakout_15m.mq5")):
+    for old in ("MT5_10_EAs.zip", "MT5_11_EAs.zip", os.path.join("optional", "NQ_Breakout_15m.mq5"), os.path.join("optional", "SPX_Breakout_5m.mq5")):
         if os.path.exists(os.path.join(dl, old)): os.remove(os.path.join(dl, old))
-    with zipfile.ZipFile(os.path.join(dl, "MT5_11_EAs.zip"), "w", zipfile.ZIP_DEFLATED) as z:
+    with zipfile.ZipFile(os.path.join(dl, "MT5_12_EAs.zip"), "w", zipfile.ZIP_DEFLATED) as z:
         for n in CORE:
             zi = zipfile.ZipInfo(n + ".mq5", date_time=(2026, 1, 1, 0, 0, 0)); zi.compress_type = zipfile.ZIP_DEFLATED
             z.writestr(zi, open(os.path.join(out, n + ".mq5"), "rb").read())
-    print("wrote MT5_EAs/ (11 core + optional + zip)")
+    print("wrote MT5_EAs/ (12 core + zip)")

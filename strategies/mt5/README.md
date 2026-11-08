@@ -13,7 +13,11 @@
 | `BTC_Weekend_Gap.mq5` (core, **on probation**) | BTCUSD (must trade at weekends) | H1 | 0.25% | 1114 |
 | `DAX_Opening_Range.mq5` (**10th core EA, Nov 2026**) | GER40 / DE40 / DAX40 | **M15** | 0.2% | 1115 |
 | `NQ_Breakout_15m.mq5` (**11th core EA, Nov 2026**) | US100 / NAS100 / USTEC | **M15** | 0.2% | 1112 |
-| `SPX_Breakout_5m.mq5` (optional, funded account) | US500 / SPX500 | M5 | 0.1% | 1113 |
+| `SPX_Breakout_5m.mq5` (**12th core EA, Nov 2026**, low spread only) | US500 / SPX500 | M5 | 0.1% | 1113 |
+
+**`SPX_Breakout_5m` promoted to core at 0.1% (8 Nov 2026)** (`tools/spx_addon_12_test.py`), for more trades. The 12 EAs average
+**about 5.6 trades per weekday** (2025-26), up from 4.5. With the drawdown brake: pass 100% / 100% / 100%, 0 breaches, 86 / 68 / 59
+days, funded median +116% (was +107%). With double costs on its trades: 100% pass, +112%. It needs a low US500 spread.
 
 **`NQ_Breakout_15m` promoted to core at 0.2% (7 Nov 2026)** (`tools/readd_test.py`). Earlier it caused breaches above 0.05%, but
 with the drawdown brake it fits at 0.2%: pass 100% / 100% / 100%, 0 breaches, 87 / 68 / 64 days (was 87 / 73 / 63), funded median
@@ -97,13 +101,13 @@ at 0.15-0.2% the pass rate falls to 83-90%. The older `NQ_Intraday_Momentum`, `N
   `US500.cash`, `BTCUSD`. Any name works; the EAs trade whatever chart they're attached to.
 
 ## Step 2 – Install the EAs
-1. MT5 → **File → Open Data Folder** → open `MQL5` → `Experts`. Copy the eleven core `.mq5` files into it (plus any optional ones).
+1. MT5 → **File → Open Data Folder** → open `MQL5` → `Experts`. Copy the twelve core `.mq5` files into it.
 2. Press **F4** (MetaEditor). In the Navigator on the left, open each file under *Experts* and press **F7** (Compile).
    The bottom panel must say `0 errors`. If it shows errors, screenshot them and send them back.
 3. Back in MT5, right-click **Expert Advisors** in the Navigator → **Refresh**. The EAs appear.
 
 ## Step 3 – Run them live (demo first)
-1. Open **eleven charts** (File → New Chart): gold ×3, US100 ×3 (M5, H2, M15), US500 ×1, oil ×1, BTC ×2 (H2 for BTC_Dip_v3, H1 for BTC_Weekend_Gap), GER40 ×1 (M15). Set each chart's timeframe
+1. Open **twelve charts** (File → New Chart): gold ×3, US100 ×3 (M5, H2, M15), US500 ×2 (H1, M5), oil ×1, BTC ×2 (H2 for BTC_Dip_v3, H1 for BTC_Weekend_Gap), GER40 ×1 (M15). Set each chart's timeframe
    from the table above (`NQ_Opening_Range` is M5; `BTC_Dip_v3` and `NQ_Dip_2h` are H2).
 2. Drag one EA onto each chart. In the window that opens:
    - **Common** tab: tick **Allow Algo Trading**.
