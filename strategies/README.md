@@ -392,4 +392,6 @@ Goal: pass faster while keeping 93%+ pass and 0 breaches. Picked on 2020-22 star
   - The same idea on Nasdaq (00:00-07:00 London range, trade until 14:00 London): best +15% / +13%/yr, but +4%/yr at double
     costs and weak neighbours.
   - Both rejected.
+- **DAX ORB exit time** (`tools/dax_exit_time_test.py`): closing at 19:00 / 20:30 / 21:55 instead of 17:25 Frankfurt gave
+  +38% / +24%, +40% / +22% and +47% / +29%/yr vs +43% / +29%. The results go down and then up again, so this is noise. 17:25 stays.
 
