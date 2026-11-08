@@ -382,4 +382,9 @@ Goal: pass faster while keeping 93%+ pass and 0 breaches. Picked on 2020-22 star
   - As a signal on its own (buy when 24h funding < 0, hold 96h): +9% / +10%/yr at 1% risk, ~3 trades a month. Too small, and an
     MT5 EA would need live funding data from Binance through WebRequest.
   - Not used.
+- **Oil and silver opening ranges** (`tools/oil_silver_orb_test.py`, hourly data 2016-2026, first-hour range at the NYMEX /
+  London / NY opens, 48 versions):
+  - Best oil version: +6% / +10%/yr at 1% risk, ~10 trades a month, +6%/yr at double costs.
+  - Silver: never positive in both halves.
+  - Too small. Rejected.
 
