@@ -1,4 +1,4 @@
-# Generic index ORB/breakout/dip lab. Run from the scratchpad: python world_lab.py SYMBOL (BTCUSDT/ETHUSDT use Binance 5m files in k5full/)
+# Generic index ORB/breakout/dip lab. Run from the scratchpad: python world_lab.py SYMBOL (e.g. XAUUSD_ASIA, USATECHIDXUSD_ASIA)
 # DAX (Germany 40) strategies on the Frankfurt session: opening range breakout, morning breakout, dips.
 import sys, numpy as np, pandas as pd
 sys.path.insert(0, "/home/user/dbxfcvnbgfcn/tools")
@@ -13,7 +13,8 @@ CFG = {"JPNIDXJPY": ("Asia/Tokyo", 540, 690, 895, 0.0002), "HKGIDXHKD": ("Asia/H
        "EURUSD": ("Europe/London", 480, 660, 985, 0.00006), "EURUSD_ASIA": ("Europe/London", 0, 600, 985, 0.00006),
        "AUDCAD": ("Europe/London", 480, 660, 985, 0.00009),
        "BTCUSDT": ("America/New_York", 570, 720, 950, 0.0006), "ETHUSDT": ("America/New_York", 570, 720, 950, 0.0008),
-       "BTCUSDT_LDN": ("Europe/London", 480, 660, 985, 0.0006)}
+       "BTCUSDT_LDN": ("Europe/London", 480, 660, 985, 0.0006),
+       "XAUUSD_ASIA": ("Europe/London", 0, 840, 1200, 0.0001), "USATECHIDXUSD_ASIA": ("Europe/London", 0, 840, 1200, 0.00012)}
 TZ, OPEN, WEND, FLAT, COST = CFG[SYM]
 parts = []
 if SYM.startswith(("BTC", "ETH")):

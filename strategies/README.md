@@ -387,4 +387,9 @@ Goal: pass faster while keeping 93%+ pass and 0 breaches. Picked on 2020-22 star
   - Best oil version: +6% / +10%/yr at 1% risk, ~10 trades a month, +6%/yr at double costs.
   - Silver: never positive in both halves.
   - Too small. Rejected.
+- **Asian-range breakouts on faster charts and on Nasdaq** (`tools/world_index_test.py` with XAUUSD_ASIA / USATECHIDXUSD_ASIA):
+  - Gold Asia range on 5m / 15m: best +6% / +6%/yr at 1% risk, weaker than the current H1 Gold_Asia_Breakout (~+13%/yr).
+  - The same idea on Nasdaq (00:00-07:00 London range, trade until 14:00 London): best +15% / +13%/yr, but +4%/yr at double
+    costs and weak neighbours.
+  - Both rejected.
 
