@@ -363,4 +363,8 @@ Goal: pass faster while keeping 93%+ pass and 0 breaches. Picked on 2020-22 star
 - **ETH dips with the drawdown brake** (`tools/eth_dip_addon_test.py`): EMA200 / EMA50 versions at 0.1-0.2% speed passing up by
   4-12 days and lift the funded median to +111-123%. But they breach on 0.1-1.9% of attempts: crash days hit the BTC and ETH dips
   together (correlation 0.5). Rejected under the 0-breach rule.
+- **One EA with 5+ trades a day** (`tools/high_frequency_test.py`): N-bar trend breakouts traded all session on 1m / 3m / 5m on
+  Nasdaq, S&P, DAX and gold (192 versions). 55 versions reached 5+ trades a day; **all 55 lose** (-130% to -290%/yr at 1% risk on
+  2023-26) once spreads are paid. The busiest version that is positive in both halves and at double costs trades 1.3 times a day
+  (Nasdaq 5m, 50-bar, EMA800, 2 ATR stop). No single EA reaches 5 trades a day profitably. The 12 EAs together average ~5.6.
 
