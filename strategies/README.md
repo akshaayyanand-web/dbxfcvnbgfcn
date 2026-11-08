@@ -394,4 +394,10 @@ Goal: pass faster while keeping 93%+ pass and 0 breaches. Picked on 2020-22 star
   - Both rejected.
 - **DAX ORB exit time** (`tools/dax_exit_time_test.py`): closing at 19:00 / 20:30 / 21:55 instead of 17:25 Frankfurt gave
   +38% / +24%, +40% / +22% and +47% / +29%/yr vs +43% / +29%. The results go down and then up again, so this is noise. 17:25 stays.
+- **Weekly opening range** (`tools/weekly_orb_test.py`): Monday's range traded Tuesday-Thursday, exit Friday, on 8 markets
+  (96 versions, 2016-2026):
+  - BTC: +30%/yr in 2016-21 but only +8%/yr since mid-2021.
+  - Gold: +6-8%/yr.
+  - Indices, oil and silver: ~0-3%/yr.
+  - Nothing reached 10%/yr in both halves. Rejected.
 
