@@ -704,11 +704,127 @@ void OnNewBar()
   }
 """)
 
+
+# ---------------------------------------------------------------------------------------------------------------
+# Breakout Pack: one EA that runs six of the morning-breakout strategies on four markets from a single chart.
+# The strategy bodies are the same code as the single EAs; only the symbol / timeframe / magic / risk are switched
+# per module. Same magic numbers as the single EAs, so running both never doubles a trade.
+EAS["NQ_Breakout_5m"] = dict(tf="PERIOD_M5", magic=1116, risk=0.05, header="", body=EAS["NQ_Breakout_15m.mq5"]["body"]
+    .replace("MODE_HIGH, 20, 2", "MODE_HIGH, 50, 2").replace("MODE_LOW, 20, 2", "MODE_LOW, 50, 2")
+    .replace("Ema(200, 1)", "Ema(800, 1)").replace("price - dir * atr", "price - dir * 2 * atr").replace('"NQ Breakout 15m"', '"NQ Breakout 5m"'))
+PACK = [  # module key, single-EA source, symbol input default, timeframe, magic, risk
+    ("NQORB", "NQ_Opening_Range.mq5", "InpSymNQ", "PERIOD_M5", 1106, 0.625),
+    ("NQBO15", "NQ_Breakout_15m.mq5", "InpSymNQ", "PERIOD_M15", 1112, 0.2),
+    ("NQBO5", "NQ_Breakout_5m", "InpSymNQ", "PERIOD_M5", 1116, 0.05),
+    ("SPXBO5", "SPX_Breakout_5m.mq5", "InpSymSPX", "PERIOD_M5", 1113, 0.1),
+    ("DAXORB", "DAX_Opening_Range.mq5", "InpSymDAX", "PERIOD_M15", 1115, 0.2),
+    ("GOLDASIA", "Gold_Asia_Breakout.mq5", "InpSymGold", "PERIOD_H1", 1103, 0.3125)]
+def make_pack():
+    common = COMMON.split("//--- event plumbing")[0]
+    import re
+    sub = lambda t: (t.replace("_Symbol", "gSym").replace("_Period", "gTf").replace("_Digits", "(int)SymbolInfoInteger(gSym, SYMBOL_DIGITS)")
+                     .replace("InpMagic", "gMagic").replace("InpRiskPct", "gRisk"))
+    common = sub(common)
+    # indicator handles cached per symbol + timeframe + length
+    common = re.sub(r"double Rsi\(int len, int shift\)\n  \{.*?\n  \}\n", """double Rsi(int len, int shift)
+  {
+   static int hs[40]; static string ks[40]; static int n = 0; string key = gSym + "|" + IntegerToString(gTf) + "|" + IntegerToString(len); int h = INVALID_HANDLE;
+   for(int i = 0; i < n; i++) if(ks[i] == key) h = hs[i];
+   if(h == INVALID_HANDLE && n < 40) { h = iRSI(gSym, gTf, len, PRICE_CLOSE); hs[n] = h; ks[n] = key; n++; }
+   double b[]; ArraySetAsSeries(b, true);
+   if(CopyBuffer(h, 0, shift, 1, b) < 1) return EMPTY_VALUE;
+   return b[0];
+  }
+""", common, flags=re.S)
+    common = re.sub(r"double Ema\(int len, int shift\)\n  \{.*?\n  \}\n", """double Ema(int len, int shift)
+  {
+   static int hs[40]; static string ks[40]; static int n = 0; string key = gSym + "|" + IntegerToString(gTf) + "|" + IntegerToString(len); int h = INVALID_HANDLE;
+   for(int i = 0; i < n; i++) if(ks[i] == key) h = hs[i];
+   if(h == INVALID_HANDLE && n < 40) { h = iMA(gSym, gTf, len, 0, MODE_EMA, PRICE_CLOSE); hs[n] = h; ks[n] = key; n++; }
+   double b[]; ArraySetAsSeries(b, true);
+   if(CopyBuffer(h, 0, shift, 1, b) < 1) return EMPTY_VALUE;
+   return b[0];
+  }
+""", common, flags=re.S)
+    common = common.replace("bool OpenTrade(int dir, double stopPrice, double tpPrice, string tag)\n  {\n",
+                            "bool OpenTrade(int dir, double stopPrice, double tpPrice, string tag)\n  {\n   trade.SetExpertMagicNumber(gMagic); trade.SetTypeFillingBySymbol(gSym);\n")
+    bodies = []
+    for k, src, symin, tf, magic, risk in PACK:
+        b = sub(EAS[src]["body"]).replace("void OnNewBar()", f"void OnNewBar_{k}()").replace("lastTradeDay", f"lastTradeDay_{k}")
+        b = b.replace("datetime ToFrankfurt(", "datetime ToFrankfurt(") if k == "DAXORB" else b
+        bodies.append(f"//=== module {k} (from {src}) ===" + b)
+    inputs = "\n".join(f"input double InpRisk_{k} = {risk};   // {k}: risk per trade (% of balance, 0 = off)" for k, *_r in [(m[0],) for m in PACK] for risk in [dict((x[0], x[5]) for x in PACK)[k]])
+    n = len(PACK)
+    ctx = "\n".join(f'   if(k == {i}) {{ gSym = {sym}; gTf = {tf}; gMagic = {mg}; gRisk = InpRisk_{key}; }}' for i, (key, src, sym, tf, mg, rk) in enumerate(PACK))
+    calls = "\n".join(f"   if(k == {i}) OnNewBar_{key}();" for i, (key, *_r) in enumerate(PACK))
+    header = """//+------------------------------------------------------------------+
+//| Breakout Pack – ONE MT5 EA that runs six morning-breakout strategies on four markets (about 5.3 trades a weekday):
+//|   NQ opening range (M5) 0.625%, NQ 15m breakout 0.2%, NQ 5m breakout 0.05%, S&P 5m breakout 0.1%,
+//|   DAX opening range (M15) 0.2%, Gold Asia breakout (H1) 0.3125%.
+//| Attach it to ANY one chart (e.g. US100 M5). Type your broker's symbol names in the inputs. It checks all markets every 5 seconds.
+//| It replaces the single EAs NQ_Opening_Range, NQ_Breakout_15m, SPX_Breakout_5m, DAX_Opening_Range and Gold_Asia_Breakout:
+//| remove those, keep the other 7 (BTC_Dip_v3, Gold_Dip, Gold_Intraday_Momentum, NQ_Dip_2h, SPX_Dip_1h, Oil_Dip_1h, BTC_Weekend_Gap).
+//| It uses the same magic numbers as the single EAs, so it never doubles their trades.
+//+------------------------------------------------------------------+
+#property version "1.00"
+input string InpSymNQ   = ".USTECHCash";  // Your broker's Nasdaq symbol (FTMO: US100.cash)
+input string InpSymSPX  = ".US500Cash";   // Your broker's S&P 500 symbol (FTMO: US500.cash)
+input string InpSymDAX  = ".DE40Cash";    // Your broker's DAX symbol (FTMO: GER40.cash)
+input string InpSymGold = "XAUUSD";       // Your broker's gold symbol
+""" + inputs + "\nstring gSym = \"\"; ENUM_TIMEFRAMES gTf = PERIOD_M5; long gMagic = 0; double gRisk = 0;\n"
+    plumbing = f"""
+//--- pack plumbing -------------------------------------------------------------------
+#define NMOD {n}
+datetime gLastBar[NMOD]; bool gRetry[NMOD];
+void CallModule(int k);
+void SetCtx(int k)
+  {{
+{ctx}
+  }}
+void RunAll()
+  {{
+   for(int k = 0; k < NMOD; k++)
+     {{
+      SetCtx(k);
+      if(gSym == "" || gRisk <= 0) continue;
+      bool blocked = GuardBlocks();
+      datetime b0 = iTime(gSym, gTf, 0);
+      if(b0 == 0) continue;
+      if(b0 == gLastBar[k])
+        {{
+         if(gRetry[k] && !blocked && TimeCurrent() - b0 < 15 * 60) {{ gSpreadRetry = false; CallModule(k); gRetry[k] = gSpreadRetry; }}
+         continue;
+        }}
+      gLastBar[k] = b0; gSpreadRetry = false;
+      if(!blocked) CallModule(k);
+      gRetry[k] = gSpreadRetry;
+     }}
+  }}
+void CallModule(int k)
+  {{
+{calls}
+  }}
+int OnInit()
+  {{
+   trade.SetDeviationInPoints(50);
+   string syms[4]; syms[0] = InpSymNQ; syms[1] = InpSymSPX; syms[2] = InpSymDAX; syms[3] = InpSymGold;
+   for(int i = 0; i < 4; i++)
+      if(syms[i] != "" && !SymbolSelect(syms[i], true)) Print("WARNING: symbol '", syms[i], "' not found - type your broker's exact name in the inputs");
+   for(int k = 0; k < NMOD; k++) {{ gLastBar[k] = 0; gRetry[k] = false; }}
+   EventSetTimer(5);
+   return INIT_SUCCEEDED;
+  }}
+void OnDeinit(const int reason) {{ EventKillTimer(); }}
+void OnTick()  {{ RunAll(); }}
+void OnTimer() {{ RunAll(); }}
+"""
+    return header + common.replace("input double InpAccountSize", "input double InpAccountSize") + "\n".join(bodies) + plumbing
+
 if __name__ == "__main__":
     out = os.path.join(os.path.dirname(__file__), "..", "strategies", "mt5")
     os.makedirs(out, exist_ok=True)
     os.makedirs(os.path.join(out, "retired"), exist_ok=True)
-    for name, e in list(EAS.items()) + [("retired/" + k, v) for k, v in RETIRED.items()]:
+    for name, e in [(k, v) for k, v in EAS.items() if k.endswith(".mq5")] + [("retired/" + k, v) for k, v in RETIRED.items()]:
         src = (e["header"] + "\n#property version \"1.00\"\n"
                f"#define REQUIRED_TF {e['tf']}\n"
                f"input double InpRiskPct = {e['risk']};    // Risk per trade (% of balance)\n"
@@ -733,3 +849,7 @@ if __name__ == "__main__":
             zi = zipfile.ZipInfo(n + ".mq5", date_time=(2026, 1, 1, 0, 0, 0)); zi.compress_type = zipfile.ZIP_DEFLATED
             z.writestr(zi, open(os.path.join(out, n + ".mq5"), "rb").read())
     print("wrote MT5_EAs/ (12 core + zip)")
+    os.makedirs(os.path.join(dl, "pack"), exist_ok=True)
+    with open(os.path.join(dl, "pack", "Breakout_Pack.mq5"), "w") as f:
+        f.write(make_pack())
+    print("wrote MT5_EAs/pack/Breakout_Pack.mq5")

@@ -367,4 +367,8 @@ Goal: pass faster while keeping 93%+ pass and 0 breaches. Picked on 2020-22 star
   Nasdaq, S&P, DAX and gold (192 versions). 55 versions reached 5+ trades a day; **all 55 lose** (-130% to -290%/yr at 1% risk on
   2023-26) once spreads are paid. The busiest version that is positive in both halves and at double costs trades 1.3 times a day
   (Nasdaq 5m, 50-bar, EMA800, 2 ATR stop). No single EA reaches 5 trades a day profitably. The 12 EAs together average ~5.6.
+- **Breakout Pack** (`MT5_EAs/pack/Breakout_Pack.mq5`, `tools/pack_addon_test.py`): one EA running six morning breakouts on four
+  markets from one chart, about 5.3 trades a weekday. It is the same logic as the single EAs plus a Nasdaq 5m breakout at 0.05%
+  (100% pass, 0 breaches, funded +119% together with the other 7 EAs). The NQ 5m breakout breached at 0.1% and above, and the DAX
+  5m breakout breached on up to 17% of attempts (rejected).
 
