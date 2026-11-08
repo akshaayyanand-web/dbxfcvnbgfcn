@@ -376,4 +376,10 @@ Goal: pass faster while keeping 93%+ pass and 0 breaches. Picked on 2020-22 star
   - Not safe even alone: Gold Dip EMA200 versions (2.7-14% breaches), SPX 20-bar breakout (0.7%), and NQ 15m 50-bar breakout (2026 near-misses).
   - Stacked together, the safe ones breached on 0.3-3.6% of attempts.
   - One variant added as an optional EA: `BTC_Dip_EMA200_2h` (0.05%, ~3 days faster, funded +118%).
+- **BTC funding rates** (`tools/btc_funding_test.py`, Binance perpetual funding 2020-2026):
+  - As a filter on BTC_Dip_v3: dips entered at the highest 20% of funding averaged 0.01R in 2020-22 but 0.35R in 2023-26, from
+    only 43 trades. Not reliable enough to block trades.
+  - As a signal on its own (buy when 24h funding < 0, hold 96h): +9% / +10%/yr at 1% risk, ~3 trades a month. Too small, and an
+    MT5 EA would need live funding data from Binance through WebRequest.
+  - Not used.
 
