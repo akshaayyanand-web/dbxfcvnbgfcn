@@ -428,4 +428,8 @@ Goal: pass faster while keeping 93%+ pass and 0 breaches. Picked on 2020-22 star
     +9-13%/yr at double costs. Breakout versions failed at double costs.
   - It trades 19:00-20:00 New York time, a slot no current EA uses.
   - Waiting for 2023-2026 data (blocked by the data server's rate limit) before any portfolio test or EA.
+- **Crypto hour-of-day effects** (`tools/crypto_hour_of_day_test.py`): no hour had the same sign every year for BTC or ETH
+  (2020-2026). Typical hourly drift is 1-3 bp, against ~6 bp cost per trade. Rejected.
+- **Monte Carlo of the 12 EAs** (`tools/monte_carlo_12_test.py`): 97.6% pass, 0% breached, 2.4% still open after ~1.4 years,
+  median ~68 days.
 

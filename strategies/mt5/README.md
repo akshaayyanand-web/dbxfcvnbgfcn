@@ -235,6 +235,14 @@ and getting there costs half the attempts. Once funded, set every EA back to 1.0
 1.5x caused 7-17%. Every breach came from days like 7 Sep 2021, when BTC gapped through its stop in one hour while
 the account was already down on the day.
 
+## Stress test of the 12 EAs (Monte Carlo, Nov 2026)
+`tools/monte_carlo_12_test.py`: 2,000 synthetic histories, built by reshuffling 20-day blocks of the real 2020-2026 hourly
+results, running the 2-step evaluation with all guards and the drawdown brake:
+- **Pass: 97.6%. Breached: 0%.** Still running after ~1.4 years without passing or failing: 2.4%.
+- Median ~68 days to funded. 44% of attempts are funded within 60 days, 69% within 120 days.
+
+Expect live results to be worse than any backtest. But even reshuffled bad stretches did not breach.
+
 ## Notes
 - MT5 only trades while it is running: keep the PC on or use a Windows VPS.
 - Check your prop firm allows EAs and holding BTC / gold over nights and weekends.
