@@ -412,4 +412,9 @@ Goal: pass faster while keeping 93%+ pass and 0 breaches. Picked on 2020-22 star
   - At the same 0.2%: no gain (83 / 70 / 57 days, funded +114% vs 86 / 68 / 59, +116%).
   - At 0.3-0.4%: 0.1-0.8% breaches.
   - The DAX EA keeps trading every day.
+- **Gold Asia breakout rules on other markets** (`tools/asia_breakout_other_markets_test.py`, hourly 2016-2026):
+  - Only gold works: +15% / +11%/yr, 1 losing year.
+  - Silver, S&P, Dow, Russell, oil and BTC: negative in at least one half, 4-8 losing years each.
+  - Nasdaq: -1% / +16%/yr, 4 losing years.
+  - The effect is specific to gold, which trades heavily in Asia. Rejected.
 
