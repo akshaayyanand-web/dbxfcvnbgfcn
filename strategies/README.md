@@ -408,4 +408,8 @@ Goal: pass faster while keeping 93%+ pass and 0 breaches. Picked on 2020-22 star
   narrowest 25% of opening ranges (threshold set on 2021-22 only: range < 0.21x daily ATR) averaged +0.73R in 2021-22 and +0.43R
   in 2023-26. Wide-range days: +0.01R / +0.13R. The effect is real, but an extra position on those days (0.1-0.3%) caused
   0.1-1.1% breaches next to the 12 EAs. Not added. The weekday pattern was noise.
+- **DAX ORB on narrow days only, at higher risk** (`tools/dax_narrow_filter_test.py`; narrowest half, threshold from 2021-22):
+  - At the same 0.2%: no gain (83 / 70 / 57 days, funded +114% vs 86 / 68 / 59, +116%).
+  - At 0.3-0.4%: 0.1-0.8% breaches.
+  - The DAX EA keeps trading every day.
 
