@@ -438,4 +438,10 @@ Goal: pass faster while keeping 93%+ pass and 0 breaches. Picked on 2020-22 star
   - Shifting risk toward the favoured side (x1.25/0.75 or x1.5/0.5) caused 3-26% breaches: volatile periods are crash periods.
   - Only cutting the weaker side (x0.75 / x0.5) stayed breach-free, but was slower with a lower funded year (+81-95% vs +107%).
   - Not used.
+- **"Crash catcher" intraday short** (`tools/crash_short_test.py`): short Nasdaq / S&P once the day is down 1.5-2.5% from the
+  open, hold to the close.
+  - About breakeven (-2% to +2%/yr at 1% risk).
+  - As a hedge: correlation +0.12 with the 12 EAs, and only +0.06% on their 30 worst days. It does not offset dip losses.
+  - With the hedge, 1.1x / 1.25x risk on the 12 EAs still breached on 5-23% / 33-42% of attempts. Rejected.
+  - Note: even +10% risk breaches, so the 12 EAs are already at their safe limit.
 
