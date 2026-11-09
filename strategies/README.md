@@ -417,4 +417,10 @@ Goal: pass faster while keeping 93%+ pass and 0 breaches. Picked on 2020-22 star
   - Silver, S&P, Dow, Russell, oil and BTC: negative in at least one half, 4-8 losing years each.
   - Nasdaq: -1% / +16%/yr, 4 losing years.
   - The effect is specific to gold, which trades heavily in Asia. Rejected.
+- **PAXG weekend move as a gold signal** (`tools/paxg_weekend_gold_test.py`; PAXG is tokenised gold that trades 24/7; 309 weekends,
+  2020-2026):
+  - The weekend PAXG move is mostly already in gold's Sunday reopen gap (correlation 0.41).
+  - It only weakly predicts the next 24-48h (correlation 0.12 / 0.07).
+  - Following moves over 0.3%: +0.00R in 2020-22 vs +0.25R in 2023-26, the gold bull market, so inconsistent. Over 1%: only 18 trades.
+  - It would also need PAXG prices inside MT5. Rejected.
 
