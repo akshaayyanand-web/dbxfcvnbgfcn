@@ -444,4 +444,10 @@ Goal: pass faster while keeping 93%+ pass and 0 breaches. Picked on 2020-22 star
   - As a hedge: correlation +0.12 with the 12 EAs, and only +0.06% on their 30 worst days. It does not offset dip losses.
   - With the hedge, 1.1x / 1.25x risk on the 12 EAs still breached on 5-23% / 33-42% of attempts. Rejected.
   - Note: even +10% risk breaches, so the 12 EAs are already at their safe limit.
+- **What breaks at 1.1x risk** (`tools/breach_anatomy_test.py`): all 237 breaching attempts fall on 11 hours. Gold_Dip is the
+  biggest loser on most of them (-2.0% to -4.7% of the account in one day at 1x): a multi-day trade that was well in profit
+  falls back to its stop during a gold crash (e.g. 2026-01-30, 2024-11-25).
+  - The simulation counts open profit given back during the day as daily loss, the stricter reading of the daily-loss rule.
+    Sources disagree on FTMO's exact measure, so ask FTMO before relying on extra headroom.
+  - Risk stays at 1.0x.
 
