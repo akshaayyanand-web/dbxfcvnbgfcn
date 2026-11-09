@@ -105,6 +105,12 @@ double DayStartBalance()
    if(!GlobalVariableCheck(n)) GlobalVariableSet(n, AccountInfoDouble(ACCOUNT_BALANCE));
    return GlobalVariableGet(n);
   }
+double DayStartEquity()      // equity (open trades included) at the first check of the server day; used by the drawdown brake
+  {
+   string n = "PP_DE_" + IntegerToString(DayKey(TimeTradeServer()));
+   if(!GlobalVariableCheck(n)) GlobalVariableSet(n, AccountInfoDouble(ACCOUNT_EQUITY));
+   return GlobalVariableGet(n);
+  }
 bool GuardBlocks()
   {
    double eq = AccountInfoDouble(ACCOUNT_EQUITY);
@@ -153,14 +159,14 @@ double RiskMoney()
    double dayRoom = InpAccountSize * InpDailyStopPct / 100 - MathMax(0, DayStartBalance() - eq);
    double maxRoom = eq - InpAccountSize * (1 - InpMaxStopPct / 100);
    r = MathMin(r, MathMin(dayRoom, maxRoom) * InpGuardShare / 100);
-   if(InpRoomCapPct > 0)      // room cap: full size until the day starts 3% down, then shrink linearly to 0 at the firm limit
+   if(InpRoomCapPct > 0)      // room cap: full size until the day starts 3% down (equity), then shrink linearly to 0 at the firm limit
      {
-      double room = DayStartBalance() - InpAccountSize * (1 - InpFirmMaxLossPct / 100);
+      double room = DayStartEquity() - InpAccountSize * (1 - InpFirmMaxLossPct / 100);
       r *= MathMax(0, MathMin(1, room / (InpAccountSize * InpRoomCapPct / 100)));
      }
-   if(InpHalfBelowPct > 0)    // half-size mode, shared by all EAs: on below -4% (day start), off again above -2%
+   if(InpHalfBelowPct > 0)    // half-size mode, shared by all EAs: on below -4% (day-start equity), off again above -2%
      {
-      double dsb = DayStartBalance();
+      double dsb = DayStartEquity();
       if(dsb <= InpAccountSize * (1 - InpHalfBelowPct / 100)) GlobalVariableSet("PP_HALF", 1);
       else if(dsb >= InpAccountSize * (1 - InpHalfUntilPct / 100) && GlobalVariableCheck("PP_HALF")) GlobalVariableDel("PP_HALF");
       if(GlobalVariableCheck("PP_HALF")) r *= 0.5;

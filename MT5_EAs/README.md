@@ -58,3 +58,21 @@ A second BTC dip style (RSI(2) < 10 above the EMA200, 6-day hold) on its own **B
 With the 12 EAs: pass 100%, 0 breaches, ~3 days faster, funded +118% vs +116% (`tools/variants_test.py`).
 **Run at most one variant.** Stacking several variations of the best EAs (4 DAX ORB versions, 2 BTC dip versions) brought
 breaches back (0.3-3.6% of attempts), because they lose on the same days. Gold Dip variants breached even alone.
+
+## Realistic results under FTMO's actual daily-loss rule (Nov 2026)
+FTMO sets the daily floor at **midnight balance (closed trades) − 5% of the starting capital**. Open losses carried past midnight
+already use up part of the next day's 5%. The dip EAs often hold losing trades overnight (median about −1% open, a quarter of
+the time about −3%). Earlier tests measured the floor from the day-start equity and were too optimistic (100% pass).
+Re-tested with FTMO's exact rule (`tools/ftmo_balance_rule_test.py`; an attempt every weekday; the guard closes everything at
+−4% with 0.3% slippage):
+
+| Setup | Pass (2020-22 / 2023-25 / 2026) | Breached | Stopped at −9.5% | Median days |
+|---|---|---|---|---|
+| Drawdown brake on the day-start **balance** (previous EAs) | 75 / 86 / 92% | ~0% | 25 / 14 / 8% | 78 / 70 / 58 |
+| **Brake on the day-start equity (current EAs)** | **89 / 96 / 98%** | **0%** | 11 / 4 / 2% | 88 / 84 / 59 |
+| Same, all risk ×0.75 | 91 / 97 / 99% | 0% | 9 / 3 / 1% | 103 / 102 / 88 |
+
+The room cap and the half-size mode now use `DayStartEquity()`, the equity at the first check of the server day with open
+trades included. They slow down while losing trades are still open. The daily guard itself keeps using the day-start
+balance, exactly like FTMO. The Monte Carlo figures above were run before this fix and are optimistic.
+**Live, expect roughly 85-95% pass and 0 rule breaches. "Stopped" attempts (the EAs halt at −9.5%) still cost the fee.**

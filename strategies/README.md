@@ -450,4 +450,9 @@ Goal: pass faster while keeping 93%+ pass and 0 breaches. Picked on 2020-22 star
   - The simulation counts open profit given back during the day as daily loss, the stricter reading of the daily-loss rule.
     Sources disagree on FTMO's exact measure, so ask FTMO before relying on extra headroom.
   - Risk stays at 1.0x.
+- **FTMO's exact daily-loss rule** (`tools/ftmo_balance_rule_test.py`): the floor is the midnight balance minus 5% of the starting
+  capital, so open losses carried overnight count. With it, the 12 EAs passed 75 / 86 / 92% (brake on balance), not 100%: many
+  attempts slid to the −9.5% stop as the −4% guard closed underwater dip trades. Moving the drawdown brake to the day-start
+  **equity** gives 89 / 96 / 98% pass, 0 breaches, 88 / 84 / 59 days. Now the default in all EAs. Earlier pass rates (100%)
+  were based on an equity floor and were optimistic.
 
