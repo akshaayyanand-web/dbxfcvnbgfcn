@@ -423,4 +423,9 @@ Goal: pass faster while keeping 93%+ pass and 0 breaches. Picked on 2020-22 star
   - It only weakly predicts the next 24-48h (correlation 0.12 / 0.07).
   - Following moves over 0.3%: +0.00R in 2020-22 vs +0.25R in 2023-26, the gold bull market, so inconsistent. Over 1%: only 18 trades.
   - It would also need PAXG prices inside MT5. Rejected.
+- **Nikkei 225 opening range, PRELIMINARY** (`tools/world_index_test.py JPNIDXJPY`, only Jan 2021 to May 2023 downloaded so far):
+  - Tokyo 09:00 opening range, no trend filter, mid-range stop: positive every year so far (+10% to +24%/yr at 1% risk), and
+    +9-13%/yr at double costs. Breakout versions failed at double costs.
+  - It trades 19:00-20:00 New York time, a slot no current EA uses.
+  - Waiting for 2023-2026 data (blocked by the data server's rate limit) before any portfolio test or EA.
 
