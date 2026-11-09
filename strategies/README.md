@@ -432,4 +432,10 @@ Goal: pass faster while keeping 93%+ pass and 0 breaches. Picked on 2020-22 star
   (2020-2026). Typical hourly drift is 1-3 bp, against ~6 bp cost per trade. Rejected.
 - **Monte Carlo of the 12 EAs** (`tools/monte_carlo_12_test.py`): 97.6% pass, 0% breached, 2.4% still open after ~1.4 years,
   median ~68 days.
+- **Volatility-regime switching** (`tools/volatility_regime_test.py`; regime = yesterday's 20-day Nasdaq volatility vs its 1-year
+  median):
+  - Dip EAs earn more in volatile markets and breakout EAs in calm ones, in both halves.
+  - Shifting risk toward the favoured side (x1.25/0.75 or x1.5/0.5) caused 3-26% breaches: volatile periods are crash periods.
+  - Only cutting the weaker side (x0.75 / x0.5) stayed breach-free, but was slower with a lower funded year (+81-95% vs +107%).
+  - Not used.
 
