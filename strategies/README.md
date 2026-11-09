@@ -404,4 +404,8 @@ Goal: pass faster while keeping 93%+ pass and 0 breaches. Picked on 2020-22 star
   - 1.25x in Phase 2: 16-22% breaches. 1.5x: 10-17%. 2x: 28-42%.
   - The brake stops slow slides toward -10%, but not a single bad day hitting the 5% daily limit.
   - Phase 2 stays at 1.0x.
+- **DAX ORB on narrow-range mornings** (`tools/dax_range_width_test.py`, `tools/dax_narrow_addon_test.py`): breakouts after the
+  narrowest 25% of opening ranges (threshold set on 2021-22 only: range < 0.21x daily ATR) averaged +0.73R in 2021-22 and +0.43R
+  in 2023-26. Wide-range days: +0.01R / +0.13R. The effect is real, but an extra position on those days (0.1-0.3%) caused
+  0.1-1.1% breaches next to the 12 EAs. Not added. The weekday pattern was noise.
 
