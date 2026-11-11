@@ -466,4 +466,11 @@ Goal: pass faster while keeping 93%+ pass and 0 breaches. Picked on 2020-22 star
   - Win rates rise to 57-85%, but every version makes about -14% to +4%/yr.
   - Current exits make +8% to +43%/yr.
   - Even the best entries lose their edge when winners are capped. Small-target / fixed-dollar TP is rejected for good.
+- **Topstep / Lucid funded in 1-2 weeks** (`tools/topstep_two_week_test.py`; $50K: $3,000 target, $2,000 EOD trailing max loss,
+  50% consistency, flat daily, micro contracts; an attempt every trading day 2020-2026, with $50 resets until funded):
+  - Best: the 4 Topstep scripts (NQ ORB, NQ momentum, gold momentum, ES ORB) at $500-1,000 per trade. Funded within
+    10 trading days (2 weeks) 20-24% of the time, within 20 days 47-51%, median 20-22 trading days, average cost incl. resets $190-370.
+  - Adding more strategies (breakouts, Gold Asia) made it worse: more trades mean more ways to hit the tight $2,000 trailing loss.
+    A daily stop changed little.
+  - The fixed $1,000 TP / $2,000 SL style gives roughly a 2-3% chance per account of getting funded and paid.
 
