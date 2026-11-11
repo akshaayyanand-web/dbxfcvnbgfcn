@@ -479,4 +479,9 @@ Goal: pass faster while keeping 93%+ pass and 0 breaches. Picked on 2020-22 star
   - Resetting until funded: 80% are funded within ~37-39 trading days (~8 weeks) at $400-500/trade (median 22-23 days),
     average cost $280-410.
   - 80% within 2 weeks is not reachable with real edges under these rules.
+- **One-try fast pass** (`tools/fast_pass_sizing_test.py`; 50K and LucidFlex 25K with $1,250 or $1,500 targets; fixed-dollar
+  sizing vs a % of the room above the max-loss line):
+  - The single-attempt pass rate within 10 trading days never exceeded ~16%. The 25K was no easier.
+  - Room-based sizing (15% of room) slightly improves the pass rate for the time taken: 58% in a median 41 days, vs 47% / 38 days at $200 fixed.
+  - Real edges here give either a high single-attempt pass rate (84%, ~5 months) or speed (~30%, ~2 weeks), never both.
 
