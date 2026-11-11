@@ -588,14 +588,14 @@ void OnNewBar()
   }
 """)
 
-EAS["Nikkei_Breakout_5m.mq5"] = dict(tf="PERIOD_M5", magic=1118, risk=0.1, header="""//+------------------------------------------------------------------+
+EAS["Nikkei_Breakout_5m.mq5"] = dict(tf="PERIOD_M5", magic=1118, risk=0.4, header="""//+------------------------------------------------------------------+
 //| Nikkei Breakout 5m – MT5 EA. Chart: JP225 / .JP225Cash / JP225.cash (your broker's Nikkei 225), M5 (Tokyo clock)
 //| Between 09:00 and 11:30 Tokyo: a 5-minute close above the highest high of the previous 20 bars while above
 //| EMA(800) -> buy; a close below the lowest low of the previous 20 bars while below EMA(800) -> sell.
 //| Stop 2 x ATR(14) on the order, no target: flat at 14:55 Tokyo. Several trades a day are possible.
-//| OPTIONAL (Nov 2026). Portfolio risk: 0.1% per trade, ~1 trade per weekday, trades 00:00-05:55 UTC when the other EAs are quiet.
+//| OPTIONAL (Nov 2026). Portfolio risk: 0.4% per trade (the other 12 EAs then run at InpRiskMultiplier 1.2 instead of 1.5), ~1 trade per weekday, trades 00:00-05:55 UTC when the other EAs are quiet.
 //| Python: +27/+36 R per year (2021-22 / 2023, Dukascopy) and +35 R per year on broker data Jun 2025-Nov 2026 (never seen
-//| before the rules were fixed); +17 R per year with double costs. With the 12 EAs in Pass Mode: pass +1-2%, same speed.
+//| before the rules were fixed); +17 R per year with double costs. With the 12 EAs (x1.2) in Pass Mode: pass 95.5 / 98% vs 91 / 97% without it, 0 breaches.
 //+------------------------------------------------------------------+""", body="""
 datetime ToTokyo(datetime s) { return ToUTC(s) + 9 * 3600; }   // Japan has no daylight saving
 void OnNewBar()

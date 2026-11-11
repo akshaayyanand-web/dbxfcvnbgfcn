@@ -54,7 +54,7 @@ That gives pass 100% / 100% / 100%, 0 breaches, a funded median of +119%, and 20
 At 0.1% the NQ 5m breakout caused small breaches, so keep it at 0.05%. A DAX 5m breakout was rejected: it breached on up to 17% of attempts.
 
 ## Option: Nikkei breakout – `optional/Nikkei_Breakout_5m.mq5` (Nov 2026)
-A new market: **JP225 / .JP225Cash, M5 chart, magic 1118, 0.1% per trade.** From 09:00 to 11:30 Tokyo, a 5-minute close above the
+A new market: **JP225 / .JP225Cash, M5 chart, magic 1118, 0.4% per trade** (with the other 12 EAs turned down, see below). From 09:00 to 11:30 Tokyo, a 5-minute close above the
 high of the last 20 bars and above EMA(800) → buy (mirror for sells); stop 2 × ATR(14), no target, flat 14:55 Tokyo.
 About 1 trade per weekday, between 00:00 and 05:55 UTC, when the other EAs are quiet. Needs the broker's server clock to be detected
 (`InpAutoServerOffset = true`).
@@ -66,6 +66,12 @@ About 1 trade per weekday, between 00:00 and 05:55 UTC, when the other EAs are q
 | Alone, all data | 36% wins, avg +0.12R, max drawdown −24.5R, losing streak 11, 28 of 45 months positive |
 | Alone on FTMO 2-step | 1% risk: 52% pass; 0.5%: 90% pass but ~330 days; 0.25%: 100% but ~2 years. **Not a stand-alone passer.** |
 | With the 12 EAs in Pass Mode, at 0.1% | pass 93 / 98% vs 91 / 97%, 0 breaches, same speed (`tools/nikkei_addon_test.py`) |
+| **Nikkei 0.4%, other 12 EAs at 80% size (chosen)** | **pass 95.5 / 98%**, 0 breaches, median 73 / 50 days (`tools/nikkei_weight_test.py`) |
+
+**Settings for this mix (Pass Mode):** the 12 core EAs `InpRiskMultiplier = 1.2` (instead of 1.5), Nikkei EA `InpRiskMultiplier = 1.5`
+(its 0.4% default becomes 0.6%), and `InpRoomCapPct = 9` on all 13. Pass rates above are for attempts started Jan 2021 – Nov 2022 and
+Jun 2025 – Jun 2026, the only dates with Nikkei data; every mix tested (Nikkei 0-0.4%, others 80-100%) landed at 91-95.5% and
+96-99%, so the gain is small and within the noise.
 
 It is a small diversifier, not a game changer. Cost-sensitive: use it only where the Nikkei spread is about 10 yen or less.
 
