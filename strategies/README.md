@@ -461,4 +461,9 @@ Goal: pass faster while keeping 93%+ pass and 0 breaches. Picked on 2020-22 star
     $400-1,100 on average.
   - Wider distances: the win rate rises to ~66%, about the 66.7% needed to break even before costs, so the average is ~$0.
   - Rejected: it has no edge, and at 2% risk per trade, two or three losses in a day hit FTMO's 5% daily limit.
+- **Small targets on the entries of all 10 EAs** (`tools/small_target_on_ea_entries_test.py`): TP at 0.25-0.75R with the same SL,
+  or the SL doubled with TP at 1x / 2x the old risk (1:4 / 1:2).
+  - Win rates rise to 57-85%, but every version makes about -14% to +4%/yr.
+  - Current exits make +8% to +43%/yr.
+  - Even the best entries lose their edge when winners are capped. Small-target / fixed-dollar TP is rejected for good.
 
