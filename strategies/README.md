@@ -484,4 +484,8 @@ Goal: pass faster while keeping 93%+ pass and 0 breaches. Picked on 2020-22 star
   - The single-attempt pass rate within 10 trading days never exceeded ~16%. The 25K was no easier.
   - Room-based sizing (15% of room) slightly improves the pass rate for the time taken: 58% in a median 41 days, vs 47% / 38 days at $200 fixed.
   - Real edges here give either a high single-attempt pass rate (84%, ~5 months) or speed (~30%, ~2 weeks), never both.
+- **"Close any trade at +$1,000"** (`tools/take_profit_1000_test.py`, $100K account, all 10 EAs, simple sum per year):
+  - $58,200/yr with the current exits vs $32,800/yr with the rule, -44%.
+  - BTC Dip: $15.3k -> $4.3k. Gold Dip: $9.5k -> $0.5k.
+  - Their biggest wins ($12-18k) are what pay for the losers.
 
