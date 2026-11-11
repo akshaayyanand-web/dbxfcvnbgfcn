@@ -76,3 +76,19 @@ The room cap and the half-size mode now use `DayStartEquity()`, the equity at th
 trades included. They slow down while losing trades are still open. The daily guard itself keeps using the day-start
 balance, exactly like FTMO. The Monte Carlo figures above were run before this fix and are optimistic.
 **Live, expect roughly 85-95% pass and 0 rule breaches. "Stopped" attempts (the EAs halt at −9.5%) still cost the fee.**
+
+### Pass Mode preset (higher pass rate *and* faster), Nov 2026
+Tested with `tools/pass_mode_test.py`: same simulator and FTMO rule as above, 61 sizing settings, an attempt started every weekday.
+Only inputs change (every EA, same values); no new code:
+
+| Preset | `InpRiskMultiplier` | `InpRoomCapPct` | `InpDailyStopPct` | Pass (2020-22 / 2023-25 / 2026) | Breached | Median days | 80% done by |
+|---|---|---|---|---|---|---|---|
+| Default | 1.0 | 7 | 4 | 89 / 96 / 98% | 0% | 88 / 84 / 59 | 219 / 203 / 108 |
+| **Pass Mode (recommended)** | **1.5** | **9** | **4** | **93 / 97 / 98.5%** | **0%** | **76 / 77 / 58** | 258 / 231 / 106 |
+| Fast Pass | 2.0 | 9 | 4 | 89 / 95 / 92% | 0-0.6% | 60 / 52 / 41 | 267 / 200 / 92 |
+| Too fast (do not use) | 3.0 | 7 | 3 | 69 / 77 / 66% | 3-6% | 28 / 26 / 25 | — |
+
+Pass Mode trades 1.5x bigger while the account is healthy, and the wider room cap (9%) shrinks size earlier and more gently
+as it loses. It passes more often than the default and ~10 days sooner. Risking more than 2x does not pass faster
+safely: breaches appear and the pass rate falls. No setting in the 61 tested passes ~100% within weeks: the fastest
+settings with 0 breaches still take a median of 50+ days.
