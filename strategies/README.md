@@ -489,3 +489,12 @@ Goal: pass faster while keeping 93%+ pass and 0 breaches. Picked on 2020-22 star
   - BTC Dip: $15.3k -> $4.3k. Gold Dip: $9.5k -> $0.5k.
   - Their biggest wins ($12-18k) are what pay for the losers.
 
+
+## Nov 2026: new markets from RoboForex exports (US30, XAGUSD, GBPJPY) and a timeframe sweep
+`tools/timeframe_sweep_test.py`. Split each data set in two halves; a strategy must be positive in both.
+- **US30** (Apr 2025-Nov 2026): no timeframe works. ORB, breakouts and dips lose on M15/M30/H1/H2 alike (best: +3 R/yr).
+- **XAGUSD** (Jun 2025-Nov 2026): dips look huge in the 2025 rally (+65 to +165 R/yr) but fall to +2-14 R/yr after it;
+  only 11-22% of versions are positive in both halves. Lower timeframes (M15) did best, but this is one rally, not an edge.
+- **GBPJPY** H1 2020-2026: the London ORB that worked on M5 in 2025-26 fails on H1 over 6 years (0% of versions positive).
+  Dips on H2 are positive in both halves for 94% of versions, but small: +2 to +6 R/yr. Not worth a slot.
+- SOL_Dip_1h (Binance 2020-2026, +26 R/yr both halves) remains the only new add-on worth running.
