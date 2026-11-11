@@ -455,4 +455,10 @@ Goal: pass faster while keeping 93%+ pass and 0 breaches. Picked on 2020-22 star
   attempts slid to the −9.5% stop as the −4% guard closed underwater dip trades. Moving the drawdown brake to the day-start
   **equity** gives 89 / 96 / 98% pass, 0 breaches, 88 / 84 / 59 days. Now the default in all EAs. Earlier pass rates (100%)
   were based on an equity floor and were optimistic.
+- **Fixed-dollar TP $1,000 / SL $2,000 with a big lot** (`tools/fixed_dollar_tp_sl_test.py`; Nasdaq and gold 1m; 6,000 entries each,
+  random or with the trend):
+  - Tiny distances (= a huge lot): the spread is 30-100% of the target, the win rate drops to 30-54%, and each trade loses
+    $400-1,100 on average.
+  - Wider distances: the win rate rises to ~66%, about the 66.7% needed to break even before costs, so the average is ~$0.
+  - Rejected: it has no edge, and at 2% risk per trade, two or three losses in a day hit FTMO's 5% daily limit.
 
