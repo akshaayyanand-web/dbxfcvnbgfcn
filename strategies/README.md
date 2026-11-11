@@ -473,4 +473,10 @@ Goal: pass faster while keeping 93%+ pass and 0 breaches. Picked on 2020-22 star
   - Adding more strategies (breakouts, Gold Asia) made it worse: more trades mean more ways to hit the tight $2,000 trailing loss.
     A daily stop changed little.
   - The fixed $1,000 TP / $2,000 SL style gives roughly a 2-3% chance per account of getting funded and paid.
+- **80% chance of getting funded, fastest** (`tools/funded_80pct_test.py`; $50K EOD trailing, 50% consistency; LucidDaily prices
+  $90 + $120 per retry):
+  - One account, no resets: 80%+ only with NQ ORB + ES ORB + Gold mom at $150/trade (84%), median ~110 trading days.
+  - Resetting until funded: 80% are funded within ~37-39 trading days (~8 weeks) at $400-500/trade (median 22-23 days),
+    average cost $280-410.
+  - 80% within 2 weeks is not reachable with real edges under these rules.
 
