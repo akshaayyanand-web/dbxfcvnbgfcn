@@ -1,0 +1,84 @@
+strategy,year,return_pct,risk_pct
+BTC Dip v3,2020,12.41,0.75
+BTC Dip v3,2021,11.26,0.75
+BTC Dip v3,2022,-0.97,0.75
+BTC Dip v3,2023,30.2,0.75
+BTC Dip v3,2024,18.66,0.75
+BTC Dip v3,2025,16.28,0.75
+BTC Dip v3,2026,14.56,0.75
+Gold Dip,2020,8.39,0.625
+Gold Dip,2021,3.99,0.625
+Gold Dip,2022,10.89,0.625
+Gold Dip,2023,-6.48,0.625
+Gold Dip,2024,25.16,0.625
+Gold Dip,2025,32.36,0.625
+Gold Dip,2026,1.59,0.625
+Gold Asia Breakout,2020,4.56,0.3125
+Gold Asia Breakout,2021,5.18,0.3125
+Gold Asia Breakout,2022,0.84,0.3125
+Gold Asia Breakout,2023,3.0,0.3125
+Gold Asia Breakout,2024,0.96,0.3125
+Gold Asia Breakout,2025,3.79,0.3125
+Gold Asia Breakout,2026,7.99,0.3125
+Gold Intraday Momentum,2020,2.74,0.3125
+Gold Intraday Momentum,2021,10.31,0.3125
+Gold Intraday Momentum,2022,1.71,0.3125
+Gold Intraday Momentum,2023,1.1,0.3125
+Gold Intraday Momentum,2024,-2.48,0.3125
+Gold Intraday Momentum,2025,3.79,0.3125
+Gold Intraday Momentum,2026,6.94,0.3125
+NQ Opening Range,2020,-0.13,0.625
+NQ Opening Range,2021,16.86,0.625
+NQ Opening Range,2022,11.81,0.625
+NQ Opening Range,2023,6.73,0.625
+NQ Opening Range,2024,9.53,0.625
+NQ Opening Range,2025,17.84,0.625
+NQ Opening Range,2026,-5.94,0.625
+NQ Dip 2h,2020,7.55,0.3125
+NQ Dip 2h,2021,5.88,0.3125
+NQ Dip 2h,2022,-2.88,0.3125
+NQ Dip 2h,2023,8.51,0.3125
+NQ Dip 2h,2024,3.26,0.3125
+NQ Dip 2h,2025,1.0,0.3125
+NQ Dip 2h,2026,4.5,0.3125
+S&P Dip 1h,2020,3.88,0.3125
+S&P Dip 1h,2021,8.71,0.3125
+S&P Dip 1h,2022,-3.59,0.3125
+S&P Dip 1h,2023,7.37,0.3125
+S&P Dip 1h,2024,8.81,0.3125
+S&P Dip 1h,2025,-0.02,0.3125
+S&P Dip 1h,2026,-1.14,0.3125
+Oil Dip 1h,2020,2.6,0.1875
+Oil Dip 1h,2021,4.6,0.1875
+Oil Dip 1h,2022,0.1,0.1875
+Oil Dip 1h,2023,-0.1,0.1875
+Oil Dip 1h,2024,0.14,0.1875
+Oil Dip 1h,2025,4.57,0.1875
+Oil Dip 1h,2026,6.54,0.1875
+BTC Weekend Gap,2020,2.79,0.25
+BTC Weekend Gap,2021,6.31,0.25
+BTC Weekend Gap,2022,6.39,0.25
+BTC Weekend Gap,2023,5.92,0.25
+BTC Weekend Gap,2024,3.06,0.25
+BTC Weekend Gap,2025,-1.64,0.25
+BTC Weekend Gap,2026,-1.22,0.25
+DAX Opening Range,2021,3.31,0.2
+DAX Opening Range,2022,13.47,0.2
+DAX Opening Range,2023,3.66,0.2
+DAX Opening Range,2024,5.61,0.2
+DAX Opening Range,2025,11.52,0.2
+DAX Opening Range,2026,0.82,0.2
+NQ Breakout 15m,2020,2.92,0.2
+NQ Breakout 15m,2021,0.71,0.2
+NQ Breakout 15m,2022,15.13,0.2
+NQ Breakout 15m,2023,4.46,0.2
+NQ Breakout 15m,2024,17.39,0.2
+NQ Breakout 15m,2025,9.61,0.2
+NQ Breakout 15m,2026,5.09,0.2
+S&P Breakout 5m,2020,1.63,0.1
+S&P Breakout 5m,2021,3.74,0.1
+S&P Breakout 5m,2022,7.66,0.1
+S&P Breakout 5m,2023,0.91,0.1
+S&P Breakout 5m,2024,1.71,0.1
+S&P Breakout 5m,2025,4.23,0.1
+S&P Breakout 5m,2026,0.8,0.1

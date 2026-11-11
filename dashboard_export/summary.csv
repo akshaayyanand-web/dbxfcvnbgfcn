@@ -1,0 +1,7 @@
+metric,value,unit,definition
+Evaluation pass rate,96.1,%,"Share of FTMO 2-step evaluations (+10% then +5%) passed under FTMO's exact daily rule (midnight balance - 5%), starts every weekday 2023-25; 88.6% for 2020-22 starts, 98.4% for 2026"
+Breaches,0.0,%,Share of evaluations that broke the 10% max or 5% daily loss rule
+Median days to funded,83.6,days,Median calendar days to pass both phases (2023-25 starts)
+"Funded year, median",115.7,%,"Median return over 67 rolling 12-month windows, profits kept, guard off"
+Max drawdown,14.5,%,"Largest fall from a peak in the equity curve, 2020-2026, guard off"
+Trades,9377.0,trades,"All trades of the 12 strategies, Apr 2020 to Oct 2026 (about 5.6 per weekday)"
