@@ -588,6 +588,39 @@ void OnNewBar()
   }
 """)
 
+EAS["Nikkei_Breakout_5m.mq5"] = dict(tf="PERIOD_M5", magic=1118, risk=0.1, header="""//+------------------------------------------------------------------+
+//| Nikkei Breakout 5m – MT5 EA. Chart: JP225 / .JP225Cash / JP225.cash (your broker's Nikkei 225), M5 (Tokyo clock)
+//| Between 09:00 and 11:30 Tokyo: a 5-minute close above the highest high of the previous 20 bars while above
+//| EMA(800) -> buy; a close below the lowest low of the previous 20 bars while below EMA(800) -> sell.
+//| Stop 2 x ATR(14) on the order, no target: flat at 14:55 Tokyo. Several trades a day are possible.
+//| OPTIONAL (Nov 2026). Portfolio risk: 0.1% per trade, ~1 trade per weekday, trades 00:00-05:55 UTC when the other EAs are quiet.
+//| Python: +27/+36 R per year (2021-22 / 2023, Dukascopy) and +35 R per year on broker data Jun 2025-Nov 2026 (never seen
+//| before the rules were fixed); +17 R per year with double costs. With the 12 EAs in Pass Mode: pass +1-2%, same speed.
+//+------------------------------------------------------------------+""", body="""
+datetime ToTokyo(datetime s) { return ToUTC(s) + 9 * 3600; }   // Japan has no daylight saving
+void OnNewBar()
+  {
+   ulong tk; long tp; datetime ot;
+   datetime t0 = ToTokyo(iTime(_Symbol, _Period, 0)), t1 = ToTokyo(iTime(_Symbol, _Period, 1));
+   if(MyPosition(tk, tp, ot))
+     {
+      if(MinuteOfDay(t0) >= 895 || DayKey(t0) != DayKey(ToTokyo(ot))) CloseMine("Flat 14:55 Tokyo");
+      return;
+     }
+   int m1 = MinuteOfDay(t1);
+   if(m1 < 540 || m1 >= 690 || DayKey(t0) != DayKey(t1)) return;   // signal bar inside 09:00-11:30 Tokyo, entry the same day
+   double c1 = iClose(_Symbol, _Period, 1), ema = Ema(800, 1), atr = AtrRma(14, 1);
+   if(ema == EMPTY_VALUE || atr == EMPTY_VALUE || atr <= 0) return;
+   int hiIdx = iHighest(_Symbol, _Period, MODE_HIGH, 20, 2), loIdx = iLowest(_Symbol, _Period, MODE_LOW, 20, 2);
+   if(hiIdx < 0 || loIdx < 0) return;
+   double hi = iHigh(_Symbol, _Period, hiIdx), lo = iLow(_Symbol, _Period, loIdx);
+   int dir = (c1 > hi && c1 > ema) ? 1 : ((c1 < lo && c1 < ema) ? -1 : 0);
+   if(dir == 0) return;
+   double price = dir == 1 ? SymbolInfoDouble(_Symbol, SYMBOL_ASK) : SymbolInfoDouble(_Symbol, SYMBOL_BID);
+   OpenTrade(dir, price - dir * 2 * atr, 0, "Nikkei Breakout 5m");
+  }
+""")
+
 EAS["DAX_Opening_Range.mq5"] = dict(tf="PERIOD_M15", magic=1115, risk=0.2, header="""//+------------------------------------------------------------------+
 //| DAX Opening Range – MT5 EA. Chart: GER40 / DE40 / DAX40 (your broker's DAX symbol), M15 (Frankfurt clock)
 //| Range = high/low of 09:00-09:30 Frankfurt. From 09:30 to 12:00, the first 15-minute close above the range
@@ -845,7 +878,7 @@ if __name__ == "__main__":
     import shutil, zipfile
     CORE = ["BTC_Dip_v3", "Gold_Dip", "Gold_Asia_Breakout", "Gold_Intraday_Momentum", "NQ_Opening_Range", "NQ_Dip_2h",
             "SPX_Dip_1h", "Oil_Dip_1h", "BTC_Weekend_Gap", "DAX_Opening_Range", "NQ_Breakout_15m", "SPX_Breakout_5m"]
-    OPTIONAL = ["BTC_Dip_EMA200_2h"]
+    OPTIONAL = ["BTC_Dip_EMA200_2h", "Nikkei_Breakout_5m"]
     dl = os.path.join(os.path.dirname(__file__), "..", "MT5_EAs")
     os.makedirs(os.path.join(dl, "optional"), exist_ok=True)
     for n in CORE: shutil.copy(os.path.join(out, n + ".mq5"), os.path.join(dl, n + ".mq5"))

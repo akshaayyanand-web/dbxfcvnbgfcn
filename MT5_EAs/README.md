@@ -53,6 +53,22 @@ That gives pass 100% / 100% / 100%, 0 breaches, a funded median of +119%, and 20
 
 At 0.1% the NQ 5m breakout caused small breaches, so keep it at 0.05%. A DAX 5m breakout was rejected: it breached on up to 17% of attempts.
 
+## Option: Nikkei breakout – `optional/Nikkei_Breakout_5m.mq5` (Nov 2026)
+A new market: **JP225 / .JP225Cash, M5 chart, magic 1118, 0.1% per trade.** From 09:00 to 11:30 Tokyo, a 5-minute close above the
+high of the last 20 bars and above EMA(800) → buy (mirror for sells); stop 2 × ATR(14), no target, flat 14:55 Tokyo.
+About 1 trade per weekday, between 00:00 and 05:55 UTC, when the other EAs are quiet. Needs the broker's server clock to be detected
+(`InpAutoServerOffset = true`).
+
+| Test | Result |
+|---|---|
+| Dukascopy 2021-23 (rules picked here) | +24 R/yr, but only +4 R/yr with double costs |
+| **Broker data Jun 2025 – Nov 2026 (unseen)** | **+34 R/yr**, +17 R/yr with double costs, 5 of 7 quarters positive |
+| Alone, all data | 36% wins, avg +0.12R, max drawdown −24.5R, losing streak 11, 28 of 45 months positive |
+| Alone on FTMO 2-step | 1% risk: 52% pass; 0.5%: 90% pass but ~330 days; 0.25%: 100% but ~2 years. **Not a stand-alone passer.** |
+| With the 12 EAs in Pass Mode, at 0.1% | pass 93 / 98% vs 91 / 97%, 0 breaches, same speed (`tools/nikkei_addon_test.py`) |
+
+It is a small diversifier, not a game changer. Cost-sensitive: use it only where the Nikkei spread is about 10 yen or less.
+
 ## Option: one extra variant – `optional/BTC_Dip_EMA200_2h.mq5`
 A second BTC dip style (RSI(2) < 10 above the EMA200, 6-day hold) on its own **BTCUSD H2** chart at **0.05%**.
 With the 12 EAs: pass 100%, 0 breaches, ~3 days faster, funded +118% vs +116% (`tools/variants_test.py`).
