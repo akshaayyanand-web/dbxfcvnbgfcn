@@ -53,6 +53,25 @@ That gives pass 100% / 100% / 100%, 0 breaches, a funded median of +119%, and 20
 
 At 0.1% the NQ 5m breakout caused small breaches, so keep it at 0.05%. A DAX 5m breakout was rejected: it breached on up to 17% of attempts.
 
+## Option: Solana dip – `optional/SOL_Dip_1h.mq5` (Nov 2026) – the best add-on so far
+**SOLUSD H1 chart, magic 1119, 0.3% per trade.** Buys when RSI(2) < 15 and the close is above EMA(200), unless SOL fell more than 8%
+in 30 days; stop 2 × ATR(14) under the signal close, exit after 144 bars (6 days). About 4-5 trades a month, held through weekends.
+
+| Test (`tools/sol_lab_test.py`, `tools/sol_addon_test.py`) | Result |
+|---|---|
+| Alone, Sep 2020 – Oct 2026 (Binance 5m data, 0.15% cost a trade) | +26 R/yr in 2020-22 **and** 2023-26, +22 R/yr with double costs; 23% wins, avg +0.46R; many neighbouring settings also +15-25 R/yr |
+| 12 EAs + SOL in Pass Mode (x1.5, room 9), FTMO exact rule | see table |
+
+| SOL risk | Pass 2020-22 / 2023-25 / 2026 | Breached | Median days | Profit at x1 |
+|---|---|---|---|---|
+| none | 92.6 / 97.4 / 98.5% | 0% | 67 / 77 / 58 | 74%/yr |
+| **0.3% (default)** | **95.7 / 96.5 / 98.0%** | **0%** | **62 / 59 / 58** | 81%/yr |
+| 0.4% | 97.2 / 97.7 / 98.0% | 0-0.1% | 58 / 55 / 58 | 84%/yr |
+| 0.5-0.6% | 95-98% | up to 2.7% | 46-60 | — do not use |
+
+Only if your firm offers SOLUSD with a spread of about 0.15% or less. It overlaps partly with BTC_Dip_v3 (both buy crypto dips), which is
+why more than 0.4% brings breaches back. If you run this one, the Nikkei EA is not needed.
+
 ## Option: Nikkei breakout – `optional/Nikkei_Breakout_5m.mq5` (Nov 2026)
 A new market: **JP225 / .JP225Cash, M5 chart, magic 1118, 0.4% per trade** (with the other 12 EAs turned down, see below). From 09:00 to 11:30 Tokyo, a 5-minute close above the
 high of the last 20 bars and above EMA(800) → buy (mirror for sells); stop 2 × ATR(14), no target, flat 14:55 Tokyo.

@@ -557,6 +557,8 @@ EAS["Oil_Dip_1h.mq5"] = dip_ea("Oil Dip 1h", "WTI / USOIL / XTIUSD", "PERIOD_H1"
 
 EAS["BTC_Dip_EMA200_2h.mq5"] = dip_ea("BTC Dip EMA200 2h", "BTCUSD", "PERIOD_H2", 1117, 0.05, 2, 10, 200, 72, 0.08,
                                      "OPTIONAL variant of BTC_Dip_v3 (Nov 2026). Portfolio risk: 0.05% per trade, run at most ONE variant. With the 12 EAs: pass 100%, 0 breaches, ~3 days faster, funded +118% vs +116%.")
+EAS["SOL_Dip_1h.mq5"] = dip_ea("SOL Dip 1h", "SOLUSD (Solana)", "PERIOD_H1", 1119, 0.3, 2, 15, 200, 144, 0.08,
+                               "OPTIONAL (Nov 2026). Portfolio risk: 0.3% per trade, ~4-5 trades a month. Python Sep 2020-Oct 2026 at 1% risk: +26 R/yr in both 2020-22 and 2023-26, +22 R/yr with double costs (0.15% a trade). With the 12 EAs in Pass Mode: pass 95.7 / 96.5 / 98% (vs 92.6 / 97.4 / 98.5%), 0 breaches, median 62 / 59 / 58 days (vs 67 / 77 / 58).")
 EAS["NQ_Breakout_15m.mq5"] = dict(tf="PERIOD_M15", magic=1112, risk=0.2, header="""//+------------------------------------------------------------------+
 //| NQ Breakout 15m – MT5 EA. Chart: US100 / NAS100 / USTEC, M15 (New York clock)
 //| Between 09:30 and 12:00 New York: a 15-minute close above the highest high of the previous 20 bars while
@@ -878,7 +880,7 @@ if __name__ == "__main__":
     import shutil, zipfile
     CORE = ["BTC_Dip_v3", "Gold_Dip", "Gold_Asia_Breakout", "Gold_Intraday_Momentum", "NQ_Opening_Range", "NQ_Dip_2h",
             "SPX_Dip_1h", "Oil_Dip_1h", "BTC_Weekend_Gap", "DAX_Opening_Range", "NQ_Breakout_15m", "SPX_Breakout_5m"]
-    OPTIONAL = ["BTC_Dip_EMA200_2h", "Nikkei_Breakout_5m"]
+    OPTIONAL = ["BTC_Dip_EMA200_2h", "Nikkei_Breakout_5m", "SOL_Dip_1h"]
     dl = os.path.join(os.path.dirname(__file__), "..", "MT5_EAs")
     os.makedirs(os.path.join(dl, "optional"), exist_ok=True)
     for n in CORE: shutil.copy(os.path.join(out, n + ".mq5"), os.path.join(dl, n + ".mq5"))
