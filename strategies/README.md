@@ -524,3 +524,8 @@ part of this momentum effect that survives costs.
 TP 3-10 / SL 3-20 combination loses 2.0-3.0 points per trade (−$100 to −$150 at 50 lots). The broker's New York spread is 2.1 points
 (1.6-3.5), larger than assumed. The 3-point-stop "best case" was an illusion: a 3-point stop sits inside spread + noise and wins only
 7-16% of the time. The 1m-bar "fair" count matched the tick truth; the best-case count did not.
+
+## Nov 2026: fast scalps with bigger targets (held 15-60 minutes) – all lose
+`tools/fast_scalp_test.py`: NQ opening drive, ORB 09:30-09:45 break and 5m breakout50 EMA800 entries, target 0.5-2R, forced exit after
+15/30/60 min, cost 2.5 points (RoboForex tick spread 2.1 + slippage). **0 of 36 positive** (−5 to −77 R/yr). The same ORB and breakout
+entries are profitable in the core EAs only because winners are held for hours (to 2R or the close): cutting them short removes the edge.
