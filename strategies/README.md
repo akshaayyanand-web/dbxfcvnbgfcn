@@ -535,3 +535,6 @@ so no cost level makes a short-hold scalp win; the earlier tiny-target search wi
 Quiet-hours limit-order fades (`tools/quiet_fade_scalp_test.py`: NQ and S&P overnight, gold Asia; limit at the 30/60-min range edge,
 target the middle, fill only when price trades a tick through): **0 of 24 positive**, −31 to −676 R/yr. Limits fill exactly when the
 range breaks, and breaks tend to continue. Scalping summary after ~950 versions: no short-hold strategy survives costs on these markets.
+**Holdout check (`tools/scalp_holdout_test.py`):** 177 short-hold NQ versions picked on 2020-2023 (39 looked profitable, best +15 R/yr),
+top 5 tested once on unseen 2024-2026: −9.6 to +3.7 R/yr at futures cost, −2.8 to −18.8 R/yr at the CFD 2.1-point spread. The
+"winners" were luck. Conclusion stands: no short-hold scalp has an edge on these markets.
