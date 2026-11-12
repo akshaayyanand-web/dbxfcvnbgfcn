@@ -498,3 +498,10 @@ Goal: pass faster while keeping 93%+ pass and 0 breaches. Picked on 2020-22 star
 - **GBPJPY** H1 2020-2026: the London ORB that worked on M5 in 2025-26 fails on H1 over 6 years (0% of versions positive).
   Dips on H2 are positive in both halves for 94% of versions, but small: +2 to +6 R/yr. Not worth a slot.
 - SOL_Dip_1h (Binance 2020-2026, +26 R/yr both halves) remains the only new add-on worth running.
+
+## Nov 2026: one-day-pass futures evals (LucidPro / Apex / Tradeify Growth style), 50K: +$3,000 target, $2,000 EOD trailing
+- BTC+SOL dip, one trade at the full $2,000 risk (TP 1.5R): 42% win, median 7 days to funded with resets, 2.5 accounts on average
+  (`tools/futures_one_shot_test.py`). But the trades take ~14 h to resolve and most futures firms require flat by the close: not usable.
+- **NQ Opening Range, all-in each day** (risk = room to the trailing floor, target = what is left to +$3,000; `tools/futures_allin_test.py`):
+  median 3.8 days, 78% within 7 days, 94% within 14 days, 2.24 accounts on average (42% on the first). Gold Asia Breakout: 3.8 days, 2.6 accounts.
+  At 75% of the room: median 12.7 days, 2.4 accounts. Topstep / LucidFlex have a 50% best-day consistency rule, so this does not pass there in one day.
