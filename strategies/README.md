@@ -514,3 +514,9 @@ Follow-up search (`tools/scalp_search_test.py`, 288 versions: ORB / 1m breakout 
 limit entries, TP 3-10, SL 3-20): **0 profitable** with fair fills. Closest: limit entry 1 pt better, TP 6 / SL 20, 0.5-pt spread:
 −0.4 pt (−$20 at 50 lots) per trade, 76% wins. Only "best-case" fills (target counted first whenever target and stop sit in the
 same minute) look profitable, and only with a 3-point stop: 1m bars cannot settle that; it needs tick data.
+
+## Nov 2026: "pump" strategies (ride or fade sudden 5/15-minute moves) – no robust edge
+`tools/pump_test.py`, 64 versions per market. Fading pumps loses everywhere (median −12 to −126 R/yr). Riding them: SPX, gold and BTC
+have no version positive in both halves. NQ: riding 15-minute top-3% pumps shows +47 / +19 R/yr (stop 0.5x pump, 60-min exit) but only
++0.04R per trade; with a 2-point spread instead of 1 it falls to +25 / −0.2. Too thin to trade; NQ_Breakout_15m already holds the
+part of this momentum effect that survives costs.
