@@ -510,3 +510,7 @@ Goal: pass faster while keeping 93%+ pass and 0 breaches. Picked on 2020-22 star
 `tools/scalp_50_lots_test.py`: take-profit 3/6/10 points vs stop 5-40 points, spread 1-2 points, on NQ ORB entries and 6,000 random
 New York entries, 1m data 2020-2026. **0 of 48 combinations made money**: −$42 to −$174 per trade at 50 lots. Win rates reach 79-91%
 with wide stops, but always below the break-even win rate the spread creates. Tiny targets turn the spread into the whole game.
+Follow-up search (`tools/scalp_search_test.py`, 288 versions: ORB / 1m breakout / 5-min thrust entries, spread 0.5-1 pt, market or
+limit entries, TP 3-10, SL 3-20): **0 profitable** with fair fills. Closest: limit entry 1 pt better, TP 6 / SL 20, 0.5-pt spread:
+−0.4 pt (−$20 at 50 lots) per trade, 76% wins. Only "best-case" fills (target counted first whenever target and stop sit in the
+same minute) look profitable, and only with a 3-point stop: 1m bars cannot settle that; it needs tick data.
