@@ -532,3 +532,6 @@ entries are profitable in the core EAs only because winners are held for hours (
 Same test with CME-futures costs (1.0 point round trip, 2.0 doubled): best is 5m breakout50 EMA800, 2R, 60-min cap: +0.01R per trade,
 +6.6 / +2.5 R/yr, −15.9 R/yr at 2.0 points. Everything else ≤ 0. The gross edge of these entries over 15-60 minutes is about zero,
 so no cost level makes a short-hold scalp win; the earlier tiny-target search with a 0.5-point spread and limit entries also lost.
+Quiet-hours limit-order fades (`tools/quiet_fade_scalp_test.py`: NQ and S&P overnight, gold Asia; limit at the 30/60-min range edge,
+target the middle, fill only when price trades a tick through): **0 of 24 positive**, −31 to −676 R/yr. Limits fill exactly when the
+range breaks, and breaks tend to continue. Scalping summary after ~950 versions: no short-hold strategy survives costs on these markets.
