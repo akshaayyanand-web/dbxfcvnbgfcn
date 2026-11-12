@@ -529,3 +529,6 @@ TP 3-10 / SL 3-20 combination loses 2.0-3.0 points per trade (−$100 to −$150
 `tools/fast_scalp_test.py`: NQ opening drive, ORB 09:30-09:45 break and 5m breakout50 EMA800 entries, target 0.5-2R, forced exit after
 15/30/60 min, cost 2.5 points (RoboForex tick spread 2.1 + slippage). **0 of 36 positive** (−5 to −77 R/yr). The same ORB and breakout
 entries are profitable in the core EAs only because winners are held for hours (to 2R or the close): cutting them short removes the edge.
+Same test with CME-futures costs (1.0 point round trip, 2.0 doubled): best is 5m breakout50 EMA800, 2R, 60-min cap: +0.01R per trade,
++6.6 / +2.5 R/yr, −15.9 R/yr at 2.0 points. Everything else ≤ 0. The gross edge of these entries over 15-60 minutes is about zero,
+so no cost level makes a short-hold scalp win; the earlier tiny-target search with a 0.5-point spread and limit entries also lost.
