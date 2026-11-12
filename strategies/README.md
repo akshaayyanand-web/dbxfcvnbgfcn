@@ -505,3 +505,8 @@ Goal: pass faster while keeping 93%+ pass and 0 breaches. Picked on 2020-22 star
 - **NQ Opening Range, all-in each day** (risk = room to the trailing floor, target = what is left to +$3,000; `tools/futures_allin_test.py`):
   median 3.8 days, 78% within 7 days, 94% within 14 days, 2.24 accounts on average (42% on the first). Gold Asia Breakout: 3.8 days, 2.6 accounts.
   At 75% of the room: median 12.7 days, 2.4 accounts. Topstep / LucidFlex have a 50% best-day consistency rule, so this does not pass there in one day.
+
+## Nov 2026: 50-lot Nasdaq scalp (+$300 ≈ 6 points) – loses
+`tools/scalp_50_lots_test.py`: take-profit 3/6/10 points vs stop 5-40 points, spread 1-2 points, on NQ ORB entries and 6,000 random
+New York entries, 1m data 2020-2026. **0 of 48 combinations made money**: −$42 to −$174 per trade at 50 lots. Win rates reach 79-91%
+with wide stops, but always below the break-even win rate the spread creates. Tiny targets turn the spread into the whole game.
