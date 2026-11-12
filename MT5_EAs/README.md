@@ -118,6 +118,21 @@ trades included. They slow down while losing trades are still open. The daily gu
 balance, exactly like FTMO. The Monte Carlo figures above were run before this fix and are optimistic.
 **Live, expect roughly 85-95% pass and 0 rule breaches. "Stopped" attempts (the EAs halt at −9.5%) still cost the fee.**
 
+### Speed Mode: when days matter more than passing on the first try (Nov 2026)
+Buy a new account after each failure and count calendar days and fees until funded (`tools/speed_resets_test.py`;
+12 EAs + SOL_Dip_1h at 0.3%, FTMO exact rule, 4-day minimum per phase, a start every 3 days Sep 2020 – Mar 2026, $250 per account):
+
+| Setup | First try | Median days | Funded ≤30 d | ≤60 d | Avg accounts | Avg fees |
+|---|---|---|---|---|---|---|
+| Pass Mode (x1.5, room 9) | 98% | 58 | 28% | 51% | 1.02 | $254 |
+| **Speed Mode x3** (`InpRiskMultiplier 3`, `InpRoomCapPct 5`) | 67% | **33** | 46% | 73% | 1.5 | $384 |
+| Speed Mode x4 (`InpRiskMultiplier 4`, `InpRoomCapPct 5`) | 58% | **29** | 52% | 78% | 1.7 | $435 |
+| One trade per phase at 4.5% (BTC/SOL dip, `tools/one_shot_resets_test.py`) | 16% | 35 | 44% | ~70% | 7.4 | $1,860 |
+
+The one-big-trade idea is slower *and* about 4x the fees: dip signals come only ~9 times a month and ~2 in 3 lose at a 2.2R target.
+In Speed Mode the EAs' `InpGuardShare` (60% of the remaining daily room per trade) caps the biggest trades, so live results are a bit
+slower and safer than the table. Go back to `InpRiskMultiplier 1.0` once funded.
+
 ### Pass Mode preset (higher pass rate *and* faster), Nov 2026
 Tested with `tools/pass_mode_test.py`: same simulator and FTMO rule as above, 61 sizing settings, an attempt started every weekday.
 Only inputs change (every EA, same values); no new code:
