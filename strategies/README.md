@@ -520,3 +520,7 @@ same minute) look profitable, and only with a 3-point stop: 1m bars cannot settl
 have no version positive in both halves. NQ: riding 15-minute top-3% pumps shows +47 / +19 R/yr (stop 0.5x pump, 60-min exit) but only
 +0.04R per trade; with a 2-point spread instead of 1 it falls to +25 / −0.2. Too thin to trade; NQ_Breakout_15m already holds the
 part of this momentum effect that survives costs.
+**Tick check (`tools/tick_scalp_test.py`, RoboForex .USTECHCash ticks Nov 6-12 2026, 900 entries, real bid/ask fills):** every
+TP 3-10 / SL 3-20 combination loses 2.0-3.0 points per trade (−$100 to −$150 at 50 lots). The broker's New York spread is 2.1 points
+(1.6-3.5), larger than assumed. The 3-point-stop "best case" was an illusion: a 3-point stop sits inside spread + noise and wins only
+7-16% of the time. The 1m-bar "fair" count matched the tick truth; the best-case count did not.
