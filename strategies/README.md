@@ -558,3 +558,12 @@ fade a sharp 10-30 minute move in the first half hour (09:30-10:00 NY) that runs
 As real one-at-a-time trades (`tools/open_fade_test.py`): S&P 15-min top-2% move, 30-min hold: 126 trades, 60% wins, +8.4 pts
 (+0.23R), 7/7 years positive, +7.8 pts with double spread; max drawdown −5.1R, +4.3 R/yr. NQ 10-min version: 6/7 years, +0.13R,
 +4.7 R/yr. Real but small. Built as optional `Open_Fade_1m.mq5` (M1, magic 1120, 0.25%).
+
+## Nov 2026: 3-hurdle grind on DAX, EURUSD (1m + 5m), BTC and SOL (5m) – 120,000 more variations
+`tools/scalp_grind_any_test.py`. Survivors of all three periods: DAX 1m 0, DAX 5m 2, EURUSD 1m 0, EURUSD 5m 1 (+0.06 pip: useless),
+BTC 25, SOL 61 – crypto has short-term mean reversion. As real one-at-a-time trades with 30-60 minute holds (`tools/crypto_revert_test.py`):
+- SOL: fade a top-2% 25-minute move that runs with the trend, exit after 60 min: 122 trades/yr, 58% wins, +0.064R, 6/7 years, +7.8 R/yr
+  at 0.10% cost, +4.8 at 0.20%, +1.7 at 0.30%. Top-0.5% moves, 30 min: 37/yr, 61% wins, 7/7 years, +3.0 R/yr (+1.8 at 0.30%).
+- BTC: fade a top-0.5% stretch from the 5m EMA(200), exit after 60 min: 25/yr, 67% wins, 7/7 years, +2.1 R/yr, unchanged at 3x cost,
+  but shrinking (2025 +0.6, 2026 +0.2).
+Real but small edges, nowhere near high-frequency scalping profits.
