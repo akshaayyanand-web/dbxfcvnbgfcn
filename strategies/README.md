@@ -538,3 +538,9 @@ range breaks, and breaks tend to continue. Scalping summary after ~950 versions:
 **Holdout check (`tools/scalp_holdout_test.py`):** 177 short-hold NQ versions picked on 2020-2023 (39 looked profitable, best +15 R/yr),
 top 5 tested once on unseen 2024-2026: −9.6 to +3.7 R/yr at futures cost, −2.8 to −18.8 R/yr at the CFD 2.1-point spread. The
 "winners" were luck. Conclusion stands: no short-hold scalp has an edge on these markets.
+
+## Nov 2026: the friend's method – 50 lots, no stop, close each trade once it is green
+`tools/hold_until_green_test.py`, 8,000 random New York entries 2020-2026, 2.1-point spread: 86-94% of trades end green, a typical run is
+5-9 wins before the first loss, but the losers average −$3,700 to −$4,600 (worst −$20,000+ with no stop). Every version loses
+$127-183 per trade. A screen of 25+ green trades in one session is what this method normally looks like before the loss arrives.
+On a 50K evaluation the stop must sit inside the $2,000 max loss (~40 points), so passing needs ~10-20 wins in a row: about 17-27%.
