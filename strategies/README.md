@@ -544,3 +544,7 @@ top 5 tested once on unseen 2024-2026: −9.6 to +3.7 R/yr at futures cost, −2
 5-9 wins before the first loss, but the losers average −$3,700 to −$4,600 (worst −$20,000+ with no stop). Every version loses
 $127-183 per trade. A screen of 25+ green trades in one session is what this method normally looks like before the loss arrives.
 On a 50K evaluation the stop must sit inside the $2,000 max loss (~40 points), so passing needs ~10-20 wins in a row: about 17-27%.
+Tick microstructure (`tools/tick_edge_test.py`): of 48 "last 5-60 s predicts next 10-120 s" signals on 4 days of ticks, 1 beat the
+2.1-point spread (fade a top-2% 60-second move on a busy tape, hold 2 min: +0.66 pt). On 6 years of 1-minute data
+(`tools/fade_60s_test.py`, ~25,000 trades) it loses 2.0-2.4 points per trade at the broker's spread and 0.5-1.3 at 1 point, in both
+halves: the 4-day result was luck.
