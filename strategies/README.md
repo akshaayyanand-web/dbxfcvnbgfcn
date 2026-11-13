@@ -548,3 +548,6 @@ Tick microstructure (`tools/tick_edge_test.py`): of 48 "last 5-60 s predicts nex
 2.1-point spread (fade a top-2% 60-second move on a busy tape, hold 2 min: +0.66 pt). On 6 years of 1-minute data
 (`tools/fade_60s_test.py`, ~25,000 trades) it loses 2.0-2.4 points per trade at the broker's spread and 0.5-1.3 at 1 point, in both
 halves: the 4-day result was luck.
+**20,000-variation grind (`tools/scalp_grind_20k_test.py`):** 10 signal features x 5 extremes x 5 time windows x 5 filters x follow/fade
+x 8 holds (1-60 min), 2.1-point spread. 273 clearly beat the spread on 2020-22 (t > 3), 9 of those also on 2023-24, **0 on 2025-26**.
+The strongest 2020-22 "winner" (+49.7 pts per trade) lost −21.6 on 2023-24 and −11.5 on 2025-26.
