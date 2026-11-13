@@ -551,3 +551,10 @@ halves: the 4-day result was luck.
 **20,000-variation grind (`tools/scalp_grind_20k_test.py`):** 10 signal features x 5 extremes x 5 time windows x 5 filters x follow/fade
 x 8 holds (1-60 min), 2.1-point spread. 273 clearly beat the spread on 2020-22 (t > 3), 9 of those also on 2023-24, **0 on 2025-26**.
 The strongest 2020-22 "winner" (+49.7 pts per trade) lost −21.6 on 2023-24 and −11.5 on 2025-26.
+
+## Nov 2026: the grind on gold and S&P – one real survivor: the opening fade
+`tools/scalp_grind_markets_test.py`: gold 197 → 3 → **0**; S&P 182 → 12 → **7** survivors of all three periods, all one idea:
+fade a sharp 10-30 minute move in the first half hour (09:30-10:00 NY) that runs with the EMA(800) slope, hold 15-30 minutes.
+As real one-at-a-time trades (`tools/open_fade_test.py`): S&P 15-min top-2% move, 30-min hold: 126 trades, 60% wins, +8.4 pts
+(+0.23R), 7/7 years positive, +7.8 pts with double spread; max drawdown −5.1R, +4.3 R/yr. NQ 10-min version: 6/7 years, +0.13R,
++4.7 R/yr. Real but small. Built as optional `Open_Fade_1m.mq5` (M1, magic 1120, 0.25%).

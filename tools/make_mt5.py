@@ -623,6 +623,43 @@ void OnNewBar()
   }
 """)
 
+EAS["Open_Fade_1m.mq5"] = dict(tf="PERIOD_M1", magic=1120, risk=0.25, header="""//+------------------------------------------------------------------+
+//| Open Fade 1m – MT5 EA. Chart: S&P 500 (US500 / .US500Cash) or Nasdaq (US100 / .USTECHCash), M1, New York clock.
+//| Between 09:30 and 10:00 New York: when the market has moved at least InpMovePts in the last InpLookMin minutes,
+//| in the same direction as the slope of the 1-minute EMA(800) (over 30 bars), trade AGAINST that move.
+//| Stop = the size of the move (on the order). Close after InpHoldMin minutes. One trade per day.
+//| S&P defaults: 15 min, 25 pts, 30 min. For Nasdaq set InpLookMin 10, InpMovePts 98, InpHoldMin 30 (and a new magic).
+//| OPTIONAL (Nov 2026). Found in a 20,000-variation search on 2020-22 and confirmed on unseen 2023-24 and 2025-26.
+//| Python 2020-2026, one trade at a time: S&P 126 trades, 60% wins, +0.23R avg, 7 of 7 years positive, +4.3R/yr,
+//| max drawdown -5.1R, still positive with double spread. Nasdaq: 239 trades, 51% wins, +0.13R, 6 of 7 years, +4.7R/yr.
+//+------------------------------------------------------------------+""", body="""
+input int    InpLookMin = 15;     // Look-back of the opening move (minutes)
+input double InpMovePts = 25;     // Minimum move size in price points (S&P 25, Nasdaq 98)
+input int    InpHoldMin = 30;     // Close the trade after this many minutes
+int lastFadeDay = 0;
+void OnNewBar()
+  {
+   ulong tk; long tp; datetime ot;
+   datetime n0 = ToNY(iTime(_Symbol, _Period, 0)), n1 = ToNY(iTime(_Symbol, _Period, 1));
+   if(MyPosition(tk, tp, ot))
+     {
+      if(TimeCurrent() - ot >= InpHoldMin * 60 || DayKey(n0) != DayKey(ToNY(ot))) CloseMine("Time exit after " + IntegerToString(InpHoldMin) + " min");
+      return;
+     }
+   int m = MinuteOfDay(n1), day = DayKey(n1);
+   if(m < 570 || m >= 600 || day == lastFadeDay) return;      // signal bars 09:30-09:59 New York
+   double mv = iClose(_Symbol, _Period, 1) - iClose(_Symbol, _Period, 1 + InpLookMin);
+   if(MathAbs(mv) < InpMovePts) return;
+   double e1 = Ema(800, 1), e31 = Ema(800, 31);
+   if(e1 == EMPTY_VALUE || e31 == EMPTY_VALUE) return;
+   int s = mv > 0 ? 1 : -1, tr = e1 > e31 ? 1 : (e1 < e31 ? -1 : 0);
+   if(tr != s) return;                                          // only fade moves that run with the EMA slope
+   int dir = -s;
+   double price = dir == 1 ? SymbolInfoDouble(_Symbol, SYMBOL_ASK) : SymbolInfoDouble(_Symbol, SYMBOL_BID);
+   if(OpenTrade(dir, price - dir * MathAbs(mv), 0, "Open Fade") || !gSpreadRetry) lastFadeDay = day;
+  }
+""")
+
 EAS["DAX_Opening_Range.mq5"] = dict(tf="PERIOD_M15", magic=1115, risk=0.2, header="""//+------------------------------------------------------------------+
 //| DAX Opening Range – MT5 EA. Chart: GER40 / DE40 / DAX40 (your broker's DAX symbol), M15 (Frankfurt clock)
 //| Range = high/low of 09:00-09:30 Frankfurt. From 09:30 to 12:00, the first 15-minute close above the range
@@ -880,7 +917,7 @@ if __name__ == "__main__":
     import shutil, zipfile
     CORE = ["BTC_Dip_v3", "Gold_Dip", "Gold_Asia_Breakout", "Gold_Intraday_Momentum", "NQ_Opening_Range", "NQ_Dip_2h",
             "SPX_Dip_1h", "Oil_Dip_1h", "BTC_Weekend_Gap", "DAX_Opening_Range", "NQ_Breakout_15m", "SPX_Breakout_5m"]
-    OPTIONAL = ["BTC_Dip_EMA200_2h", "Nikkei_Breakout_5m", "SOL_Dip_1h"]
+    OPTIONAL = ["BTC_Dip_EMA200_2h", "Nikkei_Breakout_5m", "SOL_Dip_1h", "Open_Fade_1m"]
     dl = os.path.join(os.path.dirname(__file__), "..", "MT5_EAs")
     os.makedirs(os.path.join(dl, "optional"), exist_ok=True)
     for n in CORE: shutil.copy(os.path.join(out, n + ".mq5"), os.path.join(dl, n + ".mq5"))
