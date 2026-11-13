@@ -67,11 +67,15 @@ void OnTick()
       double fav = type == POSITION_TYPE_BUY ? bid - op : op - ask;
       mfe_[k] = MathMax(mfe_[k], fav); mae_[k] = MathMax(mae_[k], -fav);
       if(halted) { trade.PositionClose(p); Print("Daily loss limit reached: trade closed. No more trades today."); continue; }
-      if(PositionGetDouble(POSITION_SL) == 0 && (InpStopPts > 0 || InpTargetPts > 0))
+      double curSL = PositionGetDouble(POSITION_SL), curTP = PositionGetDouble(POSITION_TP);
+      bool needSL = InpStopPts > 0 && curSL == 0, needTP = InpTargetPts > 0 && curTP == 0;
+      if(needSL || needTP)       // only when something is missing, so it never re-sends on every tick
         {
-         double sl = InpStopPts > 0 ? (type == POSITION_TYPE_BUY ? op - InpStopPts : op + InpStopPts) : 0;
-         double tp = InpTargetPts > 0 ? (type == POSITION_TYPE_BUY ? op + InpTargetPts : op - InpTargetPts) : PositionGetDouble(POSITION_TP);
-         if(!trade.PositionModify(p, NormalizeDouble(sl, _Digits), NormalizeDouble(tp, _Digits))) Print("Could not set SL/TP: ", trade.ResultRetcode());
+         double sl = needSL ? (type == POSITION_TYPE_BUY ? op - InpStopPts : op + InpStopPts) : curSL;
+         double tp = needTP ? (type == POSITION_TYPE_BUY ? op + InpTargetPts : op - InpTargetPts) : curTP;
+         if(trade.PositionModify(p, NormalizeDouble(sl, _Digits), NormalizeDouble(tp, _Digits)))
+            Print("Position ", p, ": SL ", DoubleToString(sl, _Digits), " TP ", DoubleToString(tp, _Digits), " set");
+         else Print("Could not set SL/TP on ", p, ": retcode ", trade.ResultRetcode(), " (check the broker's minimum stop distance)");
         }
      }
   }
