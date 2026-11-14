@@ -53,6 +53,14 @@ That gives pass 100% / 100% / 100%, 0 breaches, a funded median of +119%, and 20
 
 At 0.1% the NQ 5m breakout caused small breaches, so keep it at 0.05%. A DAX 5m breakout was rejected: it breached on up to 17% of attempts.
 
+## Option: Gold VWAP Pullback – `optional/Gold_VWAP_Pullback_5m.mq5` (Nov 2026)
+A rebuilt, safer version of a friend's 1-minute gold martingale EA. **XAUUSD M5 chart, magic 1122, 0.2% per trade, no martingale.**
+Above today's VWAP + RSI(7) oversold (or turning up) + bullish candle → wait up to 10 bars for a 1.8 x ATR pullback → buy on a bullish
+bar; mirror for sells. Only 08:00-21:00 UTC and only when ATR(14) ≥ 4 x the spread. Stop 2 x ATR, target 4 x ATR, trail 0.5 x ATR
+once 0.8 x ATR in profit. `tools/gold_vwap_pullback_search_test.py`: picked on 2020-22 (+17 R/yr), confirmed on 2023-24 (+15) and
+2025-26 (+23); ~233 trades/yr, 73% wins, +0.077R, 7/7 years positive, max drawdown −12.5R; still positive with double spread.
+The original 1-minute version with martingale lost in every year 2020-2025. Not yet tested together with the 12 EAs.
+
 ## Option: Solana dip – `optional/SOL_Dip_1h.mq5` (Nov 2026) – the best add-on so far
 **SOLUSD H1 chart, magic 1119, 0.3% per trade.** Buys when RSI(2) < 15 and the close is above EMA(200), unless SOL fell more than 8%
 in 30 days; stop 2 × ATR(14) under the signal close, exit after 144 bars (6 days). About 4-5 trades a month, held through weekends.

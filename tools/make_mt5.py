@@ -660,6 +660,79 @@ void OnNewBar()
   }
 """)
 
+EAS["Gold_VWAP_Pullback_5m.mq5"] = dict(tf="PERIOD_M5", magic=1122, risk=0.2, header="""//+------------------------------------------------------------------+
+//| Gold VWAP Pullback 5m – MT5 EA. Chart: XAUUSD, M5. A cleaned-up, tested version of a friend's 1-minute martingale EA.
+//| Signal (closed M5 bar, 08:00-21:00 UTC): price above today's VWAP (typical price x tick volume, server day),
+//| RSI(7) below 35 (or was below 35 and turning up), bullish candle -> wait up to 10 bars for a pullback of 1.8 x ATR(14),
+//| then buy on the first bullish bar that reached it. Mirror for sells. Skips bars where ATR < 4 x the current spread.
+//| Stop 2 x ATR, target 4 x ATR (on the order); once 0.8 x ATR in profit the stop trails 0.5 x ATR behind the bar extreme.
+//| No martingale. Risk-based size. OPTIONAL (Nov 2026).
+//| Python 2020-2026 (spread $0.15): ~233 trades/yr, 73% wins, +0.077R avg, 7/7 years positive, +18 R/yr, max drawdown -12.5R,
+//| losing streak 5; picked on 2020-22, confirmed on 2023-24 (+15 R/yr) and 2025-26 (+23 R/yr); double spread +12/+7/+20 R/yr.
+//| The original (1m, all hours, martingale) lost every year 2020-2025.
+//+------------------------------------------------------------------+""", body="""
+input int    InpPullbackBars = 10;   // Bars to wait for the pullback after a signal
+input double InpAtrVsSpread  = 4;    // Trade only when ATR(14) >= this x the current spread
+int    pendDir = 0, pendUntil = 0;
+double pendTarget = 0, trailAtr = 0, bestPx = 0;
+datetime trailTicketTime = 0;
+double SessionVWAP()
+  {
+   datetime b1 = iTime(_Symbol, _Period, 1); int day = DayKey(b1); double pv = 0, vv = 0;
+   for(int k = 1; k < 400; k++)
+     {
+      datetime tk = iTime(_Symbol, _Period, k);
+      if(tk == 0 || DayKey(tk) != day) break;
+      double tp = (iHigh(_Symbol, _Period, k) + iLow(_Symbol, _Period, k) + iClose(_Symbol, _Period, k)) / 3.0;
+      double v = (double)iVolume(_Symbol, _Period, k); pv += tp * v; vv += v;
+     }
+   return vv > 0 ? pv / vv : EMPTY_VALUE;
+  }
+void OnNewBar()
+  {
+   static int barNo = 0; barNo++;
+   ulong tk; long tp; datetime ot;
+   double a1 = AtrRma(14, 1);
+   if(MyPosition(tk, tp, ot))
+     {
+      int d = tp == POSITION_TYPE_BUY ? 1 : -1;
+      if(trailTicketTime != ot) { trailTicketTime = ot; trailAtr = a1; bestPx = PositionGetDouble(POSITION_PRICE_OPEN); }
+      double op = PositionGetDouble(POSITION_PRICE_OPEN), sl = PositionGetDouble(POSITION_SL);
+      bestPx = d == 1 ? MathMax(bestPx, iHigh(_Symbol, _Period, 1)) : MathMin(bestPx, iLow(_Symbol, _Period, 1));
+      if((bestPx - op) * d >= 0.8 * trailAtr)
+        {
+         double nsl = NormalizeDouble(bestPx - d * 0.5 * trailAtr, _Digits);
+         if((nsl - sl) * d > 0 && !trade.PositionModify(tk, nsl, PositionGetDouble(POSITION_TP))) Print("trail modify failed ", trade.ResultRetcode());
+        }
+      pendDir = 0; return;
+     }
+   if(a1 == EMPTY_VALUE || a1 <= 0) return;
+   double o1 = iOpen(_Symbol, _Period, 1), c1 = iClose(_Symbol, _Period, 1), h1 = iHigh(_Symbol, _Period, 1), l1 = iLow(_Symbol, _Period, 1);
+   if(pendDir != 0 && barNo <= pendUntil)                  // waiting for the pullback
+     {
+      bool reached = pendDir == 1 ? l1 <= pendTarget : h1 >= pendTarget;
+      bool turn = pendDir == 1 ? c1 > o1 : c1 < o1;
+      if(reached && turn)
+        {
+         int d = pendDir; double price = d == 1 ? SymbolInfoDouble(_Symbol, SYMBOL_ASK) : SymbolInfoDouble(_Symbol, SYMBOL_BID);
+         if(OpenTrade(d, price - d * 2.0 * a1, price + d * 4.0 * a1, "Gold VWAP Pullback")) { trailTicketTime = 0; pendDir = 0; }
+        }
+      return;
+     }
+   pendDir = 0;
+   int hUtc = HourOf(ToUTC(iTime(_Symbol, _Period, 1)));
+   if(hUtc < 8 || hUtc >= 21) return;                                     // London + New York only
+   double spread = SymbolInfoDouble(_Symbol, SYMBOL_ASK) - SymbolInfoDouble(_Symbol, SYMBOL_BID);
+   if(a1 < InpAtrVsSpread * spread) return;                                // too quiet next to the spread
+   double vw = SessionVWAP(), r1 = Rsi(7, 1), r2 = Rsi(7, 2);
+   if(vw == EMPTY_VALUE || r1 == EMPTY_VALUE || r2 == EMPTY_VALUE) return;
+   bool buy = c1 > vw && (r1 < 35 || (r2 < 35 && r1 > r2)) && c1 > o1;
+   bool sell = c1 < vw && (r1 > 65 || (r2 > 65 && r1 < r2)) && c1 < o1;
+   if(!buy && !sell) return;
+   pendDir = buy ? 1 : -1; pendTarget = c1 - pendDir * 2.0 * a1 * 0.9; pendUntil = barNo + InpPullbackBars;
+  }
+""")
+
 EAS["DAX_Opening_Range.mq5"] = dict(tf="PERIOD_M15", magic=1115, risk=0.2, header="""//+------------------------------------------------------------------+
 //| DAX Opening Range – MT5 EA. Chart: GER40 / DE40 / DAX40 (your broker's DAX symbol), M15 (Frankfurt clock)
 //| Range = high/low of 09:00-09:30 Frankfurt. From 09:30 to 12:00, the first 15-minute close above the range
@@ -917,7 +990,7 @@ if __name__ == "__main__":
     import shutil, zipfile
     CORE = ["BTC_Dip_v3", "Gold_Dip", "Gold_Asia_Breakout", "Gold_Intraday_Momentum", "NQ_Opening_Range", "NQ_Dip_2h",
             "SPX_Dip_1h", "Oil_Dip_1h", "BTC_Weekend_Gap", "DAX_Opening_Range", "NQ_Breakout_15m", "SPX_Breakout_5m"]
-    OPTIONAL = ["BTC_Dip_EMA200_2h", "Nikkei_Breakout_5m", "SOL_Dip_1h", "Open_Fade_1m"]
+    OPTIONAL = ["BTC_Dip_EMA200_2h", "Nikkei_Breakout_5m", "SOL_Dip_1h", "Open_Fade_1m", "Gold_VWAP_Pullback_5m"]
     dl = os.path.join(os.path.dirname(__file__), "..", "MT5_EAs")
     os.makedirs(os.path.join(dl, "optional"), exist_ok=True)
     for n in CORE: shutil.copy(os.path.join(out, n + ".mq5"), os.path.join(dl, n + ".mq5"))
