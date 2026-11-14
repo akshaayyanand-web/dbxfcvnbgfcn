@@ -126,6 +126,20 @@ trades included. They slow down while losing trades are still open. The daily gu
 balance, exactly like FTMO. The Monte Carlo figures above were run before this fix and are optimistic.
 **Live, expect roughly 85-95% pass and 0 rule breaches. "Stopped" attempts (the EAs halt at −9.5%) still cost the fee.**
 
+### Pass Mode with all the optional EAs (Nov 2026) – the recommended full setup
+`tools/all_optional_pass_mode_test.py`, FTMO exact rule, risk x1.5 / room cap 9 on every EA, an attempt every weekday:
+
+| Setup | Pass 2020-22 / 2023-25 / 2026 | Breached | Median days | Profit at x1 |
+|---|---|---|---|---|
+| 12 EAs | 92.6 / 97.4 / 98.5% | 0% | 68 / 77 / 58 | 74%/yr |
+| + SOL_Dip_1h (0.3%) | 95.7 / 96.5 / 98.0% | 0% | 62 / 59 / 58 | 81%/yr |
+| + Gold_VWAP_Pullback_5m (0.2%) | 91.8 / 96.8 / 98.4% | 0% | 60 / 69 / 53 | 78%/yr |
+| + Open_Fade_1m S&P (0.25%) | 92.6 / 96.5 / 99.3% | 0% | 67 / 76 / 58 | 75%/yr |
+| + Nikkei_Breakout_5m (0.1%) | 94.3 / 97.5 / 98.6% | 0% | 65 / 77 / 61 | 75%/yr |
+| **+ all four** | **97.9 / 96.9 / 98.1%** | **0%** | **60 / 55 / 52** | **87%/yr** |
+
+Run the Nikkei EA at `InpRiskPct = 0.1` for this setup (its file default is 0.4). Not included: BTC_Dip_EMA200_2h (0.05%, too small to matter).
+
 ### Speed Mode: when days matter more than passing on the first try (Nov 2026)
 Buy a new account after each failure and count calendar days and fees until funded (`tools/speed_resets_test.py`;
 12 EAs + SOL_Dip_1h at 0.3%, FTMO exact rule, 4-day minimum per phase, a start every 3 days Sep 2020 – Mar 2026, $250 per account):
