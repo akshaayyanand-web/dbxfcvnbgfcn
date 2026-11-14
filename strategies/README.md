@@ -567,3 +567,11 @@ BTC 25, SOL 61 – crypto has short-term mean reversion. As real one-at-a-time t
 - BTC: fade a top-0.5% stretch from the 5m EMA(200), exit after 60 min: 25/yr, 67% wins, 7/7 years, +2.1 R/yr, unchanged at 3x cost,
   but shrinking (2025 +0.6, 2026 +0.2).
 Real but small edges, nowhere near high-frequency scalping profits.
+
+## Nov 2026: third-party gold EAs from a friend
+- **MST Hedging EA** (compiled, grid + 1.5x lots, no stop): 2020-2026 −76% equity drawdown before gold's 2025-26 rally rescued it;
+  with Stoploss 1000: max DD 21%, flat 2020-2024, all profit from the rally; the copy stops trading on 2026-02-10 (built-in cutoff).
+- **XAU Institutional EA v7** (VWAP + RSI(7) + candle delta, ATR stops, capped martingale): rebuilt from its PDF
+  (`tools/xau_institutional_rebuild_test.py`), matched to the real 2026 report per trade (win 70.7% vs 70.6%, PF 1.24 vs 1.23).
+  2020-2025 every year loses or breaks even (PF 0.69-1.00); only 2026 is profitable. The edge depends on gold's 1-minute ATR being
+  large next to the spread ($2.11 in 2026 vs $0.40-0.59 in 2020-2024). Martingale makes the losing years worse.
