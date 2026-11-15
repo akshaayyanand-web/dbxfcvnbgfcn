@@ -175,6 +175,25 @@ Corrected simulator, FTMO exact rule, 2-step 200K (`tools/fastpass_frontier2.py`
 The weights use only 2020-22 volatility, but the EAs and the overall risk level were chosen on this same data, and 3 EAs are new
 (not compiled or demo-tested yet). Expect it to be slower live. Use the Account Equity Guard (4% / 8%) as a backstop.
 
+### CTI Direct / Instant funding (rules from CTI's own pages, Nov 2026)
+Direct: full balance from day 1, 6% static max loss from the initial balance, no daily limit, 70% split, 80K = $3,999.
+Instant: starts at half the balance (80K plan: $40K), 6% static on that, no daily limit, 50% split until +10% ($4,000) unlocks the
+full $80K at 70-100%, 80K = $1,599. Both: "personal EAs only – no third-party", no martingale. (CTI's 1-Step is 8% target with a
+5% trailing max and no daily limit – not the rules simulated in the 1-step table below.)
+`tools/cti_direct_instant_test.py`, 21 EAs equal risk, profit above the start withdrawn every 14 days, a start every week 2020-2025:
+
+| Risk scale | Direct: kept 1 yr | Direct: median withdrawn/yr after 70% (80K) | Instant: reached the $80K stage | Median days to it | Instant: kept 1 yr after | Instant: withdrawn/yr after 70% |
+|---|---|---|---|---|---|---|
+| 1.0 | 100% | $18,000 | 100% | 98 | 100% | $18,000 |
+| 2.0 | 100% | $27,100 | 100% | 57 | 100% | $27,900 |
+| **2.5** | **100%** | **$30,000** | **100%** | **50** | **100%** | **$31,000** |
+| 3.0 | 98.8% | $32,000 | 99.2% | 47 | 99.2% | $33,400 |
+| 3.5 | 67.9% | $29,600 | 96.8% | 46 | 73.4% | $35,500 |
+
+Settings at scale 2.5: the per-EA `InpRiskPct` list of the CTI section below (same scale), with `InpFirmMaxLossPct 6`,
+`InpMaxStopPct 5.7`, `InpRoomCapPct 4.2`, `InpHalfBelowPct 1.8`, `InpHalfUntilPct 0.6`, `InpDailyStopPct 4`; `InpAccountSize` =
+the balance you trade (Instant: 40000 first, 80000 after the milestone).
+
 ### 1-step firm candidates (Nov 2026) – check each firm's current rules before buying
 Same 21 EAs, equal risk (`tools/fastpass_onestep4.py`, `tools/fastpass_onestep5.py`):
 
