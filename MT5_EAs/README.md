@@ -140,6 +140,41 @@ balance, exactly like FTMO. The Monte Carlo figures above were run before this f
 
 Run the Nikkei EA at `InpRiskPct = 0.1` for this setup (its file default is 0.4). Not included: BTC_Dip_EMA200_2h (0.05%, too small to matter).
 
+### FAST PASS 19 (Nov 2026) – the fastest setup that still passed every backtest
+19 EAs (12 core + SOL_Dip_1h, Gold_VWAP_Pullback_5m, Open_Fade_1m, Nikkei_Breakout_5m + new SOL_Revert_5m, BTC_Revert_5m,
+DAX_Premarket_15m), each sized to carry about the same risk (weights from 2020-22 volatility only), no EA above 0.75% per trade.
+All EAs: `InpRiskMultiplier 1.0`, `InpRoomCapPct 7`, `InpHalfBelowPct 3`, `InpHalfUntilPct 1`, `InpDailyStopPct 4`; set `InpRiskPct`:
+
+| EA | Evaluation `InpRiskPct` | Funded `InpRiskPct` |
+|---|---|---|
+| BTC_Revert_5m | 0.75 | 0.75 |
+| Open_Fade_1m (S&P) | 0.75 | 0.75 |
+| BTC_Dip_v3 | 0.75 | 0.50 |
+| Gold_VWAP_Pullback_5m | 0.75 | 0.43 |
+| NQ_Dip_2h | 0.75 | 0.40 |
+| BTC_Weekend_Gap | 0.65 | 0.33 |
+| Gold_Dip | 0.64 | 0.32 |
+| SOL_Revert_5m | 0.63 | 0.32 |
+| Gold_Intraday_Momentum | 0.62 | 0.31 |
+| NQ_Opening_Range | 0.57 | 0.29 |
+| SPX_Dip_1h | 0.53 | 0.27 |
+| Oil_Dip_1h | 0.52 | 0.26 |
+| SOL_Dip_1h | 0.45 | 0.22 |
+| DAX_Opening_Range | 0.40 | 0.20 |
+| Nikkei_Breakout_5m | 0.36 | 0.18 |
+| Gold_Asia_Breakout | 0.35 | 0.17 |
+| DAX_Premarket_15m | 0.33 | 0.16 |
+| NQ_Breakout_15m | 0.27 | 0.13 |
+| SPX_Breakout_5m | 0.24 | 0.12 |
+
+Corrected simulator, FTMO exact rule, 2-step 200K (`tools/fastpass_frontier2.py`, `tools/fastpass_journey_test.py`):
+- Starts every 3rd day: pass **100%** (2020-22) / **100%** (2023-26), 0 breaches, median **39 / 48 days**, 35-39% within 30 days.
+- Starts every week Sep 2020 – Jun 2025: **252 / 252 passed**, median **49 days** (25%: 22, 75%: 119, 90%: 203), 33% within 30 days.
+- Funded at the funded column, all profit withdrawn every 14 days: 252/252 kept the account, median **$154,000** a year before the split.
+- Faster than this fails accounts: one notch more risk (x5) gave a median of 33-41 days but only 86-95% passes.
+The weights use only 2020-22 volatility, but the EAs and the overall risk level were chosen on this same data, and 3 EAs are new
+(not compiled or demo-tested yet). Expect it to be slower live. Use the Account Equity Guard (4% / 8%) as a backstop.
+
 ### Full journey, corrected simulator (Nov 2026) – supersedes the funded table below
 `tools/journey_test.py` with `tools/sim_fixed.py`. The older simulator let the open-P&L estimate drift on long runs: it failed some
 long evaluations that were really up 40%, and with payouts it could invent profit. Corrected, 16 EAs at risk x0.75 (room cap 7),
