@@ -27,6 +27,8 @@ input int    InpServerGMTOffset  = 2;      // Tester: server GMT offset in winte
 input bool   InpServerUsesUSDST  = true;   // Tester: server shifts +1h with US daylight saving (FTMO-style)
 input int    InpNewsBlockMin     = 2;      // No NEW trades this many minutes before/after high-impact USD news (0 = off)
 input double InpMaxSpreadPct     = 15;     // Skip a trade if the current spread is more than this % of its stop distance (0 = off)
+input int    InpMaxPosPerSymbol  = 0;      // Skip a trade if this many positions (any EA) are already open on the symbol (0 = off; FundedSquad: 2)
+input bool   InpNoOpposite       = false;  // Skip a trade if any EA has the opposite direction open on the symbol (FundedSquad: true, no hedging)
 
 //--- time helpers -------------------------------------------------------------
 datetime MakeDate(int y, int m, int d) { MqlDateTime s; ZeroMemory(s); s.year = y; s.mon = m; s.day = d; return StructToTime(s); }
@@ -185,8 +187,24 @@ double LotsFor(double riskMoney, double stopDist, ENUM_ORDER_TYPE type, double p
       lots -= step;
    return lots >= vmin ? NormalizeDouble(lots, 8) : 0;
   }
+bool SymbolSlotOK(int dir, string tag)   // firm rules on the symbol across ALL EAs: max open positions and no opposite directions
+  {
+   if(InpMaxPosPerSymbol <= 0 && !InpNoOpposite) return true;
+   int n = 0; bool opposite = false;
+   for(int i = PositionsTotal() - 1; i >= 0; i--)
+     {
+      if(PositionGetTicket(i) == 0 || PositionGetString(POSITION_SYMBOL) != _Symbol) continue;
+      n++;
+      long t = PositionGetInteger(POSITION_TYPE);
+      if((dir == 1 && t == POSITION_TYPE_SELL) || (dir == -1 && t == POSITION_TYPE_BUY)) opposite = true;
+     }
+   if(InpNoOpposite && opposite) { Print(tag, ": opposite position open on ", _Symbol, " (no-hedging rule), skipped"); return false; }
+   if(InpMaxPosPerSymbol > 0 && n >= InpMaxPosPerSymbol) { Print(tag, ": ", n, " positions already open on ", _Symbol, ", skipped"); return false; }
+   return true;
+  }
 bool OpenTrade(int dir, double stopPrice, double tpPrice, string tag)
   {
+   if(!SymbolSlotOK(dir, tag)) return false;
    if(NewsBlocked()) { Print(tag, ": high-impact news within ", InpNewsBlockMin, " min, skipped"); return false; }
    double price = dir == 1 ? SymbolInfoDouble(_Symbol, SYMBOL_ASK) : SymbolInfoDouble(_Symbol, SYMBOL_BID);
    double dist = MathAbs(price - stopPrice);
@@ -281,6 +299,7 @@ void OnNewBar()
    if(tr != s) return;                                                    // only fade moves that run with the EMA(800) slope
    if(NewsBlocked()) return;
    int d = -s; double size = MathAbs(mv) * c1;
+   if(!SymbolSlotOK(d, "Revert")) return;
    double price = d == 1 ? SymbolInfoDouble(_Symbol, SYMBOL_ASK) : SymbolInfoDouble(_Symbol, SYMBOL_BID);
    if(SpreadTooWide(size, "SOL Revert")) return;
    double lots = LotsFor(RiskMoney(), size, d == 1 ? ORDER_TYPE_BUY : ORDER_TYPE_SELL, price);
