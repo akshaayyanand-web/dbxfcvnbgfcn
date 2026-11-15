@@ -6,15 +6,15 @@ def wk_share(c):   # share of a component's R that came from weekday entries
 WKD = {"btc": wk_share("btc"), "sol": wk_share("sol"), "btcgap": 0.0}
 print("weekday share kept:", {k: round(v, 2) for k, v in WKD.items()}, flush=True)
 def acct(h0, target=None, days=None, every=14, DL=0.03, ML=0.10, G=0.02, fguard=None, flimit=0.015, slip=0.003, Z=0.07):
-    floor = 1 - ML; eq = 1.0; opn = 0.0; day = -1; hd = -1; halfmode = False; mm = 0.0; viol = 0; pays = []; ndays = 0
+    floor = 1 - ML; eq = 1.0; opn = 0.0; day = -1; hd = -1; halfmode = False; mm = 0.0; viol = 0; pays = []; ndays = 0; pdays = 0; dstart = 1.0
     end = len(EQ_R) if days is None else min(h0 + days * 24, len(EQ_R)); nextpay = h0 + every * 24
     for i in range(h0, end):
         if days is not None and i >= nextpay:
             nextpay += every * 24; bal = eq - opn
             if bal > 1.0 and eq > 1.0: w = min(bal, eq) - 1.0; pays.append(w); eq -= w
         if DAYN[i] != day:
-            if day != -1 and target is not None and eq - opn >= 1 + target and ndays >= 3: return "pass", i, viol, pays
-            day = DAYN[i]; ndays += 1; ref = max(eq - opn, eq)          # FundedSquad: higher of balance and equity at the reset
+            if day != -1 and target is not None and eq - opn >= 1 + target and pdays >= 3: return "pass", i, viol, pays
+            pdays += (eq - opn) - dstart >= 0.005; dstart = eq - opn; day = DAYN[i]; ndays += 1; ref = max(eq - opn, eq)          # FundedSquad: higher of balance and equity at the reset
             g = eq; room = g - floor
             if room <= 0.3 * ML: halfmode = True
             elif room >= 0.9 * ML: halfmode = False
@@ -56,6 +56,6 @@ def ev(args):
                 funded_kept=round(100 * (ok.funded == "kept").mean(), 1), floating_terminated=round(100 * ok.funded.str.startswith("term").mean(), 1),
                 one_violation=round(100 * (ok.viol == 1).mean(), 1), you_get_per_yr_median=round(float(np.median(you))), you_get_25pct=round(float(np.percentile(you, 25))))
 if __name__ == "__main__":
-    jobs = [(3.5, fs, fg) for fs in (0.75, 1.0, 1.5, 1.75) for fg in (0.012,)] + [(3.5, 1.75, None)]
+    jobs = [(3.5, 1.5, 0.012)]
     with Pool(os.cpu_count()) as p: rows = p.map(ev, jobs)
     pd.set_option("display.width", 260); print(pd.DataFrame(rows).to_string(index=False))
