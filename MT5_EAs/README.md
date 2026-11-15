@@ -140,6 +140,16 @@ balance, exactly like FTMO. The Monte Carlo figures above were run before this f
 
 Run the Nikkei EA at `InpRiskPct = 0.1` for this setup (its file default is 0.4). Not included: BTC_Dip_EMA200_2h (0.05%, too small to matter).
 
+### Funded: withdraw all profits every 2 weeks (Nov 2026)
+`tools/funded_payout_test.py`: 200K funded, all 16 EAs with their guards, FTMO exact rule, everything above 200K withdrawn every
+14 days (before the profit split), one year, a start every week Sep 2020 – Oct 2025:
+
+| Risk (`InpRiskMultiplier`) | Account survives the year | Lost | Median withdrawn in the year |
+|---|---|---|---|
+| 1.0 | 95.1% | 4.9% | $132,000 |
+| **0.75 (recommended funded)** | **98.1%** | **1.9%** | **$123,000** |
+| 0.5 | 98.9% | 1.1% | $94,000 |
+
 ### Speed Mode: when days matter more than passing on the first try (Nov 2026)
 Buy a new account after each failure and count calendar days and fees until funded (`tools/speed_resets_test.py`;
 12 EAs + SOL_Dip_1h at 0.3%, FTMO exact rule, 4-day minimum per phase, a start every 3 days Sep 2020 – Mar 2026, $250 per account):
