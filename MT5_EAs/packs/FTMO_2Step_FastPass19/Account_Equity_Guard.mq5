@@ -56,7 +56,7 @@ void Check()
    double flt = eq - AccountInfoDouble(ACCOUNT_BALANCE);
    if(InpMaxFloatingPct > 0 && flt <= -InpStartBalance * InpMaxFloatingPct / 100)
      {
-      GlobalVariableSet(dayHalt, 1); GlobalVariableSet("PP_DH_" + IntegerToString(DayKey(TimeTradeServer())), 1);   // also halts the EAs today
+      GlobalVariableSet(dayHalt, 1); GlobalVariableSet("PP_DH_" + IntegerToString(DayKey(TimeTradeServer())), 1); GlobalVariableSet("PP_DH_" + IntegerToString(DayKey(TimeGMT())), 1);   // also halts the EAs today
       Print("FLOATING LOSS cap reached (open P&L ", DoubleToString(flt, 2), "): everything closed, EAs stopped until the next server day");
       CloseEverything("Floating cap"); return;
      }

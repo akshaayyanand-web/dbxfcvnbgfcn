@@ -39,16 +39,17 @@ def build(name, risks, G, guard_vals, header, funded=None):
 FTMO_G = {"InpAccountSize": 200000, "InpDailyStopPct": 4.0, "InpMaxStopPct": 9.5, "InpRoomCapPct": 7.0, "InpHalfBelowPct": 3.0, "InpHalfUntilPct": 1.0, "InpFirmMaxLossPct": 10.0, "InpRiskMultiplier": 1.0}
 CTI_G = {"InpAccountSize": 40000, "InpDailyStopPct": 4.0, "InpMaxStopPct": 5.7, "InpRoomCapPct": 4.2, "InpHalfBelowPct": 1.8, "InpHalfUntilPct": 0.6, "InpFirmMaxLossPct": 6.0, "InpRiskMultiplier": 1.0}
 FS_G = {"InpAccountSize": 200000, "InpDailyStopPct": 2.0, "InpMaxStopPct": 9.5, "InpRoomCapPct": 7.0, "InpHalfBelowPct": 7.0, "InpHalfUntilPct": 1.0, "InpFirmMaxLossPct": 10.0,
-        "InpRiskMultiplier": 1.0, "InpMaxPosPerSymbol": 2, "InpNoOpposite": "true"}
+        "InpRiskMultiplier": 1.0, "InpMaxPosPerSymbol": 2, "InpNoOpposite": "true", "InpNoWeekendEntries": "true", "InpDailyResetUTC": "true",
+        "InpDailyRefHigher": "true", "InpNewsBlockMin": 5}
 FTMO_EVAL = {"btcrev": .75, "spxfade": .75, "btc": .75, "goldvwap": .75, "nq2h": .75, "btcgap": .65, "gdip": .64, "solrev": .63, "gmom": .62, "orb15": .57, "spx1h": .53,
              "oil1h": .52, "sol": .45, "daxorb": .40, "nikkei": .36, "gasia": .35, "daxpm": .33, "nqbo15": .27, "spxbo5": .24}
 FTMO_FUND = {"btcrev": .75, "spxfade": .75, "btc": .50, "goldvwap": .43, "nq2h": .40, "btcgap": .33, "gdip": .32, "solrev": .32, "gmom": .31, "orb15": .29, "spx1h": .27,
              "oil1h": .26, "sol": .22, "daxorb": .20, "nikkei": .18, "gasia": .17, "daxpm": .16, "nqbo15": .13, "spxbo5": .12}
 CTI_R = {"btcrev": 1.0, "xrprev": 1.0, "spxfade": 1.0, "nqfade": 1.0, "btc": .49, "goldvwap": .42, "nq2h": .39, "btcgap": .32, "gdip": .31, "solrev": .31, "gmom": .30,
          "orb15": .28, "spx1h": .26, "oil1h": .25, "sol": .22, "daxorb": .19, "nikkei": .17, "gasia": .17, "daxpm": .16, "nqbo15": .13, "spxbo5": .12}
-FS_R = {"btcrev": 1.0, "xrprev": 1.0, "spxfade": 1.0, "nqfade": 1.0, "btc": .68, "goldvwap": .58, "nq2h": .55, "btcgap": .44, "gdip": .44, "solrev": .43, "gmom": .42,
+FS_R = {"btcrev": 1.0, "xrprev": 1.0, "spxfade": 1.0, "nqfade": 1.0, "btc": .68, "goldvwap": .58, "nq2h": .55, "gdip": .44, "solrev": .43, "gmom": .42,
         "orb15": .39, "spx1h": .36, "oil1h": .35, "sol": .30, "daxorb": .27, "nikkei": .24, "gasia": .23, "daxpm": .22, "nqbo15": .18, "spxbo5": .16}
-FS_FUND = {k: round(v / 2, 2) for k, v in FS_R.items()}
+FS_FUND = {k: round(v * 1.5 / 3.5, 2) for k, v in FS_R.items()}   # funded scale 1.5 vs eval 3.5 (best payouts with the 1.2% floating guard)
 if __name__ == "__main__":
     build("FTMO_2Step_FastPass19", FTMO_EVAL, FTMO_G, {"InpStartBalance": 200000, "InpDailyLossPct": 4.0, "InpMaxLossPct": 8.0, "InpMaxFloatingPct": 0},
           """FTMO 2-STEP 200K - FAST PASS 19 (19 EAs + Account Equity Guard)
@@ -66,12 +67,16 @@ Backtest: reached the $80K stage in 100% of runs, median ~50 days; then kept 1 y
 Confirm with CTI in writing that these count as 'personal EAs' and that ~21 EAs on one account is allowed.
 Symbols: BTCUSD, XRPUSD, SOLUSD, XAUUSD, US100, US500, GER40, JP225, USOIL. Leave out any EA whose symbol your account lacks.""")
     build("FundedSquad_1StepFlex_200K", FS_R, FS_G, {"InpStartBalance": 200000, "InpDailyLossPct": 2.6, "InpMaxLossPct": 9.0, "InpMaxFloatingPct": 0},
-          """FUNDEDSQUAD 1-STEP FLEX 200K - 21 EAs + Account Equity Guard
-Rules: 9% target, 3% daily, 10% static max, 3 min days, 1:50; no hedging (no buy+sell on the same asset), max 2 open positions per asset,
-max 70% margin; funded stage adds a 1.5% max floating loss (all open trades together).
-Built in: every EA skips a trade if the opposite direction is open on that symbol (InpNoOpposite=true) or 2 positions are already
-open there (InpMaxPosPerSymbol=2); daily stop at 2% (InpDailyStopPct) so the 3% limit is never reached.
-EVALUATION: use as is. Backtest: 100% passed, median ~35-37 days with these filters (scale 3.5).
-FUNDED: set every EA's InpRiskPct to the 'funded' column (half) and the guard's InpMaxFloatingPct = 1.2 (closes all and stops the
-EAs for the day before the 1.5% floating rule). Two accounts: run the SAME pack with the same settings on both (never opposite trades).
+          """FUNDEDSQUAD 1-STEP FLEX 200K - 20 EAs + Account Equity Guard
+Rules: 9% target, 3% daily (from the HIGHER of balance/equity at 00:00 UTC), 10% static max, 3 min days, 1:50; no hedging,
+max 2 open positions per asset, max 70% margin, no new trades at the weekend. Funded adds: 1.5% max floating loss, news window
++-4 min, 60 s minimum hold.
+Built in (every EA): no opposite trade on a symbol (InpNoOpposite), max 2 per symbol (InpMaxPosPerSymbol), no weekend entries
+(InpNoWeekendEntries), daily stop at 2% measured FundedSquad's way (InpDailyResetUTC + InpDailyRefHigher), news block 5 min.
+BTC_Weekend_Gap is NOT in this pack (it enters at the weekend, which FundedSquad bans).
+EVALUATION: use as is. Backtest with all these filters: 100% passed, median ~44 days.
+FUNDED: set every EA's InpRiskPct to the 'funded' column and the guard's InpMaxFloatingPct = 1.2 (closes all and stops the EAs
+for the day before the 1.5% floating rule). Backtest funded 1 yr: 100% kept, 0 floating violations, ~$54K/yr per account to you
+(80% split + 20% eval bonus). Two accounts: run the SAME pack with the same settings on both (never opposite trades).
+VPS: FundedSquad's rules say VPS/VPN not allowed - get written OK from support before running this on a VPS.
 Symbols: BTCUSD, XRPUSD, SOLUSD, XAUUSD, US100, US500, GER40, JP225, USOIL. Leave out any EA whose symbol your account lacks.""", FS_FUND)

@@ -29,10 +29,13 @@ input double InpRiskMultiplier   = 1.0;    // Keep 1.0: the default risks are al
 input bool   InpAutoServerOffset = true;   // Live: detect the server's GMT offset automatically
 input int    InpServerGMTOffset  = 2;      // Tester: server GMT offset in winter (FTMO-style servers: 2)
 input bool   InpServerUsesUSDST  = true;   // Tester: server shifts +1h with US daylight saving (FTMO-style)
-input int    InpNewsBlockMin     = 2;      // No NEW trades this many minutes before/after high-impact USD news (0 = off)
+input int    InpNewsBlockMin     = 5;      // No NEW trades this many minutes before/after high-impact USD news (0 = off)
 input double InpMaxSpreadPct     = 15;     // Skip a trade if the current spread is more than this % of its stop distance (0 = off)
 input int    InpMaxPosPerSymbol  = 2;      // Skip a trade if this many positions (any EA) are already open on the symbol (0 = off; FundedSquad: 2)
 input bool   InpNoOpposite       = true;  // Skip a trade if any EA has the opposite direction open on the symbol (FundedSquad: true, no hedging)
+input bool   InpNoWeekendEntries = true;  // No new trades on Saturday/Sunday (UTC) (FundedSquad: true)
+input bool   InpDailyResetUTC    = true;  // Daily loss day starts at 00:00 UTC instead of server midnight (FundedSquad: true)
+input bool   InpDailyRefHigher   = true;  // Daily loss measured from the HIGHER of day-start balance and equity (FundedSquad: true)
 
 //--- time helpers -------------------------------------------------------------
 datetime MakeDate(int y, int m, int d) { MqlDateTime s; ZeroMemory(s); s.year = y; s.mon = m; s.day = d; return StructToTime(s); }
@@ -101,27 +104,29 @@ void CloseMine(string why)
   }
 
 //--- account-level prop guard ------------------------------------------------------
+int GuardDay() { return InpDailyResetUTC ? DayKey(TimeGMT()) : DayKey(TimeTradeServer()); }
 double DayStartBalance()
   {
-   string n = "PP_DS_" + IntegerToString(DayKey(TimeTradeServer()));
+   string n = "PP_DS_" + IntegerToString(GuardDay());
    if(!GlobalVariableCheck(n)) GlobalVariableSet(n, AccountInfoDouble(ACCOUNT_BALANCE));
    return GlobalVariableGet(n);
   }
 double DayStartEquity()      // equity (open trades included) at the first check of the server day; used by the drawdown brake
   {
-   string n = "PP_DE_" + IntegerToString(DayKey(TimeTradeServer()));
+   string n = "PP_DE_" + IntegerToString(GuardDay());
    if(!GlobalVariableCheck(n)) GlobalVariableSet(n, AccountInfoDouble(ACCOUNT_EQUITY));
    return GlobalVariableGet(n);
   }
+double DailyRef() { return InpDailyRefHigher ? MathMax(DayStartBalance(), DayStartEquity()) : DayStartBalance(); }   // reference for the daily loss
 bool GuardBlocks()
   {
    double eq = AccountInfoDouble(ACCOUNT_EQUITY);
-   string dayHalt = "PP_DH_" + IntegerToString(DayKey(TimeTradeServer()));
+   string dayHalt = "PP_DH_" + IntegerToString(GuardDay());
    if(GlobalVariableCheck("PP_HALT")) { CloseMine("Guard (max loss)"); return true; }
    if(GlobalVariableCheck(dayHalt))   { CloseMine("Guard (daily)");    return true; }
    if(eq <= InpAccountSize * (1 - InpMaxStopPct / 100))
      { GlobalVariableSet("PP_HALT", 1); CloseMine("Guard (max loss)"); return true; }
-   if(DayStartBalance() - eq >= InpAccountSize * InpDailyStopPct / 100)
+   if(DailyRef() - eq >= InpAccountSize * InpDailyStopPct / 100)
      { GlobalVariableSet(dayHalt, 1); CloseMine("Guard (daily)"); return true; }
    return false;
   }
@@ -158,7 +163,7 @@ double RiskMoney()
   {
    double bal = AccountInfoDouble(ACCOUNT_BALANCE), eq = AccountInfoDouble(ACCOUNT_EQUITY);
    double r = bal * InpRiskPct * InpRiskMultiplier / 100;
-   double dayRoom = InpAccountSize * InpDailyStopPct / 100 - MathMax(0, DayStartBalance() - eq);
+   double dayRoom = InpAccountSize * InpDailyStopPct / 100 - MathMax(0, DailyRef() - eq);
    double maxRoom = eq - InpAccountSize * (1 - InpMaxStopPct / 100);
    r = MathMin(r, MathMin(dayRoom, maxRoom) * InpGuardShare / 100);
    if(InpRoomCapPct > 0)      // room cap: full size until the day starts 3% down (equity), then shrink linearly to 0 at the firm limit
@@ -193,6 +198,7 @@ double LotsFor(double riskMoney, double stopDist, ENUM_ORDER_TYPE type, double p
   }
 bool SymbolSlotOK(int dir, string tag)   // firm rules on the symbol across ALL EAs: max open positions and no opposite directions
   {
+   if(InpNoWeekendEntries) { MqlDateTime w; TimeToStruct(TimeGMT(), w); if(w.day_of_week == 0 || w.day_of_week == 6) { Print(tag, ": weekend, no new trades"); return false; } }
    if(InpMaxPosPerSymbol <= 0 && !InpNoOpposite) return true;
    int n = 0; bool opposite = false;
    for(int i = PositionsTotal() - 1; i >= 0; i--)
