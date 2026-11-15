@@ -140,6 +140,16 @@ balance, exactly like FTMO. The Monte Carlo figures above were run before this f
 
 Run the Nikkei EA at `InpRiskPct = 0.1` for this setup (its file default is 0.4). Not included: BTC_Dip_EMA200_2h (0.05%, too small to matter).
 
+### Full journey, corrected simulator (Nov 2026) – supersedes the funded table below
+`tools/journey_test.py` with `tools/sim_fixed.py`. The older simulator let the open-P&L estimate drift on long runs: it failed some
+long evaluations that were really up 40%, and with payouts it could invent profit. Corrected, 16 EAs at risk x0.75 (room cap 7),
+FTMO exact rule, a start every week Sep 2020 – Jun 2025 (252 journeys):
+- Evaluation (both phases): **252 / 252 passed**, 0 breaches; median **84 days** (25%: 50, 75%: 129, 90%: 177).
+- Funded 200K, everything above 200K withdrawn every 14 days for a year: **252 / 252 kept the account**.
+- Withdrawn in the funded year, before the split: median **$125,000** (25%: $102,000, 75%: $138,000; worst $27,500, best $171,000);
+  ~14 payouts a year; biggest single payout $54,900.
+Backtest only: the EAs were chosen on this same data, and live fills, spreads and slippage will be worse. Plan for less.
+
 ### Funded: withdraw all profits every 2 weeks (Nov 2026)
 `tools/funded_payout_test.py`: 200K funded, all 16 EAs with their guards, FTMO exact rule, everything above 200K withdrawn every
 14 days (before the profit split), one year, a start every week Sep 2020 – Oct 2025:
