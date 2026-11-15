@@ -175,6 +175,24 @@ Corrected simulator, FTMO exact rule, 2-step 200K (`tools/fastpass_frontier2.py`
 The weights use only 2020-22 volatility, but the EAs and the overall risk level were chosen on this same data, and 3 EAs are new
 (not compiled or demo-tested yet). Expect it to be slower live. Use the Account Equity Guard (4% / 8%) as a backstop.
 
+### 1-step firm candidates (Nov 2026) – check each firm's current rules before buying
+Same 21 EAs, equal risk (`tools/fastpass_onestep4.py`, `tools/fastpass_onestep5.py`):
+
+| Rules (as reported by third-party sites) | Risk scale | Pass | Median days | ≤30 days |
+|---|---|---|---|---|
+| City Traders Imperium-style 1-Step: +8%, 5% daily, 8% max trailing until it locks at the start | 2.5 | 100% | 36 | 42% |
+| same | 3.0 | 99.6% | 32 | 48% |
+| +8%, 5% daily, 8% **static** max (firm not identified) | 3.0 | 100% | **30** | 52% |
+| Blueberry Funded 1-Step: +10%, 4% daily, 6% static | 2.0 | 100% | 51 | 25% |
+
+**Settings for a CTI-style 1-Step at scale 2.5** (all EAs: `InpRiskMultiplier 1`, `InpFirmMaxLossPct 8`, `InpMaxStopPct 7.5`,
+`InpRoomCapPct 5.6`, `InpHalfBelowPct 2.4`, `InpHalfUntilPct 0.8`, `InpDailyStopPct 4`), `InpRiskPct`:
+BTC_Revert_5m 1.0 · second BTC_Revert_5m on XRPUSD (`InpMovePct 14.1`, new magic) 1.0 · Open_Fade_1m S&P 1.0 · Open_Fade_1m on NQ
+(`InpLookMin 10`, `InpMovePts 98`, new magic) 1.0 · BTC_Dip_v3 0.49 · Gold_VWAP_Pullback_5m 0.42 · NQ_Dip_2h 0.39 · BTC_Weekend_Gap 0.32 ·
+Gold_Dip 0.31 · SOL_Revert_5m 0.31 · Gold_Intraday_Momentum 0.30 · NQ_Opening_Range 0.28 · SPX_Dip_1h 0.26 · Oil_Dip_1h 0.25 ·
+SOL_Dip_1h 0.22 · DAX_Opening_Range 0.19 · Nikkei_Breakout_5m 0.17 · Gold_Asia_Breakout 0.17 · DAX_Premarket_15m 0.16 ·
+NQ_Breakout_15m 0.13 · SPX_Breakout_5m 0.12.
+
 ### Under 30 days? 2-step vs 1-step evaluations (Nov 2026)
 `tools/fastpass_frontier3.py`, `tools/fastpass_onestep2.py`. Adding XRP revert + NQ open fade (21 EAs) only moved the FTMO 2-step
 median from ~46 to ~44 days at 100% pass. On a 2-step (+10% then +5%) under 30 days at ~100% was not reached by any setup.
