@@ -35,6 +35,8 @@ input bool   InpNoOpposite       = false;  // Skip a trade if any EA has the opp
 input bool   InpNoWeekendEntries = false;  // No new trades on Saturday/Sunday (UTC) (FundedSquad: true)
 input bool   InpDailyResetUTC    = false;  // Daily loss day starts at 00:00 UTC instead of server midnight (FundedSquad: true)
 input bool   InpDailyRefHigher   = false;  // Daily loss measured from the HIGHER of day-start balance and equity (FundedSquad: true)
+input int    InpMinHoldSec       = 0;      // Minimum hold: no trade closes by its SL/TP before this many seconds (0 = off; FundedSquad: 130)
+input double InpHoldStopMult     = 1.5;    // During the minimum hold the server stop sits this many x the normal stop distance away (emergency only)
 
 //--- time helpers -------------------------------------------------------------
 datetime MakeDate(int y, int m, int d) { MqlDateTime s; ZeroMemory(s); s.year = y; s.mon = m; s.day = d; return StructToTime(s); }
@@ -211,6 +213,27 @@ bool SymbolSlotOK(int dir, string tag)   // firm rules on the symbol across ALL 
    if(InpMaxPosPerSymbol > 0 && n >= InpMaxPosPerSymbol) { Print(tag, ": ", n, " positions already open on ", _Symbol, ", skipped"); return false; }
    return true;
   }
+string HoldKey(ulong tk) { return "PP_HOLD_" + IntegerToString((long)tk); }
+bool InHold(ulong tk) { return GlobalVariableCheck(HoldKey(tk) + "S"); }
+// Minimum hold: while a position is younger than InpMinHoldSec only the wide emergency stop is on the server.
+// After that the real stop/target go on, or the trade is closed if price is already past one of them.
+void ManageHold()
+  {
+   if(InpMinHoldSec <= 0) return;
+   for(int i = PositionsTotal() - 1; i >= 0; i--)
+     {
+      ulong tk = PositionGetTicket(i);
+      if(tk == 0 || PositionGetString(POSITION_SYMBOL) != _Symbol || PositionGetInteger(POSITION_MAGIC) != InpMagic || !InHold(tk)) continue;
+      if(TimeCurrent() - (datetime)PositionGetInteger(POSITION_TIME) < InpMinHoldSec) continue;
+      double sl = GlobalVariableGet(HoldKey(tk) + "S"), tp = GlobalVariableGet(HoldKey(tk) + "T"), cur = PositionGetDouble(POSITION_SL);
+      bool buy = PositionGetInteger(POSITION_TYPE) == POSITION_TYPE_BUY;
+      double px = buy ? SymbolInfoDouble(_Symbol, SYMBOL_BID) : SymbolInfoDouble(_Symbol, SYMBOL_ASK);
+      if(cur > 0 && (buy ? cur > sl : cur < sl)) sl = cur;                                  // keep a tighter (trailed) stop
+      bool hit = (sl > 0 && (buy ? px <= sl : px >= sl)) || (tp > 0 && (buy ? px >= tp : px <= tp));
+      bool ok = hit ? trade.PositionClose(tk) : trade.PositionModify(tk, NormalizeDouble(sl, _Digits), NormalizeDouble(tp, _Digits));
+      if(ok) { GlobalVariableDel(HoldKey(tk) + "S"); GlobalVariableDel(HoldKey(tk) + "T"); Print(hit ? "Hold over: past SL/TP, closed" : "Hold over: SL/TP set"); }
+     }
+  }
 bool OpenTrade(int dir, double stopPrice, double tpPrice, string tag)
   {
    if(!SymbolSlotOK(dir, tag)) return false;
@@ -222,8 +245,11 @@ bool OpenTrade(int dir, double stopPrice, double tpPrice, string tag)
    double lots = LotsFor(RiskMoney(), dist, dir == 1 ? ORDER_TYPE_BUY : ORDER_TYPE_SELL, price);
    if(lots <= 0) { Print(tag, ": size below minimum for the allowed risk, skipped"); return false; }
    double sl = NormalizeDouble(stopPrice, _Digits), tp = tpPrice > 0 ? NormalizeDouble(tpPrice, _Digits) : 0;
-   bool ok = dir == 1 ? trade.Buy(lots, _Symbol, 0, sl, tp, tag) : trade.Sell(lots, _Symbol, 0, sl, tp, tag);
+   double ssl = sl, stp = tp;
+   if(InpMinHoldSec > 0) { ssl = NormalizeDouble(price - dir * InpHoldStopMult * dist, _Digits); stp = 0; }   // real SL/TP applied after the hold
+   bool ok = dir == 1 ? trade.Buy(lots, _Symbol, 0, ssl, stp, tag) : trade.Sell(lots, _Symbol, 0, ssl, stp, tag);
    Print(tag, ok ? " opened " : " FAILED ", lots, " lots, SL ", sl, " TP ", tp, " retcode ", trade.ResultRetcode());
+   if(ok && InpMinHoldSec > 0) { ulong pt = trade.ResultOrder(); GlobalVariableSet(HoldKey(pt) + "S", sl); GlobalVariableSet(HoldKey(pt) + "T", tp); }
    return ok;
   }
 
@@ -272,6 +298,7 @@ int OnInit()
   }
 void OnTick()
   {
+   ManageHold();
    bool blocked = GuardBlocks();
    static datetime lastBar = 0;
    datetime b0 = iTime(_Symbol, _Period, 0);

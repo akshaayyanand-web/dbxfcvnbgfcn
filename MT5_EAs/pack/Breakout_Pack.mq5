@@ -43,6 +43,8 @@ input bool   InpNoOpposite       = false;  // Skip a trade if any EA has the opp
 input bool   InpNoWeekendEntries = false;  // No new trades on Saturday/Sunday (UTC) (FundedSquad: true)
 input bool   InpDailyResetUTC    = false;  // Daily loss day starts at 00:00 UTC instead of server midnight (FundedSquad: true)
 input bool   InpDailyRefHigher   = false;  // Daily loss measured from the HIGHER of day-start balance and equity (FundedSquad: true)
+input int    InpMinHoldSec       = 0;      // Minimum hold: no trade closes by its SL/TP before this many seconds (0 = off; FundedSquad: 130)
+input double InpHoldStopMult     = 1.5;    // During the minimum hold the server stop sits this many x the normal stop distance away (emergency only)
 
 //--- time helpers -------------------------------------------------------------
 datetime MakeDate(int y, int m, int d) { MqlDateTime s; ZeroMemory(s); s.year = y; s.mon = m; s.day = d; return StructToTime(s); }
@@ -219,6 +221,27 @@ bool SymbolSlotOK(int dir, string tag)   // firm rules on the symbol across ALL 
    if(InpMaxPosPerSymbol > 0 && n >= InpMaxPosPerSymbol) { Print(tag, ": ", n, " positions already open on ", gSym, ", skipped"); return false; }
    return true;
   }
+string HoldKey(ulong tk) { return "PP_HOLD_" + IntegerToString((long)tk); }
+bool InHold(ulong tk) { return GlobalVariableCheck(HoldKey(tk) + "S"); }
+// Minimum hold: while a position is younger than InpMinHoldSec only the wide emergency stop is on the server.
+// After that the real stop/target go on, or the trade is closed if price is already past one of them.
+void ManageHold()
+  {
+   if(InpMinHoldSec <= 0) return;
+   for(int i = PositionsTotal() - 1; i >= 0; i--)
+     {
+      ulong tk = PositionGetTicket(i);
+      if(tk == 0 || PositionGetString(POSITION_SYMBOL) != gSym || PositionGetInteger(POSITION_MAGIC) != gMagic || !InHold(tk)) continue;
+      if(TimeCurrent() - (datetime)PositionGetInteger(POSITION_TIME) < InpMinHoldSec) continue;
+      double sl = GlobalVariableGet(HoldKey(tk) + "S"), tp = GlobalVariableGet(HoldKey(tk) + "T"), cur = PositionGetDouble(POSITION_SL);
+      bool buy = PositionGetInteger(POSITION_TYPE) == POSITION_TYPE_BUY;
+      double px = buy ? SymbolInfoDouble(gSym, SYMBOL_BID) : SymbolInfoDouble(gSym, SYMBOL_ASK);
+      if(cur > 0 && (buy ? cur > sl : cur < sl)) sl = cur;                                  // keep a tighter (trailed) stop
+      bool hit = (sl > 0 && (buy ? px <= sl : px >= sl)) || (tp > 0 && (buy ? px >= tp : px <= tp));
+      bool ok = hit ? trade.PositionClose(tk) : trade.PositionModify(tk, NormalizeDouble(sl, (int)SymbolInfoInteger(gSym, SYMBOL_DIGITS)), NormalizeDouble(tp, (int)SymbolInfoInteger(gSym, SYMBOL_DIGITS)));
+      if(ok) { GlobalVariableDel(HoldKey(tk) + "S"); GlobalVariableDel(HoldKey(tk) + "T"); Print(hit ? "Hold over: past SL/TP, closed" : "Hold over: SL/TP set"); }
+     }
+  }
 bool OpenTrade(int dir, double stopPrice, double tpPrice, string tag)
   {
    trade.SetExpertMagicNumber(gMagic); trade.SetTypeFillingBySymbol(gSym);
@@ -231,8 +254,11 @@ bool OpenTrade(int dir, double stopPrice, double tpPrice, string tag)
    double lots = LotsFor(RiskMoney(), dist, dir == 1 ? ORDER_TYPE_BUY : ORDER_TYPE_SELL, price);
    if(lots <= 0) { Print(tag, ": size below minimum for the allowed risk, skipped"); return false; }
    double sl = NormalizeDouble(stopPrice, (int)SymbolInfoInteger(gSym, SYMBOL_DIGITS)), tp = tpPrice > 0 ? NormalizeDouble(tpPrice, (int)SymbolInfoInteger(gSym, SYMBOL_DIGITS)) : 0;
-   bool ok = dir == 1 ? trade.Buy(lots, gSym, 0, sl, tp, tag) : trade.Sell(lots, gSym, 0, sl, tp, tag);
+   double ssl = sl, stp = tp;
+   if(InpMinHoldSec > 0) { ssl = NormalizeDouble(price - dir * InpHoldStopMult * dist, (int)SymbolInfoInteger(gSym, SYMBOL_DIGITS)); stp = 0; }   // real SL/TP applied after the hold
+   bool ok = dir == 1 ? trade.Buy(lots, gSym, 0, ssl, stp, tag) : trade.Sell(lots, gSym, 0, ssl, stp, tag);
    Print(tag, ok ? " opened " : " FAILED ", lots, " lots, SL ", sl, " TP ", tp, " retcode ", trade.ResultRetcode());
+   if(ok && InpMinHoldSec > 0) { ulong pt = trade.ResultOrder(); GlobalVariableSet(HoldKey(pt) + "S", sl); GlobalVariableSet(HoldKey(pt) + "T", tp); }
    return ok;
   }
 
@@ -458,6 +484,7 @@ void RunAll()
      {
       SetCtx(k);
       if(gSym == "" || gRisk <= 0) continue;
+      ManageHold();
       bool blocked = GuardBlocks();
       datetime b0 = iTime(gSym, gTf, 0);
       if(b0 == 0) continue;

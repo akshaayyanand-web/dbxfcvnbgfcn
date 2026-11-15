@@ -40,7 +40,7 @@ FTMO_G = {"InpAccountSize": 200000, "InpDailyStopPct": 4.0, "InpMaxStopPct": 9.5
 CTI_G = {"InpAccountSize": 40000, "InpDailyStopPct": 4.0, "InpMaxStopPct": 5.7, "InpRoomCapPct": 4.2, "InpHalfBelowPct": 1.8, "InpHalfUntilPct": 0.6, "InpFirmMaxLossPct": 6.0, "InpRiskMultiplier": 1.0}
 FS_G = {"InpAccountSize": 200000, "InpDailyStopPct": 2.0, "InpMaxStopPct": 9.5, "InpRoomCapPct": 7.0, "InpHalfBelowPct": 7.0, "InpHalfUntilPct": 1.0, "InpFirmMaxLossPct": 10.0,
         "InpRiskMultiplier": 1.0, "InpMaxPosPerSymbol": 2, "InpNoOpposite": "true", "InpNoWeekendEntries": "true", "InpDailyResetUTC": "true",
-        "InpDailyRefHigher": "true", "InpNewsBlockMin": 5}
+        "InpDailyRefHigher": "true", "InpNewsBlockMin": 10, "InpMinHoldSec": 130}
 FTMO_EVAL = {"btcrev": .75, "spxfade": .75, "btc": .75, "goldvwap": .75, "nq2h": .75, "btcgap": .65, "gdip": .64, "solrev": .63, "gmom": .62, "orb15": .57, "spx1h": .53,
              "oil1h": .52, "sol": .45, "daxorb": .40, "nikkei": .36, "gasia": .35, "daxpm": .33, "nqbo15": .27, "spxbo5": .24}
 FTMO_FUND = {"btcrev": .75, "spxfade": .75, "btc": .50, "goldvwap": .43, "nq2h": .40, "btcgap": .33, "gdip": .32, "solrev": .32, "gmom": .31, "orb15": .29, "spx1h": .27,
@@ -69,10 +69,12 @@ Symbols: BTCUSD, XRPUSD, SOLUSD, XAUUSD, US100, US500, GER40, JP225, USOIL. Leav
     build("FundedSquad_1StepFlex_200K", FS_R, FS_G, {"InpStartBalance": 200000, "InpDailyLossPct": 2.6, "InpMaxLossPct": 9.0, "InpMaxFloatingPct": 0},
           """FUNDEDSQUAD 1-STEP FLEX 200K - 20 EAs + Account Equity Guard
 Rules: 9% target, 3% daily (from the HIGHER of balance/equity at 00:00 UTC), 10% static max, 3 min days, 1:50; no hedging,
-max 2 open positions per asset, max 70% margin, no new trades at the weekend. Funded adds: 1.5% max floating loss, news window
-+-4 min, 60 s minimum hold.
+max 2 open positions per asset, max 70% margin, no new trades at the weekend, 3 days with +0.5% profit, 2-minute minimum hold,
+1.5% max floating loss (all open trades together), no VPN, inactivity breach after 21 days.
 Built in (every EA): no opposite trade on a symbol (InpNoOpposite), max 2 per symbol (InpMaxPosPerSymbol), no weekend entries
-(InpNoWeekendEntries), daily stop at 2% measured FundedSquad's way (InpDailyResetUTC + InpDailyRefHigher), news block 5 min.
+(InpNoWeekendEntries), daily stop at 2% measured FundedSquad's way (InpDailyResetUTC + InpDailyRefHigher), no new trades 10 min
+either side of high-impact news, and a 130 s minimum hold (InpMinHoldSec): for the first 130 s only an emergency stop at 1.5x the
+normal distance is on the order; after that the real stop/target go on, or the trade closes if price is already past one.
 BTC_Weekend_Gap is NOT in this pack (it enters at the weekend, which FundedSquad bans).
 EVALUATION: use as is. Backtest with all these filters: 100% passed, median ~44 days.
 FUNDED: set every EA's InpRiskPct to the 'funded' column and the guard's InpMaxFloatingPct = 1.2 (closes all and stops the EAs
