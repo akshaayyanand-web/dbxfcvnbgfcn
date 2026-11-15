@@ -150,6 +150,10 @@ FTMO exact rule, a start every week Sep 2020 – Jun 2025 (252 journeys):
   ~14 payouts a year; biggest single payout $54,900.
 Backtest only: the EAs were chosen on this same data, and live fills, spreads and slippage will be worse. Plan for less.
 
+Same journey with the evaluation in Pass Mode (x1.5, room 9) and funded at x1.0 (`tools/journey_passmode_test.py`): 252/252 passed,
+median **92 days** (25%: 30, 75%: 171, 90%: 267) – faster for the lucky quarter, slower for the rest; 252/252 kept the funded
+account; withdrawn in the funded year median **$152,000** (25%: $134,000, 75%: $167,000; worst $23,600, best $221,000).
+
 ### Funded: withdraw all profits every 2 weeks (Nov 2026)
 `tools/funded_payout_test.py`: 200K funded, all 16 EAs with their guards, FTMO exact rule, everything above 200K withdrawn every
 14 days (before the profit split), one year, a start every week Sep 2020 – Oct 2025:
