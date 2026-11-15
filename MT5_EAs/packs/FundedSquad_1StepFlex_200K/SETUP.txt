@@ -1,0 +1,35 @@
+FUNDEDSQUAD 1-STEP FLEX 200K - 21 EAs + Account Equity Guard
+Rules: 9% target, 3% daily, 10% static max, 3 min days, 1:50; no hedging (no buy+sell on the same asset), max 2 open positions per asset,
+max 70% margin; funded stage adds a 1.5% max floating loss (all open trades together).
+Built in: every EA skips a trade if the opposite direction is open on that symbol (InpNoOpposite=true) or 2 positions are already
+open there (InpMaxPosPerSymbol=2); daily stop at 2% (InpDailyStopPct) so the 3% limit is never reached.
+EVALUATION: use as is. Backtest: 100% passed, median ~35-37 days with these filters (scale 3.5).
+FUNDED: set every EA's InpRiskPct to the 'funded' column (half) and the guard's InpMaxFloatingPct = 1.2 (closes all and stops the
+EAs for the day before the 1.5% floating rule). Two accounts: run the SAME pack with the same settings on both (never opposite trades).
+Symbols: BTCUSD, XRPUSD, SOLUSD, XAUUSD, US100, US500, GER40, JP225, USOIL. Leave out any EA whose symbol your account lacks.
+
+EA file                          Chart                InpRiskPct   funded InpRiskPct
+BTC_Revert_5m.mq5                BTCUSD M5            1.0          0.5
+XRP_Revert_5m.mq5                XRPUSD M5            1.0          0.5
+Open_Fade_1m.mq5                 US500 M1             1.0          0.5
+NQ_Open_Fade_1m.mq5              US100 M1             1.0          0.5
+BTC_Dip_v3.mq5                   BTCUSD H2            0.68         0.34
+Gold_VWAP_Pullback_5m.mq5        XAUUSD M5            0.58         0.29
+NQ_Dip_2h.mq5                    US100 H2             0.55         0.28
+BTC_Weekend_Gap.mq5              BTCUSD H1            0.44         0.22
+Gold_Dip.mq5                     XAUUSD H1            0.44         0.22
+SOL_Revert_5m.mq5                SOLUSD M5            0.43         0.21
+Gold_Intraday_Momentum.mq5       XAUUSD H1            0.42         0.21
+NQ_Opening_Range.mq5             US100 M5             0.39         0.2
+SPX_Dip_1h.mq5                   US500 H1             0.36         0.18
+Oil_Dip_1h.mq5                   USOIL/WTI H1         0.35         0.17
+SOL_Dip_1h.mq5                   SOLUSD H1            0.3          0.15
+DAX_Opening_Range.mq5            GER40/DE40 M15       0.27         0.14
+Nikkei_Breakout_5m.mq5           JP225 M5             0.24         0.12
+Gold_Asia_Breakout.mq5           XAUUSD H1            0.23         0.12
+DAX_Premarket_15m.mq5            GER40/DE40 M15       0.22         0.11
+NQ_Breakout_15m.mq5              US100 M15            0.18         0.09
+SPX_Breakout_5m.mq5              US500 M5             0.16         0.08
+
+Account_Equity_Guard.mq5 -> any one extra chart (watches the whole account). Its settings: InpStartBalance=200000, InpDailyLossPct=2.6, InpMaxLossPct=9.0, InpMaxFloatingPct=0
+Already set inside every EA: InpAccountSize=200000, InpDailyStopPct=2.0, InpMaxStopPct=9.5, InpRoomCapPct=7.0, InpHalfBelowPct=7.0, InpHalfUntilPct=1.0, InpFirmMaxLossPct=10.0, InpRiskMultiplier=1.0, InpMaxPosPerSymbol=2, InpNoOpposite=true

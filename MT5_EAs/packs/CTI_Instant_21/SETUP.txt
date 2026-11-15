@@ -4,30 +4,30 @@ STAGE 1 ($40K balance): use as is (InpAccountSize = 40000).
 STAGE 2 (after +10% the account becomes $80K): set InpAccountSize = 80000 on every EA and InpStartBalance = 80000 on the guard.
 Backtest: reached the $80K stage in 100% of runs, median ~50 days; then kept 1 yr in 100%, ~$31K/yr after the 70% split.
 Confirm with CTI in writing that these count as 'personal EAs' and that ~21 EAs on one account is allowed.
-Symbols needed: BTCUSD, XRPUSD, SOLUSD, XAUUSD, US100, US500, GER40, JP225, USOIL. Leave out any EA whose symbol your account lacks.
+Symbols: BTCUSD, XRPUSD, SOLUSD, XAUUSD, US100, US500, GER40, JP225, USOIL. Leave out any EA whose symbol your account lacks.
 
-EA file                          Chart              TF    InpRiskPct
-BTC_Revert_5m.mq5                BTCUSD M5          M5       1.0       
-XRP_Revert_5m.mq5                XRPUSD M5          M5       1.0       
-Open_Fade_1m.mq5                 US500 M1           M1       1.0       
-NQ_Open_Fade_1m.mq5              US100 M1           M1       1.0       
-BTC_Dip_v3.mq5                   BTCUSD H2          H2       0.49      
-Gold_VWAP_Pullback_5m.mq5        XAUUSD M5          M5       0.42      
-NQ_Dip_2h.mq5                    US100 H2           H2       0.39      
-BTC_Weekend_Gap.mq5              BTCUSD H1          H1       0.32      
-Gold_Dip.mq5                     XAUUSD H1          H1       0.31      
-SOL_Revert_5m.mq5                SOLUSD M5          M5       0.31      
-Gold_Intraday_Momentum.mq5       XAUUSD H1          H1       0.3       
-NQ_Opening_Range.mq5             US100 M5           M5       0.28      
-SPX_Dip_1h.mq5                   US500 H1           H1       0.26      
-Oil_Dip_1h.mq5                   USOIL/WTI H1       H1       0.25      
-SOL_Dip_1h.mq5                   SOLUSD H1          H1       0.22      
-DAX_Opening_Range.mq5            GER40/DE40 M15     M15     0.19      
-Nikkei_Breakout_5m.mq5           JP225 M5           M5       0.17      
-Gold_Asia_Breakout.mq5           XAUUSD H1          H1       0.17      
-DAX_Premarket_15m.mq5            GER40/DE40 M15     M15     0.16      
-NQ_Breakout_15m.mq5              US100 M15          M15     0.13      
-SPX_Breakout_5m.mq5              US500 M5           M5       0.12      
+EA file                          Chart                InpRiskPct
+BTC_Revert_5m.mq5                BTCUSD M5            1.0       
+XRP_Revert_5m.mq5                XRPUSD M5            1.0       
+Open_Fade_1m.mq5                 US500 M1             1.0       
+NQ_Open_Fade_1m.mq5              US100 M1             1.0       
+BTC_Dip_v3.mq5                   BTCUSD H2            0.49      
+Gold_VWAP_Pullback_5m.mq5        XAUUSD M5            0.42      
+NQ_Dip_2h.mq5                    US100 H2             0.39      
+BTC_Weekend_Gap.mq5              BTCUSD H1            0.32      
+Gold_Dip.mq5                     XAUUSD H1            0.31      
+SOL_Revert_5m.mq5                SOLUSD M5            0.31      
+Gold_Intraday_Momentum.mq5       XAUUSD H1            0.3       
+NQ_Opening_Range.mq5             US100 M5             0.28      
+SPX_Dip_1h.mq5                   US500 H1             0.26      
+Oil_Dip_1h.mq5                   USOIL/WTI H1         0.25      
+SOL_Dip_1h.mq5                   SOLUSD H1            0.22      
+DAX_Opening_Range.mq5            GER40/DE40 M15       0.19      
+Nikkei_Breakout_5m.mq5           JP225 M5             0.17      
+Gold_Asia_Breakout.mq5           XAUUSD H1            0.17      
+DAX_Premarket_15m.mq5            GER40/DE40 M15       0.16      
+NQ_Breakout_15m.mq5              US100 M15            0.13      
+SPX_Breakout_5m.mq5              US500 M5             0.12      
 
-Account_Equity_Guard.mq5         -> one             one   extra chart (watches the whole account).
-Guard inputs already set inside every EA: InpAccountSize=40000, InpDailyStopPct=4.0, InpMaxStopPct=5.7, InpRoomCapPct=4.2, InpHalfBelowPct=1.8, InpHalfUntilPct=0.6, InpFirmMaxLossPct=6.0, InpRiskMultiplier=1.0
+Account_Equity_Guard.mq5 -> any one extra chart (watches the whole account). Its settings: InpStartBalance=40000, InpDailyLossPct=50.0, InpMaxLossPct=5.8, InpMaxFloatingPct=0
+Already set inside every EA: InpAccountSize=40000, InpDailyStopPct=4.0, InpMaxStopPct=5.7, InpRoomCapPct=4.2, InpHalfBelowPct=1.8, InpHalfUntilPct=0.6, InpFirmMaxLossPct=6.0, InpRiskMultiplier=1.0
