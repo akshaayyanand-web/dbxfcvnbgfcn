@@ -175,6 +175,22 @@ Corrected simulator, FTMO exact rule, 2-step 200K (`tools/fastpass_frontier2.py`
 The weights use only 2020-22 volatility, but the EAs and the overall risk level were chosen on this same data, and 3 EAs are new
 (not compiled or demo-tested yet). Expect it to be slower live. Use the Account Equity Guard (4% / 8%) as a backstop.
 
+### Under 30 days? 2-step vs 1-step evaluations (Nov 2026)
+`tools/fastpass_frontier3.py`, `tools/fastpass_onestep2.py`. Adding XRP revert + NQ open fade (21 EAs) only moved the FTMO 2-step
+median from ~46 to ~44 days at 100% pass. On a 2-step (+10% then +5%) under 30 days at ~100% was not reached by any setup.
+On 1-step evaluations (one +10% target, pass counted on the end-of-day balance), same 21 EAs, equal risk:
+
+| Rules | Risk scale | Pass | Median days | ≤30 days |
+|---|---|---|---|---|
+| +10%, 5% daily, 10% static max | 3.5 | 100% | 33 | 45% |
+| +10%, 5% daily, 10% static max | 4.5 | 99.2% | **28** | 54% |
+| +10%, 4% daily, 8% static max | 3.5 | 99.2% | 35 | 43% |
+| +10%, 4% daily, 8% trailing EOD | 2.5 | 100% | 48 | 31% |
+| FTMO 1-Step: 3% daily, 10% trailing EOD, 50% best day | 2.0 | 100% | 56 | 21% |
+
+FTMO's own 1-Step is no faster than its 2-Step (3% daily limit, trailing max loss, best-day rule). Under 30 days needs a
+1-step with a 5% daily limit and a static 10% max loss, and even there it costs ~1% of passes.
+
 ### Full journey, corrected simulator (Nov 2026) – supersedes the funded table below
 `tools/journey_test.py` with `tools/sim_fixed.py`. The older simulator let the open-P&L estimate drift on long runs: it failed some
 long evaluations that were really up 40%, and with payouts it could invent profit. Corrected, 16 EAs at risk x0.75 (room cap 7),
