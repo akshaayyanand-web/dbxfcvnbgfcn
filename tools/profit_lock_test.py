@@ -1,76 +1,72 @@
-# Profit lock on BTC Dip / Gold Dip to shrink crash-day givebacks, then retry the add-ons that only failed on breaches.
-import sys, numpy as np, pandas as pd
-SP = sys.argv[1]
-exec(open(SP + "/speed8.py").read().split("V2 = [")[0])
-_l = open(SP + "/losers.py").read(); exec("def run3" + _l.split("def run3", 1)[1].split("wst =")[0])
-from portfolio_prop import resample, rsi, rma
-from multiprocessing import Pool
-def dip_lock(raw1h, tf, rl, buy, crash_pct, lock_at, lock_to):
-    b = resample(raw1h, tf) if tf != "1h" else raw1h; c = b.c
-    d = raw1h.c.resample("1D").last().dropna()
-    crash = (d / d.shift(30) - 1 < -crash_pct).shift(1).reindex(b.index.floor("D")).fillna(False).to_numpy().astype(bool)
-    sig = ((rsi(c, rl) < buy) & (c > c.ewm(span=50, adjust=False).mean())).to_numpy() & ~crash
-    tr = pd.concat([b.h - b.l, (b.h - c.shift()).abs(), (b.l - c.shift()).abs()], axis=1).max(axis=1); atr = rma(tr, 14).to_numpy()
-    O_, H, L, C, T = b.o.to_numpy(), b.h.to_numpy(), b.l.to_numpy(), c.to_numpy(), b.index
-    bar = T[1] - T[0]; mb = int(pd.Timedelta("96h") / bar); out, i = [], 0
-    while i < len(C) - 2:
-        if not sig[i] or np.isnan(atr[i]): i += 1; continue
-        j = i + 1; e, st0 = O_[j], C[i] - 2 * atr[i]; st = st0
-        if e <= st: i += 1; continue
-        R1 = e - st0; k, px = j, None
-        while k < len(C) - 1:
-            if L[k] <= st: px, xt = min(O_[k], st), T[k] + bar; break
-            if k - j + 1 >= mb: px, xt = O_[k + 1], T[k + 1]; k += 1; break
-            if lock_at and H[k] >= e + lock_at * R1: st = max(st, e + lock_to * R1)       # lock part of the gain (from the next bar)
-            k += 1
-        if px is None: break
-        if xt - T[j] <= pd.Timedelta(days=10): out.append((T[j], xt, e, st0, px))
-        i = k
-    return out
-def worst_day(Rm, LOm, w):
-    r = (Rm * w[:, None]).sum(0); lo = (LOm * w[:, None]).sum(0); ds = pd.Series(days); worst = []
-    for d, ix in ds.groupby(ds).groups.items():
-        ix = np.array(sorted(ix)); cum = np.concatenate([[0], np.cumsum(r[ix])[:-1]]); worst.append(np.min(cum + lo[ix]))
-    worst = np.sort(np.array(worst)); return 100 * worst[0], 100 * worst[2]
-wst = pd.date_range("2020-04-01", "2025-10-01", freq="MS", tz="UTC")
-def evaluate(args):
-    lab, Rm, LOm, w = args; res = []
-    for s_ in est:
-        h0 = idx.searchsorted(s_); a, i1, _ = run3(w, Rm, LOm, h0, len(idx), 0.10)
-        if a != "pass": res.append((s_, a, None)); continue
-        b2, i2, _ = run3(w, Rm, LOm, h0 + i1 + 1, len(idx), 0.05); res.append((s_, b2, (i1 + i2) / 24 if b2 == "pass" else None))
-    yy = [(s_, *run3(w, Rm, LOm, idx.searchsorted(s_), idx.searchsorted(s_ + pd.DateOffset(years=1)), None)) for s_ in wst]
-    w1, w3 = worst_day(Rm, LOm, w); out = dict(variant=lab, worst_day=w1, third_worst=w3)
-    for p, sel in (("A", lambda s: s < split), ("B", lambda s: s >= split)):
-        rr = [x for x in res if sel(x[0])]; t = [x[2] for x in rr if x[2] is not None]; y = [v for v in yy if sel(v[0])]
-        out |= {f"{p}_pass": 100 * np.mean([x[1] == "pass" for x in rr]), f"{p}_breach": 100 * np.mean([x[1] == "fail" for x in rr]), f"{p}_days": np.median(t),
-                f"{p}_fund": 100 * np.median([v[3] for v in y]), f"{p}_fbr": sum(v[1] == "fail" for v in y)}
-    return out
-ib, ig = names.index("btc"), names.index("gdip"); yrs = (idx[-1] - idx[0]).days / 365.25
-LOCKS = [(None, None), (2, 0.5), (2, 1.0), (3, 1.0), (3, 2.0), (4, 2.0)]
-SER = {}
-for la, lt in LOCKS:
-    SER[(la, lt)] = (P.trade_series(dip_lock(btc, "2h", 3, 20, 0.15, la, lt), P.FEE_CRYPTO, btc, idx), P.trade_series(dip_lock(gold, "1h", 2, 10, 0.08, la, lt), P.COST["XAUUSD"], gold, idx))
-    (rb, _), (rg, _) = SER[(la, lt)]
-    print(f"lock {la}->{lt}: BTC Dip alone {100*rb.sum()/yrs:+.1f}%/yr, Gold Dip alone {100*rg.sum()/yrs:+.1f}%/yr", flush=True)
-jobs = []
-for la, lt in LOCKS:
-    Rm, LOm = R.copy(), LO.copy(); (Rm[ib], LOm[ib]), (Rm[ig], LOm[ig]) = SER[(la, lt)]
-    jobs.append((f"8 EAs, lock {la}->{lt}" if la else "8 EAs as now", Rm, LOm, W))
-with Pool(3) as p: out = p.map(evaluate, jobs)
-df = pd.DataFrame(out); pd.set_option("display.width", 250); print(df.round(1).to_string(index=False), flush=True)
-# retry the blocked add-ons on the best lock (largest worst-day improvement with funded B within 3 points of baseline)
-base = df.iloc[0]; ok = df.iloc[1:][(df.iloc[1:].B_fund >= base.B_fund - 3) & (df.iloc[1:].A_breach == 0) & (df.iloc[1:].B_breach == 0)]
-if len(ok):
-    best = ok.sort_values("worst_day", ascending=False).iloc[0]; key = LOCKS[1 + ok.sort_values("worst_day", ascending=False).index[0] - 1]
-    print(f"\nbest lock: {best.variant}; retrying add-ons on it")
-    Rm, LOm = R.copy(), LO.copy(); (Rm[ib], LOm[ib]), (Rm[ig], LOm[ig]) = SER[key]
-    slv = load_csv(SP + "/fut/XAGUSD.csv"); spx = load_csv(SP + "/fut/USA500IDXUSD.csv")
-    exec(open(SP + "/cook3.py").read().split("def dip2")[1].join(["def dip2", ""]).split("spx = load_csv")[0]) if False else None
-    src3 = open(SP + "/cook3.py").read(); exec("def dip2" + src3.split("def dip2", 1)[1].split("spx = load_csv")[0])
-    adds = {"silver dip 1h": P.trade_series(dip2(slv, "1h", 2, 10, 0.12, 1), 0.00025, slv, idx), "nq dip 1h": P.trade_series(dip2(nq, "1h", 2, 10, 0.08, 1), 0.00012, nq, idx)}
-    jobs2 = [(f"{best.variant} + {k} {wt}", np.vstack([Rm, v[0]]), np.vstack([LOm, v[1]]), np.append(W, wt)) for k, v in adds.items() for wt in (0.25, 0.5)]
-    with Pool(3) as p: out2 = p.map(evaluate, jobs2)
-    print(pd.DataFrame(out2).round(1).to_string(index=False))
-else:
-    print("\nno lock kept the funded return within 3 points without breaches")
+import os, numpy as np, pandas as pd
+exec(open("onestep2.py").read().split("\nRULES = {")[0])
+TL = pd.read_pickle("dir_trades.pkl")
+def wk_share(c):   # share of a component's R that came from weekday entries
+    v = TL[c]; tot = sum(x[3] for x in v); wd = sum(x[3] for x in v if pd.Timestamp(x[0]).weekday() < 5); return max(0.0, wd / tot) if tot else 1.0
+WKD = {"btc": wk_share("btc"), "sol": wk_share("sol"), "btcgap": 0.0}
+print("weekday share kept:", {k: round(v, 2) for k, v in WKD.items()}, flush=True)
+def acct(h0, target=None, days=None, every=14, DL=0.03, ML=0.10, G=0.02, fguard=None, flimit=0.015, slip=0.003, Z=0.07, lock=None):
+    floor = 1 - ML; eq = 1.0; opn = 0.0; day = -1; hd = -1; halfmode = False; mm = 0.0; viol = 0; pays = []; ndays = 0; pdays = 0; dstart = 1.0
+    end = len(EQ_R) if days is None else min(h0 + days * 24, len(EQ_R)); nextpay = h0 + every * 24
+    for i in range(h0, end):
+        if days is not None and i >= nextpay:
+            nextpay += every * 24; bal = eq - opn
+            if bal > 1.0 and eq > 1.0: w = min(bal, eq) - 1.0; pays.append(w); eq -= w
+        if DAYN[i] != day:
+            if day != -1 and target is not None and eq - opn >= 1 + target and pdays >= 3: return "pass", i, viol, pays
+            pdays += (eq - opn) - dstart >= 0.005; dstart = eq - opn; day = DAYN[i]; ndays += 1; ref = max(eq - opn, eq)          # FundedSquad: higher of balance and equity at the reset
+            g = eq; room = g - floor
+            if room <= 0.3 * ML: halfmode = True
+            elif room >= 0.9 * ML: halfmode = False
+            mm = max(0.0, min(1.0, room / Z)) * (0.5 if halfmode else 1.0)
+        if hd == day or (EQ_R[i] == 0 and EQ_L[i] == 0):
+            if hd == day: opn = 0.0
+            continue
+        low = eq * (1 + mm * EQ_L[i]); after = eq * (1 + mm * EQ_R[i])
+        if low <= ref - G:
+            eq = min(after, max(low, ref - G - slip)); opn = 0.0; hd = day
+            if eq <= floor: return "breach", i, viol, pays
+            continue
+        if low <= floor or low <= ref - DL: return "breach", i, viol, pays
+        opn_new = opn + eq * mm * D_FLT[i]; fl = min(opn_new + (low - after), opn_new)
+        if fguard is not None and fl <= -fguard:
+            eq = (eq - opn) - fguard - slip; opn = 0.0; hd = day
+            if eq <= floor: return "breach", i, viol, pays
+            continue
+        if days is not None and fl <= -flimit:
+            viol += 1
+            if viol >= 2: return "terminated (floating rule)", i, viol, pays
+        opn = opn_new; eq = after
+        if lock is not None and eq - ref >= lock: opn = 0.0; hd = day          # daily profit target hit: close all, done for the day
+        if eq <= floor + 0.005: return "stopped", i, viol, pays
+    return ("open" if target is not None else "kept"), end - 1, viol, pays
+def weights(scale):
+    w = PORT["21"]; return {c: min(w[c] * scale, 1.0 / BASE[c]) * WKD.get(c, 1.0) for c in NAMES}
+def ev(args):
+    es, fs, fg = args
+    starts = [idx.searchsorted(s) for s in pd.date_range("2020-09-01", "2025-06-30", freq="7D", tz="UTC")]
+    out = []
+    for h0 in starts:
+        build(weights(es)); p, i, _, _ = acct(h0, target=0.09)
+        if p != "pass": out.append((p, None, None, 0.0, 0)); continue
+        build(weights(fs)); o, j, v, pays = acct(i + 48, days=365, fguard=fg)
+        out.append(("pass", (i - h0) / 24, o, 200000 * sum(pays), v))
+    d = pd.DataFrame(out, columns=["ev", "days", "funded", "paid", "viol"]); ok = d[d.ev == "pass"]
+    you = 0.8 * ok.paid + np.where(ok.paid > 0, 0.2 * 0.09 * 200000, 0)
+    return dict(eval_scale=es, funded_scale=fs, float_guard=fg, eval_pass=round(100 * len(ok) / len(d), 1), eval_med_days=round(ok.days.median()),
+                funded_kept=round(100 * (ok.funded == "kept").mean(), 1), floating_terminated=round(100 * ok.funded.str.startswith("term").mean(), 1),
+                one_violation=round(100 * (ok.viol == 1).mean(), 1), you_get_per_yr_median=round(float(np.median(you))), you_get_25pct=round(float(np.percentile(you, 25))))
+def ev2(a):
+    lock, G = a
+    starts = [idx.searchsorted(x) for x in pd.date_range("2020-09-01", "2025-06-30", freq="7D", tz="UTC")]; out = []
+    for h0 in starts:
+        build(weights(3.5)); p, i, _, _ = acct(h0, target=0.09, lock=lock, G=G)
+        if p != "pass": out.append((p, None, 0)); continue
+        build(weights(1.5)); o, j, v, pays = acct(i + 48, days=365, fguard=0.012, lock=lock, G=G)
+        out.append((o, (i - h0) / 24, 0.8 * 200000 * sum(pays)))
+    d = pd.DataFrame(out, columns=["o", "days", "you"]); ok = d[d.days.notna()]
+    return dict(profit_lock=lock, own_daily_stop=G, passed=round(100 * len(ok) / len(d), 1), med_days=ok.days.median(), p90_days=ok.days.quantile(.9),
+                funded_kept=round(100 * (ok.o == "kept").mean(), 1), you_per_yr=round(ok.you.median()))
+if __name__ == "__main__":
+    J = [(None, 0.02), (0.005, 0.02), (0.01, 0.02), (0.015, 0.02), (0.02, 0.02), (None, 0.015)]
+    with Pool(os.cpu_count()) as p: print(pd.DataFrame(p.map(ev2, J)).to_string(index=False))
