@@ -38,6 +38,7 @@ input bool   InpNoWeekendEntries = true;  // No new trades on Saturday/Sunday (U
 input bool   InpDailyResetUTC    = true;  // Daily loss day starts at 00:00 UTC instead of server midnight (FundedSquad: true)
 input bool   InpDailyRefHigher   = true;  // Daily loss measured from the HIGHER of day-start balance and equity (FundedSquad: true)
 input int    InpMinHoldSec       = 130;      // Minimum hold: no trade closes by its SL/TP before this many seconds (0 = off; FundedSquad: 130)
+input bool   InpTrailingMaxLoss  = false;  // Max-loss levels trail the highest equity and lock at the starting balance (TopOneTrader NOVA: true)
 input double InpHoldStopMult     = 1.5;    // During the minimum hold the server stop sits this many x the normal stop distance away (emergency only)
 
 //--- time helpers -------------------------------------------------------------
@@ -121,13 +122,25 @@ double DayStartEquity()      // equity (open trades included) at the first check
    return GlobalVariableGet(n);
   }
 double DailyRef() { return InpDailyRefHigher ? MathMax(DayStartBalance(), DayStartEquity()) : DayStartBalance(); }   // reference for the daily loss
+double PeakEquity()   // highest equity seen on this account (shared by all EAs in this terminal)
+  {
+   double eq = AccountInfoDouble(ACCOUNT_EQUITY), pk = GlobalVariableCheck("PP_PEAK") ? GlobalVariableGet("PP_PEAK") : InpAccountSize;
+   if(eq > pk) { pk = eq; GlobalVariableSet("PP_PEAK", pk); }
+   return pk;
+  }
+double LossFloor(double pct)   // equity level of a max-loss line: static from the start, or trailing the peak (locks at the start balance)
+  {
+   double f = InpAccountSize * (1 - pct / 100);
+   if(InpTrailingMaxLoss) f = MathMax(f, MathMin(InpAccountSize, PeakEquity() - InpAccountSize * pct / 100));
+   return f;
+  }
 bool GuardBlocks()
   {
    double eq = AccountInfoDouble(ACCOUNT_EQUITY);
    string dayHalt = "PP_DH_" + IntegerToString(GuardDay());
    if(GlobalVariableCheck("PP_HALT")) { CloseMine("Guard (max loss)"); return true; }
    if(GlobalVariableCheck(dayHalt))   { CloseMine("Guard (daily)");    return true; }
-   if(eq <= InpAccountSize * (1 - InpMaxStopPct / 100))
+   if(eq <= LossFloor(InpMaxStopPct))
      { GlobalVariableSet("PP_HALT", 1); CloseMine("Guard (max loss)"); return true; }
    if(DailyRef() - eq >= InpAccountSize * InpDailyStopPct / 100)
      { GlobalVariableSet(dayHalt, 1); CloseMine("Guard (daily)"); return true; }
@@ -167,11 +180,11 @@ double RiskMoney()
    double bal = AccountInfoDouble(ACCOUNT_BALANCE), eq = AccountInfoDouble(ACCOUNT_EQUITY);
    double r = bal * InpRiskPct * InpRiskMultiplier / 100;
    double dayRoom = InpAccountSize * InpDailyStopPct / 100 - MathMax(0, DailyRef() - eq);
-   double maxRoom = eq - InpAccountSize * (1 - InpMaxStopPct / 100);
+   double maxRoom = eq - LossFloor(InpMaxStopPct);
    r = MathMin(r, MathMin(dayRoom, maxRoom) * InpGuardShare / 100);
    if(InpRoomCapPct > 0)      // room cap: full size until the day starts 3% down (equity), then shrink linearly to 0 at the firm limit
      {
-      double room = DayStartEquity() - InpAccountSize * (1 - InpFirmMaxLossPct / 100);
+      double room = DayStartEquity() - LossFloor(InpFirmMaxLossPct);
       r *= MathMax(0, MathMin(1, room / (InpAccountSize * InpRoomCapPct / 100)));
      }
    if(InpHalfBelowPct > 0)    // half-size mode, shared by all EAs: on below -4% (day-start equity), off again above -2%

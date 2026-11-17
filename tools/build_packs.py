@@ -9,24 +9,25 @@ SRC = {"btc": "MT5_EAs/BTC_Dip_v3.mq5", "gdip": "MT5_EAs/Gold_Dip.mq5", "nq2h": 
 SYMB = {"btc": "BTCUSD", "gdip": "XAUUSD", "nq2h": "US100", "spx1h": "US500", "oil1h": "USOIL/WTI", "gasia": "XAUUSD", "gmom": "XAUUSD", "orb15": "US100",
         "nqbo15": "US100", "daxorb": "GER40/DE40", "spxbo5": "US500", "btcgap": "BTCUSD", "sol": "SOLUSD", "goldvwap": "XAUUSD", "spxfade": "US500",
         "nikkei": "JP225", "solrev": "SOLUSD", "btcrev": "BTCUSD", "daxpm": "GER40/DE40", "nqfade": "US100", "xrprev": "XRPUSD"}
-def bake(text, risk, guards, magic=None, extra=()):
+def bake(text, risk, guards, magic=None, extra=(), moff=0):
     text = re.sub(r"input double InpRiskPct = [0-9.]+;", f"input double InpRiskPct = {risk};", text)
     for name, val in guards.items(): text = re.sub(rf"(input \w+\s+{name}\s*=\s*)[^;]+;", rf"\g<1>{val};", text)
     if magic: text = re.sub(r"input long   InpMagic   = \d+;", f"input long   InpMagic   = {magic};", text)
+    if moff: text = re.sub(r"input long   InpMagic   = (\d+);", lambda m: f"input long   InpMagic   = {int(m.group(1)) + moff};", text)
     for a, b in extra: assert a in text, a; text = text.replace(a, b)
     return text
-def build(name, risks, G, guard_vals, header, funded=None):
+def build(name, risks, G, guard_vals, header, funded=None, moff=0):
     out = f"MT5_EAs/packs/{name}"; shutil.rmtree(out, ignore_errors=True); os.makedirs(out); rows = []
     for k, r in risks.items():
         if k == "nqfade":
-            t = bake(open(SRC["spxfade"]).read(), r, G, 1121, (("input int    InpLookMin = 15;", "input int    InpLookMin = 10;"), ("input double InpMovePts = 25;", "input double InpMovePts = 98;"))); fn = "NQ_Open_Fade_1m.mq5"
+            t = bake(open(SRC["spxfade"]).read(), r, G, 1121 + moff, (("input int    InpLookMin = 15;", "input int    InpLookMin = 10;"), ("input double InpMovePts = 25;", "input double InpMovePts = 98;"))); fn = "NQ_Open_Fade_1m.mq5"
         elif k == "xrprev":
-            t = bake(open(SRC["btcrev"]).read(), r, G, 1126, (("input double InpMovePct  = 6.97;", "input double InpMovePct  = 14.1;"),)).replace('"BTC Revert"', '"XRP Revert"'); fn = "XRP_Revert_5m.mq5"
-        else: t = bake(open(SRC[k]).read(), r, G); fn = os.path.basename(SRC[k])
+            t = bake(open(SRC["btcrev"]).read(), r, G, 1126 + moff, (("input double InpMovePct  = 6.97;", "input double InpMovePct  = 14.1;"),)).replace('"BTC Revert"', '"XRP Revert"'); fn = "XRP_Revert_5m.mq5"
+        else: t = bake(open(SRC[k]).read(), r, G, moff=moff); fn = os.path.basename(SRC[k])
         open(f"{out}/{fn}", "w").write(t); tf = re.search(r"#define REQUIRED_TF PERIOD_(\w+)", t).group(1)
         rows.append((fn, SYMB[k] + " " + tf, r, funded.get(k) if funded else None))
     g = open("MT5_EAs/guards/Account_Equity_Guard.mq5").read()
-    for nm, v in guard_vals.items(): g = re.sub(rf"(input double {nm}\s*=\s*)[^;]+;", rf"\g<1>{v};", g)
+    for nm, v in guard_vals.items(): g = re.sub(rf"(input \w+\s+{nm}\s*=\s*)[^;]+;", rf"\g<1>{v};", g)
     open(f"{out}/Account_Equity_Guard.mq5", "w").write(g)
     lines = [header, "", f"{'EA file':32s} {'Chart':20s} InpRiskPct" + ("   funded InpRiskPct" if funded else "")]
     lines += [f"{fn:32s} {ch:20s} {r:<10}" + (f"   {fr}" if funded else "") for fn, ch, r, fr in sorted(rows, key=lambda x: -x[2])]
@@ -49,8 +50,31 @@ CTI_R = {"btcrev": 1.0, "xrprev": 1.0, "spxfade": 1.0, "nqfade": 1.0, "btc": .49
          "orb15": .28, "spx1h": .26, "oil1h": .25, "sol": .22, "daxorb": .19, "nikkei": .17, "gasia": .17, "daxpm": .16, "nqbo15": .13, "spxbo5": .12}
 FS_R = {"btcrev": 1.0, "xrprev": 1.0, "spxfade": 1.0, "nqfade": 1.0, "btc": .68, "goldvwap": .58, "nq2h": .55, "gdip": .44, "solrev": .43, "gmom": .42,
         "orb15": .39, "spx1h": .36, "oil1h": .35, "sol": .30, "daxorb": .27, "nikkei": .24, "gasia": .23, "daxpm": .22, "nqbo15": .18, "spxbo5": .16}
+NOVA_R = {"btcrev": 1.0, "spxfade": 1.0, "nqfade": 0.96, "btc": .39, "goldvwap": .33, "nq2h": .31, "gdip": .25, "btcgap": .25, "gmom": .24, "orb15": .22,
+          "spx1h": .21, "daxorb": .16, "nikkei": .14, "gasia": .13, "daxpm": .13, "nqbo15": .10, "spxbo5": .09}
+NOVA_G = {"InpAccountSize": 300000, "InpDailyStopPct": 50.0, "InpMaxStopPct": 5.7, "InpRoomCapPct": 4.8, "InpHalfBelowPct": 0, "InpHalfUntilPct": 0,
+          "InpFirmMaxLossPct": 6.0, "InpTrailingMaxLoss": "true", "InpNoOpposite": "true", "InpMaxPosPerSymbol": 2, "InpNewsBlockMin": 2, "InpMinHoldSec": 310}
+NOVA_MULT = [1.0, 1.0, 0.95, 0.95, 0.9, 0.9]   # slightly different size per account
 FS_FUND = {k: round(v * 1.5 / 3.5, 2) for k, v in FS_R.items()}   # funded scale 1.5 vs eval 3.5 (best payouts with the 1.2% floating guard)
+def build_nova():
+    for k, mult in enumerate(NOVA_MULT, 1):
+        build(f"TopOneTrader_NOVA_300K_Eval_Account{k}", NOVA_R, dict(NOVA_G, InpRiskMultiplier=mult),
+              {"InpStartBalance": 300000, "InpDailyLossPct": 50.0, "InpMaxLossPct": 5.9, "InpMaxFloatingPct": 1.8, "InpFloatHaltDay": "false", "InpTrailLossPct": 5.5},
+              f"""TOPONETRADER NOVA 300K - EVALUATION ONLY - ACCOUNT {k} of 6 - 17 EAs + Account Equity Guard
+Use this folder on account {k} only. Every account's folder has its own magic numbers (+{100 * k}) and size (InpRiskMultiplier = {mult}),
+so no two accounts send identical orders.
+Rules: 5% target, 6% trailing max loss (follows the highest equity, locks at $300,000), no daily limit, EquityShield closes trades
+at a 2-2.5% open loss, stop loss required on every order, no trades shorter than 5 minutes again and again, weekend holding allowed.
+Built in: every order carries a real stop loss on the server; nothing closes before 310 s (an emergency stop at 1.5x sits on the
+order for the first 310 s); trailing max-loss sizing (InpTrailingMaxLoss); no opposite trades on one symbol.
+Guard: closes everything at a 1.8% open loss and keeps trading (beats EquityShield to it), closes everything for good at 5.5%
+below the highest equity (before the firm's 6%). If it ever halts: reset the evaluation (free) and reset the guard.
+IMPORTANT: one MT5 terminal installation per account (the EAs share safety flags inside a terminal).
+Backtest: ~95% passed, median ~44 days (slowest 10%: ~6 months). Failed attempt -> free reset.
+WHEN YOU PASS: remove EVERY EA from the account before trading it. EAs are not allowed on NOVA funded accounts.
+Symbols (their MT5): BTCUSD, XAUUSD, US100, US500, GER40, JPN225.""", moff=100 * k)
 if __name__ == "__main__":
+    build_nova()
     build("FTMO_2Step_FastPass19", FTMO_EVAL, FTMO_G, {"InpStartBalance": 200000, "InpDailyLossPct": 4.0, "InpMaxLossPct": 8.0, "InpMaxFloatingPct": 0},
           """FTMO 2-STEP 200K - FAST PASS 19 (19 EAs + Account Equity Guard)
 Risk and guard inputs are already set inside each file for the EVALUATION. Every EA: attach to its chart, Algo Trading on.

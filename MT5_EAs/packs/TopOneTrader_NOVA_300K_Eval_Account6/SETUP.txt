@@ -1,0 +1,35 @@
+TOPONETRADER NOVA 300K - EVALUATION ONLY - ACCOUNT 6 of 6 - 17 EAs + Account Equity Guard
+Use this folder on account 6 only. Every account's folder has its own magic numbers (+600) and size (InpRiskMultiplier = 0.9),
+so no two accounts send identical orders.
+Rules: 5% target, 6% trailing max loss (follows the highest equity, locks at $300,000), no daily limit, EquityShield closes trades
+at a 2-2.5% open loss, stop loss required on every order, no trades shorter than 5 minutes again and again, weekend holding allowed.
+Built in: every order carries a real stop loss on the server; nothing closes before 310 s (an emergency stop at 1.5x sits on the
+order for the first 310 s); trailing max-loss sizing (InpTrailingMaxLoss); no opposite trades on one symbol.
+Guard: closes everything at a 1.8% open loss and keeps trading (beats EquityShield to it), closes everything for good at 5.5%
+below the highest equity (before the firm's 6%). If it ever halts: reset the evaluation (free) and reset the guard.
+IMPORTANT: one MT5 terminal installation per account (the EAs share safety flags inside a terminal).
+Backtest: ~95% passed, median ~44 days (slowest 10%: ~6 months). Failed attempt -> free reset.
+WHEN YOU PASS: remove EVERY EA from the account before trading it. EAs are not allowed on NOVA funded accounts.
+Symbols (their MT5): BTCUSD, XAUUSD, US100, US500, GER40, JPN225.
+
+EA file                          Chart                InpRiskPct
+BTC_Revert_5m.mq5                BTCUSD M5            1.0       
+Open_Fade_1m.mq5                 US500 M1             1.0       
+NQ_Open_Fade_1m.mq5              US100 M1             0.96      
+BTC_Dip_v3.mq5                   BTCUSD H2            0.39      
+Gold_VWAP_Pullback_5m.mq5        XAUUSD M5            0.33      
+NQ_Dip_2h.mq5                    US100 H2             0.31      
+Gold_Dip.mq5                     XAUUSD H1            0.25      
+BTC_Weekend_Gap.mq5              BTCUSD H1            0.25      
+Gold_Intraday_Momentum.mq5       XAUUSD H1            0.24      
+NQ_Opening_Range.mq5             US100 M5             0.22      
+SPX_Dip_1h.mq5                   US500 H1             0.21      
+DAX_Opening_Range.mq5            GER40/DE40 M15       0.16      
+Nikkei_Breakout_5m.mq5           JP225 M5             0.14      
+Gold_Asia_Breakout.mq5           XAUUSD H1            0.13      
+DAX_Premarket_15m.mq5            GER40/DE40 M15       0.13      
+NQ_Breakout_15m.mq5              US100 M15            0.1       
+SPX_Breakout_5m.mq5              US500 M5             0.09      
+
+Account_Equity_Guard.mq5 -> any one extra chart (watches the whole account). Its settings: InpStartBalance=300000, InpDailyLossPct=50.0, InpMaxLossPct=5.9, InpMaxFloatingPct=1.8, InpFloatHaltDay=false, InpTrailLossPct=5.5
+Already set inside every EA: InpAccountSize=300000, InpDailyStopPct=50.0, InpMaxStopPct=5.7, InpRoomCapPct=4.8, InpHalfBelowPct=0, InpHalfUntilPct=0, InpFirmMaxLossPct=6.0, InpTrailingMaxLoss=true, InpNoOpposite=true, InpMaxPosPerSymbol=2, InpNewsBlockMin=2, InpMinHoldSec=310, InpRiskMultiplier=0.9

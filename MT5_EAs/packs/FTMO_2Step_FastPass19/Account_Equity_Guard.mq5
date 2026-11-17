@@ -6,6 +6,7 @@
 //|  - Total: once equity is InpMaxLossPct % below the start balance, it does the same for good (until you reset it).
 //|  - Optional floating-loss cap (FundedSquad's 1.5% max floating loss rule): closes everything at InpMaxFloatingPct and stops
 //|    the generated EAs for the rest of the server day (sets their PP_DH_ day-halt flag).
+//|  - Optional trailing max loss (TopOneTrader NOVA): the line follows the highest equity and stops at the start balance.
 //|  - Optional profit lock: once equity reaches the target, it closes everything so a phase is not given back.
 //| It does not stop other EAs from sending orders: it closes them as they appear. Remove other EAs after a halt.
 //+------------------------------------------------------------------+
@@ -15,6 +16,8 @@ input double InpDailyLossPct   = 4.0;    // Close everything at this loss today 
 input double InpMaxLossPct     = 8.0;    // Close everything for good at this total loss (firm limit usually 10)
 input double InpProfitLockPct  = 0;      // Close everything once equity is this % above the start (0 = off; e.g. 10 for phase 1)
 input double InpMaxFloatingPct = 0;      // Close everything once ALL open trades together are this % of the start in loss, and stop the EAs for the day (0 = off; FundedSquad: 1.2)
+input bool   InpFloatHaltDay   = true;   // After the floating cap: stop the EAs for the rest of the day (false = just close the trades and keep trading)
+input double InpTrailLossPct   = 0;      // Trailing max loss: close everything for good once equity is this % (of the start) below its highest point; locks at the start balance (0 = off; TopOneTrader NOVA eval: 5.5)
 #include <Trade/Trade.mqh>
 CTrade trade;
 int DayKey(datetime t) { MqlDateTime s; TimeToStruct(t, s); return s.year * 10000 + s.mon * 100 + s.day; }
@@ -53,11 +56,18 @@ void Check()
      { GlobalVariableSet(GV("HALT"), 1); Print("MAX LOSS reached (equity ", eq, "): everything closed, trading halted for good"); CloseEverything("Max-loss halt"); return; }
    if(DayStartBalance() - eq >= InpStartBalance * InpDailyLossPct / 100)
      { GlobalVariableSet(dayHalt, 1); Print("DAILY LOSS reached (equity ", eq, "): everything closed until the next server day"); CloseEverything("Daily halt"); return; }
+   if(InpTrailLossPct > 0)
+     {
+      double pk = GlobalVariableCheck(GV("PEAK")) ? GlobalVariableGet(GV("PEAK")) : InpStartBalance;
+      if(eq > pk) { pk = eq; GlobalVariableSet(GV("PEAK"), pk); }
+      double fl = MathMin(InpStartBalance, pk - InpStartBalance * InpTrailLossPct / 100);
+      if(eq <= fl) { GlobalVariableSet(GV("HALT"), 1); Print("TRAILING MAX LOSS reached (equity ", eq, ", peak ", pk, "): everything closed, trading halted for good"); CloseEverything("Trailing max-loss halt"); return; }
+     }
    double flt = eq - AccountInfoDouble(ACCOUNT_BALANCE);
    if(InpMaxFloatingPct > 0 && flt <= -InpStartBalance * InpMaxFloatingPct / 100)
      {
-      GlobalVariableSet(dayHalt, 1); GlobalVariableSet("PP_DH_" + IntegerToString(DayKey(TimeTradeServer())), 1); GlobalVariableSet("PP_DH_" + IntegerToString(DayKey(TimeGMT())), 1);   // also halts the EAs today
-      Print("FLOATING LOSS cap reached (open P&L ", DoubleToString(flt, 2), "): everything closed, EAs stopped until the next server day");
+      if(InpFloatHaltDay) { GlobalVariableSet(dayHalt, 1); GlobalVariableSet("PP_DH_" + IntegerToString(DayKey(TimeTradeServer())), 1); GlobalVariableSet("PP_DH_" + IntegerToString(DayKey(TimeGMT())), 1); }   // also halts the EAs today
+      Print("FLOATING LOSS cap reached (open P&L ", DoubleToString(flt, 2), "): everything closed", InpFloatHaltDay ? ", EAs stopped until the next server day" : "");
       CloseEverything("Floating cap"); return;
      }
    if(InpProfitLockPct > 0 && eq >= InpStartBalance * (1 + InpProfitLockPct / 100))
