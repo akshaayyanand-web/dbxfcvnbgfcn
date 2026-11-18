@@ -35,7 +35,8 @@ def _par_bond_ret(y, n):
 
 def _french(fn, block="Average Value Weighted Returns -- Daily"):
     lines = open(f"{RDATA}/french/{fn}").read().splitlines()
-    i0 = next(i for i, l in enumerate(lines) if block in l) + 1
+    i0 = next(i for i, l in enumerate(lines) if block in l)
+    if "," not in lines[i0]: i0 += 1                     # block title line -> header is the next line
     hdr = [h.strip() for h in lines[i0].split(",")]; rows = []
     for l in lines[i0 + 1:]:
         p = l.split(",")
@@ -66,6 +67,7 @@ def build():
     P["ind49"] = _french("49_Industry_Portfolios_Daily.csv"); P["ind10"] = _french("10_Industry_Portfolios_Daily.csv")
     P["mom10"] = _french("10_Portfolios_Prior_12_2_Daily.csv")
     f5 = _french("F-F_Research_Data_5_Factors_2x3_daily.csv", block="Mkt-RF"); P["ff5"] = f5
+    P["ff3"] = _french("F-F_Research_Data_Factors_daily.csv", block="Mkt-RF")
     fund = {}
     for f in sorted(glob.glob(f"{SCR}/kf/*-fundingRate-*.csv")):
         s = os.path.basename(f).split("-")[0]

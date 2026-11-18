@@ -1,0 +1,198 @@
+{
+"STRAT-0002@ind49": {
+"full_sharpe": 0.901,
+"full_sharpe_lag1": 0.896,
+"test_sharpe": 0.47,
+"test_sharpe_lag1": 0.45,
+"fragile": false
+},
+"STRAT-0012@ind49": {
+"full_sharpe": 0.96,
+"full_sharpe_lag1": 0.957,
+"test_sharpe": 0.401,
+"test_sharpe_lag1": 0.375,
+"fragile": false
+},
+"STRAT-0032@ind49": {
+"full_sharpe": 0.955,
+"full_sharpe_lag1": 0.902,
+"test_sharpe": 0.357,
+"test_sharpe_lag1": 0.335,
+"fragile": false
+},
+"STRAT-0036@macro_long": {
+"full_sharpe": 0.926,
+"full_sharpe_lag1": 0.864,
+"test_sharpe": 0.338,
+"test_sharpe_lag1": 0.411,
+"fragile": false
+},
+"STRAT-0321@swaps": {
+"full_sharpe": 1.512,
+"full_sharpe_lag1": -0.456,
+"test_sharpe": 0.849,
+"test_sharpe_lag1": -1.104,
+"fragile": true
+},
+"STRAT-0322@swaps": {
+"full_sharpe": 2.887,
+"full_sharpe_lag1": -1.878,
+"test_sharpe": 2.635,
+"test_sharpe_lag1": -2.572,
+"fragile": true
+},
+"STRAT-0323@swaps": {
+"full_sharpe": 3.736,
+"full_sharpe_lag1": -1.167,
+"test_sharpe": 3.783,
+"test_sharpe_lag1": -1.741,
+"fragile": true
+},
+"STRAT-0325@swaps": {
+"full_sharpe": 2.621,
+"full_sharpe_lag1": -1.159,
+"test_sharpe": 2.445,
+"test_sharpe_lag1": -1.851,
+"fragile": true
+},
+"STRAT-0326@swaps": {
+"full_sharpe": 0.48,
+"full_sharpe_lag1": 0.115,
+"test_sharpe": 0.591,
+"test_sharpe_lag1": 0.274,
+"fragile": true
+},
+"STRAT-0329@swaps": {
+"full_sharpe": 2.589,
+"full_sharpe_lag1": -0.637,
+"test_sharpe": 2.656,
+"test_sharpe_lag1": -1.287,
+"fragile": true
+},
+"STRAT-0359@credit": {
+"full_sharpe": 0.534,
+"full_sharpe_lag1": 0.447,
+"test_sharpe": 0.684,
+"test_sharpe_lag1": 0.445,
+"fragile": false
+},
+"STRAT-0495@macro_long": {
+"full_sharpe": 0.426,
+"full_sharpe_lag1": 0.192,
+"test_sharpe": 0.301,
+"test_sharpe_lag1": 0.127,
+"fragile": true
+},
+"STRAT-0193@commod": {
+"full_sharpe": 0.395,
+"full_sharpe_lag1": 0.196,
+"test_sharpe": 0.371,
+"test_sharpe_lag1": 0.276,
+"fragile": true
+},
+"STRAT-0195@commod": {
+"full_sharpe": 0.509,
+"full_sharpe_lag1": 0.31,
+"test_sharpe": 0.616,
+"test_sharpe_lag1": 0.653,
+"fragile": false
+},
+"STRAT-0202@energy": {
+"full_sharpe": 1.244,
+"full_sharpe_lag1": 0.436,
+"test_sharpe": 1.085,
+"test_sharpe_lag1": 0.294,
+"fragile": true
+},
+"STRAT-0203@energy": {
+"full_sharpe": 0.922,
+"full_sharpe_lag1": 0.705,
+"test_sharpe": 0.813,
+"test_sharpe_lag1": 0.564,
+"fragile": false
+},
+"STRAT-0205@energy": {
+"full_sharpe": 0.631,
+"full_sharpe_lag1": 0.222,
+"test_sharpe": 0.346,
+"test_sharpe_lag1": -0.153,
+"fragile": true
+},
+"STRAT-0206@energy": {
+"full_sharpe": 0.857,
+"full_sharpe_lag1": 0.654,
+"test_sharpe": 0.609,
+"test_sharpe_lag1": 0.378,
+"fragile": false
+},
+"STRAT-0210@energy": {
+"full_sharpe": 0.705,
+"full_sharpe_lag1": 0.665,
+"test_sharpe": 0.564,
+"test_sharpe_lag1": 0.475,
+"fragile": false
+},
+"STRAT-0232@energy": {
+"full_sharpe": 1.601,
+"full_sharpe_lag1": 0.373,
+"test_sharpe": 2.504,
+"test_sharpe_lag1": 1.022,
+"fragile": true
+},
+"STRAT-0233@energy": {
+"full_sharpe": 0.87,
+"full_sharpe_lag1": 0.605,
+"test_sharpe": 1.209,
+"test_sharpe_lag1": 1.011,
+"fragile": false
+},
+"STRAT-0235@energy": {
+"full_sharpe": 0.632,
+"full_sharpe_lag1": 0.467,
+"test_sharpe": 0.949,
+"test_sharpe_lag1": 0.601,
+"fragile": false
+},
+"STRAT-0236@energy": {
+"full_sharpe": 0.842,
+"full_sharpe_lag1": 0.572,
+"test_sharpe": 0.956,
+"test_sharpe_lag1": 0.781,
+"fragile": false
+},
+"STRAT-0239@energy": {
+"full_sharpe": 0.678,
+"full_sharpe_lag1": 0.555,
+"test_sharpe": 0.578,
+"test_sharpe_lag1": 0.304,
+"fragile": false
+},
+"STRAT-0240@energy": {
+"full_sharpe": 0.605,
+"full_sharpe_lag1": 0.503,
+"test_sharpe": 1.011,
+"test_sharpe_lag1": 1.088,
+"fragile": false
+},
+"STRAT-0252@fx_tr": {
+"full_sharpe": 0.538,
+"full_sharpe_lag1": 0.519,
+"test_sharpe": 0.541,
+"test_sharpe_lag1": 0.535,
+"fragile": false
+},
+"STRAT-0256@fx_tr": {
+"full_sharpe": 0.459,
+"full_sharpe_lag1": 0.426,
+"test_sharpe": 0.503,
+"test_sharpe_lag1": 0.522,
+"fragile": false
+},
+"STRAT-0260@fx_tr": {
+"full_sharpe": 0.529,
+"full_sharpe_lag1": 0.494,
+"test_sharpe": 0.56,
+"test_sharpe_lag1": 0.53,
+"fragile": false
+}
+}

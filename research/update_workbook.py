@@ -2,14 +2,31 @@
 import json, os, collections, openpyxl
 from openpyxl.styles import PatternFill, Font
 H = os.path.dirname(__file__); SRC = f"{H}/catalogue_source.xlsx"; OUT = f"{H}/catalogue_results.xlsx"
-recs = [json.loads(l) for l in open(f"{H}/results/results.jsonl")]
+recs_all = [json.loads(l) for l in open(f"{H}/results/results.jsonl")]
+UQ = json.load(open(f"{H}/results/uniqueness.json")) if os.path.exists(f"{H}/results/uniqueness.json") else {}
+RB = json.load(open(f"{H}/results/robustness.json")) if os.path.exists(f"{H}/results/robustness.json") else {}
+OVERRIDE = {**{f"STRAT-{i:04d}": "REJECTED - artifact: FRED swap rates (11am fixing) vs Treasury closes are non-synchronous; edge vanishes with 1-day delay (see 0330 and Robustness)" for i in range(321, 330)},
+            "STRAT-0560": "REJECTED - instrument mismatch: weekly swaps struck at the 30-day VIX do not exist", "STRAT-0580": "REJECTED - instrument mismatch: weekly front swaps struck at the 30-day VIX do not exist"}
+recs = []
+for r in recs_all:
+    if r.get("universe") == "BLOCKED": continue
+    k = f'{r["id"]}@{r["universe"]}'
+    if k in UQ: r["max_corr"], r["max_corr_with"] = UQ[k]
+    rb = RB.get(k)
+    if rb: r["delay_test"] = rb
+    if rb and rb["fragile"]: r["passed"] = False; r["fragile"] = True
+    if r["id"] in OVERRIDE: r["passed"] = False; r["override"] = OVERRIDE[r["id"]]
+    recs.append(r)
+blocked = {r["id"]: r for r in recs_all if r.get("universe") == "BLOCKED"}
 by = collections.OrderedDict()
-for r in recs: by.setdefault(r["id"], []).append(r)
+for r in sorted(recs, key=lambda r: r["id"]): by.setdefault(r["id"], []).append(r)
 def pct(x): return None if x is None else round(100 * x, 1)
 def classify(rs):
+    if any(r.get("override") for r in rs): return next(r for r in rs if r.get("override"))["override"], rs[0]
     prim = rs[0]; win = [r for r in rs if r["passed"]]
     best = max(win, key=lambda r: r["walkforward"]["sharpe"]) if win else max(rs, key=lambda r: r["walkforward"]["sharpe"])
-    var = (abs(best["max_corr"]) >= 0.7, best["max_corr_with"], best["max_corr"])
+    var = (abs(best["max_corr"] or 0) >= 0.7, best["max_corr_with"], best["max_corr"])
+    if not win and any(r.get("fragile") for r in rs): return "TESTED - FAIL (passed gate but collapses with 1-day execution delay)", best
     if win and not var[0]: st = "TESTED - PASS (distinct)"
     elif win: st = f"TESTED - PASS, VARIATION of {var[1]} (corr {var[2]}) - not counted"
     elif var[0]: st = f"TESTED - FAIL; VARIATION of {var[1]} (corr {var[2]})"
@@ -19,7 +36,7 @@ wb = openpyxl.load_workbook(SRC); ws = wb["1000 Strategy Ideas"]
 G = PatternFill("solid", fgColor="C6EFCE"); Rd = PatternFill("solid", fgColor="FFC7CE"); Y = PatternFill("solid", fgColor="FFEB9C")
 rowof = {ws.cell(i, 1).value: i for i in range(2, ws.max_row + 1)}; summary = collections.Counter(); dups = []
 for sid, rs in by.items():
-    i = rowof[sid]; st, b = classify(rs); summary[st.split(";")[0].split(",")[0]] += 1
+    i = rowof[sid]; st, b = classify(rs); summary["REJECTED - artifact" if st.startswith("REJECTED") else st.split(";")[0].split(",")[0]] += 1
     if "VARIATION" in st: dups.append((sid, b["max_corr_with"], b["max_corr"], b["name"]))
     wf, te, va = b["walkforward"], b["test"], b["val"]
     ws.cell(i, 9).value = st
@@ -32,15 +49,17 @@ for sid, rs in by.items():
     ws.cell(i, 13).value = (f"Rule: {b['mechanism']}. Params chosen on train: {b['params']} ({b['trials']} trials). Alpha t {b['alpha_t']}, beta {b['beta']}"
                             f"{', bench test Sh ' + str(b['bench_test_sharpe']) if b.get('bench_test_sharpe') is not None else ''}. Markets: {mk}. {l300}.")
     ws.cell(i, 9).fill = G if "PASS (distinct)" in st else Y if "PASS" in st else Rd
+for sid, b in blocked.items():
+    i = rowof[sid]; ws.cell(i, 9).value = "BLOCKED - data not available"; ws.cell(i, 13).value = "Needs: " + b["blocked"]; ws.cell(i, 9).fill = PatternFill("solid", fgColor="D9D9D9"); summary["BLOCKED - data not available"] += 1
 # every market test
 d = wb.create_sheet("Market tests"); cols = ["id", "name", "universe", "period", "params", "trials", "train Sh", "val Sh", "test Sh", "test CAGR %", "test maxDD %",
-     "WF CAGR %", "WF Sh", "WF Sortino", "WF Calmar", "WF maxDD %", "test trades", "test win", "test PF", "alpha t", "beta", "grid share Sh>0", "max corr", "corr with", "lev for 300%", "DD at 300% lev", "passed"]
+     "WF CAGR %", "WF Sh", "WF Sortino", "WF Calmar", "WF maxDD %", "test trades", "test win", "test PF", "alpha t", "beta", "grid share Sh>0", "max corr", "corr with", "lev for 300%", "DD at 300% lev", "passed", "test Sh with 1-day delay", "review flag"]
 d.append(cols)
 for r in recs:
     d.append([r["id"], r["name"], r["universe"], r["period"], json.dumps(r["params"]), r["trials"], r["train"]["sharpe"], r["val"]["sharpe"], r["test"]["sharpe"], pct(r["test"]["cagr"]),
               pct(r["test"]["maxdd"]), pct(r["walkforward"]["cagr"]), r["walkforward"]["sharpe"], r["walkforward"]["sortino"], r["walkforward"]["calmar"], pct(r["walkforward"]["maxdd"]),
               r["test_trades"]["trades"], r["test_trades"]["win"], r["test_trades"]["pf"], r["alpha_t"], r["beta"], r["grid_positive_share"], r["max_corr"], r["max_corr_with"],
-              r["lev_for_300"], pct(r["maxdd_at_300"]), r["passed"]])
+              r["lev_for_300"], pct(r["maxdd_at_300"]), r["passed"], (r.get("delay_test") or {}).get("test_sharpe_lag1"), r.get("override") or ("fragile (1-day delay)" if r.get("fragile") else "")])
 for c in d[1]: c.font = Font(bold=True)
 # duplicates -> replacements queue
 q = wb.create_sheet("Duplicates & replacements"); q.append(["Catalogue id", "Duplicate of", "WF return correlation", "Formulation", "Replacement hypothesis (new mechanism, to test as STRAT-R###)"])
@@ -52,8 +71,8 @@ REPL = ["Hurst-exponent regime switch (trend vs revert by fractal persistence)",
         "FX carry via rate differentials (FRED short rates)", "Commodity seasonality calendar (spot energy)", "Time-of-day intraday seasonality (half-hour returns)", "Correlation-breakdown cross-asset reversion"]
 for k, (sid, w, c, n) in enumerate(dups): q.append([sid, w, c, n, REPL[k % len(REPL)] + (" (queued)" if k < len(REPL) else " (queue: needs new idea)")])
 # progress + protocol notes
-p = wb.create_sheet("Progress"); last = max(by)
-for row in [["Last completed id", last], ["Next id", f"STRAT-{int(last[-4:]) + 1:04d}"], ["Market tests run", len(recs)], ["Strategies tested", len(by)],
+p = wb.create_sheet("Progress"); last = max(list(by) + list(blocked))
+for row in [["Last completed id", last], ["Next id", f"STRAT-{int(last[-4:]) + 1:04d}"], ["Market tests run", len(recs)], ["Strategies tested", len(by)], ["Strategies blocked (no data)", len(blocked)],
             *[[k, v] for k, v in summary.items()],
             ["Protocol", "Rules + small grid fixed in code before testing; parameters picked on first 60% (train) by Sharpe; next 20% validation; last 20% untouched test reported once; expanding walk-forward re-selected yearly; costs per side: crypto 6bp, index 1.5bp, metals 2bp, oil 4bp, FX 1bp, Treasuries 1bp, industry portfolios 5bp; positions decided at close t, earn t+1; portfolio vol target 15%, gross cap 4x (crypto 2x)."],
             ["Pass gate", "validation Sharpe>0, test Sharpe>0.3, walk-forward Sharpe>0.3, >=30 test trades, alpha t>=1.5, and long-biased books must beat equal-risk buy-and-hold (alpha t>=2 and higher test Sharpe)."],
