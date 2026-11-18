@@ -20,7 +20,7 @@ def underlyings():
     return out
 UND = underlyings()
 def roll_dates(idx, T): return idx[::T]
-def varswap(name, sign_fn, T=21, cost_vp=0.5, iv_override=None):
+def varswap(name, sign_fn, T=21, cost_vp=0.5, iv_override=None, ann=252):
     """sign_fn(j, roll_index_positions) -> array of +1 (short var) / -1 (long var) / 0 per roll. Returns daily P&L Series (per unit N=1/K)."""
     j = UND[name] if iv_override is None else iv_override; r = j.r.values; iv = (j.iv.values / 100) ** 2; n = len(j)
     rolls = np.arange(0, n - 1, T); sg = sign_fn(j, rolls); pnl = np.zeros(n)
@@ -29,7 +29,7 @@ def varswap(name, sign_fn, T=21, cost_vp=0.5, iv_override=None):
         e = min(s + T, n - 1); K = iv[s]; N = 1 / K; cap = 6.25 * K; prev = 0.0; acc = 0.0
         for t in range(s + 1, e + 1):
             acc += r[t] ** 2; k = t - s
-            V = N * (min(acc * 252 / T + (T - k) / T * iv[t], cap) - K) if t < e else N * (min(acc * 252 / T, cap) - K)
+            V = N * (min(acc * ann / T + (T - k) / T * iv[t], cap) - K) if t < e else N * (min(acc * ann / T, cap) - K)
             pnl[t] += -sg[q] * (V - prev); prev = V
         pnl[s + 1] -= abs(sg[q]) * N * 2 * np.sqrt(K) * (cost_vp / 100)    # bid/ask in variance terms
     return pd.Series(pnl, index=j.index)

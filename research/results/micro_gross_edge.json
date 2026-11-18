@@ -1,0 +1,50 @@
+{
+ "book imbalance |imb1|>0.4 (0903)": {
+  "minutes_in_position": 5760,
+  "gross_bp_per_minute": -0.12,
+  "hit_rate": 0.482,
+  "round_trips": 2,
+  "gross_bp_per_round_trip": -346.65,
+  "cost_bp_per_round_trip": 9.0
+ },
+ "follow 1-min signed volume (0923)": {
+  "minutes_in_position": 144000,
+  "gross_bp_per_minute": -0.01,
+  "hit_rate": 0.489,
+  "round_trips": 64311,
+  "gross_bp_per_round_trip": -0.02,
+  "cost_bp_per_round_trip": 9.0
+ },
+ "fade 1-min signed volume (0928)": {
+  "minutes_in_position": 144000,
+  "gross_bp_per_minute": 0.01,
+  "hit_rate": 0.501,
+  "round_trips": 64311,
+  "gross_bp_per_round_trip": 0.02,
+  "cost_bp_per_round_trip": 9.0
+ },
+ "VPIN-high flow following (0913)": {
+  "minutes_in_position": 58175,
+  "gross_bp_per_minute": -0.085,
+  "hit_rate": 0.485,
+  "round_trips": 10153,
+  "gross_bp_per_round_trip": -0.49,
+  "cost_bp_per_round_trip": 9.0
+ },
+ "large-trade fade >$2m, 10 min (0981)": {
+  "minutes_in_position": 64285,
+  "gross_bp_per_minute": -0.003,
+  "hit_rate": 0.501,
+  "round_trips": 7707,
+  "gross_bp_per_round_trip": -0.02,
+  "cost_bp_per_round_trip": 9.0
+ },
+ "depth-shock fade, 10 min (0971)": {
+  "minutes_in_position": 270,
+  "gross_bp_per_minute": 0.018,
+  "hit_rate": 0.456,
+  "round_trips": 27,
+  "gross_bp_per_round_trip": 0.18,
+  "cost_bp_per_round_trip": 9.0
+ }
+}

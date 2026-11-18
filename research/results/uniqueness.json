@@ -3,6 +3,10 @@
 0.38,
 "STRAT-0202"
 ],
+"STRAT-0783@perp": [
+-0.43,
+"STRAT-0781"
+],
 "STRAT-0309@curve": [
 0.63,
 "STRAT-0305"
@@ -47,6 +51,10 @@
 0.7,
 "STRAT-0053"
 ],
+"STRAT-0883@perp": [
+0.68,
+"STRAT-0711"
+],
 "STRAT-0260@fx_tr": [
 0.99,
 "STRAT-0252"
@@ -55,13 +63,25 @@
 0.3,
 "STRAT-0303"
 ],
+"STRAT-0927@F93": [
+0.0,
+null
+],
 "STRAT-0583@F59": [
 -0.05,
 "STRAT-0581"
 ],
+"STRAT-0894@F90": [
+0.89,
+"STRAT-0893"
+],
 "STRAT-0313@curve": [
 0.63,
 "STRAT-0312"
+],
+"STRAT-0719@perp": [
+0.58,
+"STRAT-0712"
 ],
 "STRAT-0588@F59": [
 0.09,
@@ -83,9 +103,17 @@
 0.7,
 "STRAT-0002"
 ],
+"STRAT-0885@perp": [
+0.84,
+"STRAT-0883"
+],
 "STRAT-0083@ind10": [
 0.82,
 "STRAT-0023"
+],
+"STRAT-0850@btc": [
+0.77,
+"STRAT-0846"
 ],
 "STRAT-0038@pairs_macro": [
 0.49,
@@ -95,25 +123,57 @@
 0.37,
 "STRAT-0042"
 ],
+"STRAT-0693@F70": [
+0.59,
+"STRAT-0692"
+],
 "STRAT-0071@cfd": [
 0.5,
+"STRAT-0061"
+],
+"STRAT-0718@perp": [
+0.28,
+"STRAT-0712"
+],
+"STRAT-0911@F92": [
+0.0,
+null
+],
+"STRAT-0842@crypto": [
+0.3,
 "STRAT-0061"
 ],
 "STRAT-0061@cfd": [
 -0.17,
 "STRAT-0059"
 ],
+"STRAT-0699@F70": [
+0.26,
+"STRAT-0693"
+],
 "STRAT-0023@multi_recent": [
 0.63,
 "STRAT-0021"
+],
+"STRAT-0826@crypto": [
+0.8,
+"STRAT-0821"
 ],
 "STRAT-0006@cfd": [
 0.71,
 "STRAT-0003"
 ],
+"STRAT-0720@perp": [
+0.25,
+"STRAT-0712"
+],
 "STRAT-0554@F56": [
 0.87,
 "STRAT-0553"
+],
+"STRAT-0888@perp": [
+0.46,
+"STRAT-0781"
 ],
 "STRAT-0042@orb_main": [
 -0.0,
@@ -123,6 +183,10 @@
 0.53,
 "STRAT-0584"
 ],
+"STRAT-0696@F70": [
+0.9,
+"STRAT-0693"
+],
 "STRAT-0060@macro_long": [
 0.78,
 "STRAT-0053"
@@ -130,6 +194,22 @@
 "STRAT-0066@crypto": [
 0.48,
 "STRAT-0064"
+],
+"STRAT-0893@F90": [
+0.8,
+"STRAT-0892"
+],
+"STRAT-0987@F99": [
+0.0,
+null
+],
+"STRAT-0906@F91": [
+0.0,
+null
+],
+"STRAT-0950@F95": [
+0.0,
+null
 ],
 "STRAT-0299@bonds": [
 0.55,
@@ -147,9 +227,17 @@
 0.59,
 "STRAT-0004"
 ],
+"STRAT-0824@crypto": [
+0.68,
+"STRAT-0030"
+],
 "STRAT-0052@fx": [
 0.33,
 "STRAT-0032"
+],
+"STRAT-0712@perp": [
+-0.16,
+"STRAT-0711"
 ],
 "STRAT-0274@fx_fix": [
 -0.12,
@@ -171,6 +259,10 @@ null
 0.62,
 "STRAT-0272"
 ],
+"STRAT-0926@F93": [
+0.0,
+null
+],
 "STRAT-0038@pairs_cfd": [
 0.6,
 "STRAT-0018"
@@ -187,6 +279,10 @@ null
 0.93,
 "STRAT-0033"
 ],
+"STRAT-0963@F97": [
+0.0,
+null
+],
 "STRAT-0195@commod": [
 0.63,
 "STRAT-0193"
@@ -194,6 +290,10 @@ null
 "STRAT-0122@crypto": [
 0.44,
 "STRAT-0102"
+],
+"STRAT-0903@F91": [
+0.0,
+null
 ],
 "STRAT-0076@cfd": [
 0.48,
@@ -206,6 +306,10 @@ null
 "STRAT-0016@crypto": [
 1.0,
 "STRAT-0006"
+],
+"STRAT-0821@crypto": [
+0.73,
+"STRAT-0083"
 ],
 "STRAT-0263@fx_tr": [
 -0.36,
@@ -251,6 +355,10 @@ null
 0.66,
 "STRAT-0018"
 ],
+"STRAT-0782@perp": [
+0.64,
+"STRAT-0714"
+],
 "STRAT-0094@cfd": [
 0.94,
 "STRAT-0034"
@@ -262,6 +370,10 @@ null
 "STRAT-0124@crypto": [
 -0.36,
 "STRAT-0029"
+],
+"STRAT-0944@F95": [
+0.0,
+null
 ],
 "STRAT-0021@crypto": [
 0.33,
@@ -275,9 +387,17 @@ null
 0.41,
 "STRAT-0072"
 ],
+"STRAT-0700@F70": [
+0.7,
+"STRAT-0693"
+],
 "STRAT-0065@crypto": [
 0.44,
 "STRAT-0063"
+],
+"STRAT-0827@crypto": [
+0.77,
+"STRAT-0825"
 ],
 "STRAT-0103@fx": [
 0.65,
@@ -286,6 +406,10 @@ null
 "STRAT-0303@curve": [
 -0.42,
 "STRAT-0302"
+],
+"STRAT-0738@qbasis": [
+-0.44,
+"STRAT-0733"
 ],
 "STRAT-0566@F57": [
 0.53,
@@ -298,6 +422,10 @@ null
 "STRAT-0079@macro_long": [
 0.0,
 null
+],
+"STRAT-0620@F62": [
+0.72,
+"STRAT-0613"
 ],
 "STRAT-0075@cfd": [
 0.72,
@@ -331,13 +459,25 @@ null
 0.46,
 "STRAT-0004"
 ],
+"STRAT-0788@perp": [
+-0.5,
+"STRAT-0782"
+],
 "STRAT-0258@fx_tr": [
 0.47,
 "STRAT-0252"
 ],
+"STRAT-0830@crypto": [
+0.86,
+"STRAT-0824"
+],
 "STRAT-0121@fx": [
 0.14,
 "STRAT-0118"
+],
+"STRAT-0790@perp": [
+0.56,
+"STRAT-0783"
 ],
 "STRAT-0122@fx": [
 0.3,
@@ -351,6 +491,10 @@ null
 0.59,
 "STRAT-0554"
 ],
+"STRAT-0910@F91": [
+0.0,
+null
+],
 "STRAT-0104@crypto": [
 0.33,
 "STRAT-0103"
@@ -359,9 +503,29 @@ null
 0.42,
 "STRAT-0010"
 ],
+"STRAT-0728@cashcarry": [
+0.53,
+"STRAT-0724"
+],
+"STRAT-0993@F100": [
+0.0,
+null
+],
 "STRAT-0358@credit": [
 -0.57,
 "STRAT-0353"
+],
+"STRAT-0900@F90": [
+0.93,
+"STRAT-0893"
+],
+"STRAT-0985@F99": [
+0.0,
+null
+],
+"STRAT-0924@F93": [
+0.0,
+null
 ],
 "STRAT-0031@crypto": [
 0.68,
@@ -374,6 +538,10 @@ null
 "STRAT-0003@macro_long": [
 0.65,
 "STRAT-0001"
+],
+"STRAT-0612@F62": [
+0.27,
+"STRAT-0611"
 ],
 "STRAT-0068@pairs_crypto": [
 0.21,
@@ -431,6 +599,10 @@ null
 0.79,
 "STRAT-0028"
 ],
+"STRAT-0605@F61": [
+0.14,
+"STRAT-0601"
+],
 "STRAT-0002@ind49": [
 0.0,
 null
@@ -447,13 +619,25 @@ null
 0.0,
 null
 ],
+"STRAT-0608@F61": [
+0.64,
+"STRAT-0603"
+],
 "STRAT-0321@swaps": [
 0.0,
 null
 ],
+"STRAT-0778@perp": [
+0.34,
+"STRAT-0771"
+],
 "STRAT-0060@crypto": [
 0.73,
 "STRAT-0053"
+],
+"STRAT-0949@F95": [
+0.0,
+null
 ],
 "STRAT-0096@cfd": [
 0.71,
@@ -478,6 +662,14 @@ null
 "STRAT-0304@curve": [
 -0.42,
 "STRAT-0302"
+],
+"STRAT-0976@F98": [
+0.0,
+null
+],
+"STRAT-0929@F93": [
+0.0,
+null
 ],
 "STRAT-0016@fx": [
 0.57,
@@ -511,6 +703,10 @@ null
 0.71,
 "STRAT-0113"
 ],
+"STRAT-0960@F96": [
+0.0,
+null
+],
 "STRAT-0115@fx": [
 0.76,
 "STRAT-0113"
@@ -519,6 +715,10 @@ null
 0.93,
 "STRAT-0203"
 ],
+"STRAT-0794@perp": [
+0.55,
+"STRAT-0716"
+],
 "STRAT-0006@macro_long": [
 0.42,
 "STRAT-0003"
@@ -526,6 +726,10 @@ null
 "STRAT-0055@cfd": [
 0.2,
 "STRAT-0053"
+],
+"STRAT-0785@perp": [
+-0.38,
+"STRAT-0781"
 ],
 "STRAT-0025@multi_recent": [
 0.78,
@@ -563,6 +767,14 @@ null
 0.0,
 null
 ],
+"STRAT-0724@cashcarry": [
+0.86,
+"STRAT-0722"
+],
+"STRAT-0823@btc": [
+0.0,
+null
+],
 "STRAT-0311@curve": [
 0.31,
 "STRAT-0301"
@@ -570,6 +782,10 @@ null
 "STRAT-0068@pairs_cfd": [
 0.44,
 "STRAT-0038"
+],
+"STRAT-0730@cashcarry": [
+0.91,
+"STRAT-0722"
 ],
 "STRAT-0014@ind49": [
 0.57,
@@ -587,9 +803,17 @@ null
 0.53,
 "STRAT-0033"
 ],
+"STRAT-0725@cashcarry": [
+0.75,
+"STRAT-0722"
+],
 "STRAT-0569@F57": [
 0.41,
 "STRAT-0568"
+],
+"STRAT-0889@perp": [
+0.82,
+"STRAT-0883"
 ],
 "STRAT-0001@cfd": [
 0.0,
@@ -598,6 +822,18 @@ null
 "STRAT-0011@fx": [
 0.25,
 "STRAT-0002"
+],
+"STRAT-0610@F61": [
+0.51,
+"STRAT-0608"
+],
+"STRAT-0787@perp": [
+0.76,
+"STRAT-0786"
+],
+"STRAT-0776@perp": [
+0.51,
+"STRAT-0774"
 ],
 "STRAT-0110@fx": [
 0.99,
@@ -619,6 +855,10 @@ null
 0.97,
 "STRAT-0038"
 ],
+"STRAT-0887@perp": [
+-0.31,
+"STRAT-0775"
+],
 "STRAT-0012@crypto": [
 0.94,
 "STRAT-0002"
@@ -639,6 +879,10 @@ null
 0.5,
 "STRAT-0072"
 ],
+"STRAT-0729@cashcarry": [
+0.6,
+"STRAT-0725"
+],
 "STRAT-0025@crypto": [
 0.68,
 "STRAT-0023"
@@ -651,9 +895,17 @@ null
 0.33,
 "STRAT-0032"
 ],
+"STRAT-0843@btc": [
+0.6,
+"STRAT-0823"
+],
 "STRAT-0077@crypto": [
 0.0,
 null
+],
+"STRAT-0602@F61": [
+-0.03,
+"STRAT-0601"
 ],
 "STRAT-0088@pairs_crypto": [
 0.68,
@@ -670,6 +922,10 @@ null
 "STRAT-0306@curve": [
 -0.06,
 "STRAT-0301"
+],
+"STRAT-0913@F92": [
+0.0,
+null
 ],
 "STRAT-0024@ind10": [
 0.85,
@@ -691,6 +947,10 @@ null
 0.68,
 "STRAT-0053"
 ],
+"STRAT-0988@F99": [
+0.0,
+null
+],
 "STRAT-0116@ind49": [
 0.54,
 "STRAT-0106"
@@ -707,9 +967,17 @@ null
 0.66,
 "STRAT-0090"
 ],
+"STRAT-0799@perp": [
+0.76,
+"STRAT-0795"
+],
 "STRAT-0029@multi_recent": [
 0.58,
 "STRAT-0023"
+],
+"STRAT-0990@F99": [
+0.0,
+null
 ],
 "STRAT-0099@cfd": [
 0.81,
@@ -719,6 +987,10 @@ null
 0.59,
 "STRAT-0012"
 ],
+"STRAT-0919@F92": [
+0.0,
+null
+],
 "STRAT-0564@F57": [
 0.61,
 "STRAT-0563"
@@ -726,6 +998,10 @@ null
 "STRAT-0126@ind49": [
 0.15,
 "STRAT-0123"
+],
+"STRAT-0902@F91": [
+0.0,
+null
 ],
 "STRAT-0072@fx": [
 -0.17,
@@ -738,6 +1014,10 @@ null
 "STRAT-0119@ind49": [
 0.7,
 "STRAT-0112"
+],
+"STRAT-0909@F91": [
+0.0,
+null
 ],
 "STRAT-0054@crypto": [
 0.49,
@@ -759,9 +1039,21 @@ null
 0.77,
 "STRAT-0010"
 ],
+"STRAT-0692@F70": [
+-0.38,
+"STRAT-0691"
+],
 "STRAT-0098@pairs_cfd": [
 0.71,
 "STRAT-0038"
+],
+"STRAT-0613@F62": [
+0.65,
+"STRAT-0612"
+],
+"STRAT-0698@F70": [
+0.97,
+"STRAT-0693"
 ],
 "STRAT-0355@credit": [
 0.79,
@@ -775,6 +1067,10 @@ null
 0.55,
 "STRAT-0040"
 ],
+"STRAT-0822@crypto": [
+0.22,
+"STRAT-0009"
+],
 "STRAT-0024@multi_recent": [
 0.65,
 "STRAT-0023"
@@ -783,13 +1079,29 @@ null
 -0.37,
 "STRAT-0011"
 ],
+"STRAT-0901@F91": [
+0.0,
+null
+],
 "STRAT-0079@cfd": [
 0.79,
 "STRAT-0073"
 ],
+"STRAT-0953@F96": [
+0.0,
+null
+],
+"STRAT-0975@F98": [
+0.0,
+null
+],
 "STRAT-0279@fx_fix": [
 0.65,
 "STRAT-0277"
+],
+"STRAT-0603@F61": [
+0.13,
+"STRAT-0601"
 ],
 "STRAT-0089@cfd": [
 0.8,
@@ -811,6 +1123,14 @@ null
 0.93,
 "STRAT-0036"
 ],
+"STRAT-0739@qbasis": [
+0.42,
+"STRAT-0731"
+],
+"STRAT-0784@perp": [
+0.52,
+"STRAT-0783"
+],
 "STRAT-0033@macro_long": [
 0.82,
 "STRAT-0003"
@@ -826,6 +1146,10 @@ null
 "STRAT-0499@macro_long": [
 0.68,
 "STRAT-0493"
+],
+"STRAT-0772@perp": [
+0.61,
+"STRAT-0714"
 ],
 "STRAT-0293@bonds": [
 0.4,
@@ -847,9 +1171,17 @@ null
 0.53,
 "STRAT-0351"
 ],
+"STRAT-0928@F93": [
+0.0,
+null
+],
 "STRAT-0261@fx_tr": [
 -0.23,
 "STRAT-0251"
+],
+"STRAT-0825@crypto": [
+0.74,
+"STRAT-0030"
 ],
 "STRAT-0109@fx": [
 0.55,
@@ -871,9 +1203,25 @@ null
 -0.69,
 "STRAT-0203"
 ],
+"STRAT-0920@F92": [
+0.0,
+null
+],
+"STRAT-0921@F93": [
+0.0,
+null
+],
 "STRAT-0087@crypto": [
 0.76,
 "STRAT-0027"
+],
+"STRAT-0908@F91": [
+0.0,
+null
+],
+"STRAT-0781@perp": [
+-0.5,
+"STRAT-0714"
 ],
 "STRAT-0111@crypto": [
 0.51,
@@ -886,6 +1234,14 @@ null
 "STRAT-0073@crypto": [
 0.0,
 null
+],
+"STRAT-0722@cashcarry": [
+0.78,
+"STRAT-0721"
+],
+"STRAT-0789@perp": [
+0.74,
+"STRAT-0787"
 ],
 "STRAT-0009@crypto": [
 0.71,
@@ -923,6 +1279,14 @@ null
 0.0,
 null
 ],
+"STRAT-0946@F95": [
+0.0,
+null
+],
+"STRAT-0733@qbasis": [
+0.78,
+"STRAT-0731"
+],
 "STRAT-0123@fx": [
 0.41,
 "STRAT-0121"
@@ -931,29 +1295,65 @@ null
 0.59,
 "STRAT-0002"
 ],
+"STRAT-0694@F70": [
+0.15,
+"STRAT-0691"
+],
+"STRAT-0714@perp": [
+0.35,
+"STRAT-0712"
+],
 "STRAT-0032@fx": [
 0.69,
 "STRAT-0002"
+],
+"STRAT-0727@cashcarry": [
+0.7,
+"STRAT-0724"
 ],
 "STRAT-0057@crypto": [
 0.5,
 "STRAT-0053"
 ],
+"STRAT-0983@F99": [
+0.0,
+null
+],
 "STRAT-0056@crypto": [
 0.34,
 "STRAT-0033"
+],
+"STRAT-0774@perp": [
+0.32,
+"STRAT-0771"
 ],
 "STRAT-0124@ind49": [
 0.34,
 "STRAT-0122"
 ],
+"STRAT-0989@F99": [
+0.0,
+null
+],
+"STRAT-0717@perp": [
+0.61,
+"STRAT-0714"
+],
 "STRAT-0061@crypto": [
 -0.34,
 "STRAT-0051"
 ],
+"STRAT-0959@F96": [
+0.0,
+null
+],
 "STRAT-0103@crypto": [
 0.69,
 "STRAT-0102"
+],
+"STRAT-0967@F97": [
+0.0,
+null
 ],
 "STRAT-0061@ind10": [
 0.05,
@@ -962,6 +1362,10 @@ null
 "STRAT-0002@crypto": [
 -0.04,
 "STRAT-0001"
+],
+"STRAT-0841@btc": [
+0.19,
+"STRAT-0823"
 ],
 "STRAT-0276@fx_fix": [
 0.79,
@@ -974,6 +1378,14 @@ null
 "STRAT-0095@cfd": [
 0.74,
 "STRAT-0035"
+],
+"STRAT-0923@F93": [
+0.0,
+null
+],
+"STRAT-0907@F91": [
+0.0,
+null
 ],
 "STRAT-0004@crypto": [
 0.52,
@@ -991,6 +1403,10 @@ null
 0.94,
 "STRAT-0023"
 ],
+"STRAT-0721@cashcarry": [
+0.0,
+null
+],
 "STRAT-0072@ind49": [
 -0.27,
 "STRAT-0032"
@@ -998,6 +1414,10 @@ null
 "STRAT-0081@crypto": [
 0.72,
 "STRAT-0021"
+],
+"STRAT-0726@cashcarry": [
+0.6,
+"STRAT-0724"
 ],
 "STRAT-0579@F58": [
 0.28,
@@ -1011,6 +1431,10 @@ null
 0.64,
 "STRAT-0125"
 ],
+"STRAT-0918@F92": [
+0.0,
+null
+],
 "STRAT-0570@F57": [
 0.78,
 "STRAT-0563"
@@ -1022,6 +1446,10 @@ null
 "STRAT-0496@ind10": [
 0.53,
 "STRAT-0493"
+],
+"STRAT-0980@F98": [
+0.0,
+null
 ],
 "STRAT-0191@commod": [
 0.0,
@@ -1038,6 +1466,14 @@ null
 "STRAT-0106@fx": [
 0.18,
 "STRAT-0103"
+],
+"STRAT-0971@F98": [
+0.0,
+null
+],
+"STRAT-0905@F91": [
+0.0,
+null
 ],
 "STRAT-0202@energy": [
 0.01,
@@ -1058,6 +1494,10 @@ null
 "STRAT-0493@ind10": [
 0.42,
 "STRAT-0023"
+],
+"STRAT-0691@F70": [
+0.0,
+null
 ],
 "STRAT-0037@crypto": [
 0.73,
@@ -1083,9 +1523,21 @@ null
 0.49,
 "STRAT-0576"
 ],
+"STRAT-0844@btc": [
+0.75,
+"STRAT-0843"
+],
+"STRAT-0716@perp": [
+-0.17,
+"STRAT-0714"
+],
 "STRAT-0086@crypto": [
 0.66,
 "STRAT-0036"
+],
+"STRAT-0915@F92": [
+0.0,
+null
 ],
 "STRAT-0497@cfd": [
 0.1,
@@ -1094,6 +1546,14 @@ null
 "STRAT-0090@ind10": [
 0.95,
 "STRAT-0083"
+],
+"STRAT-0898@F90": [
+-0.27,
+"STRAT-0893"
+],
+"STRAT-0846@btc": [
+0.7,
+"STRAT-0844"
 ],
 "STRAT-0305@curve": [
 0.45,
@@ -1114,6 +1574,10 @@ null
 "STRAT-0100@cfd": [
 0.83,
 "STRAT-0093"
+],
+"STRAT-0791@perp": [
+0.81,
+"STRAT-0714"
 ],
 "STRAT-0064@ind10": [
 0.65,
@@ -1147,6 +1611,10 @@ null
 0.77,
 "STRAT-0037"
 ],
+"STRAT-0616@F62": [
+0.39,
+"STRAT-0615"
+],
 "STRAT-0005@cfd": [
 0.8,
 "STRAT-0003"
@@ -1175,9 +1643,21 @@ null
 0.99,
 "STRAT-0113"
 ],
+"STRAT-0954@F96": [
+0.0,
+null
+],
 "STRAT-0565@F57": [
 0.66,
 "STRAT-0563"
+],
+"STRAT-0786@perp": [
+0.63,
+"STRAT-0714"
+],
+"STRAT-0734@qbasis": [
+0.79,
+"STRAT-0731"
 ],
 "STRAT-0310@curve": [
 0.64,
@@ -1203,6 +1683,10 @@ null
 0.66,
 "STRAT-0003"
 ],
+"STRAT-0886@perp": [
+0.52,
+"STRAT-0786"
+],
 "STRAT-0110@ind49": [
 0.99,
 "STRAT-0103"
@@ -1210,6 +1694,10 @@ null
 "STRAT-0010@cfd": [
 0.95,
 "STRAT-0003"
+],
+"STRAT-0823@crypto": [
+0.81,
+"STRAT-0083"
 ],
 "STRAT-0585@F59": [
 0.93,
@@ -1222,6 +1710,10 @@ null
 "STRAT-0029@ind10": [
 0.69,
 "STRAT-0023"
+],
+"STRAT-0737@qbasis": [
+0.76,
+"STRAT-0733"
 ],
 "STRAT-0105@crypto": [
 0.57,
@@ -1240,6 +1732,14 @@ null
 "STRAT-0323"
 ],
 "STRAT-0080@crypto": [
+0.0,
+null
+],
+"STRAT-0891@F90": [
+0.0,
+null
+],
+"STRAT-0611@F62": [
 0.0,
 null
 ],
@@ -1267,6 +1767,10 @@ null
 0.21,
 "STRAT-0351"
 ],
+"STRAT-0881@perp": [
+0.35,
+"STRAT-0785"
+],
 "STRAT-0568@F57": [
 0.75,
 "STRAT-0561"
@@ -1283,13 +1787,29 @@ null
 -0.33,
 "STRAT-0081"
 ],
+"STRAT-0984@F99": [
+0.0,
+null
+],
+"STRAT-0615@F62": [
+0.56,
+"STRAT-0613"
+],
 "STRAT-0018@pairs_crypto": [
 0.35,
 "STRAT-0008"
 ],
+"STRAT-0951@F96": [
+0.0,
+null
+],
 "STRAT-0359@credit": [
 0.69,
 "STRAT-0356"
+],
+"STRAT-0892@F90": [
+0.09,
+"STRAT-0891"
 ],
 "STRAT-0010@crypto": [
 0.54,
@@ -1307,6 +1827,14 @@ null
 0.2,
 "STRAT-0038"
 ],
+"STRAT-0828@crypto": [
+0.62,
+"STRAT-0822"
+],
+"STRAT-0941@F95": [
+0.0,
+null
+],
 "STRAT-0326@swaps": [
 0.27,
 "STRAT-0323"
@@ -1319,6 +1847,14 @@ null
 0.47,
 "STRAT-0061"
 ],
+"STRAT-0955@F96": [
+0.0,
+null
+],
+"STRAT-0977@F98": [
+0.0,
+null
+],
 "STRAT-0028@pairs_cfd": [
 0.69,
 "STRAT-0008"
@@ -1330,6 +1866,10 @@ null
 "STRAT-0085@ind10": [
 0.87,
 "STRAT-0025"
+],
+"STRAT-0792@perp": [
+0.6,
+"STRAT-0719"
 ],
 "STRAT-0031@cfd": [
 0.48,
@@ -1363,6 +1903,10 @@ null
 0.88,
 "STRAT-0040"
 ],
+"STRAT-0618@F62": [
+-0.55,
+"STRAT-0613"
+],
 "STRAT-0011@ind49": [
 0.09,
 "STRAT-0002"
@@ -1375,6 +1919,14 @@ null
 0.37,
 "STRAT-0003"
 ],
+"STRAT-0981@F99": [
+0.0,
+null
+],
+"STRAT-0715@perp": [
+0.7,
+"STRAT-0712"
+],
 "STRAT-0330@swaps": [
 0.16,
 "STRAT-0321"
@@ -1382,6 +1934,10 @@ null
 "STRAT-0015@fx": [
 0.66,
 "STRAT-0013"
+],
+"STRAT-0943@F95": [
+0.0,
+null
 ],
 "STRAT-0098@pairs_macro": [
 0.76,
@@ -1403,9 +1959,17 @@ null
 0.88,
 "STRAT-0023"
 ],
+"STRAT-0829@crypto": [
+0.71,
+"STRAT-0029"
+],
 "STRAT-0575@F58": [
 0.27,
 "STRAT-0573"
+],
+"STRAT-0917@F92": [
+0.0,
+null
 ],
 "STRAT-0074@cfd": [
 0.71,
@@ -1419,9 +1983,17 @@ null
 0.23,
 "STRAT-0123"
 ],
+"STRAT-0849@btc": [
+0.75,
+"STRAT-0844"
+],
 "STRAT-0008@pairs_cfd": [
 0.0,
 null
+],
+"STRAT-0800@perp": [
+0.8,
+"STRAT-0799"
 ],
 "STRAT-0027@crypto": [
 0.67,
@@ -1438,6 +2010,10 @@ null
 "STRAT-0017@crypto": [
 1.0,
 "STRAT-0007"
+],
+"STRAT-0609@F61": [
+0.74,
+"STRAT-0603"
 ],
 "STRAT-0030@ind10": [
 0.97,
@@ -1458,6 +2034,10 @@ null
 "STRAT-0268@fx_tr": [
 0.56,
 "STRAT-0262"
+],
+"STRAT-0604@F61": [
+0.28,
+"STRAT-0601"
 ],
 "STRAT-0123@crypto": [
 -0.28,
@@ -1483,6 +2063,14 @@ null
 0.83,
 "STRAT-0013"
 ],
+"STRAT-0974@F98": [
+0.0,
+null
+],
+"STRAT-0773@perp": [
+-0.47,
+"STRAT-0771"
+],
 "STRAT-0356@credit": [
 0.4,
 "STRAT-0355"
@@ -1507,6 +2095,10 @@ null
 0.69,
 "STRAT-0262"
 ],
+"STRAT-0735@qbasis": [
+0.79,
+"STRAT-0731"
+],
 "STRAT-0298@bonds": [
 0.04,
 "STRAT-0294"
@@ -1514,6 +2106,10 @@ null
 "STRAT-0065@ind10": [
 0.74,
 "STRAT-0063"
+],
+"STRAT-0771@perp": [
+0.23,
+"STRAT-0714"
 ],
 "STRAT-0500@cfd": [
 0.79,
@@ -1543,6 +2139,10 @@ null
 0.54,
 "STRAT-0121"
 ],
+"STRAT-0947@F95": [
+0.0,
+null
+],
 "STRAT-0125@fx": [
 0.66,
 "STRAT-0123"
@@ -1551,11 +2151,23 @@ null
 0.52,
 "STRAT-0014"
 ],
+"STRAT-0793@perp": [
+0.79,
+"STRAT-0714"
+],
 "STRAT-0125@ind49": [
 0.73,
 "STRAT-0123"
 ],
 "STRAT-0074@crypto": [
+0.0,
+null
+],
+"STRAT-0796@perp": [
+0.57,
+"STRAT-0794"
+],
+"STRAT-0956@F96": [
 0.0,
 null
 ],
@@ -1570,6 +2182,10 @@ null
 "STRAT-0046@orb_main": [
 0.72,
 "STRAT-0043"
+],
+"STRAT-0904@F91": [
+0.0,
+null
 ],
 "STRAT-0561@F57": [
 0.0,
@@ -1587,6 +2203,10 @@ null
 0.86,
 "STRAT-0083"
 ],
+"STRAT-0914@F92": [
+0.0,
+null
+],
 "STRAT-0102@crypto": [
 -0.5,
 "STRAT-0002"
@@ -1598,6 +2218,10 @@ null
 "STRAT-0075@macro_long": [
 -0.02,
 "STRAT-0009"
+],
+"STRAT-0996@F100": [
+0.0,
+null
 ],
 "STRAT-0076@macro_long": [
 -0.09,
@@ -1611,6 +2235,10 @@ null
 0.58,
 "STRAT-0043"
 ],
+"STRAT-0732@qbasis": [
+0.82,
+"STRAT-0731"
+],
 "STRAT-0073@macro_long": [
 0.0,
 null
@@ -1623,9 +2251,17 @@ null
 0.11,
 "STRAT-0021"
 ],
+"STRAT-0890@perp": [
+0.76,
+"STRAT-0883"
+],
 "STRAT-0196@commod": [
 0.79,
 "STRAT-0193"
+],
+"STRAT-0845@btc": [
+0.57,
+"STRAT-0843"
 ],
 "STRAT-0001@macro_long": [
 0.0,
@@ -1638,6 +2274,18 @@ null
 "STRAT-0007@crypto": [
 0.63,
 "STRAT-0003"
+],
+"STRAT-0882@perp": [
+0.83,
+"STRAT-0782"
+],
+"STRAT-0780@perp": [
+0.85,
+"STRAT-0776"
+],
+"STRAT-0895@F90": [
+0.73,
+"STRAT-0891"
 ],
 "STRAT-0082@fx": [
 0.79,
@@ -1675,6 +2323,10 @@ null
 0.0,
 null
 ],
+"STRAT-0601@F61": [
+0.0,
+null
+],
 "STRAT-0019@ind49": [
 0.78,
 "STRAT-0013"
@@ -1687,6 +2339,10 @@ null
 0.67,
 "STRAT-0202"
 ],
+"STRAT-0979@F98": [
+0.0,
+null
+],
 "STRAT-0005@crypto": [
 0.43,
 "STRAT-0001"
@@ -1695,6 +2351,10 @@ null
 0.88,
 "STRAT-0040"
 ],
+"STRAT-0797@perp": [
+-0.71,
+"STRAT-0789"
+],
 "STRAT-0080@macro_long": [
 -0.03,
 "STRAT-0001"
@@ -1702,6 +2362,10 @@ null
 "STRAT-0119@crypto": [
 0.74,
 "STRAT-0115"
+],
+"STRAT-0896@F90": [
+0.96,
+"STRAT-0893"
 ],
 "STRAT-0082@crypto": [
 0.65,
@@ -1715,6 +2379,10 @@ null
 -0.03,
 "STRAT-0001"
 ],
+"STRAT-0848@btc": [
+0.41,
+"STRAT-0841"
+],
 "STRAT-0099@macro_long": [
 0.84,
 "STRAT-0039"
@@ -1722,6 +2390,14 @@ null
 "STRAT-0091@crypto": [
 0.76,
 "STRAT-0031"
+],
+"STRAT-0930@F93": [
+0.0,
+null
+],
+"STRAT-0945@F95": [
+0.0,
+null
 ],
 "STRAT-0020@crypto": [
 0.96,
@@ -1731,9 +2407,17 @@ null
 -0.1,
 "STRAT-0023"
 ],
+"STRAT-0925@F93": [
+0.0,
+null
+],
 "STRAT-0013@crypto": [
 1.0,
 "STRAT-0003"
+],
+"STRAT-0847@btc": [
+0.56,
+"STRAT-0843"
 ],
 "STRAT-0308@curve": [
 -0.45,
@@ -1783,6 +2467,10 @@ null
 0.5,
 "STRAT-0035"
 ],
+"STRAT-0899@F90": [
+0.56,
+"STRAT-0892"
+],
 "STRAT-0030@multi_recent": [
 0.98,
 "STRAT-0023"
@@ -1790,6 +2478,14 @@ null
 "STRAT-0011@crypto": [
 0.54,
 "STRAT-0003"
+],
+"STRAT-0736@qbasis": [
+0.71,
+"STRAT-0731"
+],
+"STRAT-0958@F96": [
+0.0,
+null
 ],
 "STRAT-0325@swaps": [
 0.52,
@@ -1799,6 +2495,10 @@ null
 0.83,
 "STRAT-0008"
 ],
+"STRAT-0973@F98": [
+0.0,
+null
+],
 "STRAT-0114@ind49": [
 0.42,
 "STRAT-0113"
@@ -1806,6 +2506,14 @@ null
 "STRAT-0052@crypto": [
 0.46,
 "STRAT-0032"
+],
+"STRAT-0916@F92": [
+0.0,
+null
+],
+"STRAT-0884@perp": [
+0.21,
+"STRAT-0791"
 ],
 "STRAT-0058@pairs_cfd": [
 0.12,
@@ -1819,6 +2527,10 @@ null
 -0.12,
 "STRAT-0292"
 ],
+"STRAT-0606@F61": [
+0.39,
+"STRAT-0603"
+],
 "STRAT-0275@fx_fix": [
 0.7,
 "STRAT-0273"
@@ -1827,9 +2539,21 @@ null
 0.33,
 "STRAT-0313"
 ],
+"STRAT-0957@F96": [
+0.0,
+null
+],
 "STRAT-0063@crypto": [
 0.39,
 "STRAT-0040"
+],
+"STRAT-0711@perp": [
+0.0,
+null
+],
+"STRAT-0795@perp": [
+0.52,
+"STRAT-0781"
 ],
 "STRAT-0028@pairs_crypto": [
 0.39,
@@ -1859,13 +2583,25 @@ null
 0.6,
 "STRAT-0113"
 ],
+"STRAT-0619@F62": [
+0.99,
+"STRAT-0618"
+],
 "STRAT-0050@orb_main": [
 0.63,
 "STRAT-0046"
 ],
+"STRAT-0986@F99": [
+0.0,
+null
+],
 "STRAT-0035@macro_long": [
 0.79,
 "STRAT-0005"
+],
+"STRAT-0775@perp": [
+-0.7,
+"STRAT-0773"
 ],
 "STRAT-0270@fx_tr": [
 0.98,
@@ -1874,6 +2610,10 @@ null
 "STRAT-0498@cfd": [
 -0.11,
 "STRAT-0083"
+],
+"STRAT-0779@perp": [
+-0.67,
+"STRAT-0773"
 ],
 "STRAT-0581@F59": [
 0.0,
@@ -1886,6 +2626,10 @@ null
 "STRAT-0029@crypto": [
 0.79,
 "STRAT-0023"
+],
+"STRAT-0695@F70": [
+0.18,
+"STRAT-0693"
 ],
 "STRAT-0302@curve": [
 0.27,
@@ -1910,6 +2654,10 @@ null
 "STRAT-0078@pairs_macro": [
 -0.22,
 "STRAT-0028"
+],
+"STRAT-0713@perp": [
+0.66,
+"STRAT-0711"
 ],
 "STRAT-0053@cfd": [
 0.49,
@@ -1939,6 +2687,10 @@ null
 0.5,
 "STRAT-0013"
 ],
+"STRAT-0614@F62": [
+0.64,
+"STRAT-0613"
+],
 "STRAT-0120@ind49": [
 0.95,
 "STRAT-0113"
@@ -1951,9 +2703,17 @@ null
 0.67,
 "STRAT-0293"
 ],
+"STRAT-0731@qbasis": [
+0.0,
+null
+],
 "STRAT-0019@fx": [
 0.76,
 "STRAT-0013"
+],
+"STRAT-0740@qbasis": [
+0.89,
+"STRAT-0731"
 ],
 "STRAT-0069@ind10": [
 0.9,
@@ -1962,6 +2722,14 @@ null
 "STRAT-0555@F56": [
 0.6,
 "STRAT-0554"
+],
+"STRAT-0798@perp": [
+0.85,
+"STRAT-0714"
+],
+"STRAT-0777@perp": [
+-0.22,
+"STRAT-0773"
 ],
 "STRAT-0058@pairs_macro": [
 0.23,
@@ -1974,5 +2742,9 @@ null
 "STRAT-0112@crypto": [
 0.58,
 "STRAT-0102"
+],
+"STRAT-0723@cashcarry": [
+0.84,
+"STRAT-0722"
 ]
 }

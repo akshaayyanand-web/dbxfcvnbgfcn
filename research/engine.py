@@ -26,7 +26,7 @@ def excess(R):
 def universe(name):
     """returns (daily EXCESS returns over cash for funded assets, per-asset cost bps, periods/year). FX/spreads are already self-financing."""
     R, c, a = _universe(name)
-    if name in ("crypto", "cfd", "bonds", "ind10", "ind49", "macro_long", "multi_recent"):
+    if name in ("crypto", "btc", "cfd", "bonds", "ind10", "ind49", "macro_long", "multi_recent", "cashcarry", "qbasis"):
         if name in ("macro_long", "multi_recent"):
             funded = [k for k in R.columns if len(k) != 2]           # FX columns (2 letters) are spot, unfunded
             R = R.copy(); R[funded] = excess(R[funded])
@@ -78,6 +78,21 @@ def _universe(name):
         t20 = _fred("DGS20").combine_first((_fred("DGS10") + _fred("DGS30")) / 2)
         R = pd.DataFrame({"BAA": _par_bond_ret(_fred("DBAA"), 20), "AAA": _par_bond_ret(_fred("DAAA"), 20), "T20": _par_bond_ret(t20, 20)}).loc["1986-01-03":]
         R = excess(R); return R, pd.Series({"BAA": 10.0, "AAA": 8.0, "T20": 1.0}), 252
+    if name == "btc":
+        R = _rets(P["crypto"][["BTC"]]); return R, pd.Series(6.0, R.columns), 365
+    if name in ("perp", "cashcarry", "qbasis"):
+        import crypto2; C2 = crypto2.load()
+        pr = C2["perp"]; fu = C2["fund"].rename(columns=lambda c: c.replace("USDT", "")).reindex(pr.index).fillna(0)[pr.columns.intersection(C2["fund"].rename(columns=lambda c: c.replace("USDT", "")).columns)]
+        fu = fu.reindex(columns=pr.columns).fillna(0)
+        if name == "perp":
+            R = (_rets(pr) - fu).loc["2021-01-02":]; return R, pd.Series(5.0, R.columns), 365
+        if name == "cashcarry":   # long spot, short perp: earns funding, pays the basis change; both legs costed
+            sp = P["crypto"].reindex(pr.index)[pr.columns.intersection(P["crypto"].columns)]
+            R = (_rets(sp) - _rets(pr[sp.columns]) + fu[sp.columns]).loc["2021-01-02":]; return R, pd.Series(10.0, R.columns), 365
+        sp = P["crypto"]; out = {}
+        for s in C2["cm"]:
+            q = C2["cm"][s]; out[s] = _rets(sp[s]).reindex(q.index) - q["ret"]
+        R = pd.DataFrame(out).loc["2020-06-01":]; return R, pd.Series(10.0, R.columns), 365
     if name == "commod":   # FRED spot WTI, Brent, Henry Hub gas + CFD gold/silver (spot proxies, see notes)
         m = P["macro"]; cf = P["cfd"].copy(); cf.index = cf.index.tz_localize(None)
         px_ = pd.concat([m["DCOILWTICO"].where(m["DCOILWTICO"] > 0).rename("WTI"), m["DCOILBRENTEU"].rename("BRENT"), m["DHHNGSP"].rename("HHGAS"),
@@ -246,6 +261,13 @@ def evaluate_streams(sid, name, uname, stream_fn, grid, mechanism, notes=""):
     tst = dict(trades=ntr, win=round(float((tt > 0).mean()), 3) if ntr else 0, pf=round(float(tt[tt > 0].sum() / -tt[tt < 0].sum()), 3) if (tt < 0).any() else 0,
                avg_win=round(float(tt[tt > 0].mean()), 5) if (tt > 0).any() else 0, avg_loss=round(float(tt[tt < 0].mean()), 5) if (tt < 0).any() else 0)
     a_t = float(wfp.mean() / (wfp.std() / np.sqrt(len(wfp)))) if wfp.std() > 0 else 0
+    beta_b, bench_te = 0.0, None
+    if set(S.columns) & {"MKT", "SB"}:     # market-timing stream: must add alpha over always-long market (same vol target)
+        m = P["ff3"]["Mkt-RF"]; bS = pd.DataFrame({"MKT": m.reindex(S.index).fillna(0)})
+        bw = size(bS.notna().astype(float), bS, ann, cap=3.0); bp, _, _ = run(bw, bS, pd.Series(0.0, bS.columns), ann)
+        bench_te = metrics(bp.loc[t2:].iloc[1:], ann)["sharpe"]; bb = bp.reindex(wfp.index).fillna(0)
+        X = np.vstack([np.ones(len(wfp)), bb.values]).T; coef, *_ = np.linalg.lstsq(X, wfp.fillna(0).values, rcond=None); res_ = wfp.fillna(0).values - X @ coef
+        a_t = float(coef[0] / (res_.std() / np.sqrt(len(res_)))) if res_.std() > 0 else 0; beta_b = float(coef[1])
     tag = f"{sid}@{uname}"; corr_max, corr_id = 0.0, None
     for f in os.listdir(PNL_DIR):
         oid = f[:-4]
@@ -256,9 +278,10 @@ def evaluate_streams(sid, name, uname, stream_fn, grid, mechanism, notes=""):
             if abs(c) > abs(corr_max): corr_max, corr_id = c, oid.split("@")[0]
     pickle.dump(wfp, open(f"{PNL_DIR}/{tag}.pkl", "wb")); k300, dd300 = lev_for_target(wfp, ann)
     passed = m_va["sharpe"] > 0 and m_te["sharpe"] > 0.3 and m_wf["sharpe"] > 0.3 and ntr >= 30 and a_t >= 1.5
+    if bench_te is not None: passed = passed and a_t >= 2 and m_te["sharpe"] > bench_te
     rec = dict(id=sid, name=name, universe=uname, mechanism=mechanism, notes=notes, params=prm, trials=len(combos), period=f"{idx[0].date()}..{idx[-1].date()}",
                split=f"train..{t1.date()} | val..{t2.date()} | test..{idx[-1].date()}", train=m_tr, val=m_va, test=m_te, walkforward=m_wf, test_trades=tst,
                grid_positive_share=round(float(np.mean([s > 0 for s in tr])), 2), avg_daily_cost_bps=None, lev_for_300=k300, maxdd_at_300=None if dd300 is None else round(dd300, 3),
-               max_corr=round(corr_max, 2), max_corr_with=corr_id, alpha_ann=round(float(wfp.mean() * ann), 4), alpha_t=round(a_t, 2), beta=0.0, bench_test_sharpe=None, passed=bool(passed))
+               max_corr=round(corr_max, 2), max_corr_with=corr_id, alpha_ann=round(float(wfp.mean() * ann), 4), alpha_t=round(a_t, 2), beta=round(beta_b, 2), bench_test_sharpe=bench_te, passed=bool(passed))
     with open(RES, "a") as f: f.write(json.dumps(rec) + "\n")
     return rec

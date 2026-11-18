@@ -194,5 +194,54 @@
 "test_sharpe": 0.56,
 "test_sharpe_lag1": 0.53,
 "fragile": false
+},
+"STRAT-0712@perp": {
+"full_sharpe": 1.021,
+"full_sharpe_lag1": 0.881,
+"test_sharpe": 0.788,
+"test_sharpe_lag1": 0.408,
+"fragile": false
+},
+"STRAT-0715@perp": {
+"full_sharpe": 0.935,
+"full_sharpe_lag1": 0.807,
+"test_sharpe": 0.727,
+"test_sharpe_lag1": 1.268,
+"fragile": false
+},
+"STRAT-0718@perp": {
+"full_sharpe": 0.811,
+"full_sharpe_lag1": 0.617,
+"test_sharpe": 0.632,
+"test_sharpe_lag1": 0.877,
+"fragile": false
+},
+"STRAT-0719@perp": {
+"full_sharpe": 0.884,
+"full_sharpe_lag1": 0.613,
+"test_sharpe": 1.239,
+"test_sharpe_lag1": 1.431,
+"fragile": false
+},
+"STRAT-0720@perp": {
+"full_sharpe": 1.442,
+"full_sharpe_lag1": 1.37,
+"test_sharpe": 2.156,
+"test_sharpe_lag1": 1.762,
+"fragile": false
+},
+"STRAT-0826@crypto": {
+"full_sharpe": 1.041,
+"full_sharpe_lag1": 1.024,
+"test_sharpe": 0.877,
+"test_sharpe_lag1": 0.879,
+"fragile": false
+},
+"STRAT-0827@crypto": {
+"full_sharpe": 1.345,
+"full_sharpe_lag1": 1.232,
+"test_sharpe": 0.533,
+"test_sharpe_lag1": -0.038,
+"fragile": true
 }
 }

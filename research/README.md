@@ -11,7 +11,8 @@ python3 run.py STRAT-0001 STRAT-0100 # daily families (skips ids already in resu
 python3 run_orb.py                   # family 5, 1-minute opening-range tests
 python3 update_workbook.py           # writes results into the workbook
 ```
-Next id: **STRAT-0101** (Pairs distance trading). New batches go in `strategies/batchNNN.py`.
+All 1,000 ids processed. Daily batches: `BATCH=batchNNN python3 run.py`; stream batches (intraday, volatility, microstructure): `python3 run_streams.py strategies.batchNNN`;
+then `python3 uniqueness.py; python3 robustness.py; python3 update_workbook.py; python3 portfolio.py; python3 finalize.py`.
 
 ## Protocol (identical for every entry)
 Rules and a small parameter grid are fixed in code before the run. Positions use data up to the close of day t and earn day t+1.
@@ -22,14 +23,24 @@ at 4x (crypto 2x). Pass gate: validation Sharpe > 0, test Sharpe > 0.3, walk-for
 and long-biased books must beat an equal-risk buy-and-hold of the same market. Uniqueness: walk-forward daily P&L correlation >= 0.7 with an
 earlier strategy on the same market = variation (not counted).
 
-## Batch 1 (STRAT-0001..0100, families: time-series momentum, cross-sectional momentum, dual momentum, breakout continuation,
-opening-range expansion, volatility-compression breakout, trend pullback, trend exhaustion, MA regime allocation, Donchian)
-- 100 entries, 259 market tests run, all on real data with costs.
-- 10 entries pass the gate; 7 pass and are distinct, 3 pass but are variations (|corr| >= 0.7) of an earlier one; 43 entries are variations overall.
-- Opening-range expansion (0041-0050) on NQ, SPX, gold, DAX, EURUSD, NQ/SPX: 0 of 10 pass; the plain breakout loses after costs.
-- Best validated: cross-sectional/time-series momentum on US industries (walk-forward Sharpe ~0.9-1.0, test Sharpe ~0.4-0.5),
-  trend/breakout gated by a positively sloped yield curve on the long multi-asset book (walk-forward Sharpe ~0.95-1.05),
-  crypto volatility-compression breakout (walk-forward Sharpe 0.69, test Sharpe 0.92).
-- **+300%/yr:** not reached by any entry at any leverage up to 40x. A strategy with Sharpe S can compound at most ~exp(S^2/2)-1 per
-  year at full-Kelly leverage; +300% needs S >= 1.67 *and* full-Kelly drawdowns. The 7 distinct passers combined (2021-2026 overlap)
-  give Sharpe 0.50: 6.6%/yr at 15% vol (max DD -23%); doubling leverage gives 11%/yr with -42% DD; 8x loses 95%.
+## Final status (all 1,000 entries)
+| Status | Count |
+|---|---|
+| Pass, distinct | 26 |
+| Pass, variation of an earlier entry (not counted) | 15 |
+| Fail (incl. 6 that collapse with a 1-day execution delay) | 415 |
+| Rejected as data artifacts (non-synchronous swap fixings; weekly swaps struck at 30-day vol) | 10 |
+| Blocked / merged (data not available here, or same instrument as an earlier entry) | 534 |
+
+Extra safeguards added during the study: excess-of-cash returns for funded assets, buy-and-hold benchmark gate for long-biased books,
+weekly-correlation uniqueness, one-day-delay robustness, artifact overrides, gross-edge diagnostics for microstructure.
+
+**Independent edges that survive** (one per correlation cluster): short variance after payrolls (0561), crypto cross-sectional funding carry
+(0720, 0718), conditional gamma/variance (0618, 0564), trend gated by a positive curve slope (0036), industry momentum (0002), crack and
+location energy spreads (0203, 0233, 0239), stock-bond-correlation risk parity (0608), VIX-gated credit carry (0359), FX carry (0256),
+commodity spread reversion (0195).
+
+**Portfolio** (equal risk, out-of-sample walk-forward P&L): Sharpe 1.45 (2024-26 incl. crypto) / 1.59 (2011-26 excl. crypto), avg corr 0.06.
+At 10% vol: ~15-17%/yr, max DD -12%. At 20% vol (the 20% drawdown budget): ~31-35%/yr. +300% in 12 months needs ~8x (80% vol): bootstrap
+P(+300%) 23-29% with P(drawdown > 20%) 99% and typical max DD ~-70%. Selection across ~2,000 trials means live Sharpe should be expected
+well below these figures (a ~50% haircut is a reasonable prior). Results: `results/portfolio.json`, `results/passer_correlations.csv`.
