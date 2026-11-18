@@ -11,12 +11,13 @@ lo, hi = (sys.argv[1], sys.argv[2]) if len(sys.argv) > 2 else ("STRAT-0001", "ST
 for s in BATCH.specs():
     if not (lo <= s["id"] <= hi): continue
     if s.get("blocked"):
-        if (s["id"], "BLOCKED") not in done:
+        if (s["id"], "BLOCKED") not in done and not os.environ.get("FORCE_UNIVERSES"):
             with open(RES, "a") as f: f.write(json.dumps(dict(id=s["id"], name=f'{s["family"]} — {s["form"]}', universe="BLOCKED", blocked=s["blocked"])) + "\n")
             print(s["id"], "BLOCKED:", s["blocked"])
         continue
+    FORCE = set(filter(None, os.environ.get("FORCE_UNIVERSES", "").split(",")))
     for u in s["universes"]:
-        if (s["id"], u) in done: continue
+        if (s["id"], u) in done and u not in FORCE: continue
         t = time.time()
         try:
             r = evaluate(s["id"], f'{s["family"]} — {s["form"]}', u, s["fn"], s["grid"], s["desc"], sizing=s.get("sizing", True), start=s.get("start"))

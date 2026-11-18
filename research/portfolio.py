@@ -4,9 +4,17 @@ import os, json, pickle, numpy as np, pandas as pd, openpyxl
 from data import SCR
 H = os.path.dirname(__file__); D = f"{SCR}/rdata/pnl"
 wb = openpyxl.load_workbook(f"{H}/catalogue_results.xlsx"); ws = wb["1000 Strategy Ideas"]; mt = wb["Market tests"]
-st = {ws.cell(i, 1).value: ws.cell(i, 9).value for i in range(2, 1002)}
+st = {ws.cell(i, 1).value: ws.cell(i, 9).value for i in range(2, ws.max_row + 1)}
 hdr = [c.value for c in mt[1]]; rows = [dict(zip(hdr, [c.value for c in r])) for r in mt.iter_rows(min_row=2)]
-P = sorted([r for r in rows if r["passed"] and "PASS (distinct)" in (st[r["id"]] or "")], key=lambda r: -(r["WF Sh"] or 0))
+MT = pd.read_csv(f"{H}/results/multiple_testing.csv"); RB = json.load(open(f"{H}/results/robustness.json")); DR = pd.read_csv(f"{H}/results/duplicate_review.csv").set_index("id")
+ok = {(a, b) for a, b, bf in zip(MT.id, MT.universe, MT.bonf_trials) if bf}
+P = sorted([r for r in rows if r["passed"] and (r["id"], r["universe"]) in ok and not RB.get(f'{r["id"]}@{r["universe"]}', {}).get("fragile", False)
+            and not (st[r["id"]] or "").startswith(("REJECTED", "CONTROL")) and r["id"] != "STRAT-1017"], key=lambda r: -(r["WF Sh"] or 0))   # 1017 is itself an allocator over these streams
+_seen = set(); P2 = []
+for r in P:                                       # one strategy per mechanism class (best walk-forward Sharpe)
+    c = DR.mechanism_class.get(r["id"], r["id"])
+    if c not in _seen: _seen.add(c); P2.append(r)
+P = P2; print("candidates (survive gate + Bonferroni over all trials + delay test, one per mechanism class):", [(r["id"], r["universe"], DR.mechanism_class.get(r["id"])) for r in P])
 S = {}
 for r in P:
     s = pickle.load(open(f'{D}/{r["id"]}@{r["universe"]}.pkl', "rb")); s.index = pd.to_datetime(s.index); s.index = s.index.tz_localize(None) if s.index.tz is not None else s.index
@@ -22,8 +30,8 @@ def stats(p, ann=252):
     eq = (1 + p).cumprod(); y = len(p) / ann; cagr = eq.iloc[-1] ** (1 / y) - 1; dd = (eq / eq.cummax() - 1).min()
     return dict(cagr=round(float(cagr), 4), vol=round(float(p.std() * np.sqrt(ann)), 4), sharpe=round(float(p.mean() / p.std() * np.sqrt(ann)), 2), maxdd=round(float(dd), 3))
 out = {}
-for name, start in (("all edges, 2024-01..2026-09 (crypto carry included)", "2024-01-01"), ("non-crypto edges, 2011-2026-09", "2011-01-01")):
-    cols = [k for k in keep if (start == "2024-01-01") or not any(u in k for u in ("perp", "crypto", "btc"))]
+for name, start in (("surviving edges, 2011-01..2026-09", "2011-01-01"), ("surviving edges, 1995-01..2026-09", "1995-01-01")):
+    cols = list(keep)
     X = A.loc[start:"2026-09-30", cols]; X = X.loc[:, (X != 0).mean() > 0.3]
     w = 1 / X.std(); port = (X * w).sum(1) / w.sum(); port = port / (port.std() * np.sqrt(252)) * 0.10
     res = {"members": list(X.columns), "corr_avg": round(float(X.corr().values[np.triu_indices(X.shape[1], 1)].mean()), 2)}

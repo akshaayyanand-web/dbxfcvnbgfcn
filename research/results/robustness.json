@@ -27,6 +27,13 @@
 "test_sharpe_lag1": 0.411,
 "fragile": false
 },
+"STRAT-0053@crypto": {
+"full_sharpe": 0.898,
+"full_sharpe_lag1": 0.575,
+"test_sharpe": 0.922,
+"test_sharpe_lag1": -0.066,
+"fragile": true
+},
 "STRAT-0321@swaps": {
 "full_sharpe": 1.512,
 "full_sharpe_lag1": -0.456,
@@ -231,17 +238,38 @@
 "fragile": false
 },
 "STRAT-0826@crypto": {
-"full_sharpe": 1.041,
-"full_sharpe_lag1": 1.024,
-"test_sharpe": 0.877,
-"test_sharpe_lag1": 0.879,
+"full_sharpe": 1.056,
+"full_sharpe_lag1": 1.038,
+"test_sharpe": 0.901,
+"test_sharpe_lag1": 0.903,
 "fragile": false
 },
 "STRAT-0827@crypto": {
-"full_sharpe": 1.345,
-"full_sharpe_lag1": 1.232,
-"test_sharpe": 0.533,
-"test_sharpe_lag1": -0.038,
+"full_sharpe": 1.363,
+"full_sharpe_lag1": 1.25,
+"test_sharpe": 0.569,
+"test_sharpe_lag1": -0.003,
 "fragile": true
+},
+"STRAT-1009@mkt": {
+"full_sharpe": 1.166,
+"full_sharpe_lag1": 1.15,
+"test_sharpe": 1.513,
+"test_sharpe_lag1": 1.417,
+"fragile": false
+},
+"STRAT-1013@ind49": {
+"full_sharpe": 0.66,
+"full_sharpe_lag1": 0.612,
+"test_sharpe": 0.518,
+"test_sharpe_lag1": 0.504,
+"fragile": false
+},
+"STRAT-1020@ind49": {
+"full_sharpe": 0.726,
+"full_sharpe_lag1": 0.721,
+"test_sharpe": 0.325,
+"test_sharpe_lag1": 0.311,
+"fragile": false
 }
 }

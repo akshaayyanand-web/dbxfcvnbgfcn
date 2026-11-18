@@ -7,6 +7,16 @@ from data import load, COST, SCR
 P = load()
 PNL_DIR = f"{SCR}/rdata/pnl"; os.makedirs(PNL_DIR, exist_ok=True)
 RES = os.path.join(os.path.dirname(__file__), "results", "results.jsonl")
+import subprocess, datetime as _dt
+RUN_ID = os.environ.get("RUN_ID") or _dt.datetime.utcnow().strftime("run_%Y%m%d_%H%M%S")
+try: COMMIT = subprocess.run(["git", "rev-parse", "--short", "HEAD"], capture_output=True, text=True, cwd=os.path.dirname(__file__)).stdout.strip()
+except Exception: COMMIT = "unknown"
+def save_record(rec):
+    """append-only: current table + per-run log (never edited in place)."""
+    rec = dict(rec, run_id=RUN_ID, code_commit=COMMIT, recorded_utc=_dt.datetime.utcnow().isoformat(timespec="seconds"))
+    os.makedirs(os.path.join(os.path.dirname(RES), "runs"), exist_ok=True)
+    for path in (RES, os.path.join(os.path.dirname(RES), "runs", RUN_ID + ".jsonl")):
+        with open(path, "a") as f: f.write(json.dumps(rec) + "\n")
 ANN = {"crypto": 365, "default": 252}
 
 def _rets(px): return px.pct_change(fill_method=None).replace([np.inf, -np.inf], np.nan)
@@ -22,11 +32,12 @@ def rf_daily():
 def excess(R):
     i2 = R.index.tz_localize(None) if getattr(R.index, "tz", None) is not None else R.index
     rf = rf_daily().reindex(i2, method="ffill").fillna(0).values
+    if (pd.DatetimeIndex(i2).dayofweek >= 5).mean() > 0.1: rf = rf * 252 / 365     # calendar-day series (crypto): per-calendar-day cash rate
     return R.sub(rf, axis=0)
 def universe(name):
     """returns (daily EXCESS returns over cash for funded assets, per-asset cost bps, periods/year). FX/spreads are already self-financing."""
     R, c, a = _universe(name)
-    if name in ("crypto", "btc", "cfd", "bonds", "ind10", "ind49", "macro_long", "multi_recent", "cashcarry", "qbasis"):
+    if name in ("mkt_bonds_x",) or name in ("crypto", "btc", "cfd", "bonds", "ind10", "ind49", "macro_long", "multi_recent", "cashcarry", "qbasis"):
         if name in ("macro_long", "multi_recent"):
             funded = [k for k in R.columns if len(k) != 2]           # FX columns (2 letters) are spot, unfunded
             R = R.copy(); R[funded] = excess(R[funded])
@@ -78,6 +89,18 @@ def _universe(name):
         t20 = _fred("DGS20").combine_first((_fred("DGS10") + _fred("DGS30")) / 2)
         R = pd.DataFrame({"BAA": _par_bond_ret(_fred("DBAA"), 20), "AAA": _par_bond_ret(_fred("DAAA"), 20), "T20": _par_bond_ret(t20, 20)}).loc["1986-01-03":]
         R = excess(R); return R, pd.Series({"BAA": 10.0, "AAA": 8.0, "T20": 1.0}), 252
+    if name == "mkt":            # US equity market excess return (Fama-French Mkt-RF, CRSP value-weighted)
+        R = P["ff3"][["Mkt-RF"]].rename(columns={"Mkt-RF": "MKT"}); return R, pd.Series(1.0, R.columns), 252
+    if name == "mkt_bonds":      # market excess + 10y Treasury excess
+        R = pd.concat([P["ff3"]["Mkt-RF"].rename("MKT"), (P["bonds_ret"]["UST10Y"] - P["ff3"]["RF"].reindex(P["bonds_ret"].index).fillna(0)).rename("UST10Y")], axis=1).dropna()
+        return R, pd.Series({"MKT": 1.0, "UST10Y": 1.0}), 252
+    if name == "xex":            # Coinbase USD minus Binance USDT daily return, BTC and ETH (both legs costed)
+        import json as _j
+        out = {}
+        for c in ("BTC", "ETH"):
+            rows = _j.load(open(f"{SCR}/indep/cb/{c}.json")); cb = pd.Series({pd.Timestamp(int(t), unit="s", tz="UTC"): float(cl) for t, lo, hi, op, cl, v in rows}).sort_index()
+            bn = P["crypto"][c]; out[c] = (cb.pct_change() - bn.pct_change().reindex(cb.index))
+        R = pd.DataFrame(out).loc["2020-01-02":"2026-10-30"]; return R, pd.Series(12.0, R.columns), 365
     if name == "btc":
         R = _rets(P["crypto"][["BTC"]]); return R, pd.Series(6.0, R.columns), 365
     if name in ("perp", "cashcarry", "qbasis"):
@@ -237,7 +260,7 @@ def evaluate(sid, name, universe_name, signal_fn, grid, mechanism, notes="", sta
                train=m_tr, val=m_va, test=m_te, walkforward=m_wf, test_trades=tstats, grid_positive_share=robust,
                avg_daily_cost_bps=round(float(tc.mean() * 1e4), 2), lev_for_300=k300, maxdd_at_300=None if dd300 is None else round(dd300, 3),
                max_corr=round(corr_max, 2), max_corr_with=corr_id, **alpha, passed=bool(passed))
-    with open(RES, "a") as f: f.write(json.dumps(rec) + "\n")
+    save_record(rec)
     return rec
 
 def evaluate_streams(sid, name, uname, stream_fn, grid, mechanism, notes=""):
@@ -283,5 +306,5 @@ def evaluate_streams(sid, name, uname, stream_fn, grid, mechanism, notes=""):
                split=f"train..{t1.date()} | val..{t2.date()} | test..{idx[-1].date()}", train=m_tr, val=m_va, test=m_te, walkforward=m_wf, test_trades=tst,
                grid_positive_share=round(float(np.mean([s > 0 for s in tr])), 2), avg_daily_cost_bps=None, lev_for_300=k300, maxdd_at_300=None if dd300 is None else round(dd300, 3),
                max_corr=round(corr_max, 2), max_corr_with=corr_id, alpha_ann=round(float(wfp.mean() * ann), 4), alpha_t=round(a_t, 2), beta=round(beta_b, 2), bench_test_sharpe=bench_te, passed=bool(passed))
-    with open(RES, "a") as f: f.write(json.dumps(rec) + "\n")
+    save_record(rec)
     return rec

@@ -13,8 +13,9 @@ for off, (fam, why) in getattr(M, "BLOCKED", {}).items():
     for j, form in enumerate(FORMS): block(f"STRAT-{off + j + 1:04d}", f"{fam} — {form}", why + " - not available in this environment")
 FAMS = {k: (v if isinstance(v, tuple) else v) for k, v in M.FAMS.items()}
 for key, (fam, specs) in FAMS.items():
+    FORCE_IDS = set(filter(None, os.environ.get("FORCE_IDS", "").split(",")))
     for sid, form, desc, fn, g in specs:
-        if sid in done: continue
+        if sid in done and sid not in FORCE_IDS: continue
         try:
             r = evaluate_streams(sid, f"{fam} — {form}", key, fn, g, desc)
             print(f'{sid} {key} WF CAGR {r["walkforward"]["cagr"]:+.3f} Sh {r["walkforward"]["sharpe"]:+.2f} DD {r["walkforward"]["maxdd"]:+.2f} | test Sh {r["test"]["sharpe"]:+.2f} DD {r["test"]["maxdd"]:+.2f} | trades {r["test_trades"]["trades"]} | corr {r["max_corr"]} {r["max_corr_with"]} | t {r["alpha_t"]} | pass {r["passed"]} {r["params"]}', flush=True)

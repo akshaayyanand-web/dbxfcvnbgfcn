@@ -44,3 +44,20 @@ commodity spread reversion (0195).
 At 10% vol: ~15-17%/yr, max DD -12%. At 20% vol (the 20% drawdown budget): ~31-35%/yr. +300% in 12 months needs ~8x (80% vol): bootstrap
 P(+300%) 23-29% with P(drawdown > 20%) 99% and typical max DD ~-70%. Selection across ~2,000 trials means live Sharpe should be expected
 well below these figures (a ~50% haircut is a reasonable prior). Results: `results/portfolio.json`, `results/passer_correlations.csv`.
+
+## Post-review update (response to the 200-strategy review)
+1. **Preservation** - every committed result version is in `results/archive/`; runs are append-only (`results/runs/<run_id>.jsonl`, each record carries
+   run_id and code commit); the workbook sheet *Result history* shows all versions per strategy with the reason for each change.
+2. **Duplicates** - `dup_review.py`: conceptual mechanism class + core/filter layer first, then weekly P&L correlation within the class
+   (|corr| >= 0.9 = duplicate regardless). 499 tested entries -> ~118 mechanism classes (*Duplicate review* sheet).
+3. **STRAT-0053** - independent code `independent/vcb.py` + Coinbase/Bitstamp/perp data (`independent/compare_0053.py`, `independent/sensitivity_0053.py`).
+   Reproduces (P&L corr 0.995); found an engine bug (cash rate charged per calendar day x 252/365 too high on crypto) - fixed and crypto tests re-run.
+   Verdict: broad-based but small, cost-sensitive, collapses with a 1-day execution delay, fails all multiple-testing corrections.
+4. **Multiple testing** - `multiple_testing.py`: deflated Sharpe (raw / cleaned / MAD benchmarks), BH-FDR, HLZ t>3, Holm and Bonferroni on
+   skew/kurtosis-adjusted Sharpe z, PBO (CSCV) per family. No strategy reaches DSR > 0.95; ~20 tests in ~11 classes survive Bonferroni over all 2,673 trials + delay test.
+5. **Reproducibility** - `repro/fetch_data.py` (all sources), `repro/data_manifest.csv` (18,095 raw files, SHA-256), `repro/snapshot/` (25 MB processed data in git),
+   `repro/snapshot.py import` + `repro/verify.py` re-run strategies from the snapshot alone (exact match).
+6. **New mechanisms STRAT-1001..1033** (`strategies/batch011.py`, `batch011s.py`): see sheet *New mechanisms (1001+)*. NFCI timing (1009) rejected after
+   real-time ALFRED vintages (1032) removed its alpha; betting-against-beta (1020) and the random-forest industry ranker (1013) survive.
+7. **Portfolio** (7 surviving mechanism classes): out-of-sample Sharpe 1.65 (2011-26) / 1.91 (1995-26); ~17-20%/yr at 10% vol; +300% needs ~8x leverage with
+   ~-75% drawdowns. Nothing is promoted to live trading on backtests alone.

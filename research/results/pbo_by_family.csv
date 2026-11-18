@@ -1,0 +1,68 @@
+family,universe,members,days,pbo
+Swap spread relative value,swaps,9,3462,0.0
+Moving-average regime allocation,ind10,7,25592,0.0
+Butterfly curve trades,curve,9,15455,0.0
+Crypto dated-futures basis,qbasis,10,1349,0.0
+Crypto spot-perpetual basis,cashcarry,10,1034,0.0
+Volatility term structure,F58,8,3457,0.0
+Index rebalance flow,ind10,4,25592,0.0
+Commodity crack spread,energy,9,8588,0.0
+Gamma scalping,F62,9,3457,0.0
+Options implied-realized volatility,F56,9,5972,0.0
+Location basis convergence,energy,9,8588,0.012
+Yield-curve slope trades,curve,9,15455,0.012
+Dual momentum,ind10,7,25592,0.02
+Volatility skew relative value,F59,8,8746,0.024
+Cointegration spread trading,fx,9,13266,0.056
+Credit spread mean reversion,credit,9,9502,0.056
+Index rebalance flow,macro_long,5,15690,0.071
+Moving-average regime allocation,cfd,7,2035,0.091
+Cointegration spread trading,ind49,9,15287,0.103
+Trend pullback entry,ind10,7,25592,0.111
+Trend exhaustion reversal,macro_long,5,15690,0.119
+FX fixing-window flow,fx_fix,10,906,0.119
+Pairs distance trading,fx,8,13266,0.135
+Time-series momentum,macro_long,7,15690,0.135
+Interest-rate term premium,bonds,9,15455,0.147
+Crypto volatility risk premium,F90,9,928,0.151
+Crypto liquidation funding interaction,perp,10,1035,0.171
+Donchian channel trend,macro_long,7,15690,0.19
+Stablecoin supply impulse,crypto,10,1399,0.202
+Breakout continuation,macro_long,7,15690,0.214
+Opening-range expansion,orb_main,9,1511,0.222
+Cross-sectional momentum,fx,8,13266,0.254
+Cross-sectional momentum,ind49,8,25592,0.258
+Crypto open-interest divergence,perp,10,1035,0.258
+Correlation trading,F61,9,8746,0.262
+Crypto basis regime switch,perp,10,1035,0.262
+Commodity inter-commodity spread,commod,9,6771,0.262
+Basket statistical arbitrage,ind49,9,15287,0.278
+Basket statistical arbitrage,crypto,10,1399,0.333
+Donchian channel trend,cfd,7,2035,0.389
+Basket statistical arbitrage,fx,9,13266,0.401
+Breakout continuation,cfd,7,2035,0.401
+Pairs distance trading,ind49,8,15287,0.444
+Volatility event premium,F70,9,3457,0.472
+Crypto funding carry,perp,10,1035,0.496
+Breakout continuation,crypto,9,1399,0.532
+Trend pullback entry,cfd,7,2035,0.571
+Cointegration spread trading,crypto,10,1399,0.579
+Donchian channel trend,crypto,9,1399,0.587
+Trend pullback entry,crypto,9,1399,0.599
+Time-series momentum,cfd,7,2035,0.615
+Moving-average regime allocation,crypto,9,1399,0.651
+FX value reversion,fx_tr,9,13261,0.663
+Dual momentum,multi_recent,7,2054,0.671
+Index rebalance flow,cfd,5,2035,0.675
+Pairs distance trading,crypto,9,1399,0.683
+Variance risk premium,F57,9,2198,0.706
+Miner inventory behavior,btc,9,1399,0.73
+Volatility compression breakout,macro_long,7,15690,0.75
+Dual momentum,crypto,9,1399,0.754
+Time-series momentum,crypto,9,1399,0.774
+Volatility compression breakout,cfd,7,2035,0.782
+Crypto liquidation cascade,perp,10,1035,0.786
+Cross-sectional momentum,crypto,9,1399,0.845
+Volatility compression breakout,crypto,9,1399,0.921
+Currency carry,fx_tr,9,13261,0.937
+Trend exhaustion reversal,cfd,7,2035,0.952

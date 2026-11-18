@@ -2,9 +2,12 @@
 A real edge should survive (slower execution); non-synchronous-data artifacts collapse. Writes results/robustness.json."""
 import os, json, importlib, numpy as np, pandas as pd
 from engine import universe, size, run, metrics, split_idx
-H = os.path.dirname(__file__); R_ = [json.loads(l) for l in open(f"{H}/results/results.jsonl")]
+H = os.path.dirname(__file__); _L = {}
+for l in open(f"{H}/results/results.jsonl"):
+    r = json.loads(l); _L[(r["id"], r.get("universe"))] = r          # latest record per strategy x market
+R_ = list(_L.values())
 specs = {}
-for b in ("batch001", "batch002", "batch003", "batch004", "batch005", "batch008", "batch009"):
+for b in ("batch001", "batch002", "batch003", "batch004", "batch005", "batch008", "batch009", "batch011"):
     for s in importlib.import_module("strategies." + b).specs():
         if not s.get("blocked"): specs[s["id"]] = s
 out = {}

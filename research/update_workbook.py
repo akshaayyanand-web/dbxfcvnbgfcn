@@ -2,10 +2,15 @@
 import json, os, collections, openpyxl
 from openpyxl.styles import PatternFill, Font
 H = os.path.dirname(__file__); SRC = f"{H}/catalogue_source.xlsx"; OUT = f"{H}/catalogue_results.xlsx"
-recs_all = [json.loads(l) for l in open(f"{H}/results/results.jsonl")]
+_latest = {}
+for l in open(f"{H}/results/results.jsonl"):
+    r = json.loads(l); _latest[(r["id"], r.get("universe"))] = r          # latest record per strategy x market (older ones stay in runs/ and archive/)
+recs_all = list(_latest.values())
 UQ = json.load(open(f"{H}/results/uniqueness.json")) if os.path.exists(f"{H}/results/uniqueness.json") else {}
 RB = json.load(open(f"{H}/results/robustness.json")) if os.path.exists(f"{H}/results/robustness.json") else {}
 OVERRIDE = {**{f"STRAT-{i:04d}": "REJECTED - artifact: FRED swap rates (11am fixing) vs Treasury closes are non-synchronous; edge vanishes with 1-day delay (see 0330 and Robustness)" for i in range(321, 330)},
+            "STRAT-1009": "REJECTED - look-ahead via data revisions: with NFCI as actually published (ALFRED vintages, STRAT-1032) alpha t = -0.1 vs 4.9 on revised data over the same period (STRAT-1033)",
+            "STRAT-1033": "CONTROL ONLY - revised-data replica of STRAT-1009 for 2011+; not a tradable strategy (uses revised data)",
             "STRAT-0560": "REJECTED - instrument mismatch: weekly swaps struck at the 30-day VIX do not exist", "STRAT-0580": "REJECTED - instrument mismatch: weekly front swaps struck at the 30-day VIX do not exist"}
 recs = []
 for r in recs_all:
@@ -35,6 +40,9 @@ def classify(rs):
 wb = openpyxl.load_workbook(SRC); ws = wb["1000 Strategy Ideas"]
 G = PatternFill("solid", fgColor="C6EFCE"); Rd = PatternFill("solid", fgColor="FFC7CE"); Y = PatternFill("solid", fgColor="FFEB9C")
 rowof = {ws.cell(i, 1).value: i for i in range(2, ws.max_row + 1)}; summary = collections.Counter(); dups = []
+for sid in sorted({r["id"] for r in recs_all if int(r["id"][-4:]) > 1000}):        # new mechanisms added after the review (STRAT-1001+)
+    r0 = next(r for r in recs_all if r["id"] == sid); ws.append([sid, r0["name"].split(" — ")[0], r0["name"].split(" — ")[0] + " (added after review: new mechanism)", r0.get("mechanism", ""),
+              r0.get("universe", ""), "see Reproducibility sheet", "same protocol", "see Multiple testing / Duplicate review", "NOT TESTED"]); rowof[sid] = ws.max_row
 for sid, rs in by.items():
     i = rowof[sid]; st, b = classify(rs); summary["REJECTED - artifact" if st.startswith("REJECTED") else st.split(";")[0].split(",")[0]] += 1
     if "VARIATION" in st: dups.append((sid, b["max_corr_with"], b["max_corr"], b["name"]))
