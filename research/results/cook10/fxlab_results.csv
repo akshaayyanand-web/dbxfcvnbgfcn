@@ -1,0 +1,9 @@
+hyp,market,variant,n,per_yr,meanR,t_all,n_tr,meanR_tr,t_tr,n_te,meanR_te,t_te,win,R_yr
+F1 gotobi,USDJPY,long 08:00->09:55 JST on gotobi days,747,69,0.026,2.1,502,0.016,1.08,245,0.045,2.12,55,1.8
+F1 gotobi,USDJPY,short 09:55->11:55 JST on gotobi days (post-fix reversal),763,71,0.023,1.45,502,0.017,0.87,261,0.035,1.23,53,1.6
+F1 gotobi control,USDJPY,long 08:00->09:55 JST on NON-gotobi days,1948,180,-0.0,-0.02,1306,-0.008,-0.92,642,0.016,1.13,51,-0.0
+F6 Asian quiet fade,EURGBP,"fade |z|>2 drift from 23:00 UTC, target session open, out 05:30",54,5,-0.006,-0.06,36,0.021,0.17,18,-0.059,-0.57,44,-0.0
+F6 Asian quiet fade,USDCHF,"fade |z|>2 drift from 23:00 UTC, target session open, out 05:30",105,10,-0.006,-0.14,62,0.052,0.91,43,-0.091,-1.22,55,-0.1
+F8 4pm fix reversal,GBPUSD,fade 15:30->16:00 London move for 30m,2697,249,-0.04,-3.83,1808,-0.024,-1.89,889,-0.072,-3.96,48,-9.9
+F8 4pm fix reversal,USDJPY,fade 15:30->16:00 London move for 30m,2691,249,-0.037,-3.71,1801,-0.035,-2.79,890,-0.041,-2.53,47,-9.2
+F13 cross-pair reversal,6 USD pairs,"buy 2 weakest / sell 2 strongest vs USD over 24h, hold 24h",8639,799,-0.011,-2.66,5766,-0.012,-2.45,2873,-0.008,-1.14,49,-8.8
