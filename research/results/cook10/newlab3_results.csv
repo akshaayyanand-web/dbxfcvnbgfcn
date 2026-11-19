@@ -1,0 +1,18 @@
+hyp,market,variant,n,per_yr,meanR,t_all,n_tr,meanR_tr,t_tr,n_te,meanR_te,t_te,win,R_yr
+R3-1 lead-lag,EUR->XAU,"leader 5m z>2.5, follower lagging, hold 15m",1859,238,-0.034,-2.69,987,-0.029,-1.67,872,-0.041,-2.13,45,-8.2
+R3-1 lead-lag,XAU->EUR,"leader 5m z>2.5, follower lagging, hold 15m",794,119,-0.062,-3.18,412,-0.058,-2.36,382,-0.066,-2.17,45,-7.4
+R3-1 lead-lag,NQ->SPX,"leader 5m z>2.5, follower lagging, hold 15m",435,56,-0.064,-2.19,214,-0.042,-0.98,221,-0.086,-2.13,43,-3.6
+R3-1 lead-lag,SPX->NQ,"leader 5m z>2.5, follower lagging, hold 15m",293,38,-0.088,-2.45,144,-0.032,-0.54,149,-0.143,-3.37,38,-3.3
+R3-1 lead-lag,NQ->DAX,"leader 5m z>2.5, follower lagging, hold 15m",1329,229,-0.072,-4.77,620,-0.058,-2.57,709,-0.085,-4.14,43,-16.6
+R3-2 fix/auction reversal,XAU,gold AM fix: fade 30m pre-move for 45m,1795,230,-0.019,-2.85,901,-0.033,-3.46,894,-0.005,-0.57,47,-4.4
+R3-2 fix/auction reversal,XAU,gold AM fix: fade 30m pre-move for 45m (|z|>1),257,33,-0.021,-0.96,129,-0.036,-1.12,128,-0.006,-0.2,53,-0.7
+R3-2 fix/auction reversal,XAU,gold PM fix: fade 30m pre-move for 45m,1796,230,-0.037,-2.57,902,-0.05,-2.5,894,-0.024,-1.15,47,-8.5
+R3-2 fix/auction reversal,XAU,gold PM fix: fade 30m pre-move for 45m (|z|>1),870,111,-0.047,-2.12,448,-0.083,-2.78,422,-0.009,-0.27,47,-5.2
+R3-2 fix/auction reversal,EUR,EURUSD WMR 4pm fix: fade 30m pre-move for 30m,1543,198,-0.027,-2.33,776,-0.026,-1.59,767,-0.028,-1.71,48,-5.3
+R3-2 fix/auction reversal,EUR,EURUSD WMR 4pm fix: fade 30m pre-move for 30m (|z|>1),643,82,-0.004,-0.19,334,-0.014,-0.51,309,0.007,0.28,50,-0.3
+R3-2 fix/auction reversal,DAX,DAX Xetra close: fade 30m pre-move for 60m,1419,244,-0.014,-1.56,747,-0.008,-0.63,672,-0.022,-1.58,46,-3.5
+R3-2 fix/auction reversal,DAX,DAX Xetra close: fade 30m pre-move for 60m (|z|>1),418,73,-0.015,-0.77,224,-0.004,-0.17,194,-0.028,-0.93,47,-1.1
+R3-2 fix reversal month-end,EUR,"WMR 4pm fix, last 2 business days",134,17,-0.049,-1.24,68,-0.072,-1.32,66,-0.025,-0.44,50,-0.8
+R3-2 fix reversal month-end,EUR,"WMR 4pm fix, last 2 business days (|z|>1)",77,10,-0.016,-0.3,38,-0.127,-1.56,39,0.092,1.4,56,-0.2
+R3-3 MOC-window continuation,SPX,"15:00->15:50 ET sign, hold 15:50->16:00",1704,218,-0.041,-2.26,870,0.019,0.74,834,-0.103,-4.1,45,-8.9
+R3-3 MOC-window continuation,NQ,"15:00->15:50 ET sign, hold 15:50->16:00",1749,224,-0.006,-0.37,873,0.024,0.98,876,-0.036,-1.63,47,-1.3

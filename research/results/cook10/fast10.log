@@ -1,0 +1,5 @@
+{'eval_x': 4.0, 'first_try_pass': 100, 'median_days_to_funded': np.float64(53.0), 'p25': np.float64(32.0), 'p75': np.float64(92.0), 'within_30d': 24, 'within_45d': 40, 'avg_attempts': np.float64(1.0), 'max_attempts': 1}
+{'eval_x': 5.0, 'first_try_pass': 97, 'median_days_to_funded': np.float64(49.0), 'p25': np.float64(27.75), 'p75': np.float64(107.0), 'within_30d': 28, 'within_45d': 47, 'avg_attempts': np.float64(1.03), 'max_attempts': 2}
+{'eval_x': 6.0, 'first_try_pass': 88, 'median_days_to_funded': np.float64(55.5), 'p25': np.float64(25.0), 'p75': np.float64(116.5), 'within_30d': 30, 'within_45d': 43, 'avg_attempts': np.float64(1.12), 'max_attempts': 2}
+{'eval_x': 8.0, 'first_try_pass': 63, 'median_days_to_funded': np.float64(65.5), 'p25': np.float64(28.0), 'p75': np.float64(156.0), 'within_30d': 27, 'within_45d': 38, 'avg_attempts': np.float64(1.75), 'max_attempts': 6}
+{'eval_x': 10.0, 'first_try_pass': 38, 'median_days_to_funded': np.float64(92.0), 'p25': np.float64(31.0), 'p75': np.float64(166.5), 'within_30d': 25, 'within_45d': 33, 'avg_attempts': np.float64(2.29), 'max_attempts': 5}
