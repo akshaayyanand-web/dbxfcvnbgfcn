@@ -1,0 +1,22 @@
+BEST EVAL {'firm': 'Audacity Ability 2-Step', 'eval_x': 6.0, 'first_try': 96, 'median_days': np.float64(44.5), 'within_30d': 33, 'p75': np.float64(82.5)}
+FUNDED {'firm': 'Audacity Ability 2-Step', 'funded_x': 2.0, 'kept': 100, 'yr_median_to_you': np.float64(48.3), 'yr_p10': np.float64(28.3)}
+FUNDED {'firm': 'Audacity Ability 2-Step', 'funded_x': 3.0, 'kept': 100, 'yr_median_to_you': np.float64(70.1), 'yr_p10': np.float64(40.5)}
+FUNDED {'firm': 'Audacity Ability 2-Step', 'funded_x': 3.5, 'kept': 100, 'yr_median_to_you': np.float64(76.6), 'yr_p10': np.float64(26.3)}
+FUNDED {'firm': 'Audacity Ability 2-Step', 'funded_x': 4.0, 'kept': 100, 'yr_median_to_you': np.float64(77.1), 'yr_p10': np.float64(23.0)}
+BEST EVAL {'firm': 'The Concept Empire 1-Step', 'eval_x': 6.0, 'first_try': 94, 'median_days': np.float64(21.0), 'within_30d': 61, 'p75': np.float64(45.25)}
+FUNDED {'firm': 'The Concept Empire 1-Step', 'funded_x': 2.0, 'kept': 100, 'yr_median_to_you': np.float64(32.1), 'yr_p10': np.float64(19.4)}
+FUNDED {'firm': 'The Concept Empire 1-Step', 'funded_x': 3.0, 'kept': 100, 'yr_median_to_you': np.float64(47.1), 'yr_p10': np.float64(23.4)}
+FUNDED {'firm': 'The Concept Empire 1-Step', 'funded_x': 3.5, 'kept': 100, 'yr_median_to_you': np.float64(55.0), 'yr_p10': np.float64(23.0)}
+FUNDED {'firm': 'The Concept Empire 1-Step', 'funded_x': 4.0, 'kept': 100, 'yr_median_to_you': np.float64(64.3), 'yr_p10': np.float64(22.0)}
+BEST EVAL {'firm': 'FundingPips 1-Step Flex', 'eval_x': 4.0, 'first_try': 100, 'median_days': np.float64(50.0), 'within_30d': 32, 'p75': np.float64(118.25)}
+FUNDED {'firm': 'FundingPips 1-Step Flex', 'funded_x': 2.0, 'kept': 100, 'yr_median_to_you': np.float64(53.4), 'yr_p10': np.float64(26.9)}
+FUNDED {'firm': 'FundingPips 1-Step Flex', 'funded_x': 3.0, 'kept': 100, 'yr_median_to_you': np.float64(53.7), 'yr_p10': np.float64(17.5)}
+FUNDED {'firm': 'FundingPips 1-Step Flex', 'funded_x': 3.5, 'kept': 100, 'yr_median_to_you': np.float64(53.3), 'yr_p10': np.float64(11.9)}
+FUNDED {'firm': 'FundingPips 1-Step Flex', 'funded_x': 4.0, 'kept': 100, 'yr_median_to_you': np.float64(51.3), 'yr_p10': np.float64(10.8)}
+BEST EVAL {'firm': 'The5ers High Stakes 2-Step', 'eval_x': 5.0, 'first_try': 97, 'median_days': np.float64(44.0), 'within_30d': 33, 'p75': np.float64(93.25)}
+FUNDED {'firm': 'The5ers High Stakes 2-Step', 'funded_x': 2.0, 'kept': 100, 'yr_median_to_you': np.float64(50.0), 'yr_p10': np.float64(32.2)}
+FUNDED {'firm': 'The5ers High Stakes 2-Step', 'funded_x': 3.0, 'kept': 100, 'yr_median_to_you': np.float64(73.1), 'yr_p10': np.float64(46.1)}
+FUNDED {'firm': 'The5ers High Stakes 2-Step', 'funded_x': 3.5, 'kept': 100, 'yr_median_to_you': np.float64(78.0), 'yr_p10': np.float64(38.2)}
+FUNDED {'firm': 'The5ers High Stakes 2-Step', 'funded_x': 4.0, 'kept': 100, 'yr_median_to_you': np.float64(80.7), 'yr_p10': np.float64(28.4)}
+
+[exited with code 0]
