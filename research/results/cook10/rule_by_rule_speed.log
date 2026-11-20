@@ -1,0 +1,12 @@
+{'rules': 'FTMO 2-Step (10%+5%, 5% daily, 10% static)', 'eval_x': 5.0, 'first_try': 97, 'median_days': np.float64(49.0), 'within_30d': 28, 'p75': np.float64(107.0)}
+{'rules': '  change: NO daily limit', 'eval_x': 6.0, 'first_try': 90, 'median_days': np.float64(42.0), 'within_30d': 37, 'p75': np.float64(82.25)}
+{'rules': '  change: 12% max loss', 'eval_x': 5.0, 'first_try': 100, 'median_days': np.float64(46.0), 'within_30d': 29, 'p75': np.float64(92.25)}
+{'rules': '  change: one phase, 15% target', 'eval_x': 6.0, 'first_try': 90, 'median_days': np.float64(37.5), 'within_30d': 41, 'p75': np.float64(92.75)}
+{'rules': '  change: one phase, 10% target', 'eval_x': 6.0, 'first_try': 91, 'median_days': np.float64(26.5), 'within_30d': 54, 'p75': np.float64(67.75)}
+{'rules': '  change: lower targets 8%+5%', 'eval_x': 5.0, 'first_try': 97, 'median_days': np.float64(44.0), 'within_30d': 33, 'p75': np.float64(93.25)}
+{'rules': 'No daily limit + 12% max loss (2-Step 10%+5%)', 'eval_x': 6.0, 'first_try': 99, 'median_days': np.float64(42.0), 'within_30d': 37, 'p75': np.float64(77.0)}
+{'rules': 'Pipcy 2-Step (12%+6%, no daily, 12%)', 'eval_x': 6.0, 'first_try': 99, 'median_days': np.float64(44.5), 'within_30d': 33, 'p75': np.float64(84.5)}
+{'rules': 'Pipcy 1-Step (18%, no daily, 12%)', 'eval_x': 8.0, 'first_try': 90, 'median_days': np.float64(35.0), 'within_30d': 45, 'p75': np.float64(76.25)}
+{'rules': 'Dream: 1-Step 10%, no daily, 12%', 'eval_x': 8.0, 'first_try': 94, 'median_days': np.float64(17.0), 'within_30d': 64, 'p75': np.float64(47.0)}
+
+[exited with code 0]

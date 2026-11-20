@@ -1,0 +1,11 @@
+{'rule': '(a) no floating rule', 'funded_x': 2.0, 'kept': 100, 'yr_median': np.float64(52.6), 'yr_p10': np.float64(33.2), 'yr_p25': np.float64(44.7)}
+{'rule': '(a) no floating rule', 'funded_x': 3.0, 'kept': 100, 'yr_median': np.float64(77.0), 'yr_p10': np.float64(41.1), 'yr_p25': np.float64(69.7)}
+{'rule': '(a) no floating rule', 'funded_x': 4.0, 'kept': 100, 'yr_median': np.float64(96.3), 'yr_p10': np.float64(38.5), 'yr_p25': np.float64(82.2)}
+{'rule': '(b) EA closes all at -3.5% open loss', 'funded_x': 2.0, 'kept': 100, 'yr_median': np.float64(49.9), 'yr_p10': np.float64(32.7), 'yr_p25': np.float64(39.8)}
+{'rule': '(b) EA closes all at -3.5% open loss', 'funded_x': 3.0, 'kept': 100, 'yr_median': np.float64(69.5), 'yr_p10': np.float64(36.2), 'yr_p25': np.float64(60.2)}
+{'rule': '(b) EA closes all at -3.5% open loss', 'funded_x': 4.0, 'kept': 100, 'yr_median': np.float64(91.8), 'yr_p10': np.float64(16.7), 'yr_p25': np.float64(75.9)}
+{'rule': '(c) no guard: -4% open loss = breach', 'funded_x': 2.0, 'kept': 60, 'yr_median': np.float64(40.5), 'yr_p10': np.float64(1.2), 'yr_p25': np.float64(16.4)}
+{'rule': '(c) no guard: -4% open loss = breach', 'funded_x': 3.0, 'kept': 26, 'yr_median': np.float64(8.0), 'yr_p10': np.float64(0.0), 'yr_p25': np.float64(0.5)}
+{'rule': '(c) no guard: -4% open loss = breach', 'funded_x': 4.0, 'kept': 5, 'yr_median': np.float64(0.8), 'yr_p10': np.float64(0.0), 'yr_p25': np.float64(0.0)}
+
+[exited with code 0]
