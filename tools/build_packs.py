@@ -74,11 +74,11 @@ Backtest: ~95% passed, median ~44 days (slowest 10%: ~6 months). Failed attempt 
 WHEN YOU PASS: remove EVERY EA from the account before trading it. EAs are not allowed on NOVA funded accounts.
 Symbols (their MT5): BTCUSD, XAUUSD, US100, US500, GER40, JPN225.""", moff=100 * k)
 # The5ers High Stakes (2-Step): 8% + 5% targets, 5% daily (from the higher of day-start balance/equity), 10% static, weekends allowed.
-# Risks = tested risk x min(weight x scale, 1%/tested) from the 21-EA model: eval scale 5x, funded scale 3x (cook10 sims).
-T5_EVAL = {"btcrev": 1.0, "spxfade": 1.0, "nqfade": 1.0, "xrprev": 1.0, "btc": .97, "goldvwap": .83, "nq2h": .78, "btcgap": .63, "gdip": .62, "solrev": .62,
-           "gmom": .60, "orb15": .56, "spx1h": .52, "oil1h": .51, "sol": .43, "daxorb": .39, "nikkei": .34, "gasia": .33, "daxpm": .32, "nqbo15": .26, "spxbo5": .23}
+# Risks = tested risk x min(weight x scale, 1%/tested) from the 21-EA model at scale 3x, used unchanged in evaluation AND funded.
+T5_EVAL = None   # set below: the SAME risk in evaluation and funded (The5ers flags size changes between stages)
 T5_FUND = {"btcrev": 1.0, "spxfade": 1.0, "nqfade": 1.0, "xrprev": 1.0, "btc": .58, "goldvwap": .50, "nq2h": .47, "btcgap": .38, "gdip": .37, "solrev": .37,
            "gmom": .36, "orb15": .33, "spx1h": .31, "oil1h": .30, "sol": .26, "daxorb": .23, "nikkei": .21, "gasia": .20, "daxpm": .19, "nqbo15": .16, "spxbo5": .14}
+T5_EVAL = T5_FUND
 T5_G = {"InpAccountSize": 100000, "InpDailyStopPct": 4.0, "InpMaxStopPct": 9.5, "InpRoomCapPct": 8.0, "InpHalfBelowPct": 0, "InpHalfUntilPct": 0,
         "InpFirmMaxLossPct": 10.0, "InpRiskMultiplier": 1.0, "InpDailyRefHigher": "true", "InpNewsBlockMin": 2}
 def build_the5ers():
@@ -98,16 +98,27 @@ PHASE 1: use as is (guard InpProfitLockPct = 8).
 When the target is hit the guard closes everything and stops ALL the EAs (flags AEG_HALT and PP_HALT). To trade again:
 in MT5 press F3 (Global Variables) and delete AEG_HALT and PP_HALT.
 PHASE 2: delete those two flags, set the guard's InpProfitLockPct = 5 (InpStartBalance stays the account size).
-FUNDED:  delete the flags, set every EA's InpRiskPct to the 'funded' column below, guard InpProfitLockPct = 0.
+FUNDED:  delete the flags, guard InpProfitLockPct = 0. Keep every EA's InpRiskPct exactly as it is (same size as the evaluation).
 3 profitable days: if the target is hit before you have 3 profitable days, delete the flags, raise InpProfitLockPct by 0.5
 and let the EAs trade on until the third profitable day.
 
-Backtest (corrected simulator, 21 EAs, 2020-2025 start dates, rules above): passed first try 97%, median ~44 days to funded
-(slowest 25%: 93+ days); funded at the 'funded' risks: 100% kept 1 yr, ~73%/yr median to you (80% split), bad year ~46%.
+Backtest (corrected simulator, 21 EAs, 2020-2025 start dates, rules above, same risk in both stages): passed first try 100%,
+median ~57 days to funded (slowest 25%: 96+ days); funded 1 yr: 100% kept, ~75%/yr median to you (80% split), bad year ~39%.
 Expect live results to be lower: the EAs were chosen on the same history.
 
-LEVERAGE CHECK: these risks need about 1:30 on indices and gold. If your account shows 1:10 on indices, set InpRiskMultiplier = 0.6
-on every EA in the evaluation (about 3x) to avoid rejected orders.
+THE5ERS TERMS - how this pack stays inside them (read their prohibited-practices list yourself):
+- SAME position sizes in evaluation and funded: do NOT raise or cut InpRiskPct between stages (they flag size changes).
+- Risk is moderate and spread out: max 1% per trade with a stop on every order; all open trades together risk ~2.6% of the
+  account 99% of the time (max seen ~4.9%); the stock-index EAs together ~1.4% (max ~3.5%).
+- ONE The5ers account per pack. Do not run the same EAs on several The5ers accounts (their copy-trading / coordinated-trading
+  rule). Spread across different firms instead, always the same direction, never opposite positions.
+- Your own EAs with full source code (not third-party), no HFT/tick scalping (median holds 15 min to 4 days), no rollover
+  scalping, no news brackets, ~9 trades a day in total.
+- Grey areas to clear IN WRITING with The5ers support before buying: (1) 21 EAs running together (several positions open at
+  once, typically 4, up to ~12; about 1 trade in 6 opens in the same minute as another EA's) vs their 'bulk trading' rule;
+  (2) the dip EAs only buy (about 70% of all trades are longs) vs their 'one-sided bets' rule.
+
+LEVERAGE CHECK: these risks need about 1:10 or more on indices and gold (1:30 is comfortable). Check margin on a demo first.
 NEWS: the EAs only avoid OPENING trades near news; a stop or target can still fill inside the 2-minute window. Ask The5ers whether
 that counts on the funded account.
 Symbols: BTCUSD, SOLUSD, XRPUSD, XAUUSD, US100/NAS100, US500/SPX500, GER40/DAX40, JP225, USOIL/WTI (names differ per broker).

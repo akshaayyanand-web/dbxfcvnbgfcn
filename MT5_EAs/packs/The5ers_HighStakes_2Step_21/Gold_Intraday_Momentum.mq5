@@ -6,7 +6,7 @@
 //+------------------------------------------------------------------+
 #property version "1.00"
 #define REQUIRED_TF PERIOD_H1
-input double InpRiskPct = 0.6;    // Risk per trade (% of balance)
+input double InpRiskPct = 0.36;    // Risk per trade (% of balance)
 input long   InpMagic   = 1104;   // Magic number (unique per EA)
 
 #include <Trade/Trade.mqh>
