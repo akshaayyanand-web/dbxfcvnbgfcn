@@ -1,0 +1,4 @@
+test,periods,avg_pct,win,t_all,t_yr1,t_yr2,trades
+S1 weekly reversal: long 5 losers / short 5 winners (per week),94,-0.352,39,-1.33,-1.07,-0.89,
+"S4 non-earnings gap fade 2-5%, open->close (per day with signals)",359,0.075,51,0.73,1.68,-0.5,
+"S6 market-residual stat-arb z>2, beta-hedged (per day with entries)",192,-0.534,48,-1.29,-0.12,-1.41,346.0
