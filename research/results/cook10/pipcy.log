@@ -1,0 +1,18 @@
+{'firm': 'Pipcy 2-Step', 'ea_daily_stop': '4%', 'eval_x': 4.0, 'first_try': 100, 'median_days': np.float64(60.0), 'p75': np.float64(107.25), 'within_30d': 16, 'within_45d': 35, 'avg_attempts': np.float64(1.0)}
+{'firm': 'Pipcy 2-Step', 'ea_daily_stop': '4%', 'eval_x': 6.0, 'first_try': 99, 'median_days': np.float64(55.0), 'p75': np.float64(113.25), 'within_30d': 27, 'within_45d': 42, 'avg_attempts': np.float64(1.01)}
+{'firm': 'Pipcy 2-Step', 'ea_daily_stop': '4%', 'eval_x': 8.0, 'first_try': 78, 'median_days': np.float64(79.0), 'p75': np.float64(298.25), 'within_30d': 23, 'within_45d': 33, 'avg_attempts': np.float64(1.31)}
+{'firm': 'Pipcy 2-Step', 'ea_daily_stop': 'off', 'eval_x': 4.0, 'first_try': 100, 'median_days': np.float64(51.5), 'p75': np.float64(83.25), 'within_30d': 23, 'within_45d': 44, 'avg_attempts': np.float64(1.0)}
+{'firm': 'Pipcy 2-Step', 'ea_daily_stop': 'off', 'eval_x': 6.0, 'first_try': 99, 'median_days': np.float64(41.5), 'p75': np.float64(69.25), 'within_30d': 37, 'within_45d': 57, 'avg_attempts': np.float64(1.01)}
+{'firm': 'Pipcy 2-Step', 'ea_daily_stop': 'off', 'eval_x': 8.0, 'first_try': 90, 'median_days': np.float64(39.0), 'p75': np.float64(73.25), 'within_30d': 40, 'within_45d': 58, 'avg_attempts': np.float64(1.1)}
+{'firm': 'Pipcy 1-Step', 'ea_daily_stop': '4%', 'eval_x': 4.0, 'first_try': 100, 'median_days': np.float64(51.5), 'p75': np.float64(84.25), 'within_30d': 27, 'within_45d': 44, 'avg_attempts': np.float64(1.0)}
+{'firm': 'Pipcy 1-Step', 'ea_daily_stop': '4%', 'eval_x': 6.0, 'first_try': 100, 'median_days': np.float64(45.5), 'p75': np.float64(92.0), 'within_30d': 36, 'within_45d': 50, 'avg_attempts': np.float64(1.0)}
+{'firm': 'Pipcy 1-Step', 'ea_daily_stop': '4%', 'eval_x': 8.0, 'first_try': 83, 'median_days': np.float64(50.0), 'p75': np.float64(193.25), 'within_30d': 36, 'within_45d': 48, 'avg_attempts': np.float64(1.25)}
+{'firm': 'Pipcy 1-Step', 'ea_daily_stop': 'off', 'eval_x': 4.0, 'first_try': 100, 'median_days': np.float64(44.0), 'p75': np.float64(74.0), 'within_30d': 30, 'within_45d': 51, 'avg_attempts': np.float64(1.0)}
+{'firm': 'Pipcy 1-Step', 'ea_daily_stop': 'off', 'eval_x': 6.0, 'first_try': 100, 'median_days': np.float64(32.0), 'p75': np.float64(56.0), 'within_30d': 46, 'within_45d': 66, 'avg_attempts': np.float64(1.0)}
+{'firm': 'Pipcy 1-Step', 'ea_daily_stop': 'off', 'eval_x': 8.0, 'first_try': 92, 'median_days': np.float64(29.0), 'p75': np.float64(53.5), 'within_30d': 52, 'within_45d': 69, 'avg_attempts': np.float64(1.08)}
+{'firm': 'Pipcy 2-Step funded', 'ea_daily_stop': '4%', 'funded_x': 3.0, 'kept': 100, 'yr_median': np.float64(73.0), 'yr_p10': np.float64(47.3), 'yr_p25': np.float64(63.6)}
+{'firm': 'Pipcy 2-Step funded', 'ea_daily_stop': '4%', 'funded_x': 4.0, 'kept': 100, 'yr_median': np.float64(82.6), 'yr_p10': np.float64(37.5), 'yr_p25': np.float64(73.9)}
+{'firm': 'Pipcy 2-Step funded', 'ea_daily_stop': '4%', 'funded_x': 5.0, 'kept': 100, 'yr_median': np.float64(79.8), 'yr_p10': np.float64(15.4), 'yr_p25': np.float64(56.8)}
+{'firm': 'Pipcy 2-Step funded', 'ea_daily_stop': 'off', 'funded_x': 3.0, 'kept': 100, 'yr_median': np.float64(77.2), 'yr_p10': np.float64(40.7), 'yr_p25': np.float64(68.5)}
+{'firm': 'Pipcy 2-Step funded', 'ea_daily_stop': 'off', 'funded_x': 4.0, 'kept': 100, 'yr_median': np.float64(100.3), 'yr_p10': np.float64(40.0), 'yr_p25': np.float64(88.3)}
+{'firm': 'Pipcy 2-Step funded', 'ea_daily_stop': 'off', 'funded_x': 5.0, 'kept': 100, 'yr_median': np.float64(123.0), 'yr_p10': np.float64(33.7), 'yr_p25': np.float64(90.1)}

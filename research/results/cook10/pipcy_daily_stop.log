@@ -1,0 +1,12 @@
+worst single days at 6x (no stops, %): [-9.6, -8.7, -8.7, -7.8, -7.7]
+{'firm': 'Pipcy 1-Step', 'ea_daily_stop': '6%', 'eval_x': 6.0, 'funded_x': 4.0, 'first_try': 100, 'median_days': np.float64(38.5), 'within_30d': 37, 'p75': np.float64(74.5), 'funded_kept': 100, 'yr_median': np.float64(99.6), 'yr_p10': np.float64(42.4)}
+{'firm': 'Pipcy 1-Step', 'ea_daily_stop': '6%', 'eval_x': 8.0, 'funded_x': 4.0, 'first_try': 87, 'median_days': np.float64(36.0), 'within_30d': 43, 'p75': np.float64(88.25), 'funded_kept': 100, 'yr_median': np.float64(99.0), 'yr_p10': np.float64(42.4)}
+{'firm': 'Pipcy 1-Step', 'ea_daily_stop': '6%', 'eval_x': 6.0, 'funded_x': 5.0, 'first_try': 100, 'median_days': np.float64(38.5), 'within_30d': 37, 'p75': np.float64(74.5), 'funded_kept': 100, 'yr_median': np.float64(105.9), 'yr_p10': np.float64(21.4)}
+{'firm': 'Pipcy 1-Step', 'ea_daily_stop': '8%', 'eval_x': 6.0, 'funded_x': 4.0, 'first_try': 99, 'median_days': np.float64(36.0), 'within_30d': 42, 'p75': np.float64(69.5), 'funded_kept': 100, 'yr_median': np.float64(96.3), 'yr_p10': np.float64(38.5)}
+{'firm': 'Pipcy 1-Step', 'ea_daily_stop': '8%', 'eval_x': 8.0, 'funded_x': 4.0, 'first_try': 90, 'median_days': np.float64(35.0), 'within_30d': 45, 'p75': np.float64(76.25), 'funded_kept': 100, 'yr_median': np.float64(98.5), 'yr_p10': np.float64(42.9)}
+{'firm': 'Pipcy 1-Step', 'ea_daily_stop': '8%', 'eval_x': 6.0, 'funded_x': 5.0, 'first_try': 99, 'median_days': np.float64(36.0), 'within_30d': 42, 'p75': np.float64(69.5), 'funded_kept': 100, 'yr_median': np.float64(114.6), 'yr_p10': np.float64(22.2)}
+{'firm': 'Pipcy 1-Step', 'ea_daily_stop': 'off', 'eval_x': 6.0, 'funded_x': 4.0, 'first_try': 100, 'median_days': np.float64(32.0), 'within_30d': 46, 'p75': np.float64(56.0), 'funded_kept': 100, 'yr_median': np.float64(102.0), 'yr_p10': np.float64(36.9)}
+{'firm': 'Pipcy 1-Step', 'ea_daily_stop': 'off', 'eval_x': 8.0, 'funded_x': 4.0, 'first_try': 92, 'median_days': np.float64(29.0), 'within_30d': 52, 'p75': np.float64(53.5), 'funded_kept': 100, 'yr_median': np.float64(101.2), 'yr_p10': np.float64(36.9)}
+{'firm': 'Pipcy 1-Step', 'ea_daily_stop': 'off', 'eval_x': 6.0, 'funded_x': 5.0, 'first_try': 100, 'median_days': np.float64(32.0), 'within_30d': 46, 'p75': np.float64(56.0), 'funded_kept': 100, 'yr_median': np.float64(123.2), 'yr_p10': np.float64(28.4)}
+
+[exited with code 0]
