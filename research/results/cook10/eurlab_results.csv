@@ -1,0 +1,7 @@
+test,cost_pips,n,per_yr,meanR,win,t_2019_22,t_2023_26,R_per_yr
+R1 round-number fade (00/50 levels),0.8,1941,248,-0.246,44,-7.48,-8.34,-61.1
+R2 round-number break (follow),0.8,1733,221,-0.183,38,-4.96,-3.77,-40.6
+N1 NFP 5-min follow to 9:30 ET,0.8,70,9,-0.464,30,-3.66,-1.39,-4.2
+R1 round-number fade (00/50 levels),0.5,1941,248,-0.196,44,-5.84,-6.77,-48.7
+R2 round-number break (follow),0.5,1733,221,-0.123,38,-3.48,-2.39,-27.3
+N1 NFP 5-min follow to 9:30 ET,0.5,70,9,-0.387,30,-3.49,-1.29,-3.5
