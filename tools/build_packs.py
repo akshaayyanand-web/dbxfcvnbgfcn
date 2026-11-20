@@ -1,5 +1,5 @@
 """Build preconfigured EA packs (risk + guard inputs baked into each file) for FTMO 2-step, CTI Instant and FundedSquad 1-Step Flex."""
-import os, re, shutil, zipfile
+import os, re, shutil, sys, zipfile
 SRC = {"btc": "MT5_EAs/BTC_Dip_v3.mq5", "gdip": "MT5_EAs/Gold_Dip.mq5", "nq2h": "MT5_EAs/NQ_Dip_2h.mq5", "spx1h": "MT5_EAs/SPX_Dip_1h.mq5",
        "oil1h": "MT5_EAs/Oil_Dip_1h.mq5", "gasia": "MT5_EAs/Gold_Asia_Breakout.mq5", "gmom": "MT5_EAs/Gold_Intraday_Momentum.mq5",
        "orb15": "MT5_EAs/NQ_Opening_Range.mq5", "nqbo15": "MT5_EAs/NQ_Breakout_15m.mq5", "daxorb": "MT5_EAs/DAX_Opening_Range.mq5",
@@ -73,7 +73,48 @@ IMPORTANT: one MT5 terminal installation per account (the EAs share safety flags
 Backtest: ~95% passed, median ~44 days (slowest 10%: ~6 months). Failed attempt -> free reset.
 WHEN YOU PASS: remove EVERY EA from the account before trading it. EAs are not allowed on NOVA funded accounts.
 Symbols (their MT5): BTCUSD, XAUUSD, US100, US500, GER40, JPN225.""", moff=100 * k)
+# The5ers High Stakes (2-Step): 8% + 5% targets, 5% daily (from the higher of day-start balance/equity), 10% static, weekends allowed.
+# Risks = tested risk x min(weight x scale, 1%/tested) from the 21-EA model: eval scale 5x, funded scale 3x (cook10 sims).
+T5_EVAL = {"btcrev": 1.0, "spxfade": 1.0, "nqfade": 1.0, "xrprev": 1.0, "btc": .97, "goldvwap": .83, "nq2h": .78, "btcgap": .63, "gdip": .62, "solrev": .62,
+           "gmom": .60, "orb15": .56, "spx1h": .52, "oil1h": .51, "sol": .43, "daxorb": .39, "nikkei": .34, "gasia": .33, "daxpm": .32, "nqbo15": .26, "spxbo5": .23}
+T5_FUND = {"btcrev": 1.0, "spxfade": 1.0, "nqfade": 1.0, "xrprev": 1.0, "btc": .58, "goldvwap": .50, "nq2h": .47, "btcgap": .38, "gdip": .37, "solrev": .37,
+           "gmom": .36, "orb15": .33, "spx1h": .31, "oil1h": .30, "sol": .26, "daxorb": .23, "nikkei": .21, "gasia": .20, "daxpm": .19, "nqbo15": .16, "spxbo5": .14}
+T5_G = {"InpAccountSize": 100000, "InpDailyStopPct": 4.0, "InpMaxStopPct": 9.5, "InpRoomCapPct": 8.0, "InpHalfBelowPct": 0, "InpHalfUntilPct": 0,
+        "InpFirmMaxLossPct": 10.0, "InpRiskMultiplier": 1.0, "InpDailyRefHigher": "true", "InpNewsBlockMin": 2}
+def build_the5ers():
+    build("The5ers_HighStakes_2Step_21", T5_EVAL, T5_G, {"InpStartBalance": 100000, "InpDailyLossPct": 4.5, "InpMaxLossPct": 9.5, "InpProfitLockPct": 8, "InpMaxFloatingPct": 0},
+          """THE5ERS HIGH STAKES (2-STEP) - 21 EAs + Account Equity Guard
+Rules assumed (confirm on The5ers' site before buying): Phase 1 +8%, Phase 2 +5%, 5% daily loss (from the higher of the day's
+starting balance or equity, reset at server midnight), 10% static max loss, unlimited time, minimum 3 profitable days per phase,
+EAs and weekend holding allowed, 2-minute pause on high-impact news.
+
+SETUP (every EA): attach to its chart (table below), Algo Trading on. Default account size is $100,000. Different size? Change
+InpAccountSize on every EA and InpStartBalance on the guard. One MT5 terminal per account (the EAs share safety flags).
+Built in: daily stop at 4% measured the The5ers way (InpDailyRefHigher), stop everything at -9.5%, size shrinks once the day starts
+more than 2% down (InpRoomCapPct 8, reaching 0 at the 10% limit), no NEW trades 2 min either side of high-impact USD news.
+Guard: closes everything at -4.5% today or -9.5% total, and closes everything once the phase target is reached (InpProfitLockPct).
+
+PHASE 1: use as is (guard InpProfitLockPct = 8).
+When the target is hit the guard closes everything and stops ALL the EAs (flags AEG_HALT and PP_HALT). To trade again:
+in MT5 press F3 (Global Variables) and delete AEG_HALT and PP_HALT.
+PHASE 2: delete those two flags, set the guard's InpProfitLockPct = 5 (InpStartBalance stays the account size).
+FUNDED:  delete the flags, set every EA's InpRiskPct to the 'funded' column below, guard InpProfitLockPct = 0.
+3 profitable days: if the target is hit before you have 3 profitable days, delete the flags, raise InpProfitLockPct by 0.5
+and let the EAs trade on until the third profitable day.
+
+Backtest (corrected simulator, 21 EAs, 2020-2025 start dates, rules above): passed first try 97%, median ~44 days to funded
+(slowest 25%: 93+ days); funded at the 'funded' risks: 100% kept 1 yr, ~73%/yr median to you (80% split), bad year ~46%.
+Expect live results to be lower: the EAs were chosen on the same history.
+
+LEVERAGE CHECK: these risks need about 1:30 on indices and gold. If your account shows 1:10 on indices, set InpRiskMultiplier = 0.6
+on every EA in the evaluation (about 3x) to avoid rejected orders.
+NEWS: the EAs only avoid OPENING trades near news; a stop or target can still fill inside the 2-minute window. Ask The5ers whether
+that counts on the funded account.
+Symbols: BTCUSD, SOLUSD, XRPUSD, XAUUSD, US100/NAS100, US500/SPX500, GER40/DAX40, JP225, USOIL/WTI (names differ per broker).
+Leave out any EA whose symbol your account lacks (SOL/XRP are the likely ones).""", T5_FUND)
+
 if __name__ == "__main__":
+    if sys.argv[1:] == ["the5ers"]: build_the5ers(); sys.exit()
     build_nova()
     build("FTMO_2Step_FastPass19", FTMO_EVAL, FTMO_G, {"InpStartBalance": 200000, "InpDailyLossPct": 4.0, "InpMaxLossPct": 8.0, "InpMaxFloatingPct": 0},
           """FTMO 2-STEP 200K - FAST PASS 19 (19 EAs + Account Equity Guard)

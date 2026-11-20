@@ -53,15 +53,15 @@ void Check()
    if(GlobalVariableCheck(GV("HALT"))) { CloseEverything("Max-loss halt"); return; }
    if(GlobalVariableCheck(dayHalt))   { CloseEverything("Daily halt"); return; }
    if(eq <= InpStartBalance * (1 - InpMaxLossPct / 100))
-     { GlobalVariableSet(GV("HALT"), 1); Print("MAX LOSS reached (equity ", eq, "): everything closed, trading halted for good"); CloseEverything("Max-loss halt"); return; }
+     { GlobalVariableSet(GV("HALT"), 1); GlobalVariableSet("PP_HALT", 1); Print("MAX LOSS reached (equity ", eq, "): everything closed, trading halted for good"); CloseEverything("Max-loss halt"); return; }
    if(DayStartBalance() - eq >= InpStartBalance * InpDailyLossPct / 100)
-     { GlobalVariableSet(dayHalt, 1); Print("DAILY LOSS reached (equity ", eq, "): everything closed until the next server day"); CloseEverything("Daily halt"); return; }
+     { GlobalVariableSet(dayHalt, 1); GlobalVariableSet("PP_DH_" + IntegerToString(DayKey(TimeTradeServer())), 1); GlobalVariableSet("PP_DH_" + IntegerToString(DayKey(TimeGMT())), 1); Print("DAILY LOSS reached (equity ", eq, "): everything closed until the next server day"); CloseEverything("Daily halt"); return; }
    if(InpTrailLossPct > 0)
      {
       double pk = GlobalVariableCheck(GV("PEAK")) ? GlobalVariableGet(GV("PEAK")) : InpStartBalance;
       if(eq > pk) { pk = eq; GlobalVariableSet(GV("PEAK"), pk); }
       double fl = MathMin(InpStartBalance, pk - InpStartBalance * InpTrailLossPct / 100);
-      if(eq <= fl) { GlobalVariableSet(GV("HALT"), 1); Print("TRAILING MAX LOSS reached (equity ", eq, ", peak ", pk, "): everything closed, trading halted for good"); CloseEverything("Trailing max-loss halt"); return; }
+      if(eq <= fl) { GlobalVariableSet(GV("HALT"), 1); GlobalVariableSet("PP_HALT", 1); Print("TRAILING MAX LOSS reached (equity ", eq, ", peak ", pk, "): everything closed, trading halted for good"); CloseEverything("Trailing max-loss halt"); return; }
      }
    double flt = eq - AccountInfoDouble(ACCOUNT_BALANCE);
    if(InpMaxFloatingPct > 0 && flt <= -InpStartBalance * InpMaxFloatingPct / 100)
@@ -71,7 +71,7 @@ void Check()
       CloseEverything("Floating cap"); return;
      }
    if(InpProfitLockPct > 0 && eq >= InpStartBalance * (1 + InpProfitLockPct / 100))
-     { GlobalVariableSet(GV("HALT"), 1); Print("PROFIT TARGET reached (equity ", eq, "): everything closed"); CloseEverything("Profit lock"); }
+     { GlobalVariableSet(GV("HALT"), 1); GlobalVariableSet("PP_HALT", 1); Print("PROFIT TARGET reached (equity ", eq, "): everything closed"); CloseEverything("Profit lock"); }
   }
 void OnTick()  { Check(); }
 void OnTimer() { Check(); }

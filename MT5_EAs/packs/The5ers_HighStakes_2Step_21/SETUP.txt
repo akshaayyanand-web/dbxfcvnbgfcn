@@ -1,0 +1,55 @@
+THE5ERS HIGH STAKES (2-STEP) - 21 EAs + Account Equity Guard
+Rules assumed (confirm on The5ers' site before buying): Phase 1 +8%, Phase 2 +5%, 5% daily loss (from the higher of the day's
+starting balance or equity, reset at server midnight), 10% static max loss, unlimited time, minimum 3 profitable days per phase,
+EAs and weekend holding allowed, 2-minute pause on high-impact news.
+
+SETUP (every EA): attach to its chart (table below), Algo Trading on. Default account size is $100,000. Different size? Change
+InpAccountSize on every EA and InpStartBalance on the guard. One MT5 terminal per account (the EAs share safety flags).
+Built in: daily stop at 4% measured the The5ers way (InpDailyRefHigher), stop everything at -9.5%, size shrinks once the day starts
+more than 2% down (InpRoomCapPct 8, reaching 0 at the 10% limit), no NEW trades 2 min either side of high-impact USD news.
+Guard: closes everything at -4.5% today or -9.5% total, and closes everything once the phase target is reached (InpProfitLockPct).
+
+PHASE 1: use as is (guard InpProfitLockPct = 8).
+When the target is hit the guard closes everything and stops ALL the EAs (flags AEG_HALT and PP_HALT). To trade again:
+in MT5 press F3 (Global Variables) and delete AEG_HALT and PP_HALT.
+PHASE 2: delete those two flags, set the guard's InpProfitLockPct = 5 (InpStartBalance stays the account size).
+FUNDED:  delete the flags, set every EA's InpRiskPct to the 'funded' column below, guard InpProfitLockPct = 0.
+3 profitable days: if the target is hit before you have 3 profitable days, delete the flags, raise InpProfitLockPct by 0.5
+and let the EAs trade on until the third profitable day.
+
+Backtest (corrected simulator, 21 EAs, 2020-2025 start dates, rules above): passed first try 97%, median ~44 days to funded
+(slowest 25%: 93+ days); funded at the 'funded' risks: 100% kept 1 yr, ~73%/yr median to you (80% split), bad year ~46%.
+Expect live results to be lower: the EAs were chosen on the same history.
+
+LEVERAGE CHECK: these risks need about 1:30 on indices and gold. If your account shows 1:10 on indices, set InpRiskMultiplier = 0.6
+on every EA in the evaluation (about 3x) to avoid rejected orders.
+NEWS: the EAs only avoid OPENING trades near news; a stop or target can still fill inside the 2-minute window. Ask The5ers whether
+that counts on the funded account.
+Symbols: BTCUSD, SOLUSD, XRPUSD, XAUUSD, US100/NAS100, US500/SPX500, GER40/DAX40, JP225, USOIL/WTI (names differ per broker).
+Leave out any EA whose symbol your account lacks (SOL/XRP are the likely ones).
+
+EA file                          Chart                InpRiskPct   funded InpRiskPct
+BTC_Revert_5m.mq5                BTCUSD M5            1.0          1.0
+Open_Fade_1m.mq5                 US500 M1             1.0          1.0
+NQ_Open_Fade_1m.mq5              US100 M1             1.0          1.0
+XRP_Revert_5m.mq5                XRPUSD M5            1.0          1.0
+BTC_Dip_v3.mq5                   BTCUSD H2            0.97         0.58
+Gold_VWAP_Pullback_5m.mq5        XAUUSD M5            0.83         0.5
+NQ_Dip_2h.mq5                    US100 H2             0.78         0.47
+BTC_Weekend_Gap.mq5              BTCUSD H1            0.63         0.38
+Gold_Dip.mq5                     XAUUSD H1            0.62         0.37
+SOL_Revert_5m.mq5                SOLUSD M5            0.62         0.37
+Gold_Intraday_Momentum.mq5       XAUUSD H1            0.6          0.36
+NQ_Opening_Range.mq5             US100 M5             0.56         0.33
+SPX_Dip_1h.mq5                   US500 H1             0.52         0.31
+Oil_Dip_1h.mq5                   USOIL/WTI H1         0.51         0.3
+SOL_Dip_1h.mq5                   SOLUSD H1            0.43         0.26
+DAX_Opening_Range.mq5            GER40/DE40 M15       0.39         0.23
+Nikkei_Breakout_5m.mq5           JP225 M5             0.34         0.21
+Gold_Asia_Breakout.mq5           XAUUSD H1            0.33         0.2
+DAX_Premarket_15m.mq5            GER40/DE40 M15       0.32         0.19
+NQ_Breakout_15m.mq5              US100 M15            0.26         0.16
+SPX_Breakout_5m.mq5              US500 M5             0.23         0.14
+
+Account_Equity_Guard.mq5 -> any one extra chart (watches the whole account). Its settings: InpStartBalance=100000, InpDailyLossPct=4.5, InpMaxLossPct=9.5, InpProfitLockPct=8, InpMaxFloatingPct=0
+Already set inside every EA: InpAccountSize=100000, InpDailyStopPct=4.0, InpMaxStopPct=9.5, InpRoomCapPct=8.0, InpHalfBelowPct=0, InpHalfUntilPct=0, InpFirmMaxLossPct=10.0, InpRiskMultiplier=1.0, InpDailyRefHigher=true, InpNewsBlockMin=2
