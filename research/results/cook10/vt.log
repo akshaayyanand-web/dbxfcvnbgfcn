@@ -1,0 +1,15 @@
+base Sharpe 2020-22 / 2023-26: 3.7 3.23 | %/yr x1: 36.0 | worst day x1: -1.96
+{'sizing': 'base', 'eval_x': 4.0, 'first_try': 100, 'median_days': np.float64(53.0), 'p75': np.float64(92.0), 'within_30d': 24, 'within_45d': 40}
+{'sizing': 'base', 'eval_x': 5.0, 'first_try': 97, 'median_days': np.float64(49.0), 'p75': np.float64(107.0), 'within_30d': 28, 'within_45d': 47}
+{'sizing': 'base', 'funded_x': 3.0, 'kept': 100, 'yr_median': np.float64(73.3), 'yr_p10': np.float64(46.7)}
+{'sizing': 'base', 'funded_x': 3.5, 'kept': 100, 'yr_median': np.float64(78.3), 'yr_p10': np.float64(40.6)}
+book Sharpe 2020-22 / 2023-26: 3.59 3.29 | %/yr x1: 37.2 | worst day x1: -2.17
+{'sizing': 'book', 'eval_x': 4.0, 'first_try': 100, 'median_days': np.float64(56.5), 'p75': np.float64(102.25), 'within_30d': 22, 'within_45d': 40}
+{'sizing': 'book', 'eval_x': 5.0, 'first_try': 85, 'median_days': np.float64(51.5), 'p75': np.float64(126.25), 'within_30d': 25, 'within_45d': 46}
+{'sizing': 'book', 'funded_x': 3.0, 'kept': 100, 'yr_median': np.float64(76.0), 'yr_p10': np.float64(42.9)}
+{'sizing': 'book', 'funded_x': 3.5, 'kept': 100, 'yr_median': np.float64(72.8), 'yr_p10': np.float64(31.4)}
+per_ea Sharpe 2020-22 / 2023-26: 3.55 3.31 | %/yr x1: 35.4 | worst day x1: -2.39
+{'sizing': 'per_ea', 'eval_x': 4.0, 'first_try': 100, 'median_days': np.float64(57.0), 'p75': np.float64(92.75), 'within_30d': 20, 'within_45d': 39}
+{'sizing': 'per_ea', 'eval_x': 5.0, 'first_try': 91, 'median_days': np.float64(56.0), 'p75': np.float64(106.25), 'within_30d': 24, 'within_45d': 42}
+{'sizing': 'per_ea', 'funded_x': 3.0, 'kept': 100, 'yr_median': np.float64(77.9), 'yr_p10': np.float64(51.4)}
+{'sizing': 'per_ea', 'funded_x': 3.5, 'kept': 100, 'yr_median': np.float64(86.7), 'yr_p10': np.float64(35.3)}
