@@ -1,0 +1,7 @@
+lean 15 EAs Sharpe 2020-22 / 2023-26: 3.52 2.72 | %/yr x1: 25.1
+{'book': '15 two-way EAs', 'same_risk_x': 3.0, 'first_try': 100, 'median_days': np.float64(178.0), 'p75': np.float64(322.0), 'funded_kept': 100, 'yr_median': np.float64(52.3), 'yr_p10': np.float64(20.1)}
+{'book': '15 two-way EAs', 'same_risk_x': 4.0, 'first_try': 100, 'median_days': np.float64(149.0), 'p75': np.float64(276.5), 'funded_kept': 100, 'yr_median': np.float64(72.3), 'yr_p10': np.float64(40.4)}
+{'book': '15 two-way EAs', 'same_risk_x': 5.0, 'first_try': 100, 'median_days': np.float64(116.5), 'p75': np.float64(232.5), 'funded_kept': 100, 'yr_median': np.float64(77.6), 'yr_p10': np.float64(46.0)}
+{'book': '15 two-way EAs', 'same_risk_x': 6.0, 'first_try': 100, 'median_days': np.float64(86.0), 'p75': np.float64(203.75), 'funded_kept': 100, 'yr_median': np.float64(81.4), 'yr_p10': np.float64(31.4)}
+
+[exited with code 0]
