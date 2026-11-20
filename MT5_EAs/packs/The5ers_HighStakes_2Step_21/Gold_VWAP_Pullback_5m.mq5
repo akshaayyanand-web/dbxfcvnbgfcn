@@ -30,7 +30,7 @@ input double InpRiskMultiplier   = 1.0;    // Keep 1.0: the default risks are al
 input bool   InpAutoServerOffset = true;   // Live: detect the server's GMT offset automatically
 input int    InpServerGMTOffset  = 2;      // Tester: server GMT offset in winter (FTMO-style servers: 2)
 input bool   InpServerUsesUSDST  = true;   // Tester: server shifts +1h with US daylight saving (FTMO-style)
-input int    InpNewsBlockMin     = 2;      // No NEW trades this many minutes before/after high-impact USD news (0 = off)
+input int    InpNewsBlockMin     = 5;      // No NEW trades this many minutes before/after high-impact USD news (0 = off)
 input double InpMaxSpreadPct     = 15;     // Skip a trade if the current spread is more than this % of its stop distance (0 = off)
 input int    InpMaxPosPerSymbol  = 0;      // Skip a trade if this many positions (any EA) are already open on the symbol (0 = off; FundedSquad: 2)
 input bool   InpNoOpposite       = false;  // Skip a trade if any EA has the opposite direction open on the symbol (FundedSquad: true, no hedging)
@@ -40,6 +40,8 @@ input bool   InpDailyRefHigher   = true;  // Daily loss measured from the HIGHER
 input int    InpMinHoldSec       = 0;      // Minimum hold: no trade closes by its SL/TP before this many seconds (0 = off; FundedSquad: 130)
 input bool   InpTrailingMaxLoss  = false;  // Max-loss levels trail the highest equity and lock at the starting balance (TopOneTrader NOVA: true)
 input double InpHoldStopMult     = 1.5;    // During the minimum hold the server stop sits this many x the normal stop distance away (emergency only)
+input int    InpMaxOpenTotal     = 6;      // Skip a new trade if the ACCOUNT already has this many open positions (0 = off; The5ers pack: 5)
+input int    InpStaggerSec       = 90;      // Wait this many seconds after ANY EA's entry before entering (0 = off; The5ers pack: 90)
 
 //--- time helpers -------------------------------------------------------------
 datetime MakeDate(int y, int m, int d) { MqlDateTime s; ZeroMemory(s); s.year = y; s.mon = m; s.day = d; return StructToTime(s); }
@@ -214,6 +216,7 @@ double LotsFor(double riskMoney, double stopDist, ENUM_ORDER_TYPE type, double p
   }
 bool SymbolSlotOK(int dir, string tag)   // firm rules on the symbol across ALL EAs: max open positions and no opposite directions
   {
+   if(InpMaxOpenTotal > 0 && PositionsTotal() >= InpMaxOpenTotal) { Print(tag, ": ", PositionsTotal(), " positions open on the account (cap ", InpMaxOpenTotal, "), skipped"); return false; }
    if(InpNoWeekendEntries) { MqlDateTime w; TimeToStruct(TimeGMT(), w); if(w.day_of_week == 0 || w.day_of_week == 6) { Print(tag, ": weekend, no new trades"); return false; } }
    if(InpMaxPosPerSymbol <= 0 && !InpNoOpposite) return true;
    int n = 0; bool opposite = false;
@@ -249,9 +252,21 @@ void ManageHold()
       if(ok) { GlobalVariableDel(HoldKey(tk) + "S"); GlobalVariableDel(HoldKey(tk) + "T"); Print(hit ? "Hold over: past SL/TP, closed" : "Hold over: SL/TP set"); }
      }
   }
+// Stagger: if another EA opened a trade less than InpStaggerSec ago, wait and retry on later ticks of the same bar (max 15 min).
+// The slot is claimed atomically (GlobalVariableSetOnCondition), so two EAs cannot enter in the same moment.
+bool StaggerSlotOK(string tag)
+  {
+   if(InpStaggerSec <= 0 || MQLInfoInteger(MQL_TESTER)) return true;
+   if(!GlobalVariableCheck("PP_LASTENTRY")) GlobalVariableSet("PP_LASTENTRY", 0);
+   double last = GlobalVariableGet("PP_LASTENTRY"); double now = (double)TimeCurrent();
+   if(now - last < InpStaggerSec || !GlobalVariableSetOnCondition("PP_LASTENTRY", now, last))
+     { gSpreadRetry = true; static datetime lastMsg = 0; if(TimeCurrent() - lastMsg >= 30) { lastMsg = TimeCurrent(); Print(tag, ": another EA entered ", (int)(now - last), " s ago, waiting (stagger ", InpStaggerSec, " s)"); } return false; }
+   return true;
+  }
 bool OpenTrade(int dir, double stopPrice, double tpPrice, string tag)
   {
    if(!SymbolSlotOK(dir, tag)) return false;
+   if(!StaggerSlotOK(tag)) return false;
    if(NewsBlocked()) { Print(tag, ": high-impact news within ", InpNewsBlockMin, " min, skipped"); return false; }
    double price = dir == 1 ? SymbolInfoDouble(_Symbol, SYMBOL_ASK) : SymbolInfoDouble(_Symbol, SYMBOL_BID);
    double dist = MathAbs(price - stopPrice);
@@ -263,6 +278,7 @@ bool OpenTrade(int dir, double stopPrice, double tpPrice, string tag)
    double ssl = sl, stp = tp;
    if(InpMinHoldSec > 0) { ssl = NormalizeDouble(price - dir * InpHoldStopMult * dist, _Digits); stp = 0; }   // real SL/TP applied after the hold
    bool ok = dir == 1 ? trade.Buy(lots, _Symbol, 0, ssl, stp, tag) : trade.Sell(lots, _Symbol, 0, ssl, stp, tag);
+   if(ok && InpStaggerSec > 0) GlobalVariableSet("PP_LASTENTRY", (double)TimeCurrent());
    Print(tag, ok ? " opened " : " FAILED ", lots, " lots, SL ", sl, " TP ", tp, " retcode ", trade.ResultRetcode());
    if(ok && InpMinHoldSec > 0) { ulong pt = trade.ResultOrder(); GlobalVariableSet(HoldKey(pt) + "S", sl); GlobalVariableSet(HoldKey(pt) + "T", tp); }
    return ok;

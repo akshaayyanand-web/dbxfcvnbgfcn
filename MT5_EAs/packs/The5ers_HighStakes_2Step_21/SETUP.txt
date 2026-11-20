@@ -6,7 +6,9 @@ EAs and weekend holding allowed, 2-minute pause on high-impact news.
 SETUP (every EA): attach to its chart (table below), Algo Trading on. Default account size is $100,000. Different size? Change
 InpAccountSize on every EA and InpStartBalance on the guard. One MT5 terminal per account (the EAs share safety flags).
 Built in: daily stop at 4% measured the The5ers way (InpDailyRefHigher), stop everything at -9.5%, size shrinks once the day starts
-more than 2% down (InpRoomCapPct 8, reaching 0 at the 10% limit), no NEW trades 2 min either side of high-impact USD news.
+more than 2% down (InpRoomCapPct 8, reaching 0 at the 10% limit), no NEW trades 5 min either side of high-impact USD news,
+at most 6 open positions on the account (InpMaxOpenTotal), and no two EAs enter within 90 s of each other (InpStaggerSec:
+the later one waits and retries, the slot is claimed atomically).
 Guard: closes everything at -4.5% today or -9.5% total, and closes everything once the phase target is reached (InpProfitLockPct).
 
 PHASE 1: use as is (guard InpProfitLockPct = 8).
@@ -18,19 +20,22 @@ FUNDED:  delete the flags, guard InpProfitLockPct = 0. Keep every EA's InpRiskPc
 and let the EAs trade on until the third profitable day.
 
 Backtest (corrected simulator, 21 EAs, 2020-2025 start dates, rules above, same risk in both stages): passed first try 100%,
-median ~57 days to funded (slowest 25%: 96+ days); funded 1 yr: 100% kept, ~75%/yr median to you (80% split), bad year ~39%.
+median ~57 days to funded without the execution limits; the 6-position cap + 90 s stagger add ~5 days and cost ~6 points a year
+in the trade-level test, so expect ~62 days and ~70%/yr median to you (80% split), bad year ~40%; 100% of accounts kept 1 yr.
 Expect live results to be lower: the EAs were chosen on the same history.
 
 THE5ERS TERMS - how this pack stays inside them (read their prohibited-practices list yourself):
 - SAME position sizes in evaluation and funded: do NOT raise or cut InpRiskPct between stages (they flag size changes).
-- Risk is moderate and spread out: max 1% per trade with a stop on every order; all open trades together risk ~2.6% of the
-  account 99% of the time (max seen ~4.9%); the stock-index EAs together ~1.4% (max ~3.5%).
+- Risk is moderate and spread out: max 1% per trade with a hard stop on every order; all open trades together risk ~2.6% of
+  the account 99% of the time (max seen ~4.9%); the stock-index EAs together ~1.4% (max ~3.5%).
+- Execution footprint: never two entries within 90 s, at most 6 positions open (typically 4), ~8 trades a day, one order
+  modification at most per trade.
 - ONE The5ers account per pack. Do not run the same EAs on several The5ers accounts (their copy-trading / coordinated-trading
   rule). Spread across different firms instead, always the same direction, never opposite positions.
 - Your own EAs with full source code (not third-party), no HFT/tick scalping (median holds 15 min to 4 days), no rollover
   scalping, no news brackets, ~9 trades a day in total.
 - Grey areas to clear IN WRITING with The5ers support before buying: (1) 21 EAs running together (several positions open at
-  once, typically 4, up to ~12; about 1 trade in 6 opens in the same minute as another EA's) vs their 'bulk trading' rule;
+  once, typically 4, max 6; entries at least 90 s apart) vs their 'bulk trading' rule;
   (2) the dip EAs only buy (about 70% of all trades are longs) vs their 'one-sided bets' rule.
 
 LEVERAGE CHECK: these risks need about 1:10 or more on indices and gold (1:30 is comfortable). Check margin on a demo first.
@@ -63,4 +68,4 @@ NQ_Breakout_15m.mq5              US100 M15            0.16         0.16
 SPX_Breakout_5m.mq5              US500 M5             0.14         0.14
 
 Account_Equity_Guard.mq5 -> any one extra chart (watches the whole account). Its settings: InpStartBalance=100000, InpDailyLossPct=4.5, InpMaxLossPct=9.5, InpProfitLockPct=8, InpMaxFloatingPct=0
-Already set inside every EA: InpAccountSize=100000, InpDailyStopPct=4.0, InpMaxStopPct=9.5, InpRoomCapPct=8.0, InpHalfBelowPct=0, InpHalfUntilPct=0, InpFirmMaxLossPct=10.0, InpRiskMultiplier=1.0, InpDailyRefHigher=true, InpNewsBlockMin=2
+Already set inside every EA: InpAccountSize=100000, InpDailyStopPct=4.0, InpMaxStopPct=9.5, InpRoomCapPct=8.0, InpHalfBelowPct=0, InpHalfUntilPct=0, InpFirmMaxLossPct=10.0, InpRiskMultiplier=1.0, InpDailyRefHigher=true, InpNewsBlockMin=5, InpMaxOpenTotal=6, InpStaggerSec=90
