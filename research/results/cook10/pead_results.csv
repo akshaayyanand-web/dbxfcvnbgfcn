@@ -1,0 +1,3 @@
+variant,n,win,avg_ret_pct,avg_R,t_all,n_yr1,t_yr1,n_yr2,t_yr2,longs,avg_long_pct,avg_short_pct
+P1 follow every earnings move,75,49,0.98,0.169,0.71,36,0.62,39,0.41,29,4.43,-1.19
+P2 follow only moves > 5%,60,47,0.21,0.085,0.17,28,1.04,32,-1.34,24,2.32,-1.2
