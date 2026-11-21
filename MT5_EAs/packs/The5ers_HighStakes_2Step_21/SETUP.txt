@@ -3,7 +3,7 @@ Rules assumed (confirm on The5ers' site before buying): Phase 1 +8%, Phase 2 +5%
 starting balance or equity, reset at server midnight), 10% static max loss, unlimited time, minimum 3 profitable days per phase,
 EAs and weekend holding allowed, 2-minute pause on high-impact news.
 
-SETUP (every EA): attach to its chart (table below), Algo Trading on. Default account size is $100,000. Different size? Change
+SETUP (every EA): attach to its chart (table below), Algo Trading on. Account size is set inside every file (see the bottom line). Different size? Change
 InpAccountSize on every EA and InpStartBalance on the guard. One MT5 terminal per account (the EAs share safety flags).
 Built in: daily stop at 4% measured the The5ers way (InpDailyRefHigher), stop everything at -9.5%, size shrinks once the day starts
 more than 2% down (InpRoomCapPct 8, reaching 0 at the 10% limit), no NEW trades 5 min either side of high-impact USD news,

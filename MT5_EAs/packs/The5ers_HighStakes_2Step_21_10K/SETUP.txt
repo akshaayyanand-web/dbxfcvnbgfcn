@@ -1,0 +1,71 @@
+THE5ERS HIGH STAKES (2-STEP) - 21 EAs + Account Equity Guard
+Rules assumed (confirm on The5ers' site before buying): Phase 1 +8%, Phase 2 +5%, 5% daily loss (from the higher of the day's
+starting balance or equity, reset at server midnight), 10% static max loss, unlimited time, minimum 3 profitable days per phase,
+EAs and weekend holding allowed, 2-minute pause on high-impact news.
+
+SETUP (every EA): attach to its chart (table below), Algo Trading on. Account size is set inside every file (see the bottom line). Different size? Change
+InpAccountSize on every EA and InpStartBalance on the guard. One MT5 terminal per account (the EAs share safety flags).
+Built in: daily stop at 4% measured the The5ers way (InpDailyRefHigher), stop everything at -9.5%, size shrinks once the day starts
+more than 2% down (InpRoomCapPct 8, reaching 0 at the 10% limit), no NEW trades 5 min either side of high-impact USD news,
+at most 6 open positions on the account (InpMaxOpenTotal), and no two EAs enter within 90 s of each other (InpStaggerSec:
+the later one waits and retries, the slot is claimed atomically).
+Guard: closes everything at -4.5% today or -9.5% total, and closes everything once the phase target is reached (InpProfitLockPct).
+
+PHASE 1: use as is (guard InpProfitLockPct = 8).
+When the target is hit the guard closes everything and stops ALL the EAs (flags AEG_HALT and PP_HALT). To trade again:
+in MT5 press F3 (Global Variables) and delete AEG_HALT and PP_HALT.
+PHASE 2: delete those two flags, set the guard's InpProfitLockPct = 5 (InpStartBalance stays the account size).
+FUNDED:  delete the flags, guard InpProfitLockPct = 0. Keep every EA's InpRiskPct exactly as it is (same size as the evaluation).
+3 profitable days: if the target is hit before you have 3 profitable days, delete the flags, raise InpProfitLockPct by 0.5
+and let the EAs trade on until the third profitable day.
+
+Backtest (corrected simulator, 21 EAs, 2020-2025 start dates, rules above, same risk in both stages): passed first try 100%,
+median ~57 days to funded without the execution limits; the 6-position cap + 90 s stagger add ~5 days and cost ~6 points a year
+in the trade-level test, so expect ~62 days and ~70%/yr median to you (80% split), bad year ~40%; 100% of accounts kept 1 yr.
+Expect live results to be lower: the EAs were chosen on the same history.
+
+THE5ERS TERMS - how this pack stays inside them (read their prohibited-practices list yourself):
+- SAME position sizes in evaluation and funded: do NOT raise or cut InpRiskPct between stages (they flag size changes).
+- Risk is moderate and spread out: max 1% per trade with a hard stop on every order; all open trades together risk ~2.6% of
+  the account 99% of the time (max seen ~4.9%); the stock-index EAs together ~1.4% (max ~3.5%).
+- Execution footprint: never two entries within 90 s, at most 6 positions open (typically 4), ~8 trades a day, one order
+  modification at most per trade.
+- ONE The5ers account per pack. Do not run the same EAs on several The5ers accounts (their copy-trading / coordinated-trading
+  rule). Spread across different firms instead, always the same direction, never opposite positions.
+- Your own EAs with full source code (not third-party), no HFT/tick scalping (median holds 15 min to 4 days), no rollover
+  scalping, no news brackets, ~9 trades a day in total.
+- Grey areas to clear IN WRITING with The5ers support before buying: (1) 21 EAs running together (several positions open at
+  once, typically 4, max 6; entries at least 90 s apart) vs their 'bulk trading' rule;
+  (2) the dip EAs only buy (about 70% of all trades are longs) vs their 'one-sided bets' rule.
+
+LEVERAGE CHECK: these risks need about 1:10 or more on indices and gold (1:30 is comfortable). Check margin on a demo first.
+NEWS: the EAs only avoid OPENING trades near news; a stop or target can still fill inside the 2-minute window. Ask The5ers whether
+that counts on the funded account.
+Symbols: BTCUSD, SOLUSD, XRPUSD, XAUUSD, US100/NAS100, US500/SPX500, GER40/DAX40, JP225, USOIL/WTI (names differ per broker).
+Leave out any EA whose symbol your account lacks (SOL/XRP are the likely ones).
+
+EA file                          Chart                InpRiskPct   funded InpRiskPct
+BTC_Revert_5m.mq5                BTCUSD M5            1.0          1.0
+Open_Fade_1m.mq5                 US500 M1             1.0          1.0
+NQ_Open_Fade_1m.mq5              US100 M1             1.0          1.0
+XRP_Revert_5m.mq5                XRPUSD M5            1.0          1.0
+BTC_Dip_v3.mq5                   BTCUSD H2            0.58         0.58
+Gold_VWAP_Pullback_5m.mq5        XAUUSD M5            0.5          0.5
+NQ_Dip_2h.mq5                    US100 H2             0.47         0.47
+BTC_Weekend_Gap.mq5              BTCUSD H1            0.38         0.38
+Gold_Dip.mq5                     XAUUSD H1            0.37         0.37
+SOL_Revert_5m.mq5                SOLUSD M5            0.37         0.37
+Gold_Intraday_Momentum.mq5       XAUUSD H1            0.36         0.36
+NQ_Opening_Range.mq5             US100 M5             0.33         0.33
+SPX_Dip_1h.mq5                   US500 H1             0.31         0.31
+Oil_Dip_1h.mq5                   USOIL/WTI H1         0.3          0.3
+SOL_Dip_1h.mq5                   SOLUSD H1            0.26         0.26
+DAX_Opening_Range.mq5            GER40/DE40 M15       0.23         0.23
+Nikkei_Breakout_5m.mq5           JP225 M5             0.21         0.21
+Gold_Asia_Breakout.mq5           XAUUSD H1            0.2          0.2
+DAX_Premarket_15m.mq5            GER40/DE40 M15       0.19         0.19
+NQ_Breakout_15m.mq5              US100 M15            0.16         0.16
+SPX_Breakout_5m.mq5              US500 M5             0.14         0.14
+
+Account_Equity_Guard.mq5 -> any one extra chart (watches the whole account). Its settings: InpStartBalance=10000, InpDailyLossPct=4.5, InpMaxLossPct=9.5, InpProfitLockPct=8, InpMaxFloatingPct=0
+Already set inside every EA: InpAccountSize=10000, InpDailyStopPct=4.0, InpMaxStopPct=9.5, InpRoomCapPct=8.0, InpHalfBelowPct=0, InpHalfUntilPct=0, InpFirmMaxLossPct=10.0, InpRiskMultiplier=1.0, InpDailyRefHigher=true, InpNewsBlockMin=5, InpMaxOpenTotal=6, InpStaggerSec=90

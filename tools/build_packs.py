@@ -82,14 +82,15 @@ T5_EVAL = T5_FUND
 T5_G = {"InpAccountSize": 100000, "InpDailyStopPct": 4.0, "InpMaxStopPct": 9.5, "InpRoomCapPct": 8.0, "InpHalfBelowPct": 0, "InpHalfUntilPct": 0,
         "InpFirmMaxLossPct": 10.0, "InpRiskMultiplier": 1.0, "InpDailyRefHigher": "true", "InpNewsBlockMin": 5,
         "InpMaxOpenTotal": 6, "InpStaggerSec": 90}
-def build_the5ers():
-    build("The5ers_HighStakes_2Step_21", T5_EVAL, T5_G, {"InpStartBalance": 100000, "InpDailyLossPct": 4.5, "InpMaxLossPct": 9.5, "InpProfitLockPct": 8, "InpMaxFloatingPct": 0},
+def build_the5ers(size=100000):
+    name = "The5ers_HighStakes_2Step_21" + ("" if size == 100000 else f"_{size // 1000}K")
+    build(name, T5_EVAL, dict(T5_G, InpAccountSize=size), {"InpStartBalance": size, "InpDailyLossPct": 4.5, "InpMaxLossPct": 9.5, "InpProfitLockPct": 8, "InpMaxFloatingPct": 0},
           """THE5ERS HIGH STAKES (2-STEP) - 21 EAs + Account Equity Guard
 Rules assumed (confirm on The5ers' site before buying): Phase 1 +8%, Phase 2 +5%, 5% daily loss (from the higher of the day's
 starting balance or equity, reset at server midnight), 10% static max loss, unlimited time, minimum 3 profitable days per phase,
 EAs and weekend holding allowed, 2-minute pause on high-impact news.
 
-SETUP (every EA): attach to its chart (table below), Algo Trading on. Default account size is $100,000. Different size? Change
+SETUP (every EA): attach to its chart (table below), Algo Trading on. Account size is set inside every file (see the bottom line). Different size? Change
 InpAccountSize on every EA and InpStartBalance on the guard. One MT5 terminal per account (the EAs share safety flags).
 Built in: daily stop at 4% measured the The5ers way (InpDailyRefHigher), stop everything at -9.5%, size shrinks once the day starts
 more than 2% down (InpRoomCapPct 8, reaching 0 at the 10% limit), no NEW trades 5 min either side of high-impact USD news,
@@ -131,7 +132,7 @@ Symbols: BTCUSD, SOLUSD, XRPUSD, XAUUSD, US100/NAS100, US500/SPX500, GER40/DAX40
 Leave out any EA whose symbol your account lacks (SOL/XRP are the likely ones).""", T5_FUND)
 
 if __name__ == "__main__":
-    if sys.argv[1:] == ["the5ers"]: build_the5ers(); sys.exit()
+    if sys.argv[1:2] == ["the5ers"]: build_the5ers(int(sys.argv[2]) if len(sys.argv) > 2 else 100000); sys.exit()
     build_nova()
     build("FTMO_2Step_FastPass19", FTMO_EVAL, FTMO_G, {"InpStartBalance": 200000, "InpDailyLossPct": 4.0, "InpMaxLossPct": 8.0, "InpMaxFloatingPct": 0},
           """FTMO 2-STEP 200K - FAST PASS 19 (19 EAs + Account Equity Guard)
