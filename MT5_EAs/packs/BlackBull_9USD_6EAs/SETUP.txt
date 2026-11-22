@@ -1,0 +1,20 @@
+BLACKBULL $9 PERSONAL ACCOUNT - 6 EAs (high-risk compounding test, NOT a prop-firm pack)
+Only these 6 EAs can place a 0.01-lot trade on $9 without risking most of the account. Every EA risks 5% of the balance per trade
+and compounds automatically as the balance grows. Leverage 1:500-1:1000 is fine (leverage does not change the risk per trade).
+Backtest (12-month windows 2021-2025, trade by trade, 0.01-lot steps): with the full backtest edge, 49% of windows reached +500% and the
+median ended at ~$52, but the median worst drop on the way was -85%. With half the edge (more realistic live) only ~9% reached +500%
+and the median ended at ~$5.50. Expect deep drops; only use money you are fully prepared to lose.
+Check BlackBull's contract sizes: assumed US500/US100/GER40 1 lot = 1 index point x 1 (0.01 lot = 1 cent per point) and USOIL 1 lot =
+100 barrels. Different contracts change the risk - send me the specs if unsure. Symbol names differ (SPX500, NAS100, GER40, USOIL ...).
+Account_Equity_Guard is optional here (only closes everything at -95%).
+
+EA file                          Chart                InpRiskPct
+SPX_Breakout_5m.mq5              US500 M5             5.0       
+SPX_Dip_1h.mq5                   US500 H1             5.0       
+Open_Fade_1m.mq5                 US500 M1             5.0       
+NQ_Breakout_15m.mq5              US100 M15            5.0       
+DAX_Opening_Range.mq5            GER40/DE40 M15       5.0       
+Oil_Dip_1h.mq5                   USOIL/WTI H1         5.0       
+
+Account_Equity_Guard.mq5 -> any one extra chart (watches the whole account). Its settings: InpStartBalance=9, InpDailyLossPct=50.0, InpMaxLossPct=95.0, InpProfitLockPct=0, InpMaxFloatingPct=0
+Already set inside every EA: InpAccountSize=9, InpDailyStopPct=50.0, InpMaxStopPct=95.0, InpRoomCapPct=0, InpHalfBelowPct=0, InpHalfUntilPct=0, InpFirmMaxLossPct=100.0, InpRiskMultiplier=1.0, InpMaxOpenTotal=0, InpStaggerSec=0, InpNewsBlockMin=2

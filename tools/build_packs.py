@@ -134,7 +134,24 @@ that counts on the funded account.
 Symbols: BTCUSD, SOLUSD, XRPUSD, XAUUSD, US100/NAS100, US500/SPX500, GER40/DAX40, JP225, USOIL/WTI (names differ per broker).
 Leave out any EA whose symbol your account lacks (SOL/XRP are the likely ones).""", T5_FUND)
 
+# Tiny personal account ($9, BlackBull): only the 6 EAs whose 0.01-lot trade fits; 5% risk per trade; firm-style guards opened up (no prop rules).
+B9_R = {"spxbo5": 5.0, "spx1h": 5.0, "spxfade": 5.0, "nqbo15": 5.0, "daxorb": 5.0, "oil1h": 5.0}
+B9_G = {"InpAccountSize": 9, "InpDailyStopPct": 50.0, "InpMaxStopPct": 95.0, "InpRoomCapPct": 0, "InpHalfBelowPct": 0, "InpHalfUntilPct": 0, "InpFirmMaxLossPct": 100.0,
+        "InpRiskMultiplier": 1.0, "InpMaxOpenTotal": 0, "InpStaggerSec": 0, "InpNewsBlockMin": 2}
+def build_b9():
+    build("BlackBull_9USD_6EAs", B9_R, B9_G, {"InpStartBalance": 9, "InpDailyLossPct": 50.0, "InpMaxLossPct": 95.0, "InpProfitLockPct": 0, "InpMaxFloatingPct": 0},
+          """BLACKBULL $9 PERSONAL ACCOUNT - 6 EAs (high-risk compounding test, NOT a prop-firm pack)
+Only these 6 EAs can place a 0.01-lot trade on $9 without risking most of the account. Every EA risks 5% of the balance per trade
+and compounds automatically as the balance grows. Leverage 1:500-1:1000 is fine (leverage does not change the risk per trade).
+Backtest (12-month windows 2021-2025, trade by trade, 0.01-lot steps): with the full backtest edge, 49% of windows reached +500% and the
+median ended at ~$52, but the median worst drop on the way was -85%. With half the edge (more realistic live) only ~9% reached +500%
+and the median ended at ~$5.50. Expect deep drops; only use money you are fully prepared to lose.
+Check BlackBull's contract sizes: assumed US500/US100/GER40 1 lot = 1 index point x 1 (0.01 lot = 1 cent per point) and USOIL 1 lot =
+100 barrels. Different contracts change the risk - send me the specs if unsure. Symbol names differ (SPX500, NAS100, GER40, USOIL ...).
+Account_Equity_Guard is optional here (only closes everything at -95%).""")
+
 if __name__ == "__main__":
+    if sys.argv[1:2] == ["b9"]: build_b9(); sys.exit()
     if sys.argv[1:2] == ["the5ers"]: build_the5ers(int(sys.argv[2]) if len(sys.argv) > 2 else 100000); sys.exit()
     build_nova()
     build("FTMO_2Step_FastPass19", FTMO_EVAL, FTMO_G, {"InpStartBalance": 200000, "InpDailyLossPct": 4.0, "InpMaxLossPct": 8.0, "InpMaxFloatingPct": 0},
