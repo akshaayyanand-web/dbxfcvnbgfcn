@@ -41,6 +41,9 @@ input bool   InpTrailingMaxLoss  = false;  // Max-loss levels trail the highest 
 input double InpHoldStopMult     = 1.5;    // During the minimum hold the server stop sits this many x the normal stop distance away (emergency only)
 input int    InpMaxOpenTotal     = 6;      // Skip a new trade if the ACCOUNT already has this many open positions (0 = off; The5ers pack: 5)
 input int    InpStaggerSec       = 90;      // Wait this many seconds after ANY EA's entry before entering (0 = off; The5ers pack: 90)
+input int    InpReqWarn          = 500;    // Warn when ALL EAs together have sent this many server requests today (0 = off)
+input int    InpReqBlock         = 1000;   // No NEW entries once today's account-wide requests reach this (closes always allowed; 0 = off)
+input int    InpDupMax           = 5;      // Malfunction guard: this many entries by THIS EA within 10 minutes blocks it until the next server day (0 = off)
 
 //--- time helpers -------------------------------------------------------------
 datetime MakeDate(int y, int m, int d) { MqlDateTime s; ZeroMemory(s); s.year = y; s.mon = m; s.day = d; return StructToTime(s); }
@@ -251,6 +254,41 @@ void ManageHold()
       if(ok) { GlobalVariableDel(HoldKey(tk) + "S"); GlobalVariableDel(HoldKey(tk) + "T"); Print(hit ? "Hold over: past SL/TP, closed" : "Hold over: SL/TP set"); }
      }
   }
+// --- server-request budget (account-wide, per server day, kept in terminal global variables so it survives restarts) ---
+string ReqKey()   { return "PP_REQ_" + IntegerToString(DayKey(TimeTradeServer())); }
+string OpensKey() { return "PP_OPENS_" + IntegerToString(DayKey(TimeTradeServer())); }
+void GVInc(string k)
+  {
+   if(!GlobalVariableCheck(k)) GlobalVariableSet(k, 0);
+   for(int i = 0; i < 50; i++) { double v = GlobalVariableGet(k); if(GlobalVariableSetOnCondition(k, v + 1, v)) return; }
+  }
+int ReqCount() { string k = ReqKey(); return GlobalVariableCheck(k) ? (int)GlobalVariableGet(k) : 0; }
+bool ReqBudgetOK(string tag)
+  {
+   if(InpReqBlock <= 0) return true;
+   int c = ReqCount();
+   if(c < InpReqBlock) return true;
+   static datetime lastMsg = 0;
+   if(TimeCurrent() - lastMsg >= 300) { lastMsg = TimeCurrent(); Print(tag, ": ", c, " server requests today (limit ", InpReqBlock, "), no new entries until the next server day"); }
+   return false;
+  }
+bool DupOK(string tag)   // the same EA trying to enter again and again in a short time = probably a malfunction
+  {
+   if(InpDupMax <= 0) return true;
+   string hk = "PP_DUPHALT_" + IntegerToString(InpMagic) + "_" + IntegerToString(DayKey(TimeTradeServer()));
+   if(GlobalVariableCheck(hk)) { Print(tag, ": blocked until the next server day (too many entries in 10 minutes)"); return false; }
+   static datetime t[32]; static int n = 0; datetime now = TimeCurrent(); int c = 0;
+   for(int i = 0; i < 32; i++) if(t[i] > 0 && now - t[i] < 600) c++;
+   if(c >= InpDupMax) { GlobalVariableSet(hk, 1); Print("WARNING ", tag, ": ", c, " entries in 10 minutes - possible malfunction, this EA is blocked until the next server day"); return false; }
+   t[n % 32] = now; n++;
+   return true;
+  }
+void OnTradeTransaction(const MqlTradeTransaction &trans, const MqlTradeRequest &request, const MqlTradeResult &result)
+  {
+   if(trans.type != TRADE_TRANSACTION_REQUEST) return;      // one event per request this EA sent (open, close, modify, delete)
+   GVInc(ReqKey()); int c = ReqCount();
+   if(InpReqWarn > 0 && (c == InpReqWarn || c == InpReqWarn * 3 / 2)) Print("WARNING: ", c, " server requests today across all EAs (new entries stop at ", InpReqBlock, ")");
+  }
 // Stagger: if another EA opened a trade less than InpStaggerSec ago, wait and retry on later ticks of the same bar (max 15 min).
 // The slot is claimed atomically (GlobalVariableSetOnCondition), so two EAs cannot enter in the same moment.
 bool StaggerSlotOK(string tag)
@@ -265,6 +303,7 @@ bool StaggerSlotOK(string tag)
 bool OpenTrade(int dir, double stopPrice, double tpPrice, string tag)
   {
    if(!SymbolSlotOK(dir, tag)) return false;
+   if(!ReqBudgetOK(tag)) return false;
    if(!StaggerSlotOK(tag)) return false;
    if(NewsBlocked()) { Print(tag, ": high-impact news within ", InpNewsBlockMin, " min, skipped"); return false; }
    double price = dir == 1 ? SymbolInfoDouble(_Symbol, SYMBOL_ASK) : SymbolInfoDouble(_Symbol, SYMBOL_BID);
@@ -276,8 +315,10 @@ bool OpenTrade(int dir, double stopPrice, double tpPrice, string tag)
    double sl = NormalizeDouble(stopPrice, _Digits), tp = tpPrice > 0 ? NormalizeDouble(tpPrice, _Digits) : 0;
    double ssl = sl, stp = tp;
    if(InpMinHoldSec > 0) { ssl = NormalizeDouble(price - dir * InpHoldStopMult * dist, _Digits); stp = 0; }   // real SL/TP applied after the hold
+   if(!DupOK(tag)) return false;
    bool ok = dir == 1 ? trade.Buy(lots, _Symbol, 0, ssl, stp, tag) : trade.Sell(lots, _Symbol, 0, ssl, stp, tag);
    if(ok && InpStaggerSec > 0) GlobalVariableSet("PP_LASTENTRY", (double)TimeCurrent());
+   if(ok) GVInc(OpensKey());
    Print(tag, ok ? " opened " : " FAILED ", lots, " lots, SL ", sl, " TP ", tp, " retcode ", trade.ResultRetcode());
    if(ok && InpMinHoldSec > 0) { ulong pt = trade.ResultOrder(); GlobalVariableSet(HoldKey(pt) + "S", sl); GlobalVariableSet(HoldKey(pt) + "T", tp); }
    return ok;

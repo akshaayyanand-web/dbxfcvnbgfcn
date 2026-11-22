@@ -96,6 +96,9 @@ Built in: daily stop at 4% measured the The5ers way (InpDailyRefHigher), stop ev
 more than 2% down (InpRoomCapPct 8, reaching 0 at the 10% limit), no NEW trades 5 min either side of high-impact USD news,
 at most 6 open positions on the account (InpMaxOpenTotal), and no two EAs enter within 90 s of each other (InpStaggerSec:
 the later one waits and retries, the slot is claimed atomically).
+Request budget (all EAs together, per server day): warning in the Experts log at 500 and 750 server requests, no NEW entries
+at 1,000 (closes always allowed); one EA trying 5+ entries within 10 minutes is blocked until the next day (malfunction guard).
+The guard prints an hourly line: requests today, positions opened today, open now, margin used. Normal: ~15-70 requests a day.
 Guard: closes everything at -4.5% today or -9.5% total, and closes everything once the phase target is reached (InpProfitLockPct).
 
 PHASE 1: use as is (guard InpProfitLockPct = 8).

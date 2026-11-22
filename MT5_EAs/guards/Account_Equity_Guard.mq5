@@ -73,5 +73,20 @@ void Check()
    if(InpProfitLockPct > 0 && eq >= InpStartBalance * (1 + InpProfitLockPct / 100))
      { GlobalVariableSet(GV("HALT"), 1); GlobalVariableSet("PP_HALT", 1); Print("PROFIT TARGET reached (equity ", eq, "): everything closed"); CloseEverything("Profit lock"); }
   }
+void OnTradeTransaction(const MqlTradeTransaction &trans, const MqlTradeRequest &request, const MqlTradeResult &result)
+  {
+   if(trans.type != TRADE_TRANSACTION_REQUEST) return;      // the guard's own requests (emergency closes) count too
+   string k = "PP_REQ_" + IntegerToString(DayKey(TimeTradeServer())); if(!GlobalVariableCheck(k)) GlobalVariableSet(k, 0);
+   for(int i = 0; i < 50; i++) { double v = GlobalVariableGet(k); if(GlobalVariableSetOnCondition(k, v + 1, v)) break; }
+  }
+void ReportActivity()   // hourly summary in the Experts log
+  {
+   static int lastHour = -1; MqlDateTime s; TimeToStruct(TimeTradeServer(), s);
+   if(s.hour == lastHour) return; lastHour = s.hour;
+   string d = IntegerToString(DayKey(TimeTradeServer()));
+   int req = GlobalVariableCheck("PP_REQ_" + d) ? (int)GlobalVariableGet("PP_REQ_" + d) : 0, op = GlobalVariableCheck("PP_OPENS_" + d) ? (int)GlobalVariableGet("PP_OPENS_" + d) : 0;
+   Print("Activity today: ", req, " server requests, ", op, " positions opened, ", PositionsTotal(), " open now, margin used ",
+         DoubleToString(AccountInfoDouble(ACCOUNT_MARGIN) / MathMax(AccountInfoDouble(ACCOUNT_EQUITY), 1) * 100, 1), "% of equity");
+  }
 void OnTick()  { Check(); }
-void OnTimer() { Check(); }
+void OnTimer() { Check(); ReportActivity(); }
