@@ -1,0 +1,16 @@
+in-market share 47% | notional when on at 1x sizing: 3.5% of equity
+{'swap': '0%/yr', 'size': '1x', 'EA_alone_sharpe_2020_22': np.float64(0.09), 'EA_alone_sharpe_2023_26': np.float64(1.24), 'book21': (np.float64(4.0), np.float64(3.45), np.float64(38.8)), 'book22': (np.float64(3.84), np.float64(3.47), np.float64(39.8))}
+{'book': '21 EAs + stablecoin', 'swap': '0%/yr', 'size': '1x', 'first_try': 100, 'median_days': np.float64(53.5), 'p75': np.float64(88.25), 'funded_kept': 100, 'yr_median': np.float64(78.1), 'yr_p10': np.float64(28.6)}
+{'book': '21 EAs only (baseline)', 'first_try': 100, 'median_days': np.float64(57.0), 'p75': np.float64(96.25), 'funded_kept': 100, 'yr_median': np.float64(74.7), 'yr_p10': np.float64(39.2)}
+{'swap': '0%/yr', 'size': '2x', 'EA_alone_sharpe_2020_22': np.float64(0.09), 'EA_alone_sharpe_2023_26': np.float64(1.24), 'book21': (np.float64(4.0), np.float64(3.45), np.float64(38.8)), 'book22': (np.float64(3.61), np.float64(3.46), np.float64(40.8))}
+{'book': '21 EAs + stablecoin', 'swap': '0%/yr', 'size': '2x', 'first_try': 100, 'median_days': np.float64(56.5), 'p75': np.float64(91.0), 'funded_kept': 100, 'yr_median': np.float64(71.2), 'yr_p10': np.float64(28.4)}
+{'swap': '10%/yr', 'size': '1x', 'EA_alone_sharpe_2020_22': np.float64(0.01), 'EA_alone_sharpe_2023_26': np.float64(1.1), 'book21': (np.float64(4.0), np.float64(3.45), np.float64(38.8)), 'book22': (np.float64(3.83), np.float64(3.46), np.float64(39.6))}
+{'book': '21 EAs + stablecoin', 'swap': '10%/yr', 'size': '1x', 'first_try': 100, 'median_days': np.float64(53.5), 'p75': np.float64(89.0), 'funded_kept': 100, 'yr_median': np.float64(76.7), 'yr_p10': np.float64(27.4)}
+{'swap': '10%/yr', 'size': '2x', 'EA_alone_sharpe_2020_22': np.float64(0.01), 'EA_alone_sharpe_2023_26': np.float64(1.1), 'book21': (np.float64(4.0), np.float64(3.45), np.float64(38.8)), 'book22': (np.float64(3.58), np.float64(3.43), np.float64(40.5))}
+{'book': '21 EAs + stablecoin', 'swap': '10%/yr', 'size': '2x', 'first_try': 100, 'median_days': np.float64(57.0), 'p75': np.float64(93.25), 'funded_kept': 100, 'yr_median': np.float64(72.4), 'yr_p10': np.float64(28.1)}
+{'swap': '25%/yr', 'size': '1x', 'EA_alone_sharpe_2020_22': np.float64(-0.1), 'EA_alone_sharpe_2023_26': np.float64(0.88), 'book21': (np.float64(4.0), np.float64(3.45), np.float64(38.8)), 'book22': (np.float64(3.81), np.float64(3.43), np.float64(39.4))}
+{'book': '21 EAs + stablecoin', 'swap': '25%/yr', 'size': '1x', 'first_try': 100, 'median_days': np.float64(55.0), 'p75': np.float64(89.0), 'funded_kept': 100, 'yr_median': np.float64(75.5), 'yr_p10': np.float64(25.6)}
+{'swap': '25%/yr', 'size': '2x', 'EA_alone_sharpe_2020_22': np.float64(-0.1), 'EA_alone_sharpe_2023_26': np.float64(0.88), 'book21': (np.float64(4.0), np.float64(3.45), np.float64(38.8)), 'book22': (np.float64(3.54), np.float64(3.38), np.float64(40.0))}
+{'book': '21 EAs + stablecoin', 'swap': '25%/yr', 'size': '2x', 'first_try': 100, 'median_days': np.float64(57.5), 'p75': np.float64(94.0), 'funded_kept': 100, 'yr_median': np.float64(71.1), 'yr_p10': np.float64(26.0)}
+
+[exited with code 0]
