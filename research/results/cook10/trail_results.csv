@@ -1,0 +1,101 @@
+ea,variant,trades,win,R_yr_pre2023,R_yr_2023on
+btc,current,213,44,11.0,28.0
+btc,T1 +1R / trail 1R,213,57,4.0,11.6
+btc,T2 +1R / trail 1.5R,213,47,7.2,12.6
+btc,T3 +2R / trail 1R,213,47,9.5,12.8
+btc,T4 trail 1.5R from entry,213,46,6.6,12.9
+gdip,current,515,25,11.6,22.1
+gdip,T1 +1R / trail 1R,515,43,1.8,8.4
+gdip,T2 +1R / trail 1.5R,515,33,7.3,18.7
+gdip,T3 +2R / trail 1R,515,33,6.8,8.6
+gdip,T4 trail 1.5R from entry,515,32,7.9,18.2
+nq2h,current,535,35,12.2,14.6
+nq2h,T1 +1R / trail 1R,535,46,8.1,5.9
+nq2h,T2 +1R / trail 1.5R,535,39,10.1,11.3
+nq2h,T3 +2R / trail 1R,535,38,10.0,8.4
+nq2h,T4 trail 1.5R from entry,535,38,10.0,11.8
+spx1h,current,1095,33,10.0,12.6
+spx1h,T1 +1R / trail 1R,1095,45,7.9,6.5
+spx1h,T2 +1R / trail 1.5R,1095,36,7.8,4.8
+spx1h,T3 +2R / trail 1R,1095,37,11.5,11.9
+spx1h,T4 trail 1.5R from entry,1095,35,6.6,4.4
+oil1h,current,610,23,9.9,15.7
+oil1h,T1 +1R / trail 1R,610,50,5.4,11.0
+oil1h,T2 +1R / trail 1.5R,610,38,4.8,10.9
+oil1h,T3 +2R / trail 1R,610,37,7.6,8.1
+oil1h,T4 trail 1.5R from entry,610,36,3.6,10.0
+gasia,current,2222,36,12.3,14.1
+gasia,T1 +1R / trail 1R,2222,45,6.6,9.0
+gasia,T2 +1R / trail 1.5R,2222,39,5.4,13.1
+gasia,T3 +2R / trail 1R,2222,39,10.4,11.8
+gasia,T4 trail 1.5R from entry,2222,38,5.4,6.4
+gmom,current,658,37,10.6,7.9
+gmom,T1 +1R / trail 1R,658,46,4.0,-2.0
+gmom,T2 +1R / trail 1.5R,658,38,7.2,2.3
+gmom,T3 +2R / trail 1R,658,40,8.5,8.3
+gmom,T4 trail 1.5R from entry,658,36,5.7,3.2
+orb15,current,1747,46,10.1,11.5
+orb15,T1 +1R / trail 1R,1747,51,8.2,11.5
+orb15,T2 +1R / trail 1.5R,1747,45,9.0,11.9
+orb15,T3 +2R / trail 1R,1747,46,10.1,11.5
+orb15,T4 trail 1.5R from entry,1747,44,7.8,9.5
+nqbo15,current,1715,24,43.8,47.6
+nqbo15,T1 +1R / trail 1R,1715,45,7.6,-20.0
+nqbo15,T2 +1R / trail 1.5R,1715,36,27.5,-1.6
+nqbo15,T3 +2R / trail 1R,1715,36,15.4,-7.6
+nqbo15,T4 trail 1.5R from entry,1715,34,19.3,-2.5
+daxorb,current,755,37,42.5,28.8
+daxorb,T1 +1R / trail 1R,755,51,1.9,6.6
+daxorb,T2 +1R / trail 1.5R,755,40,19.9,12.1
+daxorb,T3 +2R / trail 1R,755,41,21.4,10.0
+daxorb,T4 trail 1.5R from entry,755,39,17.2,11.0
+spxbo5,current,2087,29,27.9,19.5
+spxbo5,T1 +1R / trail 1R,2087,47,9.5,-11.2
+spxbo5,T2 +1R / trail 1.5R,2087,36,24.4,-1.5
+spxbo5,T3 +2R / trail 1R,2087,37,25.1,-7.7
+spxbo5,T4 trail 1.5R from entry,2087,35,20.9,-0.6
+btcgap,current,94,33,20.3,7.2
+btcgap,T1 +1R / trail 1R,94,54,4.8,2.5
+btcgap,T2 +1R / trail 1.5R,94,44,6.9,8.2
+btcgap,T3 +2R / trail 1R,94,45,5.3,7.0
+btcgap,T4 trail 1.5R from entry,94,44,7.3,8.4
+sol,current,339,22,20.2,22.4
+sol,T1 +1R / trail 1R,339,50,-1.1,-1.6
+sol,T2 +1R / trail 1.5R,339,35,-6.9,2.2
+sol,T3 +2R / trail 1R,339,34,-6.9,-0.9
+sol,T4 trail 1.5R from entry,339,33,-7.3,1.7
+goldvwap,current,1560,74,18.3,21.7
+goldvwap,T1 +1R / trail 1R,1560,75,20.8,26.3
+goldvwap,T2 +1R / trail 1.5R,1560,74,19.8,25.0
+goldvwap,T3 +2R / trail 1R,1560,75,19.3,27.0
+goldvwap,T4 trail 1.5R from entry,1560,74,20.5,23.9
+spxfade,current,121,60,4.5,4.6
+spxfade,T1 +1R / trail 1R,121,60,4.3,4.6
+spxfade,T2 +1R / trail 1.5R,121,60,4.5,4.5
+spxfade,T3 +2R / trail 1R,121,60,4.5,4.6
+spxfade,T4 trail 1.5R from entry,121,60,4.1,4.5
+solrev,current,767,58,15.4,1.5
+solrev,T1 +1R / trail 1R,767,59,56.6,8.1
+solrev,T2 +1R / trail 1.5R,767,57,49.7,7.0
+solrev,T3 +2R / trail 1R,767,58,55.7,7.7
+solrev,T4 trail 1.5R from entry,767,55,46.7,6.5
+btcrev,current,146,68,4.2,0.9
+btcrev,T1 +1R / trail 1R,146,69,8.8,1.2
+btcrev,T2 +1R / trail 1.5R,146,69,8.2,1.0
+btcrev,T3 +2R / trail 1R,146,69,9.1,1.2
+btcrev,T4 trail 1.5R from entry,146,68,8.2,0.8
+daxpm,current,875,33,33.6,38.4
+daxpm,T1 +1R / trail 1R,875,49,-2.7,10.0
+daxpm,T2 +1R / trail 1.5R,875,37,1.7,17.7
+daxpm,T3 +2R / trail 1R,875,38,-4.6,11.2
+daxpm,T4 trail 1.5R from entry,875,36,-0.7,15.9
+nqfade,current,224,50,2.5,6.6
+nqfade,T1 +1R / trail 1R,224,54,4.4,9.2
+nqfade,T2 +1R / trail 1.5R,224,50,4.1,9.7
+nqfade,T3 +2R / trail 1R,224,52,3.5,10.8
+nqfade,T4 trail 1.5R from entry,224,49,4.0,8.9
+xrprev,current,131,59,2.2,0.4
+xrprev,T1 +1R / trail 1R,131,60,10.5,1.3
+xrprev,T2 +1R / trail 1.5R,131,58,9.6,0.9
+xrprev,T3 +2R / trail 1R,131,60,10.3,1.2
+xrprev,T4 trail 1.5R from entry,131,58,9.6,0.9
