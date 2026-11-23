@@ -203,11 +203,21 @@ double RiskMoney()
   }
 double LotsFor(double riskMoney, double stopDist, ENUM_ORDER_TYPE type, double price)
   {
+   if(stopDist <= 0) return 0;
+   // Loss per lot at the stop, in the ACCOUNT currency: MT5's own profit calculator converts JPY/EUR quotes correctly.
+   // (Some brokers report the tick value of e.g. JPN225 in yen, which made the old tick-value method size ~150x too small.)
+   double lossPerLot = 0, pf = 0;
+   double exitPx = (type == ORDER_TYPE_BUY) ? price - stopDist : price + stopDist;
+   if(OrderCalcProfit(type, _Symbol, 1.0, price, exitPx, pf) && pf < 0) lossPerLot = -pf;
    double tickSize = SymbolInfoDouble(_Symbol, SYMBOL_TRADE_TICK_SIZE);
    double tickVal  = SymbolInfoDouble(_Symbol, SYMBOL_TRADE_TICK_VALUE_LOSS);
    if(tickVal <= 0) tickVal = SymbolInfoDouble(_Symbol, SYMBOL_TRADE_TICK_VALUE);
-   if(stopDist <= 0 || tickSize <= 0 || tickVal <= 0) return 0;
-   double lossPerLot = stopDist / tickSize * tickVal;
+   double tickLoss = (tickSize > 0 && tickVal > 0) ? stopDist / tickSize * tickVal : 0;
+   static bool warned = false;
+   if(!warned && lossPerLot > 0 && tickLoss > 0 && (tickLoss > 2 * lossPerLot || lossPerLot > 2 * tickLoss))
+     { warned = true; Print("NOTE: broker tick value for ", _Symbol, " disagrees with the profit calculator (", DoubleToString(tickLoss, 2), " vs ", DoubleToString(lossPerLot, 2), " per lot at the stop); using the profit calculator"); }
+   if(lossPerLot <= 0) lossPerLot = tickLoss;
+   if(lossPerLot <= 0) return 0;
    double step = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_STEP), vmin = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_MIN), vmax = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_MAX);
    double lots = MathFloor(riskMoney / lossPerLot / step) * step;
    if(lots < vmin) return 0;              // stop too wide for the allowed risk: skip the trade
