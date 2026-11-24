@@ -1,0 +1,8 @@
+           btc1h144  gold1h144  nq2h  spx1h  oil1h  silver1h  eth1h  sol1h   btc  gdip  nqdip  spxdip
+Monte Carlo, 300 shuffled 3-year histories, The5ers High Stakes at 3x:
+  evaluation: passed 100% | breached 0% | still open after 3 years 0%
+  days to pass: median 68, 25% 41, 75% 107, 90% 178
+  funded year: kept 100% | paid to you (% of account): median 74%, 10% 39%, 25% 57%, 75% 93%, 90% 108%
+  on a $10K account: median $7,403/yr, bad case (10%) $3,905, good case (90%) $10,840
+
+[exited with code 0]
