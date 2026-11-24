@@ -1,0 +1,91 @@
+INTRADAY: 6,878 tests | passed train 15 (luck ~43) | passed both 1 (luck ~1.0)
+   median avgR train -0.073, holdout -0.086; train-passers in holdout: median +0.003, positive 53%
+DAILY: 157 tests | passed train 0 (luck ~1.0) | passed both 0 (luck ~0.02)
+
+INTRADAY SURVIVORS:
+ sid                       name sym  tf                  exit  n_train  n_hold  avgR_train  avgR_hold  t_train  t_hold   win    pf  pos_years  years
+ 448 Jump Direction Persistence BTC M15 2ATR stop, 3ATR trail    559.0   820.0       0.206      0.194    2.708   2.571 0.366 1.373        7.0    7.0
+
+INTRADAY train-passers (top 25 by holdout t):
+ sid                              name    sym  tf                  exit  n_train  n_hold  avgR_train  avgR_hold  t_train  t_hold
+ 448        Jump Direction Persistence    BTC M15 2ATR stop, 3ATR trail    559.0   820.0       0.206      0.194    2.708   2.571
+ 254         Volume Shock Continuation    ETH  H1 2ATR stop, 3ATR trail    135.0   331.0       0.503      0.236    3.003   1.784
+ 405       Keltner Channel Compression USDJPY  H1     time exit 10 bars    525.0   247.0       0.190      0.086    2.715   0.913
+  20 Composite Volume Profile Breakout USDJPY M15            fixed 1.5R    703.0   404.0       0.103      0.048    2.592   0.911
+ 411  Realised Volatility Acceleration    BTC  H1     time exit 10 bars    345.0   622.0       0.180      0.050    2.603   0.855
+   9         Initial Balance Extension    DAX  H1     time exit 10 bars    492.0   992.0       0.191      0.011    2.595   0.225
+ 409    Historical Volatility Breakout    BTC  H1            fixed 1.5R    216.0   275.0       0.340      0.005    4.056   0.065
+ 254         Volume Shock Continuation    ETH  H1     time exit 10 bars    142.0   347.0       0.260      0.003    2.881   0.037
+ 411  Realised Volatility Acceleration    BTC  H1            fixed 1.5R    358.0   655.0       0.212     -0.002    3.243  -0.052
+  20 Composite Volume Profile Breakout USDJPY M15 2ATR stop, 3ATR trail   1239.0   692.0       0.159     -0.008    3.049  -0.127
+ 409    Historical Volatility Breakout    BTC  H1     time exit 10 bars    214.0   273.0       0.348     -0.029    3.379  -0.349
+ 253         Relative Volume Expansion    BTC  H1            fixed 1.5R    112.0   244.0       0.337     -0.032    2.866  -0.408
+ 253         Relative Volume Expansion    ETH  H1            fixed 1.5R    131.0   254.0       0.280     -0.045    2.585  -0.588
+ 254         Volume Shock Continuation    ETH  H1            fixed 1.5R    148.0   360.0       0.313     -0.054    3.305  -0.881
+  73          Overnight Range Breakout    ETH  H1            fixed 1.5R    364.0   558.0       0.160     -0.069    2.549  -1.390
+
+DAILY SURVIVORS:
+none
+
+DAILY best 25 by holdout t:
+ id                                                      name    mkt  H  long_only  n_train  n_hold  avg_train_bp  avg_hold_bp  t_train  t_hold  pos_years  years
+825                      Month 5 seasonality (long every day)     NQ  1       True      155      89         -5.61        28.84    -0.52    2.71          8     11
+661                                  Risk-on (VIX -20%) -> NQ     NQ  5       True       48      20         -7.90       111.37    -0.27    2.30          8     11
+726                                  Gold-oil ratio reversion    WTI 10      False       28      18        -57.69       309.87    -0.20    2.26          8     10
+632                         Yield curve steepening/flattening    XAU  5      False      109      63        -22.57        50.67    -1.20    1.64          7     11
+729                          Precious metals basket reversion    XAG  5      False       39      28        -12.39       178.37    -0.13    1.55          6     10
+808             Weekly closing momentum (Fri follows Mon-Thu)     NQ  1      False      357     194         -8.36        14.01    -1.11    1.53          4     11
+428                 Volatility risk premium (VIX-RV20>4) long     NQ  5       True       83      34        -22.36        68.59    -0.79    1.48          5     11
+825                      Month 5 seasonality (long every day)    SPX  1       True      130      89          0.82        11.65     0.09    1.41          5     10
+582                Cross-sectional rank reversal (5d, weekly) USDJPY  5      False      185      97          2.12        18.79     0.21    1.27          8     11
+821                      Month 1 seasonality (long every day)     NQ  1       True      148      86         -2.00        15.02    -0.18    1.25          8     11
+831                     Month 11 seasonality (long every day)    SPX  1       True      151      63          6.78        12.12     0.86    1.21          7     10
+821                      Month 1 seasonality (long every day)    SPX  1       True      148      86         -4.61         8.86    -0.58    1.05          6     11
+821                      Month 1 seasonality (long every day)    XAU  1       True      148      86          1.83        15.14     0.30    0.89          8     11
+703                        USDJPY-Treasury yield relationship USDJPY  5      False       80      45         -2.45        20.22    -0.16    0.83          6     10
+630                                   Treasury yield breakout     NQ  5      False      144      87          6.60        25.24     0.27    0.82          6     11
+660                     Safe haven rotation (VIX +25% -> JPY) USDJPY  5      False       50      24         -7.74        27.37    -0.39    0.81          6     11
+729                          Precious metals basket reversion    XAU  5      False       39      28         38.90        47.10     0.82    0.81          7     10
+581 Cross-sectional rank momentum (20d, top/bottom 3, weekly)    ETH  5      False      145     185        137.24        47.10     1.13    0.77          4      7
+660                    Safe haven rotation (VIX +25% -> gold)    XAU  5      False       50      24          9.94        55.36     0.35    0.75          7     11
+581 Cross-sectional rank momentum (20d, top/bottom 3, weekly) EURUSD  5      False       37      34        -16.78        11.91    -1.33    0.71          4      8
+763                                  Equity-dollar divergence    SPX  5      False       81      46        -63.57        25.69    -1.78    0.70          5     10
+708                                   USDCAD-oil relationship USDCAD  5      False       81      43        -20.55         7.21    -1.72    0.65          4     10
+581 Cross-sectional rank momentum (20d, top/bottom 3, weekly)    XAU  5      False      203     113        -15.63        15.44    -1.14    0.64          5     11
+661                              Risk-on (VIX -20%) -> AUDJPY AUDJPY  5      False       48      20         18.28        20.50     0.94    0.63          8     11
+831                     Month 11 seasonality (long every day)     NQ  1       True      152      63          3.89         8.62     0.35    0.63          4     10
+
+INTRADAY setups ranked by median holdout R (top 20 / bottom 5):
+     cells  med_hold  pass_train  pass_all                              name
+sid                                                                         
+29      57     0.042           0         0           Previous Month Breakout
+149     57     0.024           0         0          Session Closing Reversal
+291     45     0.023           0         0             Session Volume Climax
+855     12     0.020           0         0    Post-Market Trend Continuation
+428     12     0.003           0         0           Volatility Risk Premium
+812     57    -0.016           0         0          Monthly Opening Reversal
+127     57    -0.017           0         0        Long-Legged Doji Expansion
+448     57    -0.019           1         1        Jump Direction Persistence
+438     57    -0.027           0         0     Volatility Shock Continuation
+82      57    -0.028           0         0           Failed Impulse Reversal
+534     57    -0.030           0         0       Permutation Entropy Trading
+73      57    -0.034           1         0          Overnight Range Breakout
+409     57    -0.035           2         0    Historical Volatility Breakout
+210     33    -0.037           0         0       Absorption Release Breakout
+411     57    -0.040           2         0  Realised Volatility Acceleration
+418     57    -0.041           0         0           Upside Volatility Shock
+1       57    -0.042           0         0           Auction Value Migration
+4       57    -0.044           0         0             Value Area Acceptance
+213     45    -0.046           0         0           Volume Vacuum Expansion
+60      57    -0.047           0         0       Failed Compression Breakout
+     cells  med_hold  pass_train  pass_all                               name
+sid                                                                          
+816     57    -0.179           0         0  Quarter-End Portfolio Rebalancing
+225     12    -0.182           0         0        Delta-to-Price Disagreement
+86      57    -0.183           0         0            Momentum Leg Exhaustion
+226     45    -0.189           0         0       Volume-to-Price Disagreement
+146      6       NaN           0         0            Failed Gap Continuation
+
+TRIAGE: {'Already tested': 390, 'Tested': 228, 'Not testable with this data': 216, 'Not an entry strategy': 136, 'Too vague to test': 30}
+unassigned: []
+written cat2000/Strategy_List_2_RESULTS.xlsx

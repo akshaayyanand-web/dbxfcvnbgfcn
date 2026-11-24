@@ -1,0 +1,1000 @@
+Auction Value Migration
+Point of Control Migration
+Value Area Rejection
+Value Area Acceptance
+High Volume Node Absorption
+Low Volume Node Traversal
+Single Print Auction Repair
+Failed Auction Reversal
+Initial Balance Extension
+Initial Balance Rejection
+Developing POC Continuation
+Previous Session Value Re-entry
+Value Area Overlap Rotation
+Value Area Separation Continuation
+Poor High Reversal
+Poor Low Reversal
+Excess High Reversal
+Excess Low Reversal
+Double Distribution Breakout
+Composite Volume Profile Breakout
+Previous Day High Rejection
+Previous Day Low Rejection
+Previous Day High Breakout
+Previous Day Low Breakout
+Previous Week High Rejection
+Previous Week Low Rejection
+Previous Week Breakout
+Previous Month Level Rejection
+Previous Month Breakout
+Multi-Session Range Expansion
+Multi-Session Range Compression
+Consecutive Higher High Structure
+Consecutive Lower Low Structure
+Failed Higher High Reversal
+Failed Lower Low Reversal
+Break of Structure Continuation
+Change of Character Reversal
+Market Structure Shift
+Protected Swing Failure
+Swing Liquidity Sweep
+Equal High Liquidity Sweep
+Equal Low Liquidity Sweep
+Internal Structure Breakout
+External Structure Breakout
+Structural Pullback Continuation
+Structural Retest Failure
+Trendline Break and Acceptance
+Trendline Break and Rejection
+Channel Boundary Reversal
+Channel Boundary Breakout
+Expanding Range Breakout
+Contracting Range Breakout
+Symmetrical Triangle Resolution
+Ascending Triangle Resolution
+Descending Triangle Resolution
+Broadening Formation Reversal
+Rectangle Accumulation Breakout
+Rectangle Distribution Breakdown
+Compression Coil Expansion
+Failed Compression Breakout
+Range Midpoint Rotation
+Range Extreme Rejection
+Range Extreme Acceptance
+Range Boundary Retest
+Breakout Retest Continuation
+Breakout Retest Failure
+False Breakout Reversal
+Failed Breakdown Reversal
+Gap Acceptance Continuation
+Gap Rejection Reversal
+Opening Range Breakout
+Opening Range Reversal
+Overnight Range Breakout
+Overnight Range Rejection
+Asian Range Expansion
+London Range Expansion
+New York Range Expansion
+Session High Rejection
+Session Low Rejection
+Session Range Midpoint Reversion
+Swing Failure Pattern
+Failed Impulse Reversal
+Impulse-Pullback-Continuation
+Three-Leg Correction Completion
+Corrective Channel Breakout
+Momentum Leg Exhaustion
+Trend Leg Symmetry
+Measured Move Completion
+Structural Extension Failure
+Breakout Distance Normalisation
+Price Acceptance Duration
+Time-at-Price Rejection
+Multi-Timeframe Structure Alignment
+Multi-Timeframe Structure Conflict
+Fractal Swing Alignment
+Structural Compression Transition
+Structural Volatility Expansion
+Structural Volatility Contraction
+Price Discovery Leadership Rotation
+Auction Imbalance Probability Trading
+Engulfing Reversal at Structure
+Engulfing Continuation After Pullback
+Pin Bar Liquidity Sweep
+Rejection Wick Reversal
+Long Wick Exhaustion
+Short Wick Momentum Continuation
+Inside Bar Breakout
+Inside Bar False Breakout
+Outside Bar Reversal
+Outside Bar Continuation
+Three-Bar Reversal
+Three-Bar Momentum Expansion
+Three-Bar Compression Breakout
+Morning Star Reversal
+Evening Star Reversal
+Piercing Pattern Reversal
+Dark Cloud Cover Reversal
+Tweezer Top Reversal
+Tweezer Bottom Reversal
+Harami Compression Breakout
+Marubozu Continuation
+Marubozu Exhaustion
+Doji Range Reversal
+Doji Breakout Resolution
+Dragonfly Doji Reversal
+Gravestone Doji Reversal
+Long-Legged Doji Expansion
+Spinning Top Compression
+Consecutive Bullish Candle Acceleration
+Consecutive Bearish Candle Acceleration
+Alternating Candle Exhaustion
+Candle Body Expansion
+Candle Body Contraction
+Wick-to-Body Reversal
+Wick-to-Body Continuation
+Close Near High Momentum
+Close Near Low Momentum
+Close Location Reversal
+Close Location Persistence
+Candle Range Expansion
+Candle Range Contraction
+Consecutive Range Expansion
+Consecutive Range Contraction
+Gap-and-Go Candlestick
+Gap-and-Fade Candlestick
+Failed Gap Continuation
+Opening Candle Rejection
+Closing Candle Momentum
+Session Closing Reversal
+Session Opening Exhaustion
+Two-Candle Momentum Reversal
+Four-Candle Compression Breakout
+Five-Candle Directional Persistence
+Candle Sequence Entropy
+Candle Body Imbalance
+Upper Wick Accumulation
+Lower Wick Accumulation
+Wick Cluster Breakout
+Wick Cluster Reversal
+Candle Overlap Compression
+Candle Non-Overlap Momentum
+Consecutive Close Progression
+Consecutive Close Regression
+High-Low Range Displacement
+Open-Close Displacement
+Candle Gap Continuation
+Candle Gap Reversion
+Range-to-Body Ratio Expansion
+Body-to-Range Ratio Exhaustion
+Candle Rejection Strength Ranking
+Failed Engulfing Reversal
+Failed Pin Bar Continuation
+Inside-Outside Bar Sequence
+Outside-Inside Bar Sequence
+Three-Candle Liquidity Sweep
+Four-Candle Reversal Structure
+Five-Candle Reversal Structure
+Candle Momentum Divergence
+Candle Volatility Climax
+Candle Volatility Vacuum
+Repeated High Rejection
+Repeated Low Rejection
+Repeated Close Acceptance
+Repeated Open Rejection
+Candle Range Asymmetry
+Bull-Bear Body Dominance
+Candle Sequence Change Point
+Candle Direction Autocorrelation
+Candle Direction Mean Reversion
+Candle Close Momentum Decay
+Intrabar Rejection Continuation
+Intrabar Rejection Reversal
+Session-Specific Candle Behaviour
+Multi-Timeframe Candle Agreement
+Multi-Timeframe Candle Conflict
+Candle Formation at Volume Nodes
+Candle Formation at VWAP
+Candle Formation at Previous Day Levels
+Candle Formation at Session Extremes
+Probabilistic Candlestick Ensemble
+Cumulative Delta Divergence
+Cumulative Delta Continuation
+Bid-Ask Imbalance Ladder
+Stacked Imbalance Continuation
+Volume Delta Exhaustion
+Aggressive Buyer Failure
+Aggressive Seller Failure
+Passive Buyer Absorption
+Passive Seller Absorption
+Absorption Release Breakout
+Volume Climax Reversal
+Volume Dry-Up Continuation
+Volume Vacuum Expansion
+Relative Volume Anomaly
+Volume-at-Price Migration
+Volume Concentration Reversal
+Tick Direction Persistence
+Trade Arrival Rate Acceleration
+Volume Impact Asymmetry
+Price Impact Decay
+Buying Pressure Acceleration
+Selling Pressure Acceleration
+Buying Pressure Exhaustion
+Selling Pressure Exhaustion
+Delta-to-Price Disagreement
+Volume-to-Price Disagreement
+Volume Momentum Breakout
+Volume Momentum Reversal
+Volume Distribution Skew
+Volume Distribution Kurtosis
+Volume Concentration Breakout
+Volume Concentration Mean Reversion
+Relative Buying Pressure
+Relative Selling Pressure
+Net Aggression Momentum
+Net Aggression Reversal
+Trade Size Clustering
+Large Trade Arrival Burst
+Small Trade Dominance
+Large Trade Exhaustion
+Volume Imbalance Persistence
+Volume Imbalance Decay
+Volume Imbalance Reversal
+Delta Acceleration Transition
+Delta Deceleration Transition
+Delta Trend Exhaustion
+Delta Trend Resumption
+Volume-Weighted Price Displacement
+Volume-Weighted Reversion
+Volume Participation Breakout
+Volume Participation Failure
+Relative Volume Compression
+Relative Volume Expansion
+Volume Shock Continuation
+Volume Shock Reversal
+Tick Volume Divergence
+Tick Volume Acceleration
+Tick Volume Exhaustion
+Tick Frequency Expansion
+Tick Frequency Contraction
+Trade Arrival Clustering
+Trade Arrival Dispersion
+Trade Direction Persistence
+Trade Direction Reversal
+Buy-Sell Trade Size Asymmetry
+Buyer Initiated Volume Burst
+Seller Initiated Volume Burst
+Buyer Initiated Volume Failure
+Seller Initiated Volume Failure
+Volume-Based Trend Quality
+Volume-Based Trend Fragility
+Volume Profile Migration Speed
+Volume Profile Shape Transition
+Volume Profile Skew Reversal
+Volume Profile Kurtosis Breakout
+Point of Control Rejection
+Point of Control Acceptance
+High Volume Node Rejection
+High Volume Node Acceptance
+Low Volume Node Rejection
+Low Volume Node Traversal
+Value Area Expansion
+Value Area Contraction
+Value Area Migration Speed
+Developing Value Area Reversal
+Developing Value Area Continuation
+Volume-Weighted Auction Failure
+Volume-Weighted Auction Acceptance
+Session Volume Imbalance
+Session Delta Imbalance
+Session Volume Climax
+Session Volume Exhaustion
+Cross-Session Volume Migration
+Volume Profile Gap Repair
+Volume Profile Single Print Repair
+Volume Profile Distribution Shift
+Volume-Price Elasticity
+Volume-Price Impact Reversal
+Volume Regime Change Detection
+Order Flow Consensus Trading
+Order Book Depth Imbalance
+Microprice Directional Prediction
+Queue Depletion Breakout
+Liquidity Replenishment Defence
+Liquidity Replenishment Failure
+Quote Imbalance Momentum
+Spread Resiliency Recovery
+Spread Shock Reversal
+Order Book Slope Asymmetry
+Bid Queue Exhaustion
+Ask Queue Exhaustion
+Liquidity Vacuum Detection
+Hidden Liquidity Absorption
+Limit Order Adverse Selection
+Passive Fill Probability Trading
+Market Impact Reversal
+Liquidity Provider Inventory Reversion
+Midprice Displacement
+Order Book Pressure Rotation
+Best Bid-Best Ask Pressure
+Bid Depth Acceleration
+Ask Depth Acceleration
+Bid Depth Collapse
+Ask Depth Collapse
+Depth Imbalance Persistence
+Depth Imbalance Reversal
+Multi-Level Book Imbalance
+Book Slope Change Point
+Order Book Convexity
+Order Book Concavity
+Quote Arrival Burst
+Quote Cancellation Burst
+Quote Replacement Imbalance
+Quote Lifetime Asymmetry
+Bid Quote Withdrawal
+Ask Quote Withdrawal
+Bid Quote Replenishment
+Ask Quote Replenishment
+Spread Expansion Continuation
+Spread Expansion Reversion
+Spread Compression Breakout
+Spread Compression Failure
+Midprice Jump Detection
+Midprice Mean Reversion
+Midprice Momentum Persistence
+Microprice-Midprice Divergence
+Microprice Convergence
+Order Flow Toxicity Filter
+Adverse Selection Probability
+Fill Quality Forecasting
+Marketable Order Pressure
+Passive Order Competition
+Queue Position Survival
+Queue Position Decay
+Order Book Liquidity Cliff
+Liquidity Cliff Reversal
+Liquidity Cliff Continuation
+Bid-Ask Resilience Asymmetry
+Liquidity Refill Speed
+Liquidity Refill Failure
+Price Impact per Contract
+Price Impact per Trade
+Price Impact per Quote
+Temporary Impact Reversion
+Permanent Impact Continuation
+Order Book Imbalance Entropy
+Order Book State Transition
+Order Book Regime Classification
+Trade-to-Quote Ratio
+Quote-to-Trade Ratio
+Trade Size-Depth Interaction
+Sweep-to-Fill Imbalance
+Multi-Level Liquidity Sweep
+Stop Cluster Liquidity Response
+Liquidity Pool Depletion
+Liquidity Pool Restoration
+Spread-Depth Interaction
+Spread-Volatility Interaction
+Depth-Volatility Interaction
+Execution Cost Forecasting
+Market Impact Cost Threshold
+Slippage Probability Filter
+Fill Probability Threshold
+Limit-to-Market Escalation
+Market-to-Limit Execution
+Partial Fill Completion
+Partial Fill Abandonment
+Execution Urgency Optimisation
+Order Arrival Time Optimisation
+Execution Route Selection
+Bid-Ask Bounce Classification
+Quote Flicker Detection
+Quote Stability Breakout
+Liquidity Provider Inventory Shock
+Liquidity Provider Inventory Reversal
+Short-Term Price Discovery
+Microstructure Momentum
+Microstructure Mean Reversion
+Microstructure Change Point
+Microstructure State Ensemble
+ATR Expansion Breakout
+ATR Contraction Breakout
+Bollinger Band Squeeze Expansion
+Bollinger Band Re-entry Reversal
+Keltner Channel Compression
+Keltner Channel Expansion
+Donchian Channel Breakout
+Donchian Channel Failure
+Historical Volatility Breakout
+Historical Volatility Mean Reversion
+Realised Volatility Acceleration
+Realised Volatility Deceleration
+Parkinson Volatility Regime
+Garman-Klass Volatility Regime
+Rogers-Satchell Volatility Regime
+Yang-Zhang Volatility Regime
+Realised Semivariance Asymmetry
+Upside Volatility Shock
+Downside Volatility Shock
+Volatility Clustering Continuation
+Volatility Cluster Exhaustion
+Volatility-of-Volatility Breakout
+Volatility-of-Volatility Reversal
+Intraday Volatility Seasonality
+Overnight Volatility Seasonality
+Session Volatility Transition
+Volatility Term Structure
+Volatility Risk Premium
+Implied-Realised Volatility Spread
+Volatility Skew Repricing
+Volatility Smile Distortion
+Volatility Surface Dislocation
+Volatility Compression Duration
+Volatility Expansion Duration
+Volatility Regime Persistence
+Volatility Regime Change Point
+Volatility Shock Reversion
+Volatility Shock Continuation
+Volatility Breakout Failure
+Volatility Breakout Retest
+Range-Based Volatility Forecast
+Close-to-Close Volatility Forecast
+Intrabar Volatility Forecast
+Jump-Adjusted Volatility
+Continuous Variation Forecast
+Discontinuous Variation Forecast
+Jump Intensity Trading
+Jump Direction Persistence
+Jump Reversal Probability
+Gap Volatility Normalisation
+Volatility-Scaled Momentum
+Volatility-Scaled Mean Reversion
+Volatility-Adjusted Breakout
+Volatility-Adjusted Pullback
+Volatility-Adjusted Position Duration
+Volatility-Adjusted Stop Placement
+Volatility-Adjusted Profit Target
+Volatility-Adjusted Trailing Exit
+Volatility-Adjusted Trade Frequency
+Volatility-Adjusted Session Selection
+Range Expansion Ratio
+Range Compression Ratio
+Range Expansion Failure
+Range Compression Persistence
+Intraday Range Forecast
+Overnight Range Forecast
+Daily Range Completion
+Weekly Range Completion
+Monthly Range Completion
+Range Exhaustion Reversal
+Volatility Breakout Asymmetry
+Volatility Directional Persistence
+Volatility Directional Reversal
+Volatility Momentum Divergence
+Volatility Momentum Confirmation
+Volatility Entropy Expansion
+Volatility Entropy Contraction
+Volatility Fractal Dimension
+Volatility Hurst Regime
+Volatility Variance Ratio
+Volatility Autocorrelation
+Volatility Long-Memory Detection
+Volatility Mean-Reversion Half-Life
+Volatility Forecast Disagreement
+Volatility Model Consensus
+Volatility Model Failure Detection
+Volatility Forecast Residual
+Volatility Forecast Change Point
+Volatility Regime Bayesian Filter
+Volatility Hidden Markov Model
+Volatility Mixture Distribution
+Volatility Tail-Risk Forecast
+Conditional Value-at-Risk Filter
+Expected Shortfall Regime
+Drawdown-Conditional Volatility
+Volatility-Conditional Trade Suppression
+Volatility-Conditional Re-entry
+Volatility-Conditional Scaling
+Volatility-Conditional Exit
+Multi-Model Volatility Ensemble
+Rolling Z-Score Mean Reversion
+Robust Z-Score Reversion
+Median Deviation Reversion
+Quantile Regression Trading
+Linear Regression Channel Breakout
+Linear Regression Residual Reversion
+Polynomial Regression Curve Reversion
+Locally Weighted Regression Forecast
+Kalman Filter Trend Following
+Kalman Filter Residual Reversion
+Adaptive Kalman State Switching
+Recursive Least Squares Trading
+Bayesian Regression Trading
+Bayesian Change Point Trading
+Bayesian Trend Probability
+Bayesian Reversal Probability
+Hidden Markov Trend Classification
+Hidden Markov Volatility Classification
+Markov Switching Momentum
+Markov Switching Mean Reversion
+CUSUM Trend Detection
+CUSUM Reversal Detection
+Page-Hinkley Drift Detection
+Sequential Probability Ratio Trading
+Variance Ratio Momentum
+Variance Ratio Mean Reversion
+Autocorrelation Momentum
+Autocorrelation Reversal
+Partial Autocorrelation Forecasting
+Hurst Exponent Trend Classification
+Fractal Dimension Regime Switching
+Approximate Entropy Trading
+Sample Entropy Trading
+Permutation Entropy Trading
+Transfer Entropy Lead-Lag
+Mutual Information Forecasting
+Conditional Entropy Breakout
+Information Flow Momentum
+Long-Memory Trend Following
+Long-Memory Reversion
+Ornstein-Uhlenbeck Reversion
+Mean-Reversion Half-Life Trading
+AR(1) Residual Trading
+ARIMA Forecast Trading
+SARIMA Seasonality Trading
+GARCH Volatility Forecast
+EGARCH Asymmetric Volatility
+GJR-GARCH Leverage Effect
+FIGARCH Long-Memory Volatility
+HAR-RV Volatility Forecast
+Quantile Autoregression
+Distributional Forecast Trading
+Extreme Value Theory Reversal
+Generalised Pareto Tail Trading
+Peaks-over-Threshold Risk Filter
+Tail Dependence Trading
+Copula-Based Dependence Trading
+Gaussian Copula Dislocation
+Student-t Copula Tail Dislocation
+Dynamic Copula Correlation Trading
+Cointegration Residual Reversion
+Engle-Granger Spread Trading
+Johansen Cointegration Trading
+Rolling Cointegration Breakdown
+Dynamic Hedge Ratio Trading
+Kalman Hedge Ratio Spread
+Error Correction Model Trading
+Vector Error Correction Trading
+Vector Autoregression Forecast
+Bayesian VAR Trading
+Dynamic Factor Model Residual
+Principal Component Residual Trading
+Independent Component Separation
+Common Factor Shock Reversal
+Idiosyncratic Residual Momentum
+Residual Momentum Reversal
+Factor Rotation Trading
+Factor Momentum Trading
+Factor Crowding Reversal
+Factor Dispersion Trading
+Cross-Sectional Rank Momentum
+Cross-Sectional Rank Reversal
+Cross-Sectional Dispersion Breakout
+Cross-Sectional Volatility Ranking
+Cross-Sectional Trend Breadth
+Cross-Sectional Residual Momentum
+Cross-Sectional Residual Reversion
+Cross-Sectional Skewness Trading
+Cross-Sectional Kurtosis Trading
+Cross-Sectional Correlation Shock
+Forecast Ensemble Consensus
+Forecast Ensemble Disagreement
+Model Uncertainty Abstention
+Conformal Prediction Trading
+Prediction Interval Breakout
+Prediction Interval Reversion
+Meta-Labelled Momentum
+Meta-Labelled Mean Reversion
+Sequential Model Replacement
+Online Learning Residual Trading
+Central Bank Rate Decision Momentum
+Central Bank Rate Surprise Reversal
+Interest Rate Statement Repricing
+Monetary Policy Forward Guidance
+Inflation Surprise Continuation
+Inflation Surprise Reversal
+Core Inflation Dislocation
+Producer Price Surprise Trading
+Employment Surprise Momentum
+Non-Farm Payroll Repricing
+Unemployment Rate Surprise
+Wage Growth Surprise
+GDP Surprise Momentum
+GDP Revision Repricing
+Retail Sales Surprise
+Consumer Confidence Surprise
+Manufacturing PMI Surprise
+Services PMI Surprise
+Composite PMI Divergence
+Industrial Production Surprise
+Durable Goods Surprise
+Housing Data Surprise
+Consumer Credit Surprise
+Trade Balance Surprise
+Current Account Surprise
+Fiscal Deficit Repricing
+Government Spending Surprise
+Government Bond Auction Failure
+Government Bond Auction Strength
+Treasury Yield Breakout
+Treasury Yield Reversal
+Yield Curve Steepening
+Yield Curve Flattening
+Yield Curve Inversion Reversal
+Real Yield Momentum
+Real Yield Reversion
+Inflation Breakeven Repricing
+Nominal-Real Yield Divergence
+Sovereign Risk Premium Expansion
+Sovereign Risk Premium Compression
+Credit Spread Widening
+Credit Spread Tightening
+Investment Grade Credit Dislocation
+High Yield Credit Stress
+Financial Conditions Index Shock
+Liquidity Conditions Expansion
+Liquidity Conditions Contraction
+Quantitative Easing Repricing
+Quantitative Tightening Repricing
+Central Bank Balance Sheet Surprise
+Fed-BoE Policy Divergence
+Fed-ECB Policy Divergence
+ECB-BoE Policy Divergence
+Fed-BoJ Policy Divergence
+Multi-Central-Bank Policy Spread
+Rate Differential Momentum
+Rate Differential Reversal
+Carry Trade Unwind Detection
+Carry Trade Momentum
+Safe Haven Demand Rotation
+Risk-On Risk-Off Transition
+Geopolitical Risk Shock
+Geopolitical Risk Decay
+Election Uncertainty Repricing
+Fiscal Policy Announcement
+Tax Policy Repricing
+Regulatory Announcement Repricing
+Tariff Announcement Repricing
+Trade War Escalation
+Trade War De-escalation
+OPEC Production Surprise
+OPEC Compliance Surprise
+Oil Inventory Surprise
+Oil Refinery Utilisation Surprise
+Natural Gas Storage Surprise
+Energy Demand Shock
+Energy Supply Shock
+Precious Metals Real Yield Relationship
+Gold Safe Haven Rotation
+Silver-Gold Ratio Reversion
+Copper Growth Signal
+Industrial Metals Demand Shock
+Agricultural Weather Shock
+Agricultural Supply Disruption
+Commodity Inventory Tightness
+Commodity Curve Backwardation
+Commodity Curve Contango
+Commodity Calendar Spread Dislocation
+Commodity Seasonality
+Commodity Weather Seasonality
+Economic Calendar Volatility Forecast
+Pre-Announcement Compression
+Announcement Initial Reaction
+Announcement Delayed Reaction
+Announcement Reversal
+Announcement Whipsaw Suppression
+Announcement Surprise Persistence
+Announcement Consensus Disagreement
+Macro Event Cluster Trading
+Macro Regime Transition Trading
+EURUSD-DXY Divergence
+GBPUSD-DXY Divergence
+USDJPY-US Treasury Yield Relationship
+EURUSD-US Rate Differential
+GBPUSD-UK Rate Differential
+AUDUSD-China Growth Relationship
+NZDUSD-Commodity Relationship
+USDCAD-Oil Relationship
+USDCHF-Risk Sentiment Relationship
+EURGBP Relative Strength
+EURJPY Cross-Currency Momentum
+GBPJPY Cross-Currency Momentum
+AUDJPY Carry Unwind
+NZDJPY Carry Unwind
+CHFJPY Safe Haven Rotation
+Currency Basket Momentum
+Currency Basket Reversion
+Currency Relative Strength Ranking
+Currency Relative Weakness Ranking
+Currency Volatility Dispersion
+Gold-DXY Divergence
+Gold-Real Yield Divergence
+Gold-US Treasury Relationship
+Silver-Gold Relative Value
+Gold-Copper Ratio
+Gold-Oil Ratio
+Platinum-Palladium Relative Value
+Precious Metals Basket Momentum
+Precious Metals Basket Reversion
+Industrial Metals Relative Strength
+Copper-Oil Growth Relationship
+Copper-Gold Ratio
+Copper-Equity Divergence
+Aluminium-Copper Relative Value
+Nickel-Copper Relative Value
+Oil-DXY Relationship
+Oil-CAD Relationship
+Oil-Equity Divergence
+Brent-WTI Spread Reversion
+Brent-WTI Spread Momentum
+Natural Gas-Oil Relative Value
+Energy Equity-Commodity Divergence
+Gasoline-Crude Relationship
+Heating Oil-Crude Relationship
+Commodity Basket Momentum
+Commodity Basket Reversion
+Commodity Sector Rotation
+Agricultural Commodity Relative Value
+Equity Index Relative Strength
+S&P 500-Nasdaq Relative Value
+Nasdaq-Russell Relative Value
+Dow-Nasdaq Rotation
+DAX-Euro Stoxx Relationship
+FTSE-DAX Relative Strength
+Nikkei-US Equity Relationship
+Hang Seng-China Equity Relationship
+US-China Equity Divergence
+Emerging Market-Developed Market Rotation
+Growth-Value Rotation
+Small Cap-Large Cap Rotation
+Equity-Bond Correlation Regime
+Equity-Gold Safe Haven Rotation
+Equity-Dollar Relationship
+Equity-Credit Spread Divergence
+Equity-Volatility Index Relationship
+VIX Futures Term Structure
+Volatility Index Mean Reversion
+Volatility Index Momentum
+Volatility Risk Premium Compression
+Volatility Risk Premium Expansion
+Bond-Equity Relative Momentum
+Bond-Gold Relative Value
+Bond-Dollar Relationship
+Long-Term-Short-Term Yield Spread
+Treasury-German Bund Spread
+US-UK Bond Yield Spread
+US-Japan Bond Yield Spread
+Sovereign Bond Relative Value
+Cross-Country Inflation Spread
+Cross-Country Growth Surprise Spread
+Cross-Country Monetary Policy Divergence
+Global Liquidity Synchronisation
+Global Liquidity Divergence
+Global Risk Appetite Rotation
+Global Equity Breadth Divergence
+Global Currency Funding Stress
+Cross-Asset Correlation Breakdown
+Cross-Asset Correlation Restoration
+Cross-Asset Lead-Lag Network
+Cross-Asset Momentum Leadership
+Cross-Asset Residual Momentum
+Cross-Asset Residual Reversion
+Cross-Asset Factor Neutralisation
+Cross-Asset Dispersion Expansion
+Cross-Asset Dispersion Compression
+Cross-Asset Tail Dependence Shock
+Cross-Asset Volatility Transmission
+Cross-Asset Liquidity Transmission
+Cross-Asset Regime Rotation
+Multi-Asset Opportunity Ranking
+Monday Opening Gap Behaviour
+Tuesday Trend Persistence
+Wednesday Reversal Behaviour
+Thursday Momentum Continuation
+Friday Position Unwinding
+Monday Trend Reversal
+Weekly Opening Range Breakout
+Weekly Closing Momentum
+Weekly Closing Reversal
+Weekly Range Completion
+Monthly Opening Momentum
+Monthly Opening Reversal
+Month-End Rebalancing Flow
+Month-End Momentum
+Month-End Mean Reversion
+Quarter-End Portfolio Rebalancing
+Quarter-End Currency Flow
+Quarter-End Equity Flow
+Quarter-End Bond Flow
+Year-End Position Squaring
+January Seasonality
+February Seasonality
+March Seasonality
+April Seasonality
+May Seasonality
+June Seasonality
+July Seasonality
+August Seasonality
+September Seasonality
+October Seasonality
+November Seasonality
+December Seasonality
+Holiday Liquidity Compression
+Holiday Liquidity Expansion
+Pre-Holiday Position Reduction
+Post-Holiday Repricing
+Summer Liquidity Distortion
+Year-End Volatility Regime
+Fiscal Year-End Flow
+Tax-Year-End Rebalancing
+London Fix Momentum
+London Fix Reversal
+New York Fix Momentum
+New York Fix Reversal
+Asian Fix Currency Flow
+European Opening Flow
+US Opening Flow
+US Closing Flow
+London-NY Overlap Momentum
+London-NY Overlap Reversal
+Asian-London Handover
+London-NY Handover
+Pre-Market Range Expansion
+Pre-Market Range Reversion
+Post-Market Trend Continuation
+Post-Market Trend Reversal
+Lunch-Hour Compression
+Lunch-Hour Breakout
+Session Midpoint Reversion
+Session Closing Imbalance
+First-Hour Momentum
+First-Hour Reversal
+Last-Hour Momentum
+Last-Hour Reversal
+Opening Auction Volatility
+Closing Auction Volatility
+Intraday Volume Seasonality
+Intraday Volatility Seasonality
+Intraday Spread Seasonality
+Intraday Trend Seasonality
+Overnight Momentum
+Overnight Mean Reversion
+Overnight Gap Continuation
+Overnight Gap Reversal
+Weekend Gap Continuation
+Weekend Gap Reversal
+Monday Gap Fill Probability
+Friday Close-to-Monday Open Drift
+Session Duration Hazard
+Time-of-Day Trend Persistence
+Time-of-Day Reversal Probability
+Time-of-Day Volatility Forecast
+Time-of-Day Spread Forecast
+Time-of-Day Execution Cost
+Time-Conditioned Momentum
+Time-Conditioned Mean Reversion
+Calendar-Conditioned Breakout
+Calendar-Conditioned Reversal
+Session-Conditioned Trend Model
+Session-Conditioned Range Model
+Market Open Liquidity Shock
+Market Close Liquidity Shock
+Market Open Price Discovery
+Market Close Price Discovery
+Session Transition Change Point
+Session Transition Momentum
+Session Transition Reversal
+Calendar Anomaly Detection
+Seasonal Regime Switching
+Time-Series Opportunity Ranking
+Multi-Timeframe Momentum Consensus
+Multi-Timeframe Reversal Consensus
+Multi-Timeframe Trend Conflict Filter
+Multi-Timeframe Volatility Consensus
+Multi-Timeframe Market Structure Ensemble
+Momentum-Volume Hybrid
+Momentum-Volatility Hybrid
+Momentum-Liquidity Hybrid
+Momentum-Macro Hybrid
+Momentum-Correlation Hybrid
+Mean Reversion-Volume Hybrid
+Mean Reversion-Volatility Hybrid
+Mean Reversion-Liquidity Hybrid
+Mean Reversion-Structure Hybrid
+Breakout-Volume Confirmation Hybrid
+Breakout-Order Flow Confirmation Hybrid
+Breakout-Macro Confirmation Hybrid
+Breakout-Breadth Confirmation Hybrid
+Breakout-Volatility Confirmation Hybrid
+Reversal-Absorption Confirmation Hybrid
+Reversal-Divergence Confirmation Hybrid
+Reversal-Liquidity Sweep Hybrid
+Reversal-Volatility Exhaustion Hybrid
+Reversal-Intermarket Divergence Hybrid
+Regime-Adaptive Momentum
+Regime-Adaptive Mean Reversion
+Regime-Adaptive Breakout
+Regime-Adaptive Position Holding
+Regime-Adaptive Trade Frequency
+Regime-Adaptive Stop Placement
+Bayesian Signal Fusion
+Bayesian Multi-Factor Consensus
+Bayesian Market Regime Ensemble
+Bayesian Trade Quality Ranking
+Bayesian Position Duration
+Hidden Markov Signal Ensemble
+Hidden Markov Entry Filter
+Hidden Markov Exit Model
+Hidden Markov Risk Allocation
+Hidden Markov Strategy Switching
+Random Forest Directional Forecast
+Random Forest Regime Classification
+Random Forest Trade Quality Prediction
+Gradient Boosting Momentum Forecast
+Gradient Boosting Reversal Forecast
+XGBoost Market Regime Classification
+LightGBM Cross-Asset Ranking
+CatBoost Trade Outcome Classification
+Support Vector Trend Classification
+Support Vector Reversal Classification
+Neural Network Return Forecast
+Neural Network Volatility Forecast
+LSTM Price Sequence Forecast
+GRU Price Sequence Forecast
+Temporal Convolutional Forecast
+Transformer Market State Forecast
+Temporal Fusion Transformer
+Autoencoder Market Regime Detection
+Variational Autoencoder Anomaly Detection
+Isolation Forest Market Anomaly
+One-Class SVM Market Anomaly
+K-Means Regime Clustering
+Gaussian Mixture Regime Clustering
+DBSCAN Market State Clustering
+Hierarchical Market Regime Clustering
+Reinforcement Learning Execution
+Reinforcement Learning Position Management
+Reinforcement Learning Exit Optimisation
+Contextual Bandit Strategy Selection
+Multi-Armed Bandit Signal Allocation
+Online Learning Momentum
+Online Learning Mean Reversion
+Online Learning Regime Detection
+Online Learning Signal Weighting
+Meta-Labelled Trade Selection
+Meta-Labelled Exit Selection
+Meta-Labelled Position Sizing
+Conformal Prediction Trade Filter
+Conformal Prediction Risk Filter
+Prediction Uncertainty Abstention
+Ensemble Disagreement No-Trade Filter
+Forecast Confidence Position Scaling
+Counterfactual Signal Validation
+Incremental Signal Contribution Testing
+Feature Ablation Strategy Selection
+Causal Feature Stability Filter
+Causal Event Response Model
+Drift-Aware Strategy Suspension
+Drift-Aware Strategy Reactivation
+Sequential Strategy Replacement
+Portfolio Correlation-Aware Signal Selection
+Portfolio Opportunity Cost Ranking
+Portfolio Drawdown State Machine
+Loss Cluster Hazard Filter
+Trade Duration Survival Model
+Expected Shortfall Position Control
+Dynamic Risk Budget Allocation
+Multi-Strategy Capital Allocation
+Strategy Failure Early Warning
+Adaptive Multi-Strategy Trading System

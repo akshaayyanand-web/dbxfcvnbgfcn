@@ -1,0 +1,169 @@
+ id                                                       name    mkt  H  long_only   n  n_train  n_hold  mean_bp  mean_adj_bp  t_train  t_hold  avg_train_bp  avg_hold_bp  pos_years  years
+427                    VIX term structure (VIX/VIX3M<0.9) long    SPX  5       True 326      208     118     9.03       -14.96    -1.03   -1.66        -10.48       -22.86          2     11
+428                  Volatility risk premium (VIX-RV20>4) long    SPX  5       True 255      164      91    19.11        -4.88    -0.28   -0.24         -4.75        -5.10          5     11
+427                    VIX term structure (VIX/VIX3M<0.9) long     NQ  5       True 330      209     121    13.15       -18.74    -0.98   -1.26        -15.39       -24.53          2     11
+428                  Volatility risk premium (VIX-RV20>4) long     NQ  5       True 117       83      34    35.97         4.07    -0.79    1.48        -22.36        68.59          5     11
+630                                    Treasury yield breakout USDJPY  5      False 231      144      87    -5.84        -6.37     0.31   -1.46          3.23       -20.86          5     11
+630                                    Treasury yield breakout    XAU  5      False 231      144      87    -2.42        -0.05     0.83   -1.03         12.99       -27.92          4     11
+630                                    Treasury yield breakout     NQ  5      False 231      144      87    13.62        17.35     0.27    0.82          6.60        25.24          6     11
+631                                    Treasury yield reversal USDJPY  5      False  69       51      18   -32.39       -32.32    -1.45   -1.61        -28.65       -42.99          1     11
+631                                    Treasury yield reversal    XAU  5      False  69       51      18    11.26        10.96     0.57   -0.32         21.93       -18.99          5     11
+631                                    Treasury yield reversal     NQ  5      False  69       51      18     5.36         4.89     1.04   -2.38         58.86      -146.24          6     11
+632                          Yield curve steepening/flattening    XAU  5      False 172      109      63     4.26         6.14    -1.20    1.64        -22.57        50.67          7     11
+632                          Yield curve steepening/flattening USDJPY  5      False 172      109      63     1.55         1.13    -0.19    0.57         -2.41         8.40          6     11
+635                                 Real yield momentum (gold)    XAU  5      False 241      137     104    -1.42        -0.67    -0.51    0.36         -9.76         9.56          5     11
+636                                Real yield reversion (gold)    XAU  5      False  64       45      19     5.21         2.05    -0.06    0.30         -1.97        22.21          4     11
+637                              Inflation breakeven repricing    XAU  5      False 239      169      70   -17.58       -20.03    -0.74   -0.84        -11.97       -31.14          3     11
+637                              Inflation breakeven repricing    WTI  5      False 235      169      66    24.67        22.38     0.94   -1.07         61.32       -69.16          6     11
+641                          Credit spread widening/tightening    SPX  5      False 145      104      41   -19.08       -22.88    -0.60   -0.59        -17.26       -23.70          5     11
+641                          Credit spread widening/tightening     NQ  5      False 144      103      41   -17.20       -21.63    -0.28   -0.74         -9.35       -36.94          5     11
+645                           Financial conditions index shock    SPX  5      False  12       12       0   215.69       215.69     1.40     NaN        215.69          NaN          1      1
+660                     Safe haven rotation (VIX +25% -> gold)    XAU  5      False  74       50      24    24.67         4.46     0.35    0.75          9.94        55.36          7     11
+660                      Safe haven rotation (VIX +25% -> JPY) USDJPY  5      False  74       50      24     3.65         8.19    -0.39    0.81         -7.74        27.37          6     11
+661                               Risk-on (VIX -20%) -> AUDJPY AUDJPY  5      False  68       48      20    18.94        14.47     0.94    0.63         18.28        20.50          8     11
+661                                   Risk-on (VIX -20%) -> NQ     NQ  5       True  68       48      20    59.08        27.18    -0.27    2.30         -7.90       111.37          8     11
+701                                      EURUSD-DXY divergence EURUSD  5      False  51       27      24    -6.95        -6.80     1.08   -1.43         20.97       -38.35          2      5
+702                                      GBPUSD-DXY divergence GBPUSD  5      False 131       82      49    -2.82        -2.80    -0.15   -0.18         -2.82        -2.83          3     10
+703                         USDJPY-Treasury yield relationship USDJPY  5      False 125       80      45     5.71         5.31    -0.16    0.83         -2.45        20.22          6     10
+708                                    USDCAD-oil relationship USDCAD  5      False 124       81      43   -10.93       -10.93    -1.72    0.65        -20.55         7.21          4     10
+709                                USDCHF-risk sentiment (VIX) USDCHF  5      False 126       84      42    -7.79        -7.91    -0.41   -0.74         -6.13       -11.11          5     10
+713                 AUDJPY carry unwind (follow 2-sigma weeks) AUDJPY  5      False  63       42      21     5.49         6.56     0.41   -0.15         11.76        -7.04          3     11
+714                 NZDJPY carry unwind (follow 2-sigma weeks) NZDJPY  5      False  65       42      23    -6.93        -6.80    -0.36   -0.08         -8.78        -3.55          4     11
+721                                        Gold-DXY divergence    XAU  5      False 151       92      59    12.50        12.64     0.56    0.25         13.50        10.95          5     11
+722                                 Gold-real yield divergence    XAU  5      False 148       93      55    25.82        25.00     1.49    0.23         34.95        10.39          7     11
+736                                       Oil-DXY relationship    WTI  5      False 127       74      53    -2.61        -2.44     0.05   -0.17          6.04       -14.68          6     10
+738                                      Oil-equity divergence    WTI  5      False 119       68      51    -8.46        -9.36     0.29   -0.76         35.12       -66.55          5     10
+726                                   Gold-oil ratio reversion    WTI 10      False  46       28      18    86.14        73.00    -0.20    2.26        -57.69       309.87          8     10
+728                            Precious metals basket momentum    XAU  5      False 552      352     200   -14.72       -16.55    -1.11   -1.08        -11.58       -20.24          3     11
+729                           Precious metals basket reversion    XAU  5      False  67       39      28    42.33        40.22     0.82    0.81         38.90        47.10          7     10
+728                            Precious metals basket momentum    XAG  5      False 552      352     200   -42.79       -44.27    -1.83   -1.31        -37.66       -51.81          1     11
+729                           Precious metals basket reversion    XAG  5      False  67       39      28    67.33        65.62    -0.13    1.55        -12.39       178.37          6     10
+739                                 Brent-WTI spread reversion    WTI 10      False  85       52      33   -67.90       -73.48    -0.80    0.08       -117.47        10.21          3     11
+740                                  Brent-WTI spread momentum    WTI  5      False 456      296     160   -16.54       -14.27    -0.86    0.36        -33.99        15.74          6     11
+745                        Commodity basket momentum (per leg)    XAU  5      False 560      360     200    -3.29        -5.60    -0.63    0.13         -6.50         2.49          4     11
+746                       Commodity basket reversion (per leg)    XAU  5      False  62       37      25    49.84        47.89     1.43    0.43         57.18        38.98          6     10
+745                        Commodity basket momentum (per leg)    XAG  5      False 551      352     199   -39.87       -40.79    -1.45   -1.55        -29.43       -58.34          2     11
+746                       Commodity basket reversion (per leg)    XAG  5      False  68       38      30    25.22        24.74     0.04    0.48          3.69        52.49          6     10
+745                        Commodity basket momentum (per leg)    WTI  5      False 539      352     187    30.49        27.97     1.94   -0.69         60.24       -25.50          6     11
+746                       Commodity basket reversion (per leg)    WTI  5      False  63       40      23   -15.11       -20.25    -0.45    0.60        -73.79        86.94          4      9
+749               Equity index relative strength (20d, weekly)     NQ  5      False 456      305     151   -15.04       -21.20    -0.59   -1.20        -10.42       -24.38          3     11
+749               Equity index relative strength (20d, weekly)    SPX  5      False 168      130      38     6.22        10.51     0.51   -0.03          8.28        -0.80          5     11
+749               Equity index relative strength (20d, weekly)    DOW  5      False 322      225      97     6.18         8.70     0.38    0.34          5.50         7.74          7     11
+749               Equity index relative strength (20d, weekly)    RUT  5      False 278      135     143    -3.35        -1.11    -0.19    0.00         -6.99         0.09          3      8
+749               Equity index relative strength (20d, weekly)    DAX  5      False 176       54     122     2.06         1.44     0.15    0.04          5.29         0.63          2      6
+749               Equity index relative strength (20d, weekly)    JPN  5      False  63       48      15   -51.96       -53.63    -1.79   -0.36        -62.71       -17.57          1      4
+755                                 Nikkei follows the S&P day    JPN  1      False 151      127      24    -0.55        -0.45    -0.34    0.61         -4.11        18.27          3      4
+761 Equity-bond correlation regime (long SPX when bonds hedge)    SPX  5       True 308      240      68    11.77       -12.21    -1.21    0.46        -19.08        12.03          7     11
+763                                   Equity-dollar divergence    SPX  5      False 127       81      46   -31.24       -32.56    -1.78    0.70        -63.57        25.69          5     10
+764                            Equity-credit spread divergence    SPX  5      False  32       25       7   -48.73       -24.74    -1.22   -0.67        -53.23       -32.64          2      9
+765                 Equity-VIX relationship (both up -> short)    SPX  5      False  24       15       9    79.30       103.28     1.22   -1.12        176.19       -82.19          6      9
+768                                  Volatility index momentum    SPX  5      False 160      107      53     7.61        14.51     0.63   -0.38         17.03       -11.39          7     11
+581  Cross-sectional rank momentum (20d, top/bottom 3, weekly)    SPX  5      False 142      113      29   -12.22       -25.06    -0.20   -1.31         -3.81       -44.99          4     11
+581  Cross-sectional rank momentum (20d, top/bottom 3, weekly)     NQ  5      False 323      231      92    -7.24       -19.98    -0.04   -0.78         -0.69       -23.68          4     11
+581  Cross-sectional rank momentum (20d, top/bottom 3, weekly)    DOW  5      False 145      105      40   -11.99       -17.72    -0.48   -0.72        -10.03       -17.14          4     11
+581  Cross-sectional rank momentum (20d, top/bottom 3, weekly)    RUT  5      False 189       85     104   -27.25       -27.52    -1.58    0.53        -79.67        15.59          4      8
+581  Cross-sectional rank momentum (20d, top/bottom 3, weekly)    DAX  5      False 100       37      63   -11.32       -14.61    -0.01   -0.73         -0.34       -17.77          3      6
+581  Cross-sectional rank momentum (20d, top/bottom 3, weekly)    JPN  5      False  33       22      11  -101.77      -102.23    -2.24   -1.28       -102.06      -101.20          0      4
+581  Cross-sectional rank momentum (20d, top/bottom 3, weekly)    XAU  5      False 316      203     113    -4.52        -5.80    -1.14    0.64        -15.63        15.44          5     11
+581  Cross-sectional rank momentum (20d, top/bottom 3, weekly)    XAG  5      False 417      262     155   -30.66       -30.46    -1.25   -0.77        -28.40       -34.48          3     11
+581  Cross-sectional rank momentum (20d, top/bottom 3, weekly)    WTI  5      False 460      305     155     3.81         2.30     0.58   -0.80         23.52       -34.98          5     11
+581  Cross-sectional rank momentum (20d, top/bottom 3, weekly) EURUSD  5      False  71       37      34    -3.04        -3.93    -1.33    0.71        -16.78        11.91          4      8
+581  Cross-sectional rank momentum (20d, top/bottom 3, weekly) GBPUSD  5      False 144      111      33    -5.93        -6.17    -0.56   -0.05         -7.41        -0.97          7     11
+581  Cross-sectional rank momentum (20d, top/bottom 3, weekly) USDJPY  5      False 227      133      94    -4.14        -3.48     0.12   -0.89          1.23       -11.73          3     11
+581  Cross-sectional rank momentum (20d, top/bottom 3, weekly)    BTC  5      False 313      134     179    31.08        25.36     1.86   -0.86        135.26       -46.90          5      7
+581  Cross-sectional rank momentum (20d, top/bottom 3, weekly)    ETH  5      False 330      145     185    86.71        80.93     1.13    0.77        137.24        47.10          4      7
+581  Cross-sectional rank momentum (20d, top/bottom 3, weekly) AUDUSD  5      False 131       99      32   -10.71       -10.73    -1.29    0.12        -14.90         2.28          5     11
+581  Cross-sectional rank momentum (20d, top/bottom 3, weekly) NZDUSD  5      False 180      116      64    -1.34        -2.28     0.22   -0.53          2.63        -8.53          5     11
+581  Cross-sectional rank momentum (20d, top/bottom 3, weekly) USDCAD  5      False 276      208      68    -4.28        -4.33    -0.25   -1.62         -1.75       -12.03          5     11
+581  Cross-sectional rank momentum (20d, top/bottom 3, weekly) USDCHF  5      False 263      174      89   -14.21       -15.40    -1.49   -1.70        -12.64       -17.28          2     11
+581  Cross-sectional rank momentum (20d, top/bottom 3, weekly) EURJPY  5      False 102       77      25   -18.93       -18.27    -1.06   -1.55        -17.02       -24.80          3     11
+581  Cross-sectional rank momentum (20d, top/bottom 3, weekly) GBPJPY  5      False 168      133      35    -4.76        -4.45     0.20   -1.76          3.56       -36.36          5     11
+581  Cross-sectional rank momentum (20d, top/bottom 3, weekly) AUDJPY  5      False 133       97      36    -3.14        -2.71    -0.13   -0.22         -1.97        -6.31          6     11
+581  Cross-sectional rank momentum (20d, top/bottom 3, weekly) NZDJPY  5      False 143      102      41    -5.46        -5.16     0.35   -1.06          4.54       -30.34          5     11
+581  Cross-sectional rank momentum (20d, top/bottom 3, weekly) CHFJPY  5      False 139       85      54   -11.77       -11.22    -1.13   -0.49        -14.15        -8.02          3     11
+582                 Cross-sectional rank reversal (5d, weekly)    SPX  5      False 186      135      51     1.21         6.63     0.13   -0.11          2.93        -3.32          5     11
+582                 Cross-sectional rank reversal (5d, weekly)     NQ  5      False 368      245     123   -30.42       -22.97    -1.50   -1.61        -25.92       -39.39          1     11
+582                 Cross-sectional rank reversal (5d, weekly)    DOW  5      False 212      140      72     8.46        10.46     0.54    0.12         11.62         2.31          5     11
+582                 Cross-sectional rank reversal (5d, weekly)    RUT  5      False 253      124     129    16.84        18.00     1.06   -0.09         36.47        -2.02          6      8
+582                 Cross-sectional rank reversal (5d, weekly)    DAX  5      False 127       43      84   -17.96       -16.66    -0.47   -0.70        -23.42       -15.16          3      6
+582                 Cross-sectional rank reversal (5d, weekly)    JPN  5      False  59       38      21     6.04         8.85     0.07    0.20          3.26        11.07          2      4
+582                 Cross-sectional rank reversal (5d, weekly)    XAU  5      False 360      246     114   -24.64       -23.41    -1.31   -1.77        -15.13       -45.18          4     11
+582                 Cross-sectional rank reversal (5d, weekly)    XAG  5      False 476      302     174   -25.10       -24.41    -0.32   -1.39         -6.25       -57.80          4     11
+582                 Cross-sectional rank reversal (5d, weekly)    WTI  5      False 484      321     163   -30.24       -29.26    -1.38    0.40        -54.33        17.21          5     11
+582                 Cross-sectional rank reversal (5d, weekly) EURUSD  5      False  88       43      45     1.42         2.00     0.43   -0.21          5.82        -2.77          3      8
+582                 Cross-sectional rank reversal (5d, weekly) GBPUSD  5      False 200      154      46    17.01        17.24     1.62   -0.34         23.48        -4.67          6     11
+582                 Cross-sectional rank reversal (5d, weekly) USDJPY  5      False 282      185      97     7.85         7.60     0.21    1.27          2.12        18.79          8     11
+582                 Cross-sectional rank reversal (5d, weekly)    BTC  5      False 322      144     178   -68.56       -67.32    -1.31   -0.65       -111.35       -33.94          2      7
+582                 Cross-sectional rank reversal (5d, weekly)    ETH  5      False 335      150     185    22.91        24.10     0.69   -0.33         76.44       -20.49          5      7
+582                 Cross-sectional rank reversal (5d, weekly) AUDUSD  5      False 167      120      47    -7.55        -7.53    -0.57   -0.40         -7.89        -6.70          5     11
+582                 Cross-sectional rank reversal (5d, weekly) NZDUSD  5      False 233      162      71    -8.19        -7.59    -0.25   -1.28         -2.74       -20.62          4     11
+582                 Cross-sectional rank reversal (5d, weekly) USDCAD  5      False 362      259     103    -2.97        -2.95    -0.37   -0.62         -2.33        -4.57          6     11
+582                 Cross-sectional rank reversal (5d, weekly) USDCHF  5      False 336      225     111     5.55         6.07     1.15    0.06          8.03         0.51          8     11
+582                 Cross-sectional rank reversal (5d, weekly) EURJPY  5      False 179      125      54     8.44         7.60     0.68    0.53          7.69        10.16          7     11
+582                 Cross-sectional rank reversal (5d, weekly) GBPJPY  5      False 206      159      47    -0.84        -1.01    -0.13    0.15         -1.93         2.84          5     11
+582                 Cross-sectional rank reversal (5d, weekly) AUDJPY  5      False 178      132      46   -11.67       -11.62    -0.94   -0.36        -12.40        -9.55          4     11
+582                 Cross-sectional rank reversal (5d, weekly) NZDJPY  5      False 181      134      47    -7.21        -7.36    -0.98    0.24        -11.37         4.65          6     11
+582                 Cross-sectional rank reversal (5d, weekly) CHFJPY  5      False 186      123      63    -0.47        -1.37     0.24   -0.37          2.26        -5.80          5     11
+808              Weekly closing momentum (Fri follows Mon-Thu)    SPX  1      False 545      355     190    -1.78        -2.16    -0.64    0.33         -3.98         2.33          5     11
+809                Weekly closing reversal (Fri fades Mon-Thu)    SPX  1      False 545      355     190    -5.05        -4.67    -0.46   -1.28         -2.85        -9.17          2     11
+820     Year-end position squaring (fade YTD in the last week)    SPX  1      False  21       21       0    12.93        13.16     1.00     NaN         12.93          NaN          4      4
+808              Weekly closing momentum (Fri follows Mon-Thu)     NQ  1      False 551      357     194    -0.48        -1.10    -1.11    1.53         -8.36        14.01          4     11
+809                Weekly closing reversal (Fri fades Mon-Thu)     NQ  1      False 551      357     194    -6.35        -5.74     0.20   -2.28          1.52       -20.84          3     11
+820     Year-end position squaring (fade YTD in the last week)     NQ  1      False  21       21       0    20.85        21.16     1.37     NaN         20.85          NaN          4      4
+808              Weekly closing momentum (Fri follows Mon-Thu)    XAU  1      False 555      361     194    -4.36        -4.73    -1.20   -0.21         -5.54        -2.16          5     11
+809                Weekly closing reversal (Fri fades Mon-Thu)    XAU  1      False 555      361     194    -1.11        -0.74     0.02   -0.32          0.07        -3.31          5     11
+820     Year-end position squaring (fade YTD in the last week)    XAU  1      False  21       21       0    -9.66        -7.93    -0.96     NaN         -9.66          NaN          1      4
+808              Weekly closing momentum (Fri follows Mon-Thu) EURUSD  1      False 260      130     130    -4.40        -4.39    -1.25   -1.14         -4.90        -3.90          1      8
+809                Weekly closing reversal (Fri fades Mon-Thu) EURUSD  1      False 260      130     130     1.26         1.26     0.45    0.22          1.76         0.76          7      8
+820     Year-end position squaring (fade YTD in the last week) EURUSD  1      False  13        9       4    10.34        10.53     1.77   -0.06         15.49        -1.25          2      3
+808              Weekly closing momentum (Fri follows Mon-Thu)    BTC  1      False 356      157     199    -7.12        -7.72    -0.72    0.23        -21.64         4.33          2      7
+809                Weekly closing reversal (Fri fades Mon-Thu)    BTC  1      False 356      157     199   -16.38       -15.79    -0.06   -1.49         -1.86       -27.84          2      7
+820     Year-end position squaring (fade YTD in the last week)    BTC  1      False  39       20      19   -46.47       -42.05    -0.98   -0.43        -71.06       -20.58          1      6
+821                       Month 1 seasonality (long every day)    SPX  1       True 234      148      86     5.14         0.34    -0.58    1.05         -4.61         8.86          6     11
+821                       Month 1 seasonality (long every day)     NQ  1       True 234      148      86    10.63         4.25    -0.18    1.25         -2.00        15.02          8     11
+821                       Month 1 seasonality (long every day)    XAU  1       True 234      148      86    10.76         6.72     0.30    0.89          1.83        15.14          8     11
+821                       Month 1 seasonality (long every day)    BTC  1       True 155       65      90    20.01         6.74     0.16    0.16          9.44         4.79          4      7
+822                       Month 2 seasonality (long every day)    SPX  1       True 222      141      81    -5.68       -10.48    -0.88   -1.36         -9.36       -12.42          5     11
+822                       Month 2 seasonality (long every day)     NQ  1       True 202      121      81    -8.96       -15.34    -0.98   -1.21        -14.70       -16.31          2     10
+822                       Month 2 seasonality (long every day)    XAU  1       True 222      141      81     6.03         1.99    -0.13    0.49         -1.09         7.34          5     11
+822                       Month 2 seasonality (long every day)    BTC  1       True 141       60      81    26.46        13.19     0.82   -0.36         49.59       -13.77          3      7
+823                       Month 3 seasonality (long every day)    SPX  1       True 240      154      86    -8.88       -13.68    -0.86   -0.91        -15.52       -10.39          6     11
+823                       Month 3 seasonality (long every day)     NQ  1       True 241      155      86    -4.91       -11.28    -0.65   -0.65        -12.39        -9.30          4     11
+823                       Month 3 seasonality (long every day)    XAU  1       True 241      155      86     1.29        -2.75    -0.78    0.37         -7.39         5.60          3     11
+823                       Month 3 seasonality (long every day)    BTC  1       True 155       68      87    -2.37       -15.64    -0.54    0.07        -39.53         3.04          3      7
+824                       Month 4 seasonality (long every day)    SPX  1       True 229      145      84     6.80         2.01     0.27    0.05          2.67         0.86          6     11
+824                       Month 4 seasonality (long every day)     NQ  1       True 229      145      84     7.38         1.00    -0.15    0.27         -1.79         5.81          7     11
+824                       Month 4 seasonality (long every day)    XAU  1       True 227      144      83     1.44        -2.61    -0.25   -0.30         -1.69        -4.19          4     11
+824                       Month 4 seasonality (long every day)    BTC  1       True 151       65      86    -0.97       -14.24    -0.21   -0.57         -9.86       -17.54          3      7
+825                       Month 5 seasonality (long every day)    SPX  1       True 219      130      89    10.02         5.22     0.09    1.41          0.82        11.65          5     10
+825                       Month 5 seasonality (long every day)     NQ  1       True 244      155      89    13.33         6.95    -0.52    2.71         -5.61        28.84          8     11
+825                       Month 5 seasonality (long every day)    XAU  1       True 244      155      89     0.19        -3.86    -0.70   -0.29         -3.89        -3.79          4     11
+825                       Month 5 seasonality (long every day)    BTC  1       True 153       64      89   -40.97       -54.24    -1.78   -0.31       -118.98        -7.68          3      7
+826                       Month 6 seasonality (long every day)    SPX  1       True 216      151      65     2.63        -2.17    -0.52    0.38         -4.74         3.81          5     10
+826                       Month 6 seasonality (long every day)     NQ  1       True 236      151      85     6.70         0.32    -0.25    0.41         -2.68         5.66          6     11
+826                       Month 6 seasonality (long every day)    XAU  1       True 236      151      85    -9.43       -13.47    -0.91   -1.89         -6.88       -25.18          3     11
+826                       Month 6 seasonality (long every day)    BTC  1       True 151       66      85   -55.12       -68.39    -1.95   -1.30       -108.59       -37.17          1      7
+827                       Month 7 seasonality (long every day)    SPX  1       True 242      153      89     7.64         2.84     1.13   -0.39          6.34        -3.18          5     11
+827                       Month 7 seasonality (long every day)     NQ  1       True 242      153      89     9.79         3.41     1.70   -1.04         13.64       -14.18          7     11
+827                       Month 7 seasonality (long every day)    XAU  1       True 243      153      90     7.67         3.63     0.82    0.12          5.00         1.31          5     11
+827                       Month 7 seasonality (long every day)    BTC  1       True 156       66      90    28.32        15.05     1.21   -0.65         55.72       -14.77          5      7
+828                       Month 8 seasonality (long every day)    SPX  1       True 244      157      87     2.40        -2.40    -0.52   -0.06         -3.44        -0.52          5     11
+828                       Month 8 seasonality (long every day)     NQ  1       True 244      157      87     5.27        -1.11    -0.06   -0.17         -0.55        -2.10          5     11
+828                       Month 8 seasonality (long every day)    XAU  1       True 244      157      87     2.55        -1.49    -0.77    0.57         -6.07         6.76          5     11
+828                       Month 8 seasonality (long every day)    BTC  1       True 153       66      87    -7.91       -21.18    -0.14   -1.00         -5.46       -33.10          3      7
+829                       Month 9 seasonality (long every day)    SPX  1       True 236      150      86    -8.42       -13.22    -1.99   -1.16        -16.08        -8.23          2     11
+829                       Month 9 seasonality (long every day)     NQ  1       True 236      150      86    -8.01       -14.39    -2.07   -0.16        -21.73        -1.59          2     11
+829                       Month 9 seasonality (long every day)    XAU  1       True 236      150      86    -5.83        -9.87    -2.49    0.19        -16.65         1.96          2     11
+829                       Month 9 seasonality (long every day)    BTC  1       True 152       66      86    -3.76       -17.02    -1.07    0.26        -47.92         6.69          3      7
+830                      Month 10 seasonality (long every day)    SPX  1       True 242      152      90    -1.33        -6.12    -0.60   -0.97         -5.08        -7.89          4     11
+830                      Month 10 seasonality (long every day)     NQ  1       True 243      153      90    -3.05        -9.43    -0.66   -1.02         -7.67       -12.42          4     11
+830                      Month 10 seasonality (long every day)    XAU  1       True 243      153      90     1.25        -2.80    -0.81    0.07         -5.00         0.96          6     11
+830                      Month 10 seasonality (long every day)    BTC  1       True 154       64      90    34.23        20.97     1.62   -0.21         57.86        -5.26          4      7
+831                      Month 11 seasonality (long every day)    SPX  1       True 214      151      63    13.15         8.35     0.86    1.21          6.78        12.12          7     10
+831                      Month 11 seasonality (long every day)     NQ  1       True 215      152      63    11.65         5.28     0.35    0.63          3.89         8.62          4     10
+831                      Month 11 seasonality (long every day)    XAU  1       True 215      152      63    -3.93        -7.98    -1.67    0.22        -12.55         3.06          3     10
+831                      Month 11 seasonality (long every day)    BTC  1       True 128       65      63     9.01        -4.25    -0.24    0.13        -13.75         5.54          3      6
+832                      Month 12 seasonality (long every day)    SPX  1       True 209      146      63    -6.91       -11.71    -1.93   -0.73        -13.99        -6.43          4     10
+832                      Month 12 seasonality (long every day)     NQ  1       True 210      147      63    -7.18       -13.55    -1.92   -0.35        -17.57        -4.18          6     10
+832                      Month 12 seasonality (long every day)    XAU  1       True 210      147      63     3.14        -0.90     0.51   -0.76          2.76        -9.45          4     10
+832                      Month 12 seasonality (long every day)    BTC  1       True 134       68      66    14.16         0.89     0.13   -0.10          5.12        -3.47          2      6
