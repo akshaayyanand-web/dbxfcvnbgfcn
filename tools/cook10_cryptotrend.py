@@ -2,7 +2,7 @@
 # (10% or 20%/yr on the notional, both sides). Hourly mark-to-market components added to the 21-EA book; The5ers High Stakes at 3x.
 import sys
 exec(open("firms.py").read().split('\nif __name__ == "__main__":')[0])
-exec(open("retail.py").read().split("def run(")[0])
+exec(open("retail.py").read().split("\ndef run(")[0])
 COSTC = {"BTC": 0.0006, "ETH": 0.001, "SOL": 0.0015, "XRP": 0.002}
 def trades(sym, method):
     b5 = crypto(sym); hb = rs(b5, "4h"); O, H, L, C = (hb[c].to_numpy() for c in "ohlc"); T = hb.index; A10 = atr(H, L, C, 10); A14 = atr(H, L, C, 14)

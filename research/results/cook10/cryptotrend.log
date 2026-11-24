@@ -1,0 +1,51 @@
+correlation of ORB variants with the NQ momentum strategy: {'orb15': 0.25, 'orb30': 0.3, 'orb15L': 0.21}
+built
+daily correlations:
+           btc1h144  gold1h144  nq2h  spx1h  oil1h  silver1h  eth1h  sol1h   btc  gdip  nqdip  spxdip
+btc1h144       1.00       0.10  0.11   0.12  -0.01      0.14   0.53   0.39  0.67  0.05   0.07    0.07
+gold1h144      0.10       1.00  0.06   0.09   0.01      0.53   0.11   0.05  0.08  0.74   0.01    0.04
+nq2h           0.11       0.06  1.00   0.58  -0.03      0.09   0.11   0.11  0.11  0.03   0.28    0.25
+spx1h          0.12       0.09  0.58   1.00  -0.01      0.16   0.11   0.14  0.11  0.05   0.26    0.32
+oil1h         -0.01       0.01 -0.03  -0.01   1.00      0.05  -0.02  -0.00 -0.01 -0.00   0.04    0.05
+silver1h       0.14       0.53  0.09   0.16   0.05      1.00   0.10   0.11  0.08  0.39   0.03    0.07
+eth1h          0.53       0.11  0.11   0.11  -0.02      0.10   1.00   0.38  0.48  0.06   0.03    0.06
+sol1h          0.39       0.05  0.11   0.14  -0.00      0.11   0.38   1.00  0.36  0.06   0.07    0.06
+btc            0.67       0.08  0.11   0.11  -0.01      0.08   0.48   0.36  1.00  0.06   0.06    0.06
+gdip           0.05       0.74  0.03   0.05  -0.00      0.39   0.06   0.06  0.06  1.00   0.00    0.03
+nqdip          0.07       0.01  0.28   0.26   0.04      0.03   0.03   0.07  0.06  0.00   1.00    0.23
+spxdip         0.07       0.04  0.25   0.32   0.05      0.07   0.06   0.06  0.06  0.03   0.23    1.00
+gap>1% hold 48h: 180 trades, corr with BTC dip 0.10, with portfolio 0.03
+gap>1% hold 96h: 180 trades, corr with BTC dip 0.16, with portfolio 0.07
+gap>2% hold 48h: 94 trades, corr with BTC dip 0.09, with portfolio 0.03
+gap>2% hold 96h: 94 trades, corr with BTC dip 0.15, with portfolio 0.07
+gap>3% hold 48h: 60 trades, corr with BTC dip 0.06, with portfolio 0.03
+gap>3% hold 96h: 60 trades, corr with BTC dip 0.13, with portfolio 0.07
+DAX 15min pre-market range trend50 stop-mid: corr NQ ORB 0.08, 9-EA portfolio 0.07
+DAX 15min ORB30 second-chance trend50: corr NQ ORB 0.07, 9-EA portfolio 0.06
+DAX 5min ORB30 second-chance trend50: corr NQ ORB 0.09, 9-EA portfolio 0.07
+DAX 15min ORB30 trend50 target0 stop-mid: corr NQ ORB 0.07, 9-EA portfolio 0.06
+DAX 15min ORB60 trend50 target0 stop-mid: corr NQ ORB 0.05, 9-EA portfolio 0.07
+DAX 15min ORB30 trend20 target0 stop-mid: corr NQ ORB 0.06, 9-EA portfolio 0.05
+corr pre-market vs ORB: 0.6
+check NQ bo rebuilt == bo: True
+check base == r12: False
+rebuilt == r12: True
+weekday share kept: {'btc': np.float64(0.74), 'sol': np.float64(0.48), 'btcgap': 0.0}
+21 EAs Sharpe 2020-22 / 2023-26 / %/yr x1: (np.float64(4.0), np.float64(3.45), np.float64(38.8))
+{'book': '21 EAs', 'median_days': np.float64(57.0), 'first_try': 100, 'yr_median': np.float64(74.7), 'yr_p10': np.float64(39.2)}
+
+Supertrend 4h crypto, swap 10%/yr: trades 1427, avg R after swap 0.120, t 2020-22 1.58, t 2023-26 1.9
+  book + sleeve Sharpe 2020-22 / 2023-26 / %/yr x1: (np.float64(3.63), np.float64(2.89), np.float64(43.6))
+   {'book': '21 EAs + crypto Supertrend', 'swap': '10%', 'median_days': np.float64(53.0), 'first_try': 98, 'kept': 91, 'yr_median': np.float64(60.6), 'yr_p10': np.float64(10.7)}
+
+Supertrend 4h crypto, swap 20%/yr: trades 1427, avg R after swap 0.097, t 2020-22 1.32, t 2023-26 1.55
+  book + sleeve Sharpe 2020-22 / 2023-26 / %/yr x1: (np.float64(3.57), np.float64(2.81), np.float64(42.6))
+   {'book': '21 EAs + crypto Supertrend', 'swap': '20%', 'median_days': np.float64(55.5), 'first_try': 96, 'kept': 90, 'yr_median': np.float64(62.6), 'yr_p10': np.float64(5.7)}
+
+EMA 4h crypto, swap 10%/yr: trades 2482, avg R after swap 0.169, t 2020-22 2.1, t 2023-26 1.99
+  book + sleeve Sharpe 2020-22 / 2023-26 / %/yr x1: (np.float64(3.22), np.float64(2.57), np.float64(51.7))
+   {'book': '21 EAs + crypto EMA', 'swap': '10%', 'median_days': np.float64(52.0), 'first_try': 82, 'kept': 59, 'yr_median': np.float64(33.9), 'yr_p10': np.float64(0.0)}
+
+EMA 4h crypto, swap 20%/yr: trades 2482, avg R after swap 0.141, t 2020-22 1.84, t 2023-26 1.64
+  book + sleeve Sharpe 2020-22 / 2023-26 / %/yr x1: (np.float64(3.12), np.float64(2.44), np.float64(49.6))
+   {'book': '21 EAs + crypto EMA', 'swap': '20%', 'median_days': np.float64(43.0), 'first_try': 78, 'kept': 57, 'yr_median': np.float64(32.1), 'yr_p10': np.float64(0.0)}
