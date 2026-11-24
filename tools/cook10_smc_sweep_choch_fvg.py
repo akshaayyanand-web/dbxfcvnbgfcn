@@ -10,7 +10,7 @@ def hd(pair):
         except zipfile.BadZipFile: continue
         nm = [n for n in z.namelist() if n.lower().endswith(".csv")]
         if nm: parts.append(pd.read_csv(io.BytesIO(z.read(nm[0])), sep=";", header=None, names=["t", "o", "h", "l", "c", "v"]))
-    d = pd.concat(parts); d.index = (pd.to_datetime(d.t, format="%Y%m%d %H%M%S") + pd.Timedelta(hours=5)).dt.tz_localize("UTC")
+    d = pd.concat(parts); d.index = pd.DatetimeIndex(pd.to_datetime(d.t, format="%Y%m%d %H%M%S")).tz_localize("America/New_York", ambiguous="NaT", nonexistent="NaT").tz_convert("UTC"); d = d[d.index.notna()]
     return d[["o", "h", "l", "c"]].astype(float).loc[lambda x: ~x.index.duplicated()].sort_index()
 def crypto(sym):
     p = []

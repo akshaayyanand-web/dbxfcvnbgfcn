@@ -12,7 +12,7 @@ def load_hd(pair):
         if not nm: continue
         d = pd.read_csv(io.BytesIO(z.read(nm[0])), sep=";", header=None, names=["t", "o", "h", "l", "c", "v"])
         parts.append(d)
-    d = pd.concat(parts); d.index = pd.to_datetime(d.t, format="%Y%m%d %H%M%S") + pd.Timedelta(hours=5); d.index = d.index.tz_localize("UTC")
+    d = pd.concat(parts); d.index = pd.DatetimeIndex(pd.to_datetime(d.t, format="%Y%m%d %H%M%S")).tz_localize("America/New_York", ambiguous="NaT", nonexistent="NaT").tz_convert("UTC"); d = d[d.index.notna()]
     return d[["o", "h", "l", "c"]].astype(float).loc[lambda x: ~x.index.duplicated()].sort_index()
 class FX(M1):
     def __init__(s, pair):

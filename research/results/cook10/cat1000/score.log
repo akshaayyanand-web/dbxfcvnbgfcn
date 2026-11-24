@@ -1,0 +1,145 @@
+tests with >= 100 train trades: 26,338  (of 29,942 non-empty results)
+passed train: 122  (luck alone would give about 164)
+passed train AND holdout: 2  (luck alone, if tests were independent: about 3.7)
+
+holdout result of everything that passed train: median avgR -0.036, share positive 36%
+all tests: median avgR train -0.052, holdout -0.083; share positive in both 10%
+
+SURVIVORS (pass train and holdout):
+                                                  name       ID  base sym  tf                  exit  n_train  n_hold  avgR_train  avgR_hold  t_train  t_hold   win    pf  pos_years  years
+Multi-day consolidation breakout + Volume confirmation CFD-0267    27 ETH M15 2ATR stop, 3ATR trail    260.0   327.0       0.304      0.349    2.604   2.088 0.368 1.611        7.0    7.0
+     Multi-day consolidation breakout + Spread ceiling CFD-0262    27 ETH M15 2ATR stop, 3ATR trail    254.0   306.0       0.328      0.354    2.752   2.017 0.366 1.646        7.0    7.0
+
+BASE SETUPS ranked by median holdout avgR (all cells):
+      cells  med_avgR_train  med_avgR_hold  pass_train  pass_all                                     name              family
+base                                                                                                                         
+76      300          -0.035          0.025           0         0       New York continuation after London       Session-based
+29      333           0.096          0.010          19         0                    Weekly level breakout            Breakout
+72      153          -0.026         -0.028           1         0                New York open range break       Session-based
+21      261           0.001         -0.030           6         0                   Opening range breakout            Breakout
+27      331           0.032         -0.031           2         2         Multi-day consolidation breakout            Breakout
+82      325           0.023         -0.031          10         0          Linear-regression channel break        Quantitative
+95      325          -0.014         -0.037           2         0  Session breakout with volatility filter              Hybrid
+24      331          -0.011         -0.040           0         0                Donchian channel breakout            Breakout
+69      329          -0.009         -0.041           1         0                 Volatility stop reversal          Volatility
+80       53          -0.026         -0.042           0         0                 Session opening gap fill       Session-based
+7       315          -0.038         -0.045           0         0              Ichimoku cloud continuation     Trend following
+22      312          -0.029         -0.049           0         0                     Asian range breakout            Breakout
+96      311          -0.035         -0.051           2         0               VWAP plus market structure              Hybrid
+30      318          -0.015         -0.052           4         0                 Range expansion breakout            Breakout
+71      323          -0.014         -0.052           0         0                  London open range break       Session-based
+10      327           0.011         -0.055           0         0          Moving-average ribbon expansion     Trend following
+25      325           0.009         -0.055           2         0              Volatility squeeze breakout            Breakout
+3       325          -0.012         -0.055           2         0                  Donchian trend breakout     Trend following
+8       312          -0.039         -0.057           0         0                 Parabolic SAR trend ride     Trend following
+56      311          -0.027         -0.058           1         0                            TSI crossover            Momentum
+99      314          -0.038         -0.060           0         0          Trend regime plus Donchian exit              Hybrid
+46      324          -0.008         -0.060           0         0                  Sweep plus displacement  Liquidity concepts
+58      263           0.003         -0.060           6         0                 Volume-weighted momentum            Momentum
+63      328          -0.003         -0.061           0         0           Bollinger bandwidth percentile          Volatility
+52      312          -0.024         -0.063           1         0                    MACD signal crossover            Momentum
+39      310          -0.074         -0.064           0         0       Fibonacci retracement continuation        Price action
+2       311          -0.036         -0.064           1         0                     50/200 EMA alignment     Trend following
+28      308          -0.086         -0.065           0         0                Triangle pattern breakout            Breakout
+100     312          -0.023         -0.066           4         0           Signal consensus with risk cap              Hybrid
+50      327          -0.034         -0.066           4         0        Liquidity sweep plus VWAP reclaim  Liquidity concepts
+92      256          -0.019         -0.066           0         0            Breakout plus volume plus ATR              Hybrid
+97      309          -0.030         -0.068           1         0      Multi-timeframe cloud plus momentum              Hybrid
+33      308          -0.052         -0.068           0         0                Break of structure retest        Price action
+90      300          -0.042         -0.069           0         0                    Robust ensemble score        Quantitative
+54      310          -0.020         -0.069           0         0              Rate-of-change acceleration            Momentum
+51      316          -0.023         -0.071           4         0              MACD zero-line continuation            Momentum
+78      327          -0.007         -0.072           7         0                 Session overlap momentum       Session-based
+88      291          -0.071         -0.072           0         0            Return autocorrelation signal        Quantitative
+60      309          -0.043         -0.073           0         0       Multi-timeframe momentum alignment            Momentum
+1       294          -0.065         -0.074           0         0                EMA pullback continuation     Trend following
+53      314          -0.041         -0.076           1         0                     RSI 50-line momentum            Momentum
+67      317          -0.052         -0.076           0         0                 High-volatility pullback          Volatility
+66      325          -0.019         -0.076           1         0                    Range-to-ATR breakout          Volatility
+9       301          -0.047         -0.077           1         0                      VWAP trend pullback     Trend following
+85      329          -0.034         -0.077           0         0                     Cross-asset lead-lag        Quantitative
+57      326          -0.039         -0.078           0         0              Momentum divergence failure            Momentum
+73      294          -0.066         -0.079           0         0             London session VWAP pullback       Session-based
+23      325          -0.004         -0.082           6         0              Prior-day high/low breakout            Breakout
+98      310          -0.021         -0.082           0         0             Range regime plus oscillator              Hybrid
+61      326           0.038         -0.083          24         0                ATR expansion trend entry          Volatility
+93      313          -0.048         -0.085           1         0     Liquidity sweep plus structure shift              Hybrid
+40      305          -0.073         -0.086           0         0                   Wick-cluster rejection        Price action
+83      314          -0.065         -0.088           0         0                    Kalman trend estimate        Quantitative
+37      308          -0.062         -0.088           0         0                   Inside-bar compression        Price action
+5       319          -0.064         -0.089           0         0               Supertrend flip-and-retest     Trend following
+94      316          -0.084         -0.091           0         0           Mean reversion with trend veto              Hybrid
+87      310          -0.037         -0.091           0         0             Realised-volatility forecast        Quantitative
+65      299          -0.060         -0.092           0         0                 Volatility regime switch          Volatility
+79      299          -0.124         -0.094           0         0            End-of-session mean reversion       Session-based
+59      312          -0.040         -0.095           2         0                    ADX plus DI expansion            Momentum
+75      308          -0.084         -0.101           0         0                  London fakeout reversal       Session-based
+4       305          -0.087         -0.101           0         0                     ADX trend resumption     Trend following
+17      290          -0.064         -0.101           0         0                       CCI extreme return      Mean reversion
+45      307          -0.069         -0.102           0         0                     Swing-point stop run  Liquidity concepts
+84      268          -0.037         -0.104           0         0              Pairs spread mean reversion        Quantitative
+35      313          -0.057         -0.104           1         0                 Failed breakout reversal        Price action
+74      306          -0.070         -0.105           1         0                    New York VWAP reclaim       Session-based
+86      290          -0.118         -0.106           0         0                      Hurst-regime switch        Quantitative
+6       289          -0.078         -0.109           0         0     Higher-high / lower-low continuation     Trend following
+81      311          -0.101         -0.110           0         0                 Rolling z-score reversal        Quantitative
+62      317          -0.046         -0.112           2         0             ATR contraction then release          Volatility
+34      299          -0.099         -0.113           0         0              Supply-demand zone reaction        Price action
+91      312          -0.066         -0.113           1         0             Trend plus pullback plus RSI              Hybrid
+15      306          -0.109         -0.114           0         0                    Z-score price stretch      Mean reversion
+12      305          -0.129         -0.115           0         0                     RSI extreme reversal      Mean reversion
+48      295          -0.131         -0.115           0         0                       Order-block retest  Liquidity concepts
+13      303          -0.085         -0.116           0         0                 Keltner channel snapback      Mean reversion
+55      310          -0.070         -0.118           0         0                Stochastic momentum reset            Momentum
+19      316          -0.065         -0.119           0         0             RSI divergence at range edge      Mean reversion
+18      293          -0.082         -0.120           0         0                     Williams %R reversal      Mean reversion
+38      287          -0.099         -0.122           0         0         Support-resistance role reversal        Price action
+11      298          -0.081         -0.122           0         0            Bollinger outer-band re-entry      Mean reversion
+32      288          -0.106         -0.122           0         0          Engulfing reversal at structure        Price action
+47      291          -0.132         -0.124           0         0               Fair-value-gap retracement  Liquidity concepts
+26      291          -0.089         -0.129           0         0                      Inside-bar breakout            Breakout
+64      286          -0.121         -0.132           0         0                      NR7 range expansion          Volatility
+31      307          -0.104         -0.134           0         0           Pin-bar rejection at key level        Price action
+43      292          -0.089         -0.134           0         0              Previous-day liquidity grab  Liquidity concepts
+20      303          -0.147         -0.141           0         0                   ATR-normalised stretch      Mean reversion
+49      290          -0.154         -0.141           0         0             Premium-discount range entry  Liquidity concepts
+41      297          -0.093         -0.147           0         0               Equal-high liquidity sweep  Liquidity concepts
+42      314          -0.085         -0.155           0         0                Equal-low liquidity sweep  Liquidity concepts
+16      314          -0.089         -0.155           0         0                 Range midpoint reversion      Mean reversion
+44      284          -0.126         -0.174           0         0                   Session high/low sweep  Liquidity concepts
+89      308          -0.006         -0.177           0         0                  Range-efficiency filter        Quantitative
+14      289          -0.118         -0.182           0         0             Distance-from-VWAP reversion      Mean reversion
+68      311          -0.067         -0.190           0         0                      Low-volatility fade          Volatility
+77      240          -0.148         -0.220           1         0                 Asian session range fade       Session-based
+36      275          -0.369         -0.531           0         0           Three-bar continuation pattern        Price action
+70       23          -1.050            NaN           0         0          Gap-and-volatility continuation          Volatility
+
+BY FAMILY:
+                    cells  med_train  med_hold  pass_train  pass_all
+family                                                              
+Breakout             3135     -0.009    -0.051          39         2
+Hybrid               3078     -0.039    -0.071          11         0
+Liquidity concepts   3021     -0.086    -0.113           4         0
+Mean reversion       3017     -0.091    -0.123           0         0
+Momentum             3083     -0.034    -0.075          15         0
+Price action         3000     -0.082    -0.101           1         0
+Quantitative         3046     -0.053    -0.082          10         0
+Session-based        2603     -0.052    -0.074          10         0
+Trend following      3098     -0.045    -0.069           4         0
+Volatility           2861     -0.036    -0.086          28         0
+
+BY MARKET:
+        cells  med_train  med_hold  pass_all
+sym                                         
+BTC      3285     -0.065    -0.097         0
+DAX      3280     -0.046    -0.061         0
+ETH      3277     -0.037    -0.107         2
+EURUSD   3121     -0.103    -0.121         0
+GBPUSD   2788     -0.067    -0.127         0
+NQ       3303     -0.016    -0.043         0
+SPX      3256     -0.069    -0.095         0
+USDJPY   2787     -0.035    -0.071         0
+WTI      1672     -0.010    -0.055         0
+XAU      3173     -0.050    -0.047         0
+
+Status counts: {'Tested - rejected': 993, 'Not testable with this data': 5, 'Tested - candidate (needs prop sim)': 2}
