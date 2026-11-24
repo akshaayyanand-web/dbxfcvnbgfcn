@@ -1,0 +1,38 @@
+DAX 4498
+SPX 6156
+BTC 5774
+XAG 154
+WTI 153
+NQ 6779
+DOW 187
+XAU 9567
+ETH 2061
+
+POOLED:
+                            trades  win   avgR  t_pre2023  t_2023on pos_years
+test                                                                         
+T1 trend-day continuation      990   44 -0.026      -0.17     -1.15      4/11
+T2 round-number stop run     33608   33 -0.207     -18.17    -20.00       0/8
+T4 jobless-claims momentum     731   32 -0.192      -2.88     -1.94       1/8
+
+BY SYMBOL:
+                                trades  win   avgR  t_pre2023  t_2023on pos_years
+test                       sym                                                   
+T1 trend-day continuation  BTC      79   46  0.084       0.90      0.26       6/7
+                           DAX      73   41 -0.127      -0.76     -1.09       2/6
+                           DOW     187   50  0.009       0.38     -0.25      5/11
+                           ETH      93   33 -0.223      -1.56     -1.73       1/7
+                           NQ       98   43 -0.124      -0.19     -1.93       1/8
+                           SPX      88   44 -0.042       0.55     -1.37       5/8
+                           WTI     153   46  0.025      -0.27      0.78      6/11
+                           XAG     154   42  0.027       0.28      0.18      4/11
+                           XAU      65   48  0.054      -0.69      1.11       4/8
+T2 round-number stop run   BTC    5695   31 -0.294     -10.38    -12.12       0/7
+                           DAX    4425   34 -0.176      -4.54     -6.89       0/6
+                           ETH    1968   33 -0.230      -7.60     -2.52       1/7
+                           NQ     6429   33 -0.183      -6.65     -8.00       0/8
+                           SPX    5872   31 -0.251      -9.61     -9.96       0/8
+                           XAU    9219   34 -0.154      -5.81     -8.61       0/8
+T4 jobless-claims momentum NQ      252   34 -0.230      -2.15     -1.56       1/8
+                           SPX     196   35 -0.202      -2.37     -0.79       2/8
+                           XAU     283   29 -0.152      -0.94     -1.12       2/8

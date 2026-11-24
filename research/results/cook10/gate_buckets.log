@@ -1,0 +1,18 @@
+Book daily P&L (bp of account at 1x) by regime bucket:
+  TS pre2023: (0.0, 0.85]: n=280 +12.0bp sh=4.0 | (0.85, 0.95]: n=392 +10.8bp sh=3.8 | (0.95, 1.0]: n=148 +9.0bp sh=3.7 | (1.0, 9.0]: n=32 +19.2bp sh=7.5
+  TS 2023on: (0.0, 0.85]: n=383 +8.8bp sh=3.1 | (0.85, 0.95]: n=794 +10.9bp sh=3.5 | (0.95, 1.0]: n=151 +14.3bp sh=5.0 | (1.0, 9.0]: n=71 +4.7bp sh=1.5
+  S9 pre2023: (0.0, 0.85]: n=216 +11.4bp sh=3.6 | (0.85, 1.0]: n=454 +10.7bp sh=4.1 | (1.0, 1.1]: n=140 +11.5bp sh=4.5 | (1.1, 9.0]: n=42 +13.9bp sh=3.8
+  S9 2023on: (0.0, 0.85]: n=274 +5.6bp sh=2.0 | (0.85, 1.0]: n=852 +12.1bp sh=3.9 | (1.0, 1.1]: n=232 +11.4bp sh=3.8 | (1.1, 9.0]: n=41 +1.6bp sh=0.6
+  VX pre2023: (15, 20]: n=264 +10.3bp sh=3.7 | (20, 30]: n=496 +11.2bp sh=3.9 | (30, 99]: n=92 +13.6bp sh=5.1
+  VX 2023on: (0, 15]: n=405 +7.8bp sh=2.9 | (15, 20]: n=745 +10.2bp sh=3.3 | (20, 30]: n=227 +17.0bp sh=5.3 | (30, 99]: n=22 -4.9bp sh=-1.7
+  HY pre2023: 
+  HY 2023on: (-9.0, -0.3]: n=100 +15.8bp sh=4.8 | (-0.3, 0.0]: n=517 +7.9bp sh=2.8 | (0.0, 0.3]: n=308 +13.4bp sh=4.2 | (0.3, 9.0]: n=122 +12.9bp sh=4.3
+  NF pre2023: (-9.0, -0.5]: n=503 +11.9bp sh=4.4 | (-0.5, -0.3]: n=119 +18.8bp sh=6.2 | (-0.3, 0.0]: n=230 +5.7bp sh=2.0
+  NF 2023on: (-9.0, -0.5]: n=434 +12.9bp sh=4.0 | (-0.5, -0.3]: n=719 +8.4bp sh=3.0 | (-0.3, 0.0]: n=246 +11.5bp sh=3.6
+
+BOOK at 1x: Sharpe 2020-22 / 2023-26 / %/yr: (np.float64(4.0), np.float64(3.45), np.float64(38.8))
+    {'book': '21 EAs (no gate)', 'median_days': np.float64(57.0), 'first_try': 100, 'kept': 100, 'yr_median': np.float64(74.7), 'yr_p10': np.float64(39.2)}
+--
+  File "/tmp/claude-0/-home-user-dbxfcvnbgfcn/0ea82c59-9b45-5b6c-b663-efd40f90c87c/scratchpad/gate.py", line 40, in <module>
+                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+TypeError: NDFrame.fillna() got an unexpected keyword argument 'method'

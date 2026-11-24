@@ -1,0 +1,19 @@
+BOOK at 1x: Sharpe 2020-22 / 2023-26 / %/yr: (np.float64(4.0), np.float64(3.45), np.float64(38.8))
+
+TS>1 x0.5: share of days gated 5% | Sharpe 2020-22 / 2023-26 / %/yr: (np.float64(3.92), np.float64(3.48), np.float64(38.0))
+    {'book': 'TS>1 x0.5', 'median_days': np.float64(57.0), 'first_try': 100, 'kept': 100, 'yr_median': np.float64(72.8), 'yr_p10': np.float64(41.2)}
+
+S9>1.1 x0.5: share of days gated 3% | Sharpe 2020-22 / 2023-26 / %/yr: (np.float64(4.0), np.float64(3.47), np.float64(38.2))
+    {'book': 'S9>1.1 x0.5', 'median_days': np.float64(57.0), 'first_try': 100, 'kept': 100, 'yr_median': np.float64(75.0), 'yr_p10': np.float64(36.5)}
+
+HY chg>0.3 x0.5: share of days gated 5% | Sharpe 2020-22 / 2023-26 / %/yr: (np.float64(4.0), np.float64(3.38), np.float64(37.5))
+    {'book': 'HY chg>0.3 x0.5', 'median_days': np.float64(58.0), 'first_try': 100, 'kept': 100, 'yr_median': np.float64(68.4), 'yr_p10': np.float64(39.2)}
+
+NFCI>0 x0.5: share of days gated 2% | Sharpe 2020-22 / 2023-26 / %/yr: (np.float64(4.0), np.float64(3.45), np.float64(38.8))
+    {'book': 'NFCI>0 x0.5', 'median_days': np.float64(57.0), 'first_try': 100, 'kept': 100, 'yr_median': np.float64(74.7), 'yr_p10': np.float64(39.2)}
+
+TS<0.85 x1.25: share of days gated 29% | Sharpe 2020-22 / 2023-26 / %/yr: (np.float64(3.95), np.float64(3.42), np.float64(41.5))
+    {'book': 'TS<0.85 x1.25', 'median_days': np.float64(52.5), 'first_try': 100, 'kept': 100, 'yr_median': np.float64(75.7), 'yr_p10': np.float64(28.8)}
+
+VIX>30 x0.5: share of days gated 8% | Sharpe 2020-22 / 2023-26 / %/yr: (np.float64(3.88), np.float64(3.48), np.float64(37.9))
+    {'book': 'VIX>30 x0.5', 'median_days': np.float64(57.0), 'first_try': 100, 'kept': 100, 'yr_median': np.float64(74.7), 'yr_p10': np.float64(38.8)}

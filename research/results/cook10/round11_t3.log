@@ -1,0 +1,25 @@
+DAX 133
+SPX 211
+XAU 185
+BTC 0
+XAG 279
+WTI 349
+DOW 179
+NQ 245
+ETH 0
+
+POOLED:
+                     trades  win   avgR  t_pre2023  t_2023on pos_years
+test                                                                  
+T3 weekend gap fill    1581   50 -0.084      -2.93     -1.98      2/11
+
+BY SYMBOL:
+                         trades  win   avgR  t_pre2023  t_2023on pos_years
+test                sym                                                   
+T3 weekend gap fill DAX     133   49 -0.093      -0.43     -1.07       2/6
+                    DOW     179   45 -0.126      -1.85     -0.40      2/11
+                    NQ      245   53  0.012       1.15     -0.93       3/8
+                    SPX     211   49 -0.065      -0.51     -0.99       3/8
+                    WTI     349   52 -0.039      -1.44      0.65      4/11
+                    XAG     279   52 -0.191      -3.10     -1.37      1/11
+                    XAU     185   46 -0.105      -0.99     -1.24       1/8
