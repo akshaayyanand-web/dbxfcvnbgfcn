@@ -1,0 +1,7 @@
+book,starts,median_days,first_try,pro_kept,paid_median,paid_p10,paid_p90,median_level
+21 EAs,all starts,93.0,67,100,11188,2562,18688,"$100,000"
+21 EAs,holdout starts,119.0,56,100,11188,2562,14938,"$100,000"
++A+B 0.2% each,all starts,100.0,54,100,14938,5938,37438,"$100,000"
++A+B 0.2% each,holdout starts,152.0,53,100,14938,8188,22438,"$100,000"
+"+A+B 0.2% each, spread x2",all starts,121.5,45,100,14938,4062,37438,"$100,000"
+"+A+B 0.2% each, spread x2",holdout starts,209.0,34,100,14938,5938,14938,"$100,000"
