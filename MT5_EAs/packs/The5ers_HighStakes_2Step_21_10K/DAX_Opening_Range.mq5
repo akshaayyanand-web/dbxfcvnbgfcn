@@ -205,7 +205,13 @@ double LotsFor(double riskMoney, double stopDist, ENUM_ORDER_TYPE type, double p
    // (Some brokers report the tick value of e.g. JPN225 in yen, which made the old tick-value method size ~150x too small.)
    double lossPerLot = 0, pf = 0;
    double exitPx = (type == ORDER_TYPE_BUY) ? price - stopDist : price + stopDist;
+   // MT5 can only convert a quote currency it has a price for: make sure the cross pair (e.g. USDJPY for JPN225) is in Market Watch.
+   string pc = SymbolInfoString(_Symbol, SYMBOL_CURRENCY_PROFIT), ac = AccountInfoString(ACCOUNT_CURRENCY);
+   if(pc != ac && pc != "") { SymbolSelect(ac + pc, true); SymbolSelect(pc + ac, true); }
    if(OrderCalcProfit(type, _Symbol, 1.0, price, exitPx, pf) && pf < 0) lossPerLot = -pf;
+   static bool convWarned = false;
+   if(lossPerLot <= 0 && pc != ac && !convWarned)
+     { convWarned = true; Print("WARNING: cannot convert ", pc, " to ", ac, " for ", _Symbol, ": add ", ac, pc, " (or ", pc, ac, ") to Market Watch, otherwise this EA sizes from the broker tick value and may trade far too small"); }
    double tickSize = SymbolInfoDouble(_Symbol, SYMBOL_TRADE_TICK_SIZE);
    double tickVal  = SymbolInfoDouble(_Symbol, SYMBOL_TRADE_TICK_VALUE_LOSS);
    if(tickVal <= 0) tickVal = SymbolInfoDouble(_Symbol, SYMBOL_TRADE_TICK_VALUE);
