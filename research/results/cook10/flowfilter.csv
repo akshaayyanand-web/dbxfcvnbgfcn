@@ -1,0 +1,11 @@
+filter,period,kept,skipped,kept_avgR,skipped_avgR,all_avgR,t_diff,R_yr_all,R_yr_kept
+H1 breakouts only in low gamma (GEX pct <= 0.4),2016-22,1321,1957,0.193,0.108,0.142,1.12,66.4,36.4
+H1 breakouts only in low gamma (GEX pct <= 0.4),2023-26,1149,2752,0.107,0.158,0.143,-0.69,143.0,31.5
+H1 fades/dips only in higher gamma (GEX pct > 0.4),2016-22,856,255,0.133,0.23,0.155,-0.73,24.7,16.3
+H1 fades/dips only in higher gamma (GEX pct > 0.4),2023-26,630,234,0.141,0.24,0.168,-0.82,37.2,22.8
+H2 DIX agrees with direction,2016-22,2191,2198,0.153,0.137,0.145,0.25,91.1,47.9
+H2 DIX agrees with direction,2023-26,2313,2452,0.136,0.158,0.147,-0.35,180.2,80.9
+H3 crypto taker flow agrees,2016-22,400,721,0.134,0.191,0.17,-0.52,27.3,7.7
+H3 crypto taker flow agrees,2023-26,161,408,0.543,0.336,0.395,0.72,57.6,22.4
+H3b crypto taker flow against,2016-22,721,400,0.191,0.134,0.17,0.52,27.3,19.6
+H3b crypto taker flow against,2023-26,408,161,0.336,0.543,0.395,-0.72,57.6,35.2
