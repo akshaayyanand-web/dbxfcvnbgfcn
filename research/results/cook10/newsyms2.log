@@ -1,0 +1,20 @@
+HistData markets available: ['XAG', 'DXY', 'EURAUD', 'GBPAUD', 'EURNZD', 'GBPCAD', 'CHFJPY', 'NZDJPY', 'EURCHF', 'AUDNZD', 'GBPCHF', 'EURCAD']
+
+ALL NEW MARKETS: 35801 tests | passed train 9 (luck ~222) | passed both 0 (luck ~5.1)
+        tests  med_train  med_hold  pass_train  pass_both
+sym                                                      
+AUDNZD   3260     -0.271    -0.335           3          0
+CHFJPY   3332     -0.205    -0.227           3          0
+DXY      3334     -0.161    -0.219           0          0
+EURAUD   3360     -0.130    -0.174           0          0
+EURCAD   3359     -0.171    -0.242           0          0
+EURCHF   3304     -0.225    -0.229           0          0
+EURNZD   3306     -0.207    -0.247           0          0
+GBPAUD   3339     -0.166    -0.201           0          0
+GBPCAD   3312     -0.178    -0.238           0          0
+GBPCHF   3350     -0.166    -0.271           0          0
+NZDJPY   3414     -0.137    -0.182           3          0
+XAG      3322     -0.204    -0.170           0          0
+
+SURVIVORS:
+none
