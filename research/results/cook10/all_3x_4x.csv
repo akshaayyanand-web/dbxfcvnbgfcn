@@ -1,0 +1,7 @@
+book,risk,first_try,median_days,within_30d,funded_kept,yr_median,yr_bad10,worst_day_raw,replay_2026
+21 EAs,3x,100,61.5,15,100,74.7,39.2,-5.14,"funded 2026-03-20 (77 d), kept, $30,000 level, paid $8,864 (89%)"
+21 EAs,4x,100,52.0,22,100,84.5,25.5,-6.74,"funded 2026-03-10 (67 d), kept, $50,000 level, paid $15,427 (154%)"
+21 + 4 sisters,3x,100,48.5,26,100,82.4,38.7,-5.54,"funded 2026-03-20 (77 d), kept, $30,000 level, paid $11,933 (119%)"
+21 + 4 sisters,4x,100,45.0,29,100,84.7,21.1,-7.39,"funded 2026-02-26 (55 d), kept, $40,000 level, paid $16,227 (162%)"
+21 + 4 sisters + Noise Band + BTC #448,3x,100,49.0,24,100,92.2,46.1,-6.06,"funded 2026-03-20 (77 d), kept, $40,000 level, paid $13,389 (134%)"
+21 + 4 sisters + Noise Band + BTC #448,4x,100,44.0,32,100,82.5,17.8,-8.09,"funded 2026-03-21 (78 d), kept, $25,000 level, paid $8,473 (85%)"
