@@ -1,0 +1,36 @@
+HistData markets available: ['HSI', 'ASX', 'CAC', 'BRENT', 'USDMXN', 'USDZAR', 'AUDJPY', 'CADJPY']
+ALL NEW MARKETS: 38832 tests | passed train 67 (luck ~241) | passed both 0 (luck ~5.5)
+        tests  med_train  med_hold  pass_train  pass_both
+sym                                                      
+ADA      2036     -0.033    -0.102          12          0
+ASX      3452     -0.146    -0.139           0          0
+AUDJPY   3488     -0.086    -0.118           4          0
+AVAX     2051     -0.055    -0.096           7          0
+BCH      2001     -0.103    -0.143           0          0
+BNB      2035     -0.071    -0.186           3          0
+BRENT    3442     -0.085    -0.108           4          0
+CAC      3425     -0.084    -0.085           2          0
+CADJPY   3416     -0.104    -0.157           2          0
+DOGE     2016     -0.067    -0.109           6          0
+DOT      2053     -0.078    -0.127           7          0
+HSI      3342     -0.088    -0.088           0          0
+LINK     2039     -0.048    -0.117          14          0
+LTC      1998     -0.114    -0.176           4          0
+TRX      2014     -0.120    -0.155           0          0
+USDMXN   3290     -0.234    -0.257           0          0
+USDZAR   3278     -0.236    -0.322           2          0
+
+SURVIVORS:
+none
+
+NOISE BAND / SESSION OPEN MOMENTUM on the new indices:
+market                 system  trades  avgR_train  t_train  avgR_hold  t_hold
+   HSI         Noise Band k=1    1797      -0.034    -1.14     -0.064   -1.87
+   HSI         Noise Band k=2     602       0.020     0.62     -0.002   -0.04
+   HSI Session Open Mom 2x/6h    2616      -0.047    -1.72     -0.046   -1.35
+   ASX         Noise Band k=1    1887      -0.058    -1.77     -0.076   -1.75
+   ASX         Noise Band k=2     690      -0.054    -1.82     -0.035   -0.77
+   ASX Session Open Mom 2x/6h    2623      -0.029    -0.87     -0.116   -3.03
+   CAC         Noise Band k=1    3023      -0.049    -1.87     -0.090   -2.73
+   CAC         Noise Band k=2    1087       0.009     0.32     -0.062   -1.91
+   CAC Session Open Mom 2x/6h    2701      -0.012    -0.43     -0.025   -0.64
