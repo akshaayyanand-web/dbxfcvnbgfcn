@@ -1,0 +1,37 @@
+
+Catalogue 1 (1,000 rows): 2435 tests | median avgR train -0.112, holdout -0.147 | passed train 0 (luck ~15.1) | passed both 0 (luck ~0.34)
+      ID                                                    name tf                              exit  n_train  n_hold  avgR_train  avgR_hold  t_train  t_hold  pos_years  years
+CFD-0974           Range regime plus oscillator + News avoidance H1       half at 1R, trail rest 2ATR     48.0    23.0      -0.249      0.632   -1.774   2.114        5.0   11.0
+CFD-0851        Hurst-regime switch + Higher-timeframe direction H1                        fixed 1.5R    224.0   134.0      -0.143      0.220   -1.735   2.035        6.0   11.0
+CFD-0851        Hurst-regime switch + Higher-timeframe direction H1                          fixed 1R    247.0   151.0      -0.130      0.156   -2.012   1.961        5.0   11.0
+CFD-0858              Hurst-regime switch + No-trade chop filter H1 structure exit / 20-bar time stop    533.0   350.0      -0.127      0.146   -2.701   1.919        4.0   11.0
+CFD-0979 Range regime plus oscillator + Correlation exposure cap H1       half at 1R, trail rest 2ATR     52.0    24.0      -0.205      0.560   -1.520   1.898        5.0   11.0
+CFD-0756   New York continuation after London + Day-of-week test H1                        fixed 1.5R     44.0    32.0       0.183      0.401    0.957   1.812        7.0   11.0
+CFD-0266     Multi-day consolidation breakout + Day-of-week test H1                        fixed 1.5R    106.0    77.0       0.041      0.215    0.369   1.616        8.0   11.0
+CFD-0978     Range regime plus oscillator + No-trade chop filter H1 structure exit / 20-bar time stop     33.0    13.0      -0.099      0.777   -0.411   1.588        7.0   11.0
+CFD-0266     Multi-day consolidation breakout + Day-of-week test H1                          fixed 2R    106.0    77.0       0.033      0.231    0.276   1.571        6.0   11.0
+CFD-0756   New York continuation after London + Day-of-week test H1                          fixed 1R     82.0    58.0       0.066      0.200    0.576   1.564        6.0   11.0
+
+List 2 (158 setups): 668 tests | median avgR train -0.101, holdout -0.138 | passed train 0 (luck ~4.1) | passed both 0 (luck ~0.09)
+ sid                           name  tf                  exit  n_train  n_hold  avgR_train  avgR_hold  t_train  t_hold  pos_years  years
+ 812       Monthly Opening Reversal  H1 2ATR stop, 3ATR trail     83.0    46.0       0.245      0.489    1.031   1.707        6.0   11.0
+ 812       Monthly Opening Reversal  H1            fixed 1.5R     83.0    46.0      -0.125      0.206   -0.945   1.125        6.0   11.0
+ 179       Candle Volatility Climax M15     time exit 10 bars    254.0   207.0       0.008      0.071    0.079   0.636        6.0   11.0
+ 806          Monday Trend Reversal  H1     time exit 10 bars    179.0   100.0       0.005      0.078    0.055   0.578        7.0   11.0
+ 154        Candle Sequence Entropy M15 2ATR stop, 3ATR trail     54.0    70.0      -0.142      0.120   -0.663   0.539        4.0   11.0
+ 438  Volatility Shock Continuation  H1            fixed 1.5R     67.0    36.0      -0.105      0.109   -0.710   0.510        5.0   11.0
+ 438  Volatility Shock Continuation  H1 2ATR stop, 3ATR trail     64.0    35.0      -0.212      0.137   -1.456   0.459        5.0   11.0
+ 409 Historical Volatility Breakout  H1            fixed 1.5R    265.0   174.0       0.006      0.039    0.079   0.411        6.0   11.0
+  51       Expanding Range Breakout  H1 2ATR stop, 3ATR trail    389.0   278.0      -0.198      0.041   -2.588   0.392        2.0   11.0
+ 437     Volatility Shock Reversion M15 2ATR stop, 3ATR trail     67.0    36.0       0.234      0.112    1.132   0.366        8.0   11.0
+
+FTSE INTERMARKET / DAILY:
+                                        test  trades  avg_bp_train  t_train  avg_bp_hold  t_hold
+FTSE catches up with GBPUSD (5-day residual)     118         -69.5    -1.84        -10.2   -0.38
+   FTSE catches up with SPX (5-day residual)     116         -79.3    -1.93        -13.1   -0.67
+   FTSE catches up with DAX (5-day residual)      69         125.3     2.07         -2.1   -0.11
+   FTSE catches up with DXY (5-day residual)     120         -86.9    -2.31        -25.5   -0.94
+                        FTSE 20-day momentum     558         -20.5    -1.89        -15.6   -1.31
+                 FTSE 5-day 2-sigma reversal      55         -82.4    -1.29          9.6    0.32
+
+[exited with code 0]
