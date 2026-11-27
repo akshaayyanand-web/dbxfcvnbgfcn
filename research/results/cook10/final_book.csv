@@ -1,0 +1,7 @@
+book,risk,first_try,median_days,within_30d,funded_kept,yr_median,yr_bad10,worst_day_raw,replay_2026
+21 EAs,3x,100,61.5,15,100,74.7,39.2,-5.14,"funded 2026-03-20 (77 d), kept, $30,000 level, paid $8,864 (89%)"
+21 EAs,4x,100,52.0,22,100,84.5,25.5,-6.74,"funded 2026-03-10 (67 d), kept, $50,000 level, paid $15,427 (154%)"
+21 + BTC 1h dip + gold 4h dip (passed anti-cheat),3x,100,52.0,22,100,78.1,30.9,-5.07,"funded 2026-02-26 (55 d), kept, $30,000 level, paid $7,525 (75%)"
+21 + BTC 1h dip + gold 4h dip (passed anti-cheat),4x,100,49.0,28,100,91.9,13.1,-6.76,"funded 2026-02-26 (55 d), kept, $40,000 level, paid $11,416 (114%)"
+21 + all 6 candidates,3x,100,50.0,24,100,92.0,50.4,-6.06,"funded 2026-03-20 (77 d), kept, $40,000 level, paid $13,377 (134%)"
+21 + all 6 candidates,4x,100,44.5,32,100,87.6,17.8,-8.09,"funded 2026-03-21 (78 d), kept, $25,000 level, paid $8,388 (84%)"

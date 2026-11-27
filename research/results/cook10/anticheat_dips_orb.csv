@@ -1,0 +1,28 @@
+candidate,test,result
+Dip 1h BTC,1 crazy future (5 cut dates),CLEAN
+Dip 1h BTC,   after fixing the daily-close leak,"504 trades, avg +0.283R (t 2.00)"
+Dip 1h BTC,2 random entry (40 runs),strategy +0.283R vs random mean +0.061R; beats 100% of random runs
+Dip 1h BTC,3 double costs,+0.214R (t 1.51)
+Dip 1h BTC,5 enter one bar later,+0.190R (t 1.47)
+Dip 1h BTC,6 nearby settings,{'rsi_th': 10} +0.348; {'rsi_th': 20} +0.225; {'stopx': 1.5} +0.294; {'stopx': 2.5} +0.296; {'hold_h': 72} +0.204; {'hold_h': 120} +0.278
+Dip 1h BTC,7 best days out,top 1% of days removed: +0.091R/trade; top 5%: -0.213R/trade
+Dip 4h gold,1 crazy future (5 cut dates),CLEAN
+Dip 4h gold,   after fixing the daily-close leak,"237 trades, avg +0.282R (t 2.37)"
+Dip 4h gold,2 random entry (40 runs),strategy +0.282R vs random mean +0.191R; beats 95% of random runs
+Dip 4h gold,3 double costs,+0.270R (t 2.28)
+Dip 4h gold,5 enter one bar later,+0.354R (t 2.65)
+Dip 4h gold,6 nearby settings,{'rsi_th': 10} +0.275; {'rsi_th': 20} +0.222; {'stopx': 1.5} +0.196; {'stopx': 2.5} +0.241; {'hold_h': 72} +0.162; {'hold_h': 120} +0.353
+Dip 4h gold,7 best days out,top 1% of days removed: +0.173R/trade; top 5%: +0.004R/trade
+Dip 1h NQ,1 crazy future (5 cut dates),CLEAN
+Dip 1h NQ,   after fixing the daily-close leak,"479 trades, avg +0.130R (t 1.16)"
+Dip 1h NQ,2 random entry (40 runs),strategy +0.130R vs random mean +0.145R; beats 35% of random runs
+Dip 1h NQ,3 double costs,+0.100R (t 0.89)
+Dip 1h NQ,5 enter one bar later,+0.016R (t 0.15)
+Dip 1h NQ,6 nearby settings,{'rsi_th': 10} +0.122; {'rsi_th': 20} +0.089; {'stopx': 1.5} +0.237; {'stopx': 2.5} +0.144; {'hold_h': 72} +0.103; {'hold_h': 120} +0.201
+Dip 1h NQ,7 best days out,top 1% of days removed: +0.032R/trade; top 5%: -0.206R/trade
+ORB-30 NQ,1 crazy future (5 cut dates),CLEAN
+ORB-30 NQ,2 random entry (40 runs),strategy +0.038R vs random mean -0.018R; beats 95% of random runs
+ORB-30 NQ,3 double costs,+0.011R (t 0.48)
+ORB-30 NQ,5 enter one bar later,+0.027R (t 1.13)
+ORB-30 NQ,6 nearby settings,{'n': 25} +0.047; {'n': 35} +0.033; {'tgt': 1.5} +0.030; {'tgt': 2.5} +0.042
+ORB-30 NQ,7 best days out,top 1% of days removed: +0.017R/trade; top 5%: -0.062R/trade
