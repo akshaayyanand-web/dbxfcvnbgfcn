@@ -1,0 +1,10 @@
+test,trades,win,avgR,t_train,avgR_hold,t_hold,baseline,beats_base,pos_years
+"VIX9D/VIX > 1.10 -> buy SPX, 5 days",31,52.0,-0.056,-1.19,0.336,1.15,0.026,20.0,2/8
+"VIX9D/VIX > 1.10 -> buy NQ, 5 days",34,50.0,-0.088,-1.86,0.368,1.26,0.057,3.0,4/8
+"VIX9D/VIX > 1.10 -> buy DOW, 5 days",53,51.0,-0.063,-0.72,0.124,0.55,0.046,2.0,6/11
+"VIX9D/VIX > 1.10 -> buy RUT, 5 days",35,43.0,-0.219,-2.54,0.089,0.49,-0.016,0.0,3/8
+"VIX9D/VIX > 1.10 -> buy DAX, 5 days",20,55.0,-0.079,0.74,-0.273,-1.18,-0.001,20.0,4/6
+"VIX9D/VIX > 1.10 -> buy FTSE, 5 days",52,58.0,0.016,-0.1,0.118,0.53,0.002,62.0,6/11
+"nearby: VIX9D/VIX > 1.05 -> buy SPX, 5 days",68,46.0,-0.073,-1.42,0.125,0.65,0.051,0.0,3/8
+"nearby: VIX9D/VIX > 1.15 -> buy SPX, 5 days",17,,,,,,,,
+"nearby: VIX9D/VIX > 1.20 -> buy SPX, 5 days",10,,,,,,,,
