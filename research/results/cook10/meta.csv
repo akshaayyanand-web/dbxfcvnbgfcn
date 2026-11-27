@@ -1,0 +1,23 @@
+variant,sharpe_train,sharpe_hold,yr_pct,worst_day,max_dd,first_try,median_days,within_30d,within_60d
+"base (pack as is, 3x)",3.06,2.9,74.8,-5.47,-13.3,91,61.6,17,48
+EC filter: EA off when its last 20d < 0,2.42,1.77,38.0,-5.38,-18.2,84,113.4,4,17
+EC filter: EA half when its last 20d < 0,2.9,2.54,56.4,-5.26,-14.1,94,77.0,10,36
+EC filter: EA off when its last 60d < 0,2.39,2.25,46.1,-5.47,-14.8,90,108.5,5,21
+EC filter: EA half when its last 60d < 0,2.85,2.71,60.4,-5.47,-12.9,96,77.0,10,35
+EC filter: EA off when its last 120d < 0,2.59,2.22,49.5,-4.77,-11.8,95,106.4,7,20
+EC filter: EA half when its last 120d < 0,2.92,2.67,62.1,-5.12,-10.3,99,74.2,10,36
+"EA momentum 63d: top third x1.5, bottom x0.5",2.85,2.61,72.3,-6.29,-13.7,85,62.3,15,47
+"EA REVERSAL 63d: bottom third x1.5, top x0.5",2.97,2.88,77.3,-6.1,-18.6,88,58.8,16,52
+"EA momentum 126d: top third x1.5, bottom x0.5",2.82,2.51,71.1,-6.12,-13.9,83,67.2,15,42
+"EA REVERSAL 126d: bottom third x1.5, top x0.5",3.01,2.96,78.5,-6.1,-18.3,85,57.4,16,52
+"EA momentum 252d: top third x1.5, bottom x0.5",2.85,2.73,74.8,-5.72,-11.9,89,58.8,18,51
+"EA REVERSAL 252d: bottom third x1.5, top x0.5",2.97,2.71,74.7,-6.1,-18.3,86,58.8,15,51
+inverse-vol 120d (risk parity),3.23,2.86,52.0,-4.83,-9.8,100,91.0,6,26
+inverse-vol 120d (risk parity)  [risk-matched x1.47],3.23,2.86,76.3,-7.08,-14.4,85,67.2,15,43
+"book momentum 10d: x1.25 after an up 10d, x0.75 after down",2.82,2.77,80.0,-6.84,-15.7,81,58.099999999999994,21,52
+"book momentum 20d: x1.25 after an up 20d, x0.75 after down",2.93,2.76,83.6,-6.84,-15.8,77,57.4,22,54
+"book momentum 60d: x1.25 after an up 60d, x0.75 after down",3.07,2.86,91.0,-6.84,-16.6,77,51.099999999999994,23,59
+book drawdown throttle: x0.5 while >2% below peak,2.66,2.68,55.6,-5.47,-10.5,97,78.4,11,36
+book drawdown throttle: x0.5 while >4% below peak,2.92,2.71,64.8,-5.47,-12.9,94,67.2,14,44
+"after a losing day x0.75, after a winning day x1.25",2.88,2.68,73.9,-6.84,-15.5,80,61.6,15,48
+"after a losing day x1.25, after a winning day x0.75",3.06,2.94,75.7,-5.31,-15.8,86,61.6,19,48
