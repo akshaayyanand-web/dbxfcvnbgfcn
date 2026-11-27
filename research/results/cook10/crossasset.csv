@@ -1,0 +1,16 @@
+test,trades,win,avgR,t_train,avgR_hold,t_hold,baseline,beats_base,pos_years
+"X1 BTC weekend >2% -> NQ from Sunday reopen, 22h",111,42,0.188,1.35,0.043,0.21,0.051,88,4/7
+"X1b BTC weekend (all) -> NQ, 22h",309,39,0.064,0.91,0.018,0.16,0.015,68,3/7
+"X2 BTC overnight z>1.5 -> NQ 09:30, 60 min",193,49,0.059,2.78,-0.12,-1.31,-0.03,85,4/7
+"X3 Hong Kong z>1.5 -> DAX 09:00, 60 min",159,48,-0.024,0.04,-0.046,-0.48,0.001,42,3/6
+X3b Hong Kong z>1.5 -> DAX 09:00 to 17:25,159,30,-0.122,-0.78,-0.104,-0.6,0.014,8,1/6
+"X4 Brent 1h z>2.5 -> USDCAD opposite, 4h",1364,44,-0.031,0.08,-0.103,-2.27,-0.051,85,4/11
+"X5 VIX9D/VIX > 1.10 -> buy S&P, hold 5 days",28,61,0.163,0.14,0.356,1.12,0.043,90,4/8
+X6 lunar: long around NEW moon (SPX),97,59,0.015,0.11,0.024,0.31,0.051,38,5/8
+X6c control: long around FULL moon (SPX),97,65,0.113,2.41,0.047,0.74,0.051,82,6/8
+X6 lunar: long around NEW moon (NQ),97,52,-0.036,-1.33,0.032,0.4,0.08,5,3/8
+X6c control: long around FULL moon (NQ),96,69,0.108,1.58,0.113,1.82,0.08,57,8/8
+X6 lunar: long around NEW moon (BTC),84,50,-0.028,1.1,-0.134,-1.39,0.051,15,3/7
+X6c control: long around FULL moon (BTC),85,55,0.031,0.19,0.04,0.52,0.04,48,4/7
+X6 lunar: long around NEW moon (XAU),97,60,0.074,1.64,0.022,0.31,0.116,30,6/8
+X6c control: long around FULL moon (XAU),96,53,0.005,-0.04,0.013,0.15,0.118,0,4/8
