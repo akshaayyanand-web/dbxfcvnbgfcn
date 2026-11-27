@@ -1,0 +1,55 @@
+THE5ERS HIGH STAKES (2-STEP) - 27 EAs (the 21-EA pack + 6 add-ons) + Account Equity Guard
+Everything in the 21-EA pack's SETUP still applies (phases, guard, flags, same risk in both stages, one account per pack).
+
+THE 6 ADD-ONS (Nov 2026) - read before running:
+  BTC_Dip_1h, Gold_Dip_4h   passed every anti-cheat test (beat 95-100% of random-entry runs, survive double costs,
+                             a one-bar delay and nearby settings). The strongest two.
+  NQ_Dip_1h                  did NOT beat random long entries (it mostly rides the Nasdaq's rise). Included because you asked
+                             for all 6; remove it first if you want a leaner pack.
+  NQ_Opening_Range_30        thin edge, dies at double costs, overlaps NQ_Opening_Range (correlation 0.75).
+  Noise_Band_NQ_1m           beats random, but double costs leave almost nothing: needs tight NAS100 spreads.
+  BTC_Jump_15m               beats random, but double costs or a one-bar delay remove most of the edge: needs tight BTC spreads.
+RUN ALL 6 ON A DEMO FIRST for 4-6 weeks and compare every trade with the backtest (spread, fill, timing). Only then add them to
+the paid account - and add them at the START of a phase, not in the middle, so the risk stays the same through the stage.
+
+Backtest (rough for the add-ons: their P&L booked at the exit, not hour by hour), The5ers rules, 2020-25 start dates, 3x:
+  21 EAs:          median 62 days to pass, 15% within 30 days, funded year median 75% / bad year 39%.
+  21 + all 6:      median 50 days, 24% within 30 days, funded year median 92% / bad year 50%; 2026 replay paid $13.4K on $10K.
+  These numbers include the 4 add-ons that failed an anti-cheat test, so expect less. Execution limits (6 open positions,
+  90 s stagger) block more trades with 27 EAs than with 21; the 6-position cap is kept for The5ers' bulk-trading rule.
+
+CHARTS for the add-ons: BTC_Dip_1h -> BTCUSD H1, Gold_Dip_4h -> XAUUSD H4, NQ_Dip_1h -> US100 H1, NQ_Opening_Range_30 -> US100 M5,
+Noise_Band_NQ_1m -> US100 M1, BTC_Jump_15m -> BTCUSD M15. Each EA on its own chart (two EAs on one chart is not possible in MT5).
+Add USDJPY to Market Watch (needed by the Nikkei EA's sizing).
+
+EA file                          Chart                InpRiskPct   funded InpRiskPct
+BTC_Revert_5m.mq5                BTCUSD M5            1.0          1.0
+Open_Fade_1m.mq5                 US500 M1             1.0          1.0
+NQ_Open_Fade_1m.mq5              US100 M1             1.0          1.0
+XRP_Revert_5m.mq5                XRPUSD M5            1.0          1.0
+Noise_Band_NQ_1m.mq5             US100 M1             0.6          0.6
+BTC_Dip_v3.mq5                   BTCUSD H2            0.58         0.58
+Gold_VWAP_Pullback_5m.mq5        XAUUSD M5            0.5          0.5
+NQ_Dip_2h.mq5                    US100 H2             0.47         0.47
+BTC_Dip_1h.mq5                   BTCUSD H1            0.45         0.45
+Gold_Dip_4h.mq5                  XAUUSD H4            0.45         0.45
+NQ_Dip_1h.mq5                    US100 H1             0.45         0.45
+NQ_Opening_Range_30.mq5          US100 M5             0.45         0.45
+BTC_Weekend_Gap.mq5              BTCUSD H1            0.38         0.38
+Gold_Dip.mq5                     XAUUSD H1            0.37         0.37
+SOL_Revert_5m.mq5                SOLUSD M5            0.37         0.37
+Gold_Intraday_Momentum.mq5       XAUUSD H1            0.36         0.36
+NQ_Opening_Range.mq5             US100 M5             0.33         0.33
+SPX_Dip_1h.mq5                   US500 H1             0.31         0.31
+Oil_Dip_1h.mq5                   USOIL/WTI H1         0.3          0.3
+BTC_Jump_15m.mq5                 BTCUSD M15           0.3          0.3
+SOL_Dip_1h.mq5                   SOLUSD H1            0.26         0.26
+DAX_Opening_Range.mq5            GER40/DE40 M15       0.23         0.23
+Nikkei_Breakout_5m.mq5           JP225 M5             0.21         0.21
+Gold_Asia_Breakout.mq5           XAUUSD H1            0.2          0.2
+DAX_Premarket_15m.mq5            GER40/DE40 M15       0.19         0.19
+NQ_Breakout_15m.mq5              US100 M15            0.16         0.16
+SPX_Breakout_5m.mq5              US500 M5             0.14         0.14
+
+Account_Equity_Guard.mq5 -> any one extra chart (watches the whole account). Its settings: InpStartBalance=10000, InpDailyLossPct=4.5, InpMaxLossPct=9.5, InpProfitLockPct=8, InpMaxFloatingPct=0
+Already set inside every EA: InpAccountSize=10000, InpDailyStopPct=4.0, InpMaxStopPct=9.5, InpRoomCapPct=8.0, InpHalfBelowPct=0, InpHalfUntilPct=0, InpFirmMaxLossPct=10.0, InpRiskMultiplier=1.0, InpDailyRefHigher=true, InpNewsBlockMin=5, InpMaxOpenTotal=6, InpStaggerSec=90

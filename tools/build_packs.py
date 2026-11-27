@@ -9,6 +9,10 @@ SRC = {"btc": "MT5_EAs/BTC_Dip_v3.mq5", "gdip": "MT5_EAs/Gold_Dip.mq5", "nq2h": 
 SYMB = {"btc": "BTCUSD", "gdip": "XAUUSD", "nq2h": "US100", "spx1h": "US500", "oil1h": "USOIL/WTI", "gasia": "XAUUSD", "gmom": "XAUUSD", "orb15": "US100",
         "nqbo15": "US100", "daxorb": "GER40/DE40", "spxbo5": "US500", "btcgap": "BTCUSD", "sol": "SOLUSD", "goldvwap": "XAUUSD", "spxfade": "US500",
         "nikkei": "JP225", "solrev": "SOLUSD", "btcrev": "BTCUSD", "daxpm": "GER40/DE40", "nqfade": "US100", "xrprev": "XRPUSD"}
+
+SRC.update({"btc1h": "MT5_EAs/addons/BTC_Dip_1h.mq5", "xau4h": "MT5_EAs/addons/Gold_Dip_4h.mq5", "nq1h": "MT5_EAs/addons/NQ_Dip_1h.mq5",
+            "orb30": "MT5_EAs/addons/NQ_Opening_Range_30.mq5", "noiseband": "MT5_EAs/addons/Noise_Band_NQ_1m.mq5", "btcjump": "MT5_EAs/addons/BTC_Jump_15m.mq5"})
+SYMB.update({"btc1h": "BTCUSD", "xau4h": "XAUUSD", "nq1h": "US100", "orb30": "US100", "noiseband": "US100", "btcjump": "BTCUSD"})
 def bake(text, risk, guards, magic=None, extra=(), moff=0):
     text = re.sub(r"input double InpRiskPct = [0-9.]+;", f"input double InpRiskPct = {risk};", text)
     for name, val in guards.items(): text = re.sub(rf"(input \w+\s+{name}\s*=\s*)[^;]+;", rf"\g<1>{val};", text)
@@ -150,8 +154,38 @@ Check BlackBull's contract sizes: assumed US500/US100/GER40 1 lot = 1 index poin
 100 barrels. Different contracts change the risk - send me the specs if unsure. Symbol names differ (SPX500, NAS100, GER40, USOIL ...).
 Account_Equity_Guard is optional here (only closes everything at -95%).""")
 
+# 21 EAs + 6 add-ons (Nov 2026). Add-on risks at the pack's 3x: sister dips/ORB30 0.15% x3, Noise Band 0.2% x3, BTC Jump 0.1% x3.
+T5_ADD = {"btc1h": .45, "xau4h": .45, "nq1h": .45, "orb30": .45, "noiseband": .60, "btcjump": .30}
+def build_the5ers27(size=10000):
+    name = "The5ers_HighStakes_2Step_27" + ("" if size == 100000 else f"_{size // 1000}K"); risks = dict(T5_FUND, **T5_ADD)
+    build(name, risks, dict(T5_G, InpAccountSize=size), {"InpStartBalance": size, "InpDailyLossPct": 4.5, "InpMaxLossPct": 9.5, "InpProfitLockPct": 8, "InpMaxFloatingPct": 0},
+          """THE5ERS HIGH STAKES (2-STEP) - 27 EAs (the 21-EA pack + 6 add-ons) + Account Equity Guard
+Everything in the 21-EA pack's SETUP still applies (phases, guard, flags, same risk in both stages, one account per pack).
+
+THE 6 ADD-ONS (Nov 2026) - read before running:
+  BTC_Dip_1h, Gold_Dip_4h   passed every anti-cheat test (beat 95-100% of random-entry runs, survive double costs,
+                             a one-bar delay and nearby settings). The strongest two.
+  NQ_Dip_1h                  did NOT beat random long entries (it mostly rides the Nasdaq's rise). Included because you asked
+                             for all 6; remove it first if you want a leaner pack.
+  NQ_Opening_Range_30        thin edge, dies at double costs, overlaps NQ_Opening_Range (correlation 0.75).
+  Noise_Band_NQ_1m           beats random, but double costs leave almost nothing: needs tight NAS100 spreads.
+  BTC_Jump_15m               beats random, but double costs or a one-bar delay remove most of the edge: needs tight BTC spreads.
+RUN ALL 6 ON A DEMO FIRST for 4-6 weeks and compare every trade with the backtest (spread, fill, timing). Only then add them to
+the paid account - and add them at the START of a phase, not in the middle, so the risk stays the same through the stage.
+
+Backtest (rough for the add-ons: their P&L booked at the exit, not hour by hour), The5ers rules, 2020-25 start dates, 3x:
+  21 EAs:          median 62 days to pass, 15% within 30 days, funded year median 75% / bad year 39%.
+  21 + all 6:      median 50 days, 24% within 30 days, funded year median 92% / bad year 50%; 2026 replay paid $13.4K on $10K.
+  These numbers include the 4 add-ons that failed an anti-cheat test, so expect less. Execution limits (6 open positions,
+  90 s stagger) block more trades with 27 EAs than with 21; the 6-position cap is kept for The5ers' bulk-trading rule.
+
+CHARTS for the add-ons: BTC_Dip_1h -> BTCUSD H1, Gold_Dip_4h -> XAUUSD H4, NQ_Dip_1h -> US100 H1, NQ_Opening_Range_30 -> US100 M5,
+Noise_Band_NQ_1m -> US100 M1, BTC_Jump_15m -> BTCUSD M15. Each EA on its own chart (two EAs on one chart is not possible in MT5).
+Add USDJPY to Market Watch (needed by the Nikkei EA's sizing).""", dict(T5_FUND, **T5_ADD))
+
 if __name__ == "__main__":
     if sys.argv[1:2] == ["b9"]: build_b9(); sys.exit()
+    if sys.argv[1:2] == ["the5ers27"]: build_the5ers27(int(sys.argv[2]) if len(sys.argv) > 2 else 10000); sys.exit()
     if sys.argv[1:2] == ["the5ers"]: build_the5ers(int(sys.argv[2]) if len(sys.argv) > 2 else 100000); sys.exit()
     build_nova()
     build("FTMO_2Step_FastPass19", FTMO_EVAL, FTMO_G, {"InpStartBalance": 200000, "InpDailyLossPct": 4.0, "InpMaxLossPct": 8.0, "InpMaxFloatingPct": 0},
